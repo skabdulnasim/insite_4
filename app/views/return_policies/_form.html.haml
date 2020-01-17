@@ -1,0 +1,63 @@
+= form_for @return_policy, :html => { :class => 'form-horizontal' } do |f|
+  - if @return_policy.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@return_policy.errors.count, "error")} prohibited this return_policy from being saved:"
+      %ul
+        - @return_policy.errors.full_messages.each do |msg|
+          %li= msg
+  .form-horizontal.bordered-row.m-input.col-sm-12        
+    .form-group.col-sm-12
+      = f.label :return_allowed,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.radio_button(:return_allowed, true,:id=>"return_allowed_yes", :checked => true)
+        %label{:for=> "return_allowed_yes"}= "Yes"
+        = f.radio_button(:return_allowed, false,:id=>"return_allowed_no")
+        %label{:for=> "return_allowed_no"}= "No"
+    .form-group.col-sm-12
+      = f.label :is_refundable,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.radio_button(:is_refundable, true,:id=>"is_refundable_yes", :checked => true)
+        %label{:for=> "is_refundable_yes"}= "Yes"
+        = f.radio_button(:is_refundable, false,:id=>"is_refundable_no")
+        %label{:for=> "is_refundable_no"}= "No"    
+    .form-group.col-sm-12
+      = f.label :policy,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.text_field :policy, :required => true, :autofocus => true, :placeholder => "Enter Cancelation Policy", :class => 'form-control', autocomplete: 'off'
+    .form-group.col-sm-12
+      = f.label :return_alowed_on_order_state,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.select :return_alowed_on_order_state, options_for_select(OrderStatus.all.map{ |u| [u.name, u.name] }, @return_policy.return_alowed_on_order_state), { include_blank: "Select an OrderStatus"}, :class => 'form-control',:required => true
+    .form-group.col-sm-12
+      = f.label :is_delivery_charge_refandable,:class => 'col-sm-2 control-label'
+      = f.check_box :is_delivery_charge_refandable
+      .col-sm-10.input-field
+        = f.radio_button(:is_delivery_charge_refandable, true,:id=>"is_delivery_charge_refandable_yes", :checked => true)
+        %label{:for=> "is_delivery_charge_refandable_yes"}= "Yes"
+        = f.radio_button(:is_delivery_charge_refandable, false,:id=>"is_delivery_charge_refandable_no")
+        %label{:for=> "is_delivery_charge_refandable_no"}= "No"
+    .form-group.col-sm-12
+      = f.label :unit_id,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.select :unit_id, options_for_select(Unit.all.map{ |u| [u.unit_name, u.id] }, @return_policy.unit_id), { include_blank: "Select an unit"}, :class => 'form-control',:required => true
+    .form-group.col-sm-12
+      = f.label :return_allowed_after_deliverable,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.text_field :return_allowed_after_deliverable, :required => true, :autofocus => true, :placeholder => "Enter Hour to allow return", :class => 'form-control', autocomplete: 'off'
+    .form-group.col-sm-12
+      = f.label :return_charge_type,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.select :return_charge_type, options_for_select({"By Amount" => "amount","By Percentage(%)" => "percentage"},@return_policy.return_charge_type), { include_blank: "Select charge type"}, {:class => "form-control"}
+    .form-group.col-sm-12
+      = f.label :return_charge,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.text_field :return_charge, :required => true, :autofocus => true, :placeholder => "Enter return charge", :class => 'form-control', autocomplete: 'off'
+    = f.fields_for :return_causes do |builder|
+      = render 'return_cause_fields', f:builder
+    = link_to_add_fields "Add Return Cause", f, :return_causes, {}, 'm-btn green margin-l-15 add_return_causes'
+    
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        = f.submit 'Save', :class => 'btn btn-success btn-lg'
+        %a.btn.btn-primary.btn-lg{:href => "#"}
+          Cancel   

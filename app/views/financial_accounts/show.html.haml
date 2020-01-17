@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Total credit:
+  = @financial_account.total_credit
+%p
+  %b Total debit:
+  = @financial_account.total_debit
+%p
+  %b Current balance:
+  = @financial_account.current_balance
+%p
+  %b Account holder type:
+  = @financial_account.account_holder_type
+%p
+  %b Account holder:
+  = @financial_account.account_holder_id
+
+= link_to 'Edit', edit_financial_account_path(@financial_account)
+\|
+= link_to 'Back', financial_accounts_path

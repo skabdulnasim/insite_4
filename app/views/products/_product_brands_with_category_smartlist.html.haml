@@ -1,0 +1,93 @@
+- unless smart_listing.empty?
+  %table.table.pading-10
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-2 Brand
+        %th.col-lg-2 Category
+        %th.col-lg-2 Increase By Sale Price (%)
+        %th.col-lg-2 Decrease By Sale Price (%)
+        %th.col-lg-2 Decrease By MRP(%)
+        %th.col-lg-1
+        %th.col-lg-1 Add Rule
+
+    %tbody
+      - menu_card_id = params[:id]
+      - smart_listing.collection.each do |object|
+        - if object.brand_name != nil && object.brand_name != ""
+          %tr.data-table__selectable-row.m-input
+            %td
+              =object.brand_name
+            %td
+            %td
+              = text_field_tag 'brand_name_increase_by_sp', '', class: "form-control allow-numeric-only brand_name_increase_by_sp brand_name_increase_by_sp_#{object.brand_name}", placeholder: "Increase By", 'data-brand-name' => object.brand_name
+            %td
+              = text_field_tag 'brand_name_decrease_by_sp', '', class: "form-control allow-numeric-only brand_name_decrease_by_sp brand_name_decrease_by_sp_#{object.brand_name}", placeholder: "Decrease By", 'data-brand-name' => object.brand_name
+            %td
+              = text_field_tag 'brand_name_decrease_by_mrp', '', class: "form-control allow-numeric-only brand_name_decrease_by_mrp brand_name_decrease_by_mrp_#{object.brand_name}", placeholder: "Decrease By", 'data-brand-name' => object.brand_name
+            %td
+              = button_tag "Update", :class => 'btn btn-success brand_name_price_btn', :type => 'button', 'data-brand-name' => object.brand_name
+            %td
+
+          - menu_category_ids = []
+          - products = Product.by_brand_name(object.brand_name)
+          - if products.present?
+            - products.each do |product|
+              - menu_product = MenuProduct.find_by_menu_card_id_and_product_id(menu_card_id,product)
+              - if menu_product.present?
+                - menu_category_ids.push menu_product.menu_category_id
+                - if menu_category_ids.count(menu_product.menu_category_id) < 2
+                  - menu_category = MenuCategory.find(menu_product.menu_category_id)
+                  %tr.data-table__selectable-row.m-input
+                    %td
+                    %td
+                      = menu_category.name
+                    %td
+                      = text_field_tag 'brand_name_with_category_increase_by_sp', '', class: "form-control allow-numeric-only brand_name_with_category_increase_by_sp brand_name_with_category_increase_by_sp_#{menu_category.id}_#{object.brand_name}", placeholder: "Increase By", 'data-brand-name' => object.brand_name, "data-menu-category-id" => menu_category.id
+                    %td
+                      = text_field_tag 'brand_name_with_category_decrease_by_sp', '', class: "form-control allow-numeric-only brand_name_with_category_decrease_by_sp brand_name_with_category_decrease_by_sp_#{menu_category.id}_#{object.brand_name}", placeholder: "Decrease By", 'data-brand-name' => object.brand_name, "data-menu-category-id" => menu_category.id
+                    %td
+                      = text_field_tag 'brand_name_with_category_decrease_by_mrp', '', class: "form-control allow-numeric-only brand_name_with_category_decrease_by_mrp brand_name_with_category_decrease_by_mrp_#{menu_category.id}_#{object.brand_name}", placeholder: "Decrease By", 'data-brand-name' => object.brand_name, "data-menu-category-id" => menu_category.id
+                    %td
+                      = button_tag "Update", :class => 'btn btn-success brand_name_with_category_price_btn', :type => 'button', 'data-brand-name' => object.brand_name, "data-menu-category-id" => menu_category.id
+                    %td
+                      %a.m-btn.green.m-btn-low-padding#add_lot.add_lot_rule{"data-target" =>"#addLotModal", "data-toggle" => "modal", 'data-brand-name' => object.brand_name, "data-menu-category-id" => menu_category.id}
+                        / , "data-lot-id"=>mp_lot.id
+                        %i.mdi-content-add
+
+
+#addLotModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "addLotModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      = form_tag(add_rule_with_category_and_brand_menu_cards_path method: "post", id:params[:id], multipart: true) do
+        .modal-header.m-modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#addLotModalLabel.modal-title Add lots
+        .modal-body
+          .col-md-12
+            .col-md-1
+            .col-md-9
+              %table.data-table
+                %thead
+                  %tr.data-table__selectable-row
+                    %th
+                      %input.checkbox-parent-toggle.filled-in{:type=>"checkbox"}
+                    %th= "SALE RULE ID"
+                    %th= "SALE RULE NAME"
+                %tbody
+                  = hidden_field_tag 'menu_card_id', params[:id]
+                  = hidden_field_tag 'brand_name', ''
+                  = hidden_field_tag 'menu_category_id', ''
+                  - @sale_rules.each do |sale_rule|
+                    %tr.data-table__selectable-row
+                      %td
+                        %input.checkbox-child.filled-in.sale_rule_checkbox{:value=> "#{sale_rule.id }",:name=>"selected_sale_rules[]",:type=>"checkbox", "data-sale-rule-id" => "#{sale_rule.id}",:id=>"sale_rule_#{sale_rule.id}", "data-sale-rule-name" => "#{sale_rule.name}"}
+                        %label{:for=>"sale_rule_#{sale_rule.id}"}        
+                      %td=sale_rule.id
+                      %td=sale_rule.name
+          .clearfix
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          / %button.btn.btn-default{"data-dismiss" => "modal", :type => "button", :class => "add_lot_with_brand_category" } Save
+          = submit_tag "Save", class: "btn btn-primary"

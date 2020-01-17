@@ -1,0 +1,41 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        //%th= smart_listing.sortable "Stock Id", "id"
+        //%th= smart_listing.sortable "SKU", "sku" if AppConfiguration.get_config_value('stock_identity') != "enabled"
+        %th= smart_listing.sortable "SKU", "sku"
+        %th Stock identity
+        %th= smart_listing.sortable "Name", "name"
+        %th Color
+        %th Size
+        %th Enter counted stock
+    %tbody
+      - smart_listing.collection.each do |object|
+        - if object.stock_identity.present?
+          %tr.data-table__selectable-row
+            - product = Product.find(object.product_id)
+            - _stock_identity = object.stock_identity
+            - _stock_id = _stock_identity.split('-')[5]
+            //%td=object.id
+            / %td=object.sku if AppConfiguration.get_config_value('stock_identity') != "enabled"
+            %td=object.sku
+            %td=object.stock_identity
+            %td
+              =object.product.name
+              - if object.product.local_name.present?
+                %b
+                  = " ( #{object.product.local_name} )"
+            %td 
+            %td
+            %td
+              .input-group
+                / - _sku = AppConfiguration.get_config_value('stock_identity') != "enabled" ? object.sku : ''
+                - _sku = object.sku
+                %input.form-control.add-stock-identity-products-to-cart-onkey{"data-product-id"=>object.product_id,"data-sku"=>_sku,"data-product-name"=>product.name,"data-product-unit"=>product.basic_unit,"data-stock-id"=>_stock_id, "data-stock-identity" => _stock_identity, :type => "text", :class=>"quantity_#{object.stock_identity}"}
+                .input-group-addon=product.basic_unit          
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

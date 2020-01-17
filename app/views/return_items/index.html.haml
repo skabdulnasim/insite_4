@@ -1,0 +1,16 @@
+= render "layouts/flash"
+- if @return_items.present?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Return Items
+          = smart_listing_render :return_items
+-else
+  .jumbotron
+    %h2 No Return Items Available
+    %p It seems that your branch don't have any return items.
+    %p
+      %a.btn.btn-primary.btn-lg Learn more

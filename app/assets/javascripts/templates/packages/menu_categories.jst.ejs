@@ -1,0 +1,15 @@
+<select class="form-control menu_categories" required="required">
+	<option value="">-- Choose Menu Category --</option>
+	<% category_count = menu_card.categories.length %>
+	<%  if(category_count > 0) { %>
+    <% for (var i = category_count - 1; i >= 0; i--) { %>
+      <option value="<%= menu_card.categories[i].id %>"><%= menu_card.categories[i].name %></option>
+      <% subcategories = menu_card.categories[i].sub_categories %>
+        <%  if(subcategories.length > 0) { %>
+          <% for (var j=0; j < subcategories.length; j++) { %>
+            <option value="<%=subcategories[j].id%>">-- <%=subcategories[j].name %></option>
+          <% } %>
+        <% } %>
+      <% } %>
+    <% } %>
+</select>

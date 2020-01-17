@@ -1,0 +1,79 @@
+- manual_load_javascript "templates/areas/select_user"
+= form_for @area do |f|
+  - if @area.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@area.errors.count, "error")} prohibited this area from being saved:"
+      %ul
+        - @area.errors.full_messages.each do |msg|
+          %li= msg
+
+  .col-sm-6
+    .form-group
+      = f.label :name, :class=> 'col-sm-4 control-label'
+      .col-sm-7
+        = f.text_field :name, :required=> true
+    %br
+    .form-group
+      = f.label :descriptions, :class=> 'col-sm-4 control-label'
+      .col-sm-7
+        = f.text_field :descriptions, :required=> true
+    %br
+    = hidden_field_tag "hidden_item_ids","" # these are the zone ids initialized through javaScript
+    - if @area.user_id.present?
+      = hidden_field_tag "user_id","#{@area.user_id}"
+      .p#allocted_role_id{"data-role-id"=>@area.user.users_role.role_id}
+      .p#area_id{"data-area-id"=>@area.id}
+    - else
+      = hidden_field_tag "user_id",""
+    .col-sm-4
+      .switch
+        %label
+          .col-sm-4
+            Status
+          .col-sm-8{:style=>"margin-left:150px;"}
+            = f.check_box :status, :required=> true
+            %span.lever
+    .form-group{:style=>"margin-top:10px;"}
+      %ul.token-input-list-facebook.allocation_item_container{:style=>"width:250px !important ;margin-left:175px;max-height:150px !important;overflow: auto !important;"}
+    %br
+      - @zones.each do |zone|
+        -if is_allocated_to_area(zone.id) == true
+          .pre_allocated_list{"data-item-id"=>zone.id, "data-item-name"=>zone.name}
+    %br
+    .form-group{:style=>"margin-top:30px;margin-left:150px;"}
+      .col-sm-4
+        = link_to 'Back', areas_path , :class=>'btn btn-primary btn-lg' 
+      .col-sm-4
+        = f.submit 'Save', :class=> 'bnt btn-success btn-lg' 
+
+.col-sm-6 
+  .row 
+    .card
+      .panel.panel-default
+        .panel-heading{:style=>"background-color:#4285f4; color:#fff;"}
+          Select Zone
+          %br       
+          = smart_listing_controls_for(:zones, {class: "text-left"}) do
+            .form-group.filter.input-append
+              .input-group
+                %input.form-control.search{:placeholder => "Search zone...", :type => "text", :name=> "zone_name", :style=>"width:250px; float:right;"}
+                %span.input-group-btn
+                  %button.btn.orange.disabled{:type => "submit"}
+                    %span.glyphicon.glyphicon-search
+      = smart_listing_render :zones
+
+  .row
+    .main-section__content
+      .example
+        .example__content.p0.min-height-300
+          .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Select User
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              User role
+            .padding-5
+              = select_tag "role_id", options_for_select(@roles.map{ |role| [role.name.humanize, role.id] }), { prompt: "Select role",:required=>true, class: "form-control"}
+
+            #ajax-user-section

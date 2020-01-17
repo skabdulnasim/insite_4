@@ -1,0 +1,128 @@
+- links_arr = [{:title=>"Purchase Orders",:url=>"#",:active_class=>""},{:title=>"Id: #{@purchase_order.id}",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)
+
+%script{:src=>"https://code.jquery.com/ui/1.12.1/jquery-ui.js"}
+- manual_load_javascript "stores"
+
+:javascript
+	$(function() {
+		$('#product-search-po-edit').autocomplete({
+			source: "/products/search_products",
+			select: function(event, ui) {
+				$('#product-search-po-edit').val(ui.item.name);
+				$('#product-search-po-edit').attr('data-product-id',ui.item.id);
+				return false;
+			}
+		});
+
+		$('#product-search-po-edit').autocomplete().data('uiAutocomplete')._renderItem = function(ul, item) {
+			return $('<li class="collection-item">').append('<a data-product-id='+item.id+'>' + item.name + '</a>').appendTo(ul);
+		};
+	});  
+	
+:css
+	.ui-autocomplete {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		z-index: 1000;
+		float: left;
+		display: none;
+		min-width: 160px;
+		_width: 160px;
+		margin: 2px 0 0 0;
+		list-style: none;
+		background-color: #ffffff;
+		border-color: #ccc;
+		border-color: rgba(0, 0, 0, 0.2);
+		border-style: solid;
+		border-width: 1px;
+	}
+	.ui-menu-item{
+		display: block;
+		padding:10px;
+		clear: both;
+		font-weight: normal;
+		line-height: 18px;
+		white-space: nowrap;
+		border-bottom:1px solid #ccc;
+		margin-left:-40px;
+	}
+	.ui-menu-item:last-child {
+		border: none;
+	}
+	.ui-menu-item:hover { 
+		background-color: #EFEFEF;
+		cursor: pointer;
+	}
+	.ui-corner-all{
+		color: #616567;
+	}
+	.ui-helper-hidden-accessible{
+		display: none;
+	}
+
+/ %h1= "Editing purchase_order:##{@purchase_order.id}"
+
+.card.padding-20
+	%tr.row{:style=>"display:flex;"}
+		%td
+			.form-group.filter.input-append.float-l{:style=>"width: 15%;margin-top: 5px;margin-right:10px;"}
+				.input-group
+					%input.form-control{:placeholder => "Add Products", :type => "text", :id => "product-search-po-edit", :style => "height:36px;"}
+						%span.input-group-btn
+							%a.m-btn.green.m-btn-low-padding#product_add_po_edit
+								%i.mdi-content-add
+		%td
+			= form_tag(cancel_po_store_purchase_orders_path(@store), method: "get",multipart: true) do
+				%input{:type=>"hidden", :name=>"purchase_order_id", :value=>@purchase_order.id}
+				%button.m-btn.red.float-r.waves-effect.waves-light#total_po_cancel{:type => "submit"}
+					Cancel Po
+	= form_tag store_purchase_order_path(@purchase_order.store,@purchase_order),method: :put do
+		= submit_tag("submit po", :class => 'm-btn btn-success float-r margin-r-5')
+		%table.table.table-hover.table-bordered#purchase_product_accordion
+			= hidden_field_tag :po_vendor_id, @purchase_order.vendor_id
+			%thead
+				%tr
+					%th sl no
+					%th product name
+					%th price
+					%th quantity
+					/ %td unit
+					%th= "estimate cost (#{currency})"
+					%td cancel item
+				%tbody.dynamic_product_add
+					-sl=0
+					- @purchase_order_metum.each do |meta|
+						-vendor_price = meta.product.vendor_products.by_vendor(@purchase_order.vendor_id).first.price
+						-sl += 1
+						%tr.data-table__selectable-row{:id=>"po_meta#{meta.id}"}
+							=hidden_field_tag("purchase_orders[][meta_id]",meta.id)
+							=hidden_field_tag("purchase_orders[][action]",'update')
+							%td{:class=>"meta_products","data-product-id"=>meta.product_id}= sl 
+								
+							%td{"aria-controls" => "purchase_product_collapse_#{meta.product_id}", "aria-expanded" => "false", "data-parent" => "#purchase_product_accordion", "data-toggle" => "collapse", :href => "#purchase_product_collapse_#{meta.product_id}", :role => "button"}
+								= meta.product.name
+							%td
+								=text_field_tag("purchase_orders[][price_per_unit]",meta.price_per_unit,class: "allow-numeric-only form-control price_#{meta.product_id} product_price", "data-product-id"=>meta.product_id)
+							%td
+								%span.float-l
+									=text_field_tag("purchase_orders[][product_amount]",meta.product_amount,class: "allow-numeric-only form-control margin-b-2 input_quantity transfer-quantity-#{meta.product_id}", "data-product-id"=>meta.product_id)
+								%span.m-btn.cyan.margin-l-15{:style=>"height:33px;"}
+									= meta.product.basic_unit
+							/ %td
+							/ 	- meta.product.input_units.each do |unit|
+							/ 		-puts unit.inspect
+							/ 	/ = select_tag :product_unit_id, options_for_select(meta.product.input_units.active_only.map{ |ut| [ut.product_unit_name, "#{ut.product_unit_id}__#{ut.product_unit_name}__#{ut.basic_unit_multiplier}",{"data-transaction-id"=>ut.id}]}),{ prompt: meta.product.basic_unit, :class=>"form-control transfer-input input_quantity add_transaction_unit"}
+							/ 	= select_tag :product_unit_id, nil, { prompt: meta.product.basic_unit, :class=>"form-control transfer-input input_quantity unit-input-#{meta.product_id} add_transaction_unit"}
+							%td
+								=text_field_tag("estimate_price_#{meta.id}",meta.product_amount*meta.price_per_unit,class: "allow-numeric-only estimated_cost_#{meta.product_id} form-control product_estmated_cose")
+							%td
+								.m-btn.red.m-btn-low-padding.cancel_item_in_po{:title=>"cancel item in po", "data-po-id"=>@purchase_order.id, "data-meta-id"=>meta.id, "data-product-name"=>meta.product.name}
+									%i.mdi-action-highlight-remove
+						%tr.collapse.light-blue.lighten-5{"aria-labelledby" => "purchase_product_heading#{meta.product_id}", :role => "tabpanel", :id => "purchase_product_collapse_#{meta.product_id}"}
+							%td
+							%td
+							%td
+							%td
+

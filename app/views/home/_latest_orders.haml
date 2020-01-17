@@ -1,0 +1,8 @@
+%tr
+  %td
+    = "##{latest_order.id}"
+    = billed_order(latest_order)
+  %td= show_delivery_name(latest_order)      
+  %td= show_order_status(latest_order)
+  %td= show_order_source(latest_order)
+  %td= latest_order.created_at.strftime("%d %b %Y, %I:%M %p")

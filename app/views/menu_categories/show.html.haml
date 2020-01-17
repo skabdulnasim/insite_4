@@ -1,0 +1,33 @@
+#page-wrapper
+  .row
+    .page-header
+      %h1
+        Menu Management
+        %small Viewing menu category
+    .page-container     
+      
+      
+      %table.table.table-hover
+        %tr.well
+          %th= "Name"
+          %th= "Menu Card" 
+          %th= "Description"
+          %th= "Parent"          
+          %th= "category image"
+          %tr
+            %td= @menu_category.name
+            %td= @menu_category.menu_card.name
+            %td= @menu_category.description
+            - if !@menu_category.parent.nil?
+              %td= MenuCategory.menu_parent(@menu_category.parent)[0].name
+            - else
+              %td= '-'
+            %td
+              = image_tag(@menu_category.image.url(:medium))
+            
+      %a{:href => "#{edit_menu_category_path(@menu_category)}", :class => 'btn btn-primary btn-mini active'}
+        %i.icon-edit
+        Edit
+      %a{:href => "#{new_menu_product_path}?menu_card_id=#{@menu_category[:menu_card_id]}", :class => 'btn btn-primary btn-mini active'}
+        %i.icon-backward
+        Back      

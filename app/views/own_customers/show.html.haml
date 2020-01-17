@@ -1,0 +1,27 @@
+= render "layouts/flash"
+.row
+  .col-lg-8.col-sm-6.col-lg-8.col-lg-12
+    .info-box.teal.teal-text.text-lighten-4.card
+      %span.info-box-icon
+      .info-box-content
+        %span.info-box-text Customer
+.row
+  .col-lg-8.col-lg-6.col-lg-8.col-lg-12
+    .info-box.steelblue.steelblue-text.text-lighten-4.card
+      .info-box-content
+        %p
+          %b Name:
+          = @own_customer.name
+        %p
+          %b Customer unique id:
+          = @own_customer.customer_unique_id
+        %p
+          %b Mobile no:
+          = @own_customer.mobile_no
+        %p
+          %b Email:
+          = @own_customer.email
+
+        = link_to 'Edit', edit_own_customer_path(@own_customer)
+        
+        = link_to 'Back', own_customers_path  

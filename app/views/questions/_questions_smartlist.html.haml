@@ -1,0 +1,31 @@
+- unless smart_listing.empty?
+	%table.data-table    
+		%tr
+			%th.col-lg-4 Title
+			%th.col-lg-2 Question Type
+			%th.col-lg-1 Image
+			%th.col-lg-2 Option Type
+			%th.col-lg-1 Status
+			%th.col-lg-2 Action
+		- smart_listing.collection.each do |object|
+			%tr
+				%td.col-lg-4= object.title
+				%td.col-lg-2= object.question_type
+				%td.col-lg-1= object.image.present? ? image_tag("#{object.image}", width: '50', :class => "img-thumbnail") : image_tag("icons/product-box-128.png", width: '50', :class => "img-thumbnail")
+				%td.col-lg-2= object.option_type
+				%td.col-lg-1
+					- question_status = object.status == 'enable' ? true : false
+					.switch.padding-5
+						%label
+							= check_box_tag :status, 'enable', question_status, {"data-value-active"=>"enable","data-value-inactive"=>"disable", "class"=>"update_question_status", "data-question-id"=>object.id }
+							%span.lever.margin-l-none
+				%td.col-lg-2
+					%a.m-btn.green.m-btn-low-padding{:href => "#{question_path(object)}", :title => "View question"}
+						%i.mdi-action-visibility
+					%a.m-btn.orange.m-btn-low-padding{:href => "#{edit_question_path(object)}", :title => "Edit question"} 
+						%i.mdi-editor-border-color
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		No question found

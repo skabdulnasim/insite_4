@@ -1,0 +1,68 @@
+-if AppConfiguration.get_config_value('stock_identity') == 'enabled'
+  - current_stock = Stock.find(f.object.stock_id).available_stock
+- else
+  / =debug f.object
+  -if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+    - current_stock =  Stock.product_variation_available_stock(f.object.product_id, f.object.stock_transfer.primary_store_id, f.object.sku,f.object.color_id,f.object.size_id,f.object.batch_no,f.object.expery_date,f.object.model_number,f.object.sale_price_without_tax)
+  -else
+    - current_stock = f.object.sku.present? ? Stock.product_variation_available_stock(f.object.product_id, f.object.stock_transfer.primary_store_id, f.object.sku,f.object.color_id,f.object.size_id,f.object.batch_no,f.object.expery_date,f.object.model_number,f.object.sale_price_without_tax): get_product_current_stock(f.object.stock_transfer.primary_store_id, f.object.product_id)
+- compositions = f.object.product.product_compositions
+%section
+  .card
+    .card-content.padding-10
+      .col-sm-4.p0
+        %span.text-darken-2{:class => "#{current_stock>0 ? 'green-text' : 'red-text'}"}
+          / = f.object.sku.present? ? "#{f.object.product_name} - (#{f.object.sku})" : "#{f.object.product_name}"
+
+          - _product = Product.find(f.object.product_id)
+          - _product_name = _product.package_component.present? ?  _product.product_name(_product) : f.object.product_name
+          - if f.object.sku.present?
+            - if f.object.product.local_name.present?
+              = "#{_product_name} (#{f.object.product.local_name}) - (#{f.object.sku})"
+            - else
+              = "#{_product_name} - (#{f.object.sku})"
+          - else
+            = "#{_product_name}"
+            - if f.object.product.local_name.present?
+              %b
+                = "( #{f.object.product.local_name} ) "
+        -if AppConfiguration.get_config_value('stock_identity') == 'enabled'
+          %br 
+          %small
+          Identity :
+          = f.object.stock_identity        
+               
+        %br
+        %small
+          Current Stock :
+          =number_with_precision(current_stock, :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+          = f.object.product_basic_unit
+        - if f.object.color_name.present?
+          %small
+            , Color:
+            = f.object.color_name
+        - if f.object.size_name.present?
+          %small
+            , Size:
+            = f.object.size_name
+        - if f.object.batch_no.present?
+          %small
+            , Batch No:
+            = f.object.batch_no
+      .col-sm-4
+        .input-group
+          %span.input-group-addon QTY
+          = f.text_field :quantity_transfered, :class=> "form-control autosubmit-input-quantity allow-numeric-only", "data-name"=>_product_name, "data-current-stock"=>number_with_precision(current_stock, :precision => 8, :significant => true, :strip_insignificant_zeros => true), "data-product-basic-unit"=>"#{f.object.product_basic_unit}"
+          %span.input-group-addon
+            = f.object.product_transaction_unit_id.present? ? stock_transfer_unit_name(f.object.product_transaction_unit_id) : f.object.product_basic_unit
+      .col-sm-4
+        - if compositions.present?
+          - check_status = (f.object.is_transferable == false) ? true : false
+          = f.check_box :is_transferable, {:class => 'filled-in autosubmit-input', :checked => check_status}, false, true
+          = f.label :is_transferable, 'Transfer ingredients?'
+      - if f.object.stock_transfer.to_store.store_type == 'waste_bin'
+        - if @reason_codes.present?
+          .col-sm-4
+            = f.select :reason_code_id, options_for_select(@reason_codes.map{ |reason_code| [reason_code.reason, reason_code.id] }, f.object.reason_code_id), { include_blank: "Select a reason"}, {:class => "form-control autosubmit-input-quantity"}
+
+      .clearfix

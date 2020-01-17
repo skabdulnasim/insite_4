@@ -1,0 +1,4 @@
+- if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+	= render "by_catalog_barcode_on", :stock_purchase => @stock_purchase, :business_type => business_type
+- else
+	= render "by_catalog_barcode_off", :stock_purchase => @stock_purchase, :business_type => business_type

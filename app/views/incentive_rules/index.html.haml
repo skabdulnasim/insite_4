@@ -1,0 +1,45 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing incentive rules
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_incentive_rule_path}"}
+              %i.mdi-content-add.left
+              New Incentive rule              
+        %table.data-table    
+          %tr
+            %th Role
+            %th 
+              Incentive amount 
+              %br
+              for each shop
+            %th 
+              Avg. incentive 
+              %br
+              amount for all shop
+            %th Achivement range type
+            %th Achivement lower range
+            %th Achivement upper range
+            %th Actions
+
+          - @incentive_rules.each do |incentive_rule|
+            %tr
+              %td= incentive_rule.role.name
+              %td= incentive_rule.incentive_amount
+              %td= incentive_rule.avg_incentive_amount
+              %td= incentive_rule.achivement_range_type
+              %td= incentive_rule.achivement_lower_range
+              %td= incentive_rule.achivement_upper_range
+              %td
+                %a.m-btn.green.m-btn-low-padding{:href => "#{incentive_rule_path(incentive_rule)}", :title => "View incentive rules"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_incentive_rule_path(incentive_rule)}", :title => "Edit incentive rule"} 
+                  %i.mdi-editor-border-color
+                %a.m-btn.red.m-btn-low-padding{:href => "#{incentive_rule_path(incentive_rule)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete incentive rule"}
+                  %i.mdi-action-delete 
+
+

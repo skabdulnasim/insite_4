@@ -1,0 +1,27 @@
+%ul.nav.navbar-top-links.navbar-right.material-navbar-top-links
+  %li.dropdown
+    %a.dropdown-toggle.padding-10{"data-toggle" => "dropdown", :href => "#"}
+      %i.mdi-social-notifications.sm{:style=>"color:#FFF;"}
+    %ul.dropdown-menu.dropdown-user
+      %li
+        %a{:href => profile_user_path(current_user)}
+          %i.fa.fa-user.fa-fw
+          = current_user.email
+      %li.divider
+      %li
+        %a{:href => "#{destroy_user_session_path}", :method => "delete"}
+          %i.fa.fa-sign-out.fa-fw
+          Logout
+  %li.rotate-dropdown
+    %a.dropdown-toggle.padding-10{"data-toggle" => "dropdown", :href => "#"}
+      %i.mdi-navigation-apps.sm{:style=>"color:#FFF;"}
+    %ul.dropdown-menu.dropdown-user
+      %li
+        %a{:href => profile_user_path(current_user)}
+          %i.fa.fa-user.fa-fw
+          = current_user.email
+      %li.divider
+      %li
+        %a{:href => "#{destroy_user_session_path}", :method  => "delete"}
+          %i.fa.fa-sign-out.fa-fw
+          Logout

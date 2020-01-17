@@ -1,0 +1,12 @@
+.row.m0.custom-list-item
+  .col.s1.p0
+    %i.material-icons.theme-green-text.font-25 person_pin
+  .col.s11.p0-20
+    %h6.m0
+      %strong=customer.customer_profile.customer_name
+      %small.theme-green-text.right Take Away
+    %small.grey-text
+      ="Contact:  #{customer.mobile_no}"
+      = hidden_field_tag 'order_deliverable_type', 'Customer'
+      = hidden_field_tag 'order_deliverable_id', customer.id      
+  .clearfix

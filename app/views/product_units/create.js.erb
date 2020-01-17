@@ -1,0 +1,5 @@
+$('#new_product_unit').hide();
+$('#new_product_unit_link').show();
+Materialize.toast("Product unit created successfully.", 3000,'green')
+$("#product_unit").prepend("<%=j render @product_unit %>")
+

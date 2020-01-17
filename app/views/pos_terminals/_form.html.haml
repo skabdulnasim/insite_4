@@ -1,0 +1,50 @@
+= form_for @pos_terminal do |f|
+  .row.m0
+    .col.offset-s3.s6
+      .card
+        .card-content.blue
+          %h5.font-weight-200
+            %span.blue-text.text-lighten-5 inPOS
+            %button.waves-effect.waves-light.btn.white.blue-text.right.font-12
+              %i.material-icons.right send
+              %span.font-weight-400 Save
+            .clearfix
+        .card-content.white
+          %h5.font-weight-200 Primary Info
+          .mt20
+            .input-field.col.s4
+              = f.text_field :name
+              = f.label :name
+            .input-field.col.s4
+              = f.select :capability, options_for_select(PosTerminal::CAPABILITIES.map{ |ut| [ut.humanize, ut]}, @pos_terminal.capability), {:required => true}
+              = f.label :capability
+            .input-field.col.s4
+              = f.select :istrash, options_for_select([["No",0], ["Yes", 1]], @pos_terminal.istrash)
+              = f.label :istrash
+
+          = f.fields_for :properties, OpenStruct.new(@pos_terminal.properties) do |builder|
+            %h5.font-weight-200 Select the catalog you want to use
+            - capability = @pos_terminal.capability.present? ? "#{@pos_terminal.capability.humanize}" : "#{@pos_terminal.capability}"
+            %p.mt20.grey-text
+              ="As this POS is configured to be used for #{capability}, we are listing catalogs according to that."
+            .mt20
+              = builder.select :menu_card_id, options_for_select(@catalogs.map { |e| ["#{e.name} (#{e.unit.unit_name} | #{e.section.name} | #{e.scope.humanize})", e.id] }, @pos_terminal.menu_card_id)
+            %br
+            %h5.font-weight-200 Other Settings
+            .mt20
+              .input-field.col.s4
+                = builder.select :search_type, options_for_select([["Using Barcode","by_barcode"], ["Using Item Name", "by_item_name"],["Using Product Name", "by_product_name"],["Using Both", "by_barcode_and_name"]], @pos_terminal.search_type)
+                = builder.label :search_type, "Search items"
+              .input-field.col.s4
+                = builder.select :invoice_page_size, options_for_select([["A4","a4"], ["A5", "a5"]], @pos_terminal.invoice_page_size)
+                = builder.label :invoice_page_size, "Invoice Page Size"
+              .input-field.col.s4
+                = builder.select :sku_only_operations, options_for_select([["Yes","yes"], ["No", "no"]], @pos_terminal.sku_only_operations)
+                = builder.label :sku_only_operations, "Barcode mandatory for billing?"
+              .input-field.col.s6
+                = builder.select :upc_based_operations, options_for_select([["Yes","yes"], ["No", "no"]], @pos_terminal.upc_based_operations)
+                = builder.label :upc_based_operations, "Item Serial (UPC) Required?"
+              .input-field.col.s6
+                = builder.text_field :bill_serial_prefix
+                = builder.label :bill_serial_prefix
+              .clearfix

@@ -1,0 +1,37 @@
+<div class="col-lg-12 padding-5">
+  <div class="card waves-effect waves-light">
+    <div class="card-content p0">
+      <p class="header white-text teal padding-10">
+        PRODUCT DETAILS
+      </p> 
+    </div>   
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="font-sz-12">From Store</th>           
+          <th class="font-sz-12">Amount</th>
+          <th class="font-sz-12">Date</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% for(var i=0; i<attributes.length; i++) { %>
+        <%
+        var requ_date = new Date(attributes[i].created_at);
+        var requ_date = requ_date.format("dd-mm-yyyy, hh:MM TT");
+        %>
+        <tr class="data-table__selectable-row">
+          <td class="font-sz-12"> 
+            <%= attributes[i].store.name %>
+          </td>
+          <td class="font-sz-12"> 
+            <%= attributes[i].product_ammount %> <%= basic_unit %>
+          </td>
+          <td class="font-sz-12"> 
+            <%= requ_date %>
+          </td>
+        </tr>  
+      <%}%>
+      </tbody>
+    </table>     
+  </div>
+</div>

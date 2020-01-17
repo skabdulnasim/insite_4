@@ -1,0 +1,192 @@
+<div id="DivIdToPrintInvoice">
+  <style>
+    html{
+      font-family: "Roboto", sans-serif;
+      color: rgba(0, 0, 0, 0.87);
+    }
+    #Bill_table{
+      font-size: 12px;
+    }
+    .row {
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 20px
+    }
+
+    .row:after {
+        content: "";
+        display: table;
+        clear: both
+    }
+
+    .row .col.s5 {
+        width: 41.6666666667%;
+        margin-left: auto;
+        left: auto;
+        right: auto
+    }
+
+    .row .col.s7 {
+        width: 58.3333333333%;
+        margin-left: auto;
+        left: auto;
+        right: auto
+    }
+    .mt10 { margin-top: 9px !important; }
+    .p10 { padding: 9px !important; }
+    table {
+        width: 100%;
+        display: table
+    }
+    .th {
+      border: 1px solid black;
+      font-family: verdana;
+    }
+    .table {
+      border-collapse: collapse;
+      width: 50%;
+    }
+    .th {
+      height: 0px;
+      text-align: center;
+    }
+
+    h6 {
+      font-size: 0.8rem;
+      font-weight: 400;
+    }
+    h3{
+      font-size: 14px !important;
+      color: #000000 !important;
+    }
+    h34{
+      font-size: 12px !important;
+      color: #000000 !important;
+    }
+    /* hide the page footer on screen display */
+    /*.page-break { display: none; }*/
+
+    @media print {
+      /* make a 10-inch high block that sits on top of the page content */
+      .page-break {
+        page-break-before: always;
+        display: block;
+        position: absolute;
+        /*height: 640pt;*/
+        height: <%=page_size%>pt;
+      }
+
+      /* stick the contents of .page-break to the bottom of the 10 inch block */
+      .page-break .copyright {
+        position: absolute;
+        bottom: 0px;
+      }
+    }
+  </style>
+  <div style="margin: 9px;" class="page-break">
+    <div class="row" style="margin: 0px; padding: 0px;">
+      <div class="col s7" style="float: left; box-sizing: border-box; padding: 0 0.15rem;">
+        <div class="col s3" style="float: left; box-sizing: border-box; padding: 5px 0.15rem;">
+          <% if(response.unit.unit_image) { %>
+            <img src="<%=response.unit.unit_image%>" alt="<%=response.unit.unit_name%>" width='100'>
+          <% } %>
+        </div>
+        <div class="col s8" style="float: left; box-sizing: border-box; padding: 5px 0.15rem;margin-top:10px;">
+          <h6 style="margin: 4px 2px;"><%=response.unit.unit_name%></h6>
+          <h6 style="margin: 3px 2px; font-size: 9px; color: #000;">
+            <%=response.unit.address%>, <%=response.unit.landmark%>, <%=response.unit.state%>- <%=response.unit.pincode%>
+          </h6>
+          <h6 style="margin: 3px 2px; font-size: 9px; color: #000;">
+            <%=response.unit.bill_header_text%>
+          </h6>
+          <h6 style="margin: 3px 2px; font-size: 9px;">
+            Contact us: <%=response.unit.phone%>
+          </h6>
+        </div>  
+      </div>
+      <div class="col s5" style="float: left; box-sizing: border-box; padding: 0 0.15rem;">
+        <p style="border: 1px dashed #424242; font-size: 9px; padding:3px; margin-top: 0px;">
+          TAX INVOICE # <%=response.serial_no%>
+        </p>
+        <h6 style="margin: 5px; font-size: 9px;">Bill ID: <%=response.id%></h6>
+        <h3 style="margin: 5px;">Invoice Date: <%=response.synced_at%></h6>
+
+        <h3 style="margin: 2px 5px;">
+          <%= response.deliverable_type %>:
+          <% if(response.deliverable_type == "Address") { %>
+            <b><%= response.deliverable.receiver_first_name%> <%= response.deliverable.receiver_last_name%></b>
+            <%= response.deliverable.delivery_address%>,
+            <%= response.deliverable.landmark %>, <%= response.deliverable.city %> - <%= response.deliverable.pincode %>.
+            (Contact: <%= response.deliverable.contact_no %>)
+          <% } else if(response.deliverable_type == "Customer") { %>
+            <%= response.deliverable.more_details.firstname%>
+            <%= response.deliverable.more_details.lastname%>
+            (Contact: <%= response.deliverable.mobile_no %>)
+          <% } %>
+          Booking-Time: <%= response.reservation.reservation_date%>, <%=response.reservation.start_time %> - <%=response.reservation.end_time %> 
+        </h3>
+      </div>
+    </div>
+    <div style="clear: both;"></div>
+    <div class="cl-sm-12">
+      <table id="Bill_table" calss="table">
+        <% orders = response.orders; %>
+        <tr>
+          <td class = "th">SR#</th>
+          <td class = "th">Description</th>
+          <td class = "th">Price <small>(<%=currency%>)</small></th>
+          <td class = "th">Tax Amount <small>(<%=currency%>)</small></th>
+          <td class = "th">Sub Total <small>(<%=currency%>)</small></th>
+        </tr>
+        <% for (var i = orders.length - 1; i >= 0; i--) { %>
+          <% var k = 1 %>
+          <% for (var j = orders[i].order_items.length - 1; j >= 0; j--) { %>
+            <tr>
+              <td width="5%" class = "th"><%=k%></td>
+              <td width="30%" class = "th"><%= orders[i].order_items[j].product_name %></td>
+              <td width="20%" class = "th"><%= orders[i].order_items[j].product_price + orders[i].order_items[j].customization_price %></td>
+              <td width="15%" class = "th"><%= (orders[i].order_items[j].quantity * orders[i].order_items[j].tax_amount).toFixed(2) %></td>
+              <td width="30%" class = "th"><%= orders[i].order_items[j].subtotal.toFixed(2) %></td>
+            </tr>
+            <% k = k+1 %>
+          <% } %>
+        <% } %>  
+
+        <tr>
+          <td class="th" colspan="4"><h6 style="margin-top: -10px;"><u>Terms & Conditions</u></h6></td>
+          
+          <td class = "th">
+            <p style="font-size: 11px; margin-top: 0px; margin-bottom: 0px; text-align: left; padding-left:10px;">
+              <p>Grand Total: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<%= response.grand_total.toFixed(2) %><br></p>
+              Amount Paid in: &nbsp;
+              <% if(response.status == 'paid') {%>
+                <% payments = response.settlement.payments; %>
+                <% if (payments) {%>
+                  <% for (var i = payments.length - 1; i >= 0; i--) { %>
+                    <%=payments[i].paymentmode_type%>
+                  <% } %>
+                <% } %>
+              <% }%>
+              <br>
+              <p>Paid Amount: &nbsp;&nbsp;&nbsp;&nbsp;<%=response.settlement.bill_amount.toFixed(2)%></p>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="copyright">
+      <p style="float: right; width: 100%; margin: 10px; text-align: right;">
+        <span style="font-size: 15px; font-weight: 300;">Thank You!</span>
+        <br>
+        <span style="font-size: 9px;">for shopping with us</span>
+      </p>
+      <p style="float: right; width: 100%; margin: 5px 0px; font-size: 9px; border-bottom: 1px dotted #000; padding: 9px 0px;">
+        <span><%=response.unit.bill_footer_text%></span>
+      </p>
+      <center style="font-size: 8px;">This is a computer generated invoice</center>
+    </div>
+
+  </div>
+
+</div>
+<!-- <a href="#!" class="btn green print">Print</a> -->

@@ -1,0 +1,13 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Questions
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_question_path}"}
+              %i.mdi-content-add.left
+              New Question
+        = smart_listing_render :questions

@@ -1,0 +1,35 @@
+- links_arr = [{:title=>"TsE Report",:url=>tsp_reports_path,:active_class=>""},{:title=>"User Sumary report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+//= debug @category_sales
+//= debug @sub_sale
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="User sumary reports between #{params[:from_date]} to #{params[:to_date]}"  
+          .data-table-header__actions
+            .form-group
+              = smart_listing_controls_for(:tse_sumary_list, {class: "form-inline float-l margin-l-30"}) do
+                = hidden_field_tag :from_date, "#{params[:from_date]}"
+                = hidden_field_tag :to_date, "#{params[:to_date]}"
+                -if params[:unit_ids].present?
+                  -params[:unit_ids].each do |u_id|
+                    = hidden_field_tag "unit_ids[]",u_id
+                .form-group.filter.input-append
+                  .input-group
+                    %input.form-control.search.tse-list{:placeholder => "Search TsE...", :type => "text", :name=> "tse_filter"}
+                      %span.input-group-btn
+                        %button.btn.btn-default.disabled{:type => "submit" }
+                          %span.glyphicon.glyphicon-search    
+                /= select_tag "resource_id", options_for_select(@resources.collect{ |u| ["#{u.name}", u.id] },params[:resource_id]),class: "form-control resources-list", prompt: 'Select Resource'   
+              - url = "/tsp_reports/tse_sumary_report.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"
+              - if params[:unit_ids].present?
+                - params[:unit_ids].each do |u_id|
+                  -url = url+"&unit_ids[]="+u_id          
+              %a.m-btn.indigo.margin-l-5.export-tse-sumary-report{:href=>"#{url}"}
+                %i.mdi-file-file-download.left
+                CSV
+        = smart_listing_render :tse_sumary_list  

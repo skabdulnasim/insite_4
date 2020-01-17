@@ -1,0 +1,23 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Card Serial
+        %th Name on Card
+        %th Membership point
+        %th Redemption
+        %th Pending Point
+    %tbody
+      - smart_listing.collection.each do |object|
+        - loyalty_card = LoyaltyCard.find(object.loyalty_card_id)
+        %tr.data-table__selectable-row  
+          %td= loyalty_card.card_serial
+          %td= loyalty_card.name_on_card 
+          %td= object.total_obtained_point     
+          %td= object.total_available_point
+          %td= object.total_obtained_point.to_i - object.total_available_point.to_i
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

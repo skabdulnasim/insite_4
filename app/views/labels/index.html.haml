@@ -1,0 +1,23 @@
+%h1 Listing labels
+
+%table
+  %tr
+    %th Type
+    %th Name
+    %th Status
+    %th
+    %th
+    %th
+
+  - @labels.each do |label|
+    %tr
+      %td= label.customer_state
+      %td= label.name
+      %td= label.status
+      %td= link_to 'Show', label
+      %td= link_to 'Edit', edit_label_path(label)
+      %td= link_to 'Destroy', label, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Label', new_label_path

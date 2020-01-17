@@ -1,0 +1,29 @@
+= form_for @stock_transfer, url: wizard_path,:html => { :class => 'transfer_item_autosubmit_form', :remote => true } do |f|
+  = hidden_field_tag :store_id, @store.id
+  .col-lg-3.p0
+    %h4.strong.grey-text.text-darken-3 Transfer Details
+    -if f.object.boxing_id.present?
+    -else
+      %p.grey-text You can add or remove transfer items.
+  .col-lg-9
+    - if @stock_transfer.errors.any?
+      #error_explanation
+        %h2= "#{pluralize(@stock_transfer.errors.count, "error")} prohibited this transfer from being saved:"
+        %ul
+          - @stock_transfer.errors.full_messages.each do |msg|
+            %li= msg
+    .form-group.col-lg-6
+      = f.label :from_store
+      %input.form-control{:type => "text", :value => "#{@stock_transfer.from_store.name} (#{@stock_transfer.from_store.address})", :readonly => true}
+    .form-group.col-lg-6
+      = f.label :to_store
+      %input.form-control{:type => "text", :value => "#{@stock_transfer.to_store.name} (#{@stock_transfer.to_store.address})", :readonly => true}
+    -if f.object.boxing_id.present?
+    -else
+      .form-group.col-lg-12
+        %label Products
+        = f.text_field :product_tokens, data: {load: @stock_transfer.products}, :style=>"width:600px;", :class=>'item-autosubmit-input'
+    -# .form-group.col-lg-12
+    -#   = f.submit "Update", :class => 'm-btn green', name: 'update_transfer_products'
+
+  .clearfix

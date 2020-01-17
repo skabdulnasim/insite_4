@@ -1,0 +1,35 @@
+- Category.all.each do |category|
+  %ul{:style => "list-style:none"}
+    - if category.parent.blank?
+      %li.categories_action_list{:id => "#{category.id}"}
+        
+        #accordion.panel-group
+          .panel.panel-default
+            .panel-heading
+              %h4.panel-title
+                %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#category#{category.id}"}
+                  = category.name
+            .panel-collapse.collapse{:id => "category#{category.id}"}
+              .panel-body                  
+                %table.table.table-bordered.simple
+                  - @products.each do |product|
+                    - if product.category_id == category.id                  
+                      %tr
+                        %td
+                          %input{:type => "radio", :value => product.id, :name => "menu_product[product_id]", :id=>"product_id_#{product.id}"}
+                          %label{:for=>"product_id_#{product.id}"}= product.name                           
+                %table.table.table-bordered.variable
+                  - @variable_products.each do |gp|
+                    - if gp.category_id == category.id
+                      %tr
+                        %td
+                          %input{:type => "radio", :value => gp.id, :name => "menu_product[product_id]", :id=>"product_id_#{gp.id}"}
+                          %label{:for=>"product_id_#{gp.id}"}= gp.name                           
+                %table.table.table-bordered.combo
+                  - @combo_products.each do |cp|
+                    - if cp.category_id == category.id
+                      %tr
+                        %td
+                          %input{:type => "radio", :value => cp.id, :name => "menu_product[product_id]", :id=>"product_id_#{cp.id}"}
+                          %label{:for=>"product_id_#{cp.id}"}= cp.name                           
+        = render partial: 'menu_products/mp_subcategory_li', locals: {subcategories: category.subcategories} if category.subcategories.present?

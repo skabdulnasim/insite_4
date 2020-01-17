@@ -1,0 +1,6 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Coupons",:url=>coupons_path,:active_class=>""},{:title=>"coupon : #{@coupon.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+.card.padding-10{:style => "width:50%;"}
+  Edit Coupon
+  = render 'form'

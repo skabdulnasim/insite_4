@@ -1,0 +1,25 @@
+%h1 Listing store_requisition_meta
+
+%table
+  %tr
+    %th Requisition
+    %th Product
+    %th Product ammount
+    %th Product unit
+    %th
+    %th
+    %th
+
+  - @store_requisition_meta.each do |store_requisition_metum|
+    %tr
+      %td= store_requisition_metum.requisition_id
+      %td= store_requisition_metum.product_id
+      %td= store_requisition_metum.product_ammount
+      %td= store_requisition_metum.product_unit_id
+      %td= link_to 'Show', store_requisition_metum
+      %td= link_to 'Edit', edit_store_requisition_metum_path(store_requisition_metum)
+      %td= link_to 'Destroy', store_requisition_metum, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Store requisition metum', new_store_requisition_metum_path

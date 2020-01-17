@@ -1,0 +1,81 @@
+.col-lg-12
+  .col-lg-2
+    - if !@menu_product.product.product_image.nil?
+      %img{:src => "/uploads/#{@menu_product.product.product_image}", :class => "img-thumbnail", :width => "200px"}        
+    - else
+      %img{:src => "/uploads/product.png", :class => "img-thumbnail", :width => "200px"} 
+    
+    %a{:href => "#{menu_products_path}", :class => 'btn btn-primary btn-block btn-sm'}
+      %i.fa.fa-reply
+      Back
+    - if can? :edit, Product  
+      %a{:href => "#{edit_menu_product_path(@menu_product)}", :class => 'btn btn-success btn-block btn-sm'}
+        %i.fa.fa-edit
+        Edit              
+
+  .col-lg-10
+    .col-lg-6
+      #callout-stacked-modals.bs-callout.bs-callout-success
+
+        - if @menu_product.product.name.present?
+          %h4
+            %b
+              = @menu_product.product.name
+              - if @menu_product.mode == 0
+                %a{:class => "btn btn-success icon_show btn-xs", :id => @menu_product.id}
+                  Show
+              - else
+                %a{:class => "btn btn-danger icon_hide btn-xs", :id => @menu_product.id}
+                  Hide
+              
+        - if @menu_product.menu_category.present? 
+          %h5
+            %b Menu Category : 
+            = @menu_product.menu_category.name
+           
+        - if @menu_product.procured_price.present? 
+          %h5
+            %b Procured Price :
+            = number_to_currency("#{@menu_product.procured_price}", unit: currency, format: "%u %n")
+
+        - if @menu_product.sell_price_without_tax.present? 
+          %h5
+            %b Sell Price(Without Tax) :
+            = number_to_currency("#{@menu_product.sell_price_without_tax}", unit: currency, format: "%u %n")
+
+        - if @menu_product.sell_price.present? 
+          %h5
+            %b Sell Price :
+            = number_to_currency("#{@menu_product.sell_price}", unit: currency, format: "%u %n")
+
+        - if @menu_product.tax_group.present? 
+          %h5
+            %b Tax Group :
+            = "#{@menu_product.tax_group.name}(#{@menu_product.tax_group.total_amnt} %)"
+
+        - if @menu_product.store.present? 
+          %h5
+            %b Store :
+            = @menu_product.store.name
+
+    .col-lg-6
+      #callout-stacked-modals.bs-callout.bs-callout-success{:style=>"min-height:100px;overflow-y:scroll;"}
+        %h4
+          %b
+            = "Combinations"
+        - if @menu_product.combination_types.present?
+          - @menu_product.combination_types.each do |mc|
+            %h4
+              = "#{mc.name}"
+            - @menu_product.menu_product_combinations.each do |mpc|
+              - if mpc.combination_type_id == mc.id
+                %form.form-inline
+                  .form-group
+                    .input-group
+                      .input-group-addon= "# #{mpc.id}"
+                      %input#exampleInputAmount.form-control{:placeholder => "Amount", :type => "text", :value => mpc.product.name, :readonly => true}
+                        .input-group-addon= number_to_currency("#{mpc.price}", unit: currency, format: "%u %n")
+                %br
+        - else
+          = "No combinations are available for this product."
+                  

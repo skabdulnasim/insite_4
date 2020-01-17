@@ -1,0 +1,9 @@
+%ul
+  - subcategories.each do |sub|
+    %li
+      .input-group.col-sm-5
+        %span.input-group-addon
+          %input{:type => "radio", :name => "category[parent]", :value => "#{sub.id}~#{sub.name}", :checked => (sub.id == @category.parent)}
+        %input.form-control{:type => "text", :value => sub.name, :readonly => true}
+          
+      = render partial: 'subcategory_li_edit', locals: {subcategories: sub.subcategories} if sub.subcategories.present?

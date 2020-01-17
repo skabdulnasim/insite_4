@@ -1,0 +1,128 @@
+- unless smart_listing.empty?
+
+  %table.data-table
+    %thead
+      %tr
+        %th SE
+        %th Vendor
+        / %th Product
+        %th 
+          Vendor 
+          %br
+          Address
+        %th 
+          Visiting
+          %br
+          remarks
+        %th 
+          Visting 
+          %br
+          reason
+        %th Day
+        %th In Time
+        %th Out Time
+        /%th Device 
+        %th{:style => "padding-right: 0px !important;"}
+          Exception
+          %br
+          status
+        %th Recorded At
+        %th Synced At
+        %th Location
+    
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td{:style=>"background-color:rgb(255, 210, 26);"}
+            %b
+              = object.profile.full_name
+            %br
+            Ph:
+            = object.profile.contact_no
+          - visiting_reports = VisitingHistory.by_user(object.id).by_recorded_at(@from_datetime,@to_datetime).by_visited_entity_type("Vendor")
+          - work_statuses = UserWorkStatus.by_user(object.id).by_recorded_at(@from_datetime,@to_datetime)
+          - if visiting_reports.present? || work_statuses.present?
+            - if visiting_reports.present? 
+              - _map_data_arr=[] 
+              - visiting_reports.each do |vh|
+                - _map_data_hash={}
+                - _map_data_hash["lat"]=vh.latitude
+                - _map_data_hash["lon"]=vh.longitude
+                - _vendor=Vendor.find(vh.visited_entity_id)
+                - _map_data_hash["vendor_name"]=_vendor.name
+                - _map_data_hash["vendor_address"]=_vendor.address
+                - _map_data_arr.push(_map_data_hash)
+            %td{:style=>"background-color:rgb(255, 210, 26);"}
+              %img{:src => "/google-maps.png", :class => "map-view", :width => "40px","data-latlon"=>"#{_map_data_arr.to_json}", "data-clat"=>"#{object.profile.latitude}", "data-clon"=>"#{object.profile.longitude}", "data-cname"=>"#{object.profile.full_name}", "data-map_for"=>"visiting_history", "data-cphone"=>"#{object.profile.contact_no}"} 
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td{:style => "padding-right: 0px !important;"}
+          - else
+            %td{:style => "padding-left: 12px !important;",:colspan => 12} 
+              No Record Found ....
+          - if visiting_reports.present?
+            - visiting_reports.each do |vh|
+              /= debug vh
+              - _vendor=Vendor.find(vh.visited_entity_id)
+              - _map_data_individual_arr=[]
+              - _map_data_individual_hash={}
+              - _map_data_individual_hash["lat"]=vh.latitude
+              - _map_data_individual_hash["lon"]=vh.longitude
+              - _map_data_individual_hash["vendor_name"]=_vendor.name
+              - _map_data_individual_hash["vendor_address"]=_vendor.address
+              - _map_data_individual_arr.push(_map_data_individual_hash)
+              %tr{:style=>"background-color:rgb(255, 165, 27);"}
+                %td Visiting Reports
+                - if _vendor.name.present?
+                  %td= _vendor.name
+                - else
+                  %td= "-"
+                %td= _vendor.address.present? ? "#{_vendor.address}" : '-'     
+                %td= vh.visiting_remarks
+                %td= vh.visting_reason
+                %td= vh.day
+                
+                %td= vh.in_time.strftime("%I:%M %p")
+                %td= vh.out_time.strftime("%I:%M %p")    
+                /%td= vh.device_id
+                %td{:style => "padding-right: 0px !important;"}
+                  = '-'
+                %td= vh.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+                %td= vh.created_at.strftime("%d-%m-%Y, %I:%M %p")  
+                %td
+                  %img{:src => "/google-maps.png", :class => "map-view", :width => "40px", "data-latlon"=>"#{_map_data_individual_arr.to_json}", "data-clat"=>"#{object.profile.latitude}", "data-clon"=>"#{object.profile.longitude}", "data-cname"=>"#{object.profile.full_name}", "data-map_for"=>"visiting_history", "data-cphone"=>"#{object.profile.contact_no}"} 
+                
+          - if work_statuses.present?
+            - work_statuses.each do |ws|
+              %tr{:style=>"background-color:rgb(255, 132, 52);"}
+                %td Exception Status
+                %td= '-'
+                %td= '-'
+                %td= '_'
+                %td= ws.remarks
+                %td= '_'
+                %td= ws.recorded_at.strftime("%A")
+                %td= '_'
+                %td= '_'    
+                /%td= ws.device_id
+                %td{:style => "padding-right: 0px !important;"}
+                  = ws.work_status  
+                %td= ws.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+                %td= ws.created_at.strftime("%d-%m-%Y, %I:%M %p") 
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  %br             
+- else
+  .alert.alert-warning
+    %td
+      No record found
+  

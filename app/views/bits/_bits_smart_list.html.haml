@@ -1,0 +1,45 @@
+.main-section__content
+	.example
+		.example__content.p0
+			.data-table-container
+				%header.data-table-header
+					.data-table-header__label
+						%span.fs-title Listing Resource Bits
+					.data-table-header__actions
+						%a.m-btn.m-btn-teal{:href => "#{new_bit_path}"}
+							%i.mdi-content-add.left
+							New Beat
+- unless smart_listing.empty?
+	%table.data-table
+		%thead
+			%tr
+				%th.col-lg-3  
+					%strong Sl No
+				%th.col-lg-3  
+					%strong Beat Name
+				%th.col-lg-3
+					%strong Parent Beat
+				%th.col-lg-3 
+					%strong Beat Descriptions
+		%tbody
+			- sl = 1
+			- smart_listing.collection.each do |bit|
+				%tr
+					%td.col-lg-3
+						= sl
+					%td.col-lg-3  
+						= bit.name
+					%td.col-lg-3 
+						= bit.parent_bit
+					%td.col-lg-3
+						= bit.area_descriptions
+					%td.col-lg-3
+						%a.m-btn.orange.m-btn-low-padding{:href => "#{edit_bit_path(bit)}", :title => "Edit State"} 
+							%i.mdi-editor-border-color
+						%a.m-btn.red.m-btn-low-padding{:title => "Remove State",:href => "#{bit_path(bit)}",:method => :delete,:method => :delete, :data => { :confirm => 'Are you sure?' } }
+							%i.mdi-action-delete
+					- sl += 1
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+-else
+	%p.warning No records!

@@ -1,0 +1,6 @@
+$('#tax_class_edit_modal').closeModal();
+<% if @error.present? %>
+  Materialize.toast("<%= @error.message %>", 3000,'red');  
+<% else %>
+  $("#taxclasstable").find(".taxclass_of_<%= @tax_class.id %>").remove();
+<% end %>

@@ -1,0 +1,24 @@
+%p#notice= notice
+
+%p
+  %b Customer:
+  = @money_refund.customer_id
+%p
+  %b Order:
+  = @money_refund.order_id
+%p
+  %b Paymentmode:
+  = @money_refund.paymentmode
+%p
+  %b Refund amount:
+  = @money_refund.refund_amount
+%p
+  %b Account no:
+  = @money_refund.account_no
+%p
+  %b Ifsc code:
+  = @money_refund.ifsc_code
+
+= link_to 'Edit', edit_money_refund_path(@money_refund)
+\|
+= link_to 'Back', money_refunds_path

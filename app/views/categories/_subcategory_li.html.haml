@@ -1,0 +1,16 @@
+%ul{:style => "list-style:none"}
+  - subcategories.each do |sub|
+    %li.categories_action_list{:id => "#{sub.id}"}
+      = link_to sub.name, category_path(sub), :class => 'btn btn-primary btn-mini active view', "data-toggle" => "tooltip"
+      %span.categories_action_box{:id => "categories_action_box#{sub.id}"}
+        %a.btn.btn-sm.btn-success{:href => "", :class=> "plus", :id=> "#{sub.id}~#{sub.name}", :title => "Create category under this category", "data-target" => "#creat_cat_modal", "data-toggle" => "modal"}
+          %i.fa.fa-plus
+        %a.btn.btn-sm.btn-info{:href => "#{edit_category_path(sub)}", :class=> "edit", :title => "Edit this category"} 
+          %i.fa.fa-edit
+        %a.btn.btn-sm.btn-danger{:href => "#{category_path(sub)}", :class => "delete", :method => :delete, :title => "Delete this category along with its sub categories", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}
+          %i.fa.fa-trash-o
+    
+      
+      = form_for @category, :html => { :class => 'form-inline'} do |f| 
+        %div{:id=> "dyn_form#{sub.id}" }       
+      = render partial: 'subcategory_li', locals: {subcategories: sub.subcategories} if sub.subcategories.present?

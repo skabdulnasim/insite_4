@@ -1,0 +1,145 @@
+:css
+  #toast-container {
+    display: block;
+    position: fixed;
+    z-index: 10000
+  }
+- unless smart_listing.empty?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Listing Bills
+              - if AppConfiguration.get_config_value("bulk_discount_on_bill") == "enabled"
+                %a.m-btn.blue.float-r.waves-effect.waves-light.bill-discount{"data-target" =>"#billDiscountModal", "data-toggle" => "modal"}
+                  %i.mdi-action-trending-up.left
+                  Add Discount    
+          %table.data-table#accordion
+            %thead
+              %tr.data-table__selectable-row
+                %th
+                  - if AppConfiguration.get_config_value("bulk_discount_on_bill") == "enabled"
+                    %input.checkbox-parent-toggle.filled-in{:type=>"checkbox",:id=>"parent_check"}
+                    %label{:for=>"parent_check"}  
+                  = smart_listing.sortable "ID", "id"
+                %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "SL No.", "serial_no"
+                /%th.hidden-sm.hidden-md.hidden-xs= "Source"
+                %th.hidden-sm.hidden-md.hidden-xs= "Deliver To"
+                %th= smart_listing.sortable "Status", "status"
+                %th
+                  %small
+                    Billed 
+                    %br
+                    ="Amount (in #{currency})"
+                %th
+                  %small
+                    Grand Total 
+                    %br
+                    ="(in #{currency})"
+                %th
+                  %small
+                    Settled 
+                    %br 
+                    ="Amount (in #{currency})"
+                %th
+                  %small
+                    Advance 
+                    %br 
+                    ="Amount (in #{currency})"         
+                %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Recorded Date", "recorded_at"
+                %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Synced Date", "created_at"
+                %th
+                  %small
+                    Reprint
+            %tbody.panel
+              - smart_listing.collection.each do |object|
+                %input.current_unit_id{:type=>"hidden", :value=>object.unit_id}
+                %tr.data-table__selectable-row
+                  %td
+                    - if AppConfiguration.get_config_value("bulk_discount_on_bill") == "enabled"
+                      - if object.bill_discounts.present?
+                        %input.checkbox-child.filled-in{:value=> "#{object.id }",:name=>"select_bills[]",:type=>"checkbox",:id=>"bill_#{object.id}", 'data-bill-id'=>"#{object.id}", :class => "remove_checkbox_#{object.id}",:disabled => 'disabled', :checked => 'checked'}
+                        %label{:for=>"bill_#{object.id}"} 
+                      - else
+                        %input.filled-in.checkbox-child.select-bill{:value=> "#{object.id }",:name=>"select_bills[]",:type=>"checkbox",:id=>"bill_#{object.id}", 'data-bill-id'=>"#{object.id}",'data-grand-total'=>"#{object.grand_total}",'data-bill-amount'=>"#{object.bill_amount}", :class => "remove_checkbox_#{object.id}"}
+                        %label{:for=>"bill_#{object.id}"} 
+                    =object.id
+                  %td.hidden-sm.hidden-md.hidden-xs.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_collapse_#{object.id}","data-action"=>"view_bill"}
+                    ="#{object.prefix}""#{object.serial_no}""#{object.suffix}"
+                  /%td.hidden-sm.hidden-md.hidden-xs=object.orders.first.source.humanize
+                  -  if object.orders.first.present?
+                    %td.hidden-sm.hidden-md.hidden-xs.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_collapse_#{object.id}","data-action"=>"view_bill"}
+                      = show_bill_delivery_name(object)
+                  - else 
+                    %td.hidden-sm.hidden-md.hidden-xs.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_collapse_#{object.id}","data-action"=>"view_bill"}
+                      = "_"  
+                  %td.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_status_#{object.id}","data-action"=>"view_bill"}
+                    =get_bill_status(object)
+                  %td.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_collapse_#{object.id}","data-action"=>"view_bill"}
+                    =object.bill_amount.round(2)
+                  %td.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_grand_total_#{object.id}","data-action"=>"view_bill"}
+                    =object.grand_total
+                  %td.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_collapse_#{object.id}","data-action"=>"view_bill"}
+                    = show_bill_settlement_amount(object)
+                  %td.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_advance_#{object.id}","data-action"=>"view_bill"}
+                    = object.advance_payment.present? ? object.advance_payment : 0   
+                  %td.hidden-sm.hidden-md.hidden-xs.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_collapse_#{object.id}","data-action"=>"view_bill"}
+                    =object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")  
+                  %td.hidden-sm.hidden-md.hidden-xs.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-bill-id"=>object.id,"data-currency"=>currency, :class=>"bill_collapse_#{object.id}","data-action"=>"view_bill"}
+                    =object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+                  -if object.bill_reprints.count!=0
+                    %td
+                      %span.badge.reprint{"data-bill-id"=>object.id, "data-action"=>"bill_reprint_details","aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", :class=>"bill_collapse_#{object.id}"}
+                        =object.bill_reprints.count 
+                  -else
+                    %td
+                      %span.badge
+                        =object.bill_reprints.count  
+                %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{object.id}", :role => "tabpanel", :id => "collapse_#{object.id}"}
+                  %td.p0{:colspan=>9,:id=>"bill_quickinfo_#{object.id}"}
+                    Loading please wait... 
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links
+          %input.current_user_id{:type=>"hidden", :value=>current_user.id}
+          %input.current_user_id{:type=>"hidden", :value=>current_user.id}
+          %input.current_user_email{:type=>"hidden", :value=>current_user.email}
+          %br
+- else
+  .alert.alert-warning
+    No bills found
+
+#billDiscountModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showBillLeavel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Bill Discount
+      .modal-body
+        .col-md-12
+          .col-md-2
+          .col-md-10
+            .span.red-text
+              *** This is percentage discount don't give more than 100%.
+            %br      
+        .col-md-12
+          .col-md-2
+            Discount(%)
+          .col-md-10
+            .form-group{:style=> "width:100%"}
+              %input.form-control.allow-numeric-only{:type=>"textbox",:id=>"discount",:name=>"discount",:required=>"true",:placeholder=>"Enter Discount(%)."}
+        .col-md-12
+          .col-md-2
+            Remarks
+          .col-md-10
+            .form-group{:style=> "width:100%"}
+              %input.form-control{:type=>"textbox",:id=>"remarks",:name=>"remarks",:required=>"true",:placeholder=>"Enter Remarks."}      
+              
+        .clearfix
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        %button.btn.btn-primary{:type => "button",:id=>"add_discount"} Update

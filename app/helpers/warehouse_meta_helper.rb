@@ -1,0 +1,2 @@
+module WarehouseMetaHelper
+end

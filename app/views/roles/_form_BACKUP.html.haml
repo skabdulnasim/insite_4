@@ -1,0 +1,49 @@
+= form_for @role, remote: true do |f|
+  - if @role.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+      = "#{pluralize(@role.errors.count, "error")} prohibited this product from being saved."
+  .input-field.col.s12
+    = f.label :name
+    = f.text_field :name, :class=>"validate m0", :placeholder=> "Enter role name", :autofocus=>true, :required => true
+  .input-field.col.s12
+    %label Set Permissions for different modules
+
+    %ul.collapsible.mt50{"data-collapsible" => "accordion"}
+      - @permission_groups.each do |group|  
+        %li
+          .collapsible-header{"data-module"=>"#{group.name}"}
+            =group.name.humanize
+          .collapsible-body{"data-module"=>"#{group.name}"}
+            - classes = group.permissions.pluck("DISTINCT subject_class")
+            .p10.grey-text.text-darken-1 
+              ="#{group.name.humanize} contains #{classes.count} submodules*. Now define access permission for this role."
+              %h6.grey-text.text-darken-2 
+                %b Permissions
+              %input.with-gap.permission-radio{:name => "#{group.name}", :type => "radio", :id=>"read_group_#{group.id}", :value => "read", "data-module"=>"#{group.name}"}
+              %label{:for => "read_group_#{group.id}"} Read only
+              %br
+              %input.with-gap.permission-radio{:name => "#{group.name}", :type => "radio", :id=>"manage_group_#{group.id}", :value => "manage", "data-module"=>"#{group.name}"}
+              %label{:for => "manage_group_#{group.id}"} Manage everything
+              %br
+              %input.with-gap.permission-radio{:name => "#{group.name}", :type => "radio", :id=>"manual_group_#{group.id}", :value => "manual", "data-module"=>"#{group.name}"}
+              %label{:for => "manual_group_#{group.id}"} Set manually
+            %div{:class => "permissions_of_#{group.name}"}
+              - classes.each do |controller|
+                = check_box_tag controller
+                = label_tag controller
+                .grey.lighten-3.p10.mt10.ml15
+                  - permissions = group.permissions.by_class(controller)
+                  - permissions.each do |permission|
+                    .checkbox
+                      = check_box_tag "role[permission_ids][]", permission.id, f.object.permissions.include?(permission), :id=>"role_permission_#{permission.id}", :class=>"filled-in permission_of_#{group.name} permission_#{group.name}_#{permission.action}"
+                      = f.label permission.description, :for=>"role_permission_#{permission.id}"
+            .p10
+              %h6.text-darken-1.line-height-1
+                %small="* Submodules are #{classes.map { |e| e }.join(', ')}"
+  .input-field.col.s12
+    %button.btn.green.green-text.text-lighten-5.waves-effect.waves-light{:type=>"submit"}
+      Save
+    %a.btn.white.grey-text.close-role-form
+      Cancel

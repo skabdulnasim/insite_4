@@ -1,0 +1,9 @@
+<div class="col-sm-12 padding-5 filter-title" id="unit_<%= unit_id %>">
+	<%= unit_name %>
+  <% for(var i=0; i<stores.length; i++) { %>
+  	<div class="col-sm-12 margin-l-5 ">
+	    <input type="checkbox" name="store_id[]" value="<%= stores[i].id %>" id="store_<%= stores[i].id %>" class="filled-in font-sz-12">
+	    <label for="store_<%= stores[i].id %>"><%= stores[i].name %></label><br>
+    </div>
+  <%}%>
+</div>

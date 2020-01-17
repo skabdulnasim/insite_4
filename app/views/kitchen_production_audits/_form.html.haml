@@ -1,0 +1,34 @@
+= form_tag(update_audit_store_kitchen_production_audits_path(@store), method: "post",multipart: true) do
+  - if @products.present?
+    %h4 Enter how much stocks procured in production center for these products
+    %table.table.table-bordered.table-hover.table-striped
+      %thead
+        %tr          
+          %th.col-md-1 
+            %input.checkbox-parent-toggle{:type=>"checkbox"}  
+          %th.col-md-2= "Product"
+          %th.col-md-2= "Transfered ingredients / Target quantity"
+          %th.col-md-2= "Transfer date"
+          %th.col-md-2= "Procured quantity"
+          %th.col-md-3= "Remarks"
+      %tbody
+        - @products.each do |pro|
+          %tr
+            %td
+              %input.checkbox-child{:value=> "#{pro.id }",:name=>"checked_products[]",:type=>"checkbox", "data-po-id" => "#{pro.id}", :id =>"product_#{pro.id}"}
+              %label{:for=>"product_#{pro.id}"}
+            %td="##{pro.product_id} #{pro.product.name}"
+            %td="#{pro.received_qty} #{pro.product.basic_unit}"
+            %td
+              =pro.created_at.strftime("%d %b %Y, %I:%M %p") 
+            %td    
+              .input-group
+                %input.form-control.check-input.numeric-only{:name => "quantity_#{pro.id}", :type => "text",:class=>"check-input-#{pro.id}"}
+                .input-group-addon= pro.product.basic_unit
+            %td
+              %textarea.form-control{:name => "remarks_#{pro.id}", :placeholder => "Remarks about this production", :rows => "2",:class=>"check-input-#{pro.id}"}
+    %button.m-btn.blue.float-r{:method => "post", :title => "check", :type =>"submit", :align =>"right"}
+      Save audit
+  - else
+    .alert.alert-warning
+      No product available for production audit

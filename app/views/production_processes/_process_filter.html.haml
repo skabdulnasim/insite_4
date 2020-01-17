@@ -1,0 +1,19 @@
+.card
+  .padding-10 
+    %b FILTER BY
+  = smart_listing_controls_for(:production_processes, {class: "text-left"}) do
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-search.left
+      Search
+    .padding-10 
+      .form-group.filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search process...", :type => "text", :name=> "process_filter"}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search
+    / .filter-title.margin-t-b-0 
+    /   %i.mdi-action-list.left
+    /   Categories          
+    / .padding-10.height-350{:style => "overflow-y: auto;"} 
+    /   = render 'products/listing_category'

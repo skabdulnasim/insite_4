@@ -1,0 +1,22 @@
+<% if(cart_data.length < 1) { %>
+  <p><small>No products selected.</small></p>
+  <% $(".cart-total").html("0"); %>
+<% } else { %>
+    <% cart_total = 0%>
+
+  <% for (var i = cart_data.length - 1; i >= 0; i--) { %>
+    <% cart_total = cart_total+(cart_data[i].unit_subtotal * cart_data[i].quantity) %>
+
+    <div class="card card-panel padding-5" id="row_<%= cart_data[i].menu_product_id %>">
+      <span>
+        <b><%= cart_data[i].name %></b>
+        <button aria-hidden="true" class="close btn_delete float-r" type="button" data-id='<%= cart_data[i].menu_product_id %>' data-menu-card-id='<%= menu_card_id %>'>
+          <i class="fa fa-times-circle"></i>
+        </button>
+        <br>
+        QTY: <%= cart_data[i].quantity %>
+      </span>
+    </div>
+  <% };%>
+  <% $(".cart-total").html(cart_total); %>
+<% } %>

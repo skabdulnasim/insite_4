@@ -1,0 +1,33 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Promotions",:url=>alpha_promotions_path,:active_class=>""},{:title=>"promotion : #{@alpha_promotion.promo_code}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+%table.table.table-bordered
+  %tr
+    %th Promo code
+    %th Promo type
+    %th Description
+    %th Promo user
+    %th Count
+    %th Promo value
+    %th Status
+    %th Valid from
+    %th Valid till
+    %th Actions
+
+    %tr
+      %td= @alpha_promotion.promo_code
+      %td= @alpha_promotion.promo_type
+      %td= @alpha_promotion.description
+      %td= @alpha_promotion.promo_user
+      %td= @alpha_promotion.count
+      %td= @alpha_promotion.promo_value
+      %td= @alpha_promotion.status
+      %td= @alpha_promotion.valid_from
+      %td= @alpha_promotion.valid_till
+      %td
+        %a{:href => "#{edit_alpha_promotion_path(@alpha_promotion)}", :class => 'btn btn-primary btn-mini active'}
+          %i.icon-edit
+          Edit
+        %a{:href => "#{alpha_promotions_path}", :class => 'btn btn-primary btn-mini active'}
+          %i.icon-backward
+          Back

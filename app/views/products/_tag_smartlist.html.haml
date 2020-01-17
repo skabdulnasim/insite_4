@@ -1,0 +1,19 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-5= smart_listing.sortable "Tag", "name"
+        %th.col-lg-2
+          Action
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.name
+          %td{:style=>"text-align:right"}
+            %button.add-tags-to-product.m-btn.green.m-btn-low-padding{"data-tag-id"=>object.id,"data-tag-name"=>object.name}
+              %i.mdi-content-add
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No colors found

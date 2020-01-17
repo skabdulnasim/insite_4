@@ -1,0 +1,53 @@
+- unless smart_listing.empty?
+	%table.data-table
+		%thead
+			%tr
+				%th 
+					%strong SL no
+				%th 
+					%strong Resource Name
+				%th 
+					%strong Beneficiary Name
+				%th 
+					%strong Type
+				%th 
+					%strong Beneficiary Percentage(%)
+				%th
+					%strong Commission (in INR)
+				%th
+					%strong Bank Account Details
+				%th
+					%strong IFSC Code
+		%tbody
+			-sl =1
+			- smart_listing.collection.each do |object|
+				- total_owner_commission_amount = get_commission_amount(object.id,"owner",params[:from_date],params[:to_date])
+				- total_csm_commission_amount = get_commission_amount(object.id,"csm",params[:from_date],params[:to_date])
+				%tr
+					%td=sl
+					%td="#{object.name}  (#{object.unique_identity_no})"
+					%td -
+					%td -
+					%td -
+					%td -
+					%td -
+					%td -
+					-if object.beneficiaries.present?
+						-object.beneficiaries.each do |beneficiary|
+							%tr
+								%td
+								%td 
+								%td="#{beneficiary.name}"
+								%td="#{beneficiary.beneficiary_type}"
+								%td="#{beneficiary.beneficiary_percentage}"
+								-if beneficiary.beneficiary_type == "owner"
+									%td=((total_owner_commission_amount/100)*beneficiary.beneficiary_percentage.to_i).round(2)
+								-else
+									%td=((total_csm_commission_amount/100)*beneficiary.beneficiary_percentage.to_i).round(2)
+								%td= "#{beneficiary.bank_name} \n #{beneficiary.account_number}"
+								%td= "#{beneficiary.ifsc}"
+				-sl+=1
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+-else
+	.alert.alert-warning No record found

@@ -1,0 +1,13 @@
+%section
+  .col-lg-6.col-lg-offset-3
+    .center
+      = image_tag("internal-server-error.png", :height=>"300px")
+      %h2 
+        %strong= (notice.nil? == false) ? "#{notice}" : "Something isn't right."
+      %h4.grey-text Try to refresh this page or feel free to contact us if the problem persists. Meanwhile, you may return to dashboard.
+      %br
+      %br
+      %a.m-btn.blue.waves-effect.waves-light{:href=>"#{root_path}"}
+        Return to Dashboard      
+      %br
+          

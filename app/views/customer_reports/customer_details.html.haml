@@ -1,0 +1,19 @@
+- links_arr = [{:title=>"Customer Reports",:url=>customer_reports_path,:active_class=>""},{:title=>"Customer Details",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+%link{:href => "http://fonts.googleapis.com/icon?family=Material+Icons", :rel => "stylesheet"}
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title.left Filter data
+              
+          .data-table-header__actions        
+            %a.export-runner-reports.m-btn.indigo.margin-l-5{:href=>"/customer_reports/customer_details.csv"}
+              %i.mdi-file-file-download.left
+              CSV
+
+        = smart_listing_render :customer_details

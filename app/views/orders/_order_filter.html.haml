@@ -1,0 +1,82 @@
+.card
+  .padding-10 
+    %b FILTER BY
+  = smart_listing_controls_for(:orders, {class: "text-left"}) do
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-search.left
+      Search
+    .padding-10 
+      .form-group.filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search by Order ID...", :type => "text", :name=> "id_filter"}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search  
+    .filter-title.margin-t-b-0 status
+    .padding-l-r-5
+      - OrderStatus.all.each do |order_status|
+        .checkbox
+          = check_box_tag 'order_status_ids[]', order_status.id, false,{ :id => "status_#{order_status.id}", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"status_#{order_status.id}", :style=>"padding-left:30px;"}= order_status.name.humanize
+      .checkbox
+        = check_box_tag 'order_canceled', nil, false,{ :id => "status_cancel", :class=>"filled-in"}
+        %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"status_cancel", :style=>"padding-left:30px;"} Canceled
+    .filter-title.margin-t-b-0 Store filter
+    .padding-l-r-5
+    - if current_user.stores.present?
+      - current_user.stores.each do |store|
+        .checkbox
+          = check_box_tag 'store_ids[]', store.id, false, { :id => "store_filter_#{store.id}", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"store_filter_#{store.id}", :style=>"padding-left:30px;"}="#{store.name}"
+    - else 
+      - Order.select("DISTINCT(store_id)").where("store_id IS NOT NULL").each do |order_details|
+        .checkbox
+          = check_box_tag 'store_ids[]', order_details.store_id, false, { :id => "store_filter_#{order_details.store_id}", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"store_filter_#{order_details.store_id}", :style=>"padding-left:30px;"}="#{Store.find(order_details.store_id).name.humanize}"
+
+    - if current_user.role.name == "owner"    
+      .filter-title branch 
+      .padding-10{:style => "max-height: 300px; overflow-y: auto;"} 
+        - Order.select("DISTINCT(unit_id)").each do |order|
+          .checkbox
+            = radio_button_tag 'unit_id', order.unit_id, false,{ :id => "source_#{order.unit_id}", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"source_#{order.unit_id}", :style=>"padding-left:30px;"}= order.unit.unit_name.humanize 
+    .filter-title source
+    .padding-10
+      - Order.select("DISTINCT(source)").each do |order|
+        .checkbox
+          = check_box_tag 'order_sources[]', order.source, false,{ :id => "source_#{order.source}", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"source_#{order.source}", :style=>"padding-left:30px;"}= order.source.humanize   
+    .filter-title Recorded date
+    .padding-10 
+      .form-group.from_date.input-append
+        = text_field_tag :from_date, '', class: "search form-control form-control-small-pad", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;"
+        %br
+        %br
+        = text_field_tag :to_date, '', class: "search form-control form-control-small-pad", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;"
+    .filter-title Bill status
+    .padding-10 
+      .checkbox
+        = radio_button_tag 'billed', 0, false,{ :id => "unbilled_orders", :class=>"filled-in"}
+        %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"unbilled_orders", :style=>"padding-left:30px;"} Unbilled
+      .checkbox
+        = radio_button_tag 'billed', 1, false,{ :id => "billed_orders", :class=>"filled-in"}
+        %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"billed_orders", :style=>"padding-left:30px;"} Billed
+    .filter-title Stock status
+    .padding-10
+      .checkbox
+        = radio_button_tag 'stock_issue_status', false, false,{ :id => "unissued_orders", :class=>"with-gap"}
+        %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"unissued_orders", :style=>"padding-left:30px;"} Stock not issued
+      .checkbox
+        = radio_button_tag 'stock_issue_status', true, false,{ :id => "issued_orders", :class=>"with-gap"}
+        %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"issued_orders", :style=>"padding-left:30px;"} Stock issued
+    .filter-title slot
+    .padding-10
+      - Slot.all.each do |slot|
+        .checkbox
+          = check_box_tag 'slot_ids[]', slot.id, false,{ :id => "slot_#{slot.id}", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"slot_#{slot.id}", :style=>"padding-left:30px;"}= slot.title.humanize
+    .filter-title Delivery date
+    .padding-10 
+      .form-group.from_date.input-append
+        = text_field_tag :delivery_date, '', class: "search form-control form-control-small-pad", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;"

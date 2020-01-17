@@ -1,0 +1,43 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+  });
+- manual_load_javascript "templates/proformas/order_details", "templates/orders/print_order_details"  
+= render "layouts/flash"
+.clearfix
+.col-sm-3.padding-5
+  .card
+    .padding-10
+      %b FILTER BY
+    = smart_listing_controls_for(:proformas, {class: "text-left"}) do
+      .filter-title.margin-t-b-0
+        %i.mdi-action-search.left
+        Search
+      .padding-10
+        .form-group.filter.input-append
+          .input-group
+            %input.form-control.search{:placeholder => "Search by Proforma ID...", :type => "text", :name=> "id_filter"}
+              %span.input-group-btn
+                %button.btn.btn-primary.disabled{:type => "submit" }
+                  %span.glyphicon.glyphicon-search
+
+.col-sm-9.padding-5
+  = smart_listing_render :proformas
+
+#orderModal.modal.fade{"aria-labeledby" => "orderModal", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg{:role => "document"}
+    .modal-content
+      .modal-header
+        %buttion.close{"aria-label" => "Close", "data-dismiss"=> "modal", :type=> "button"}
+          %span{"aria-hidden"=> "true"} ×
+        %h4#myModalLabel.modal-title Proforma Invoice
+      .modal-body#orderModalBody
+        \...
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss"=>"modal", :type=> "button"} Close
+        %button.btn.btn-primary.print_proforma{:type=>"button"} Print

@@ -1,0 +1,6 @@
+<% if  params[:target_id].present? %>
+	<%= smart_listing_update(:user_target_products) %>
+<% else %>
+	<%= smart_listing_update(:product_list) %>
+<% end %>
+	

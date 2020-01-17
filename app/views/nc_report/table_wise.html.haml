@@ -1,0 +1,271 @@
+/=debug @table_wise
+- links_arr = [{:title=>"NC Report",:url=>nc_report_index_path,:active_class=>""},{:title=>"Detail NC Report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+/= debug @category_sales
+%ul.collapsible{"data-collapsible" => "accordion"}
+  %li
+    .collapsible-header
+      %b Column preferences
+    .collapsible-body
+      %p.col-lg-12
+        = form_tag(save_report_preferences_sale_reports_path, method: "post", :class=>"padding-20") do
+          - get_table_wise_nc_preferences(current_user.unit_id,'nc_report_table_wise')
+          = hidden_field_tag :report_key, "nc_report_table_wise"
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+            Save preferences
+      .clearfix
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title=" Sales between #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            %a.m-btn.indigo.margin-l-5{:href=>"/nc_report/table_wise.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+        - unless @table_wise.empty?
+          - @pref = @preferences.present? ? JSON.parse(@preferences.allowed_attributes) : ["date","table","remarks","bill","order_id","name","quantity","sales_cost","total_sales_cost","time","user","procurement_cost","total_procurement_cost"]
+          %table.data-table
+            %thead
+              %tr
+                - if @pref.include?('date')
+                  %th Date
+                - if @pref.include?('table')  
+                  %th Table
+                - if @pref.include?('remarks')
+                  %th Remarks
+                - if @pref.include?('bill')
+                  %th Bill
+                - if @pref.include?('order_id')
+                  %th Order ID
+                - if @pref.include?('name')
+                  %th Name
+                - if @pref.include?('quantity')
+                  %th Quantity
+                - if @pref.include?('sales_cost')
+                  %th Sales Price
+                - if @pref.include?('total_sales_cost')
+                  %th Total Sales Price
+                - if @pref.include?('time')
+                  %th Time
+                - if @pref.include?('user')
+                  %th User
+                - if @pref.include?('procurement_cost')
+                  %th Procurement Cost
+                - if @pref.include?('total_procurement_cost')
+                  %th Total Procurement Cost
+            %tbody
+              -total_cost_till_date = 0
+              -total_sales_cost_till_date = 0
+              -@table_wise.each do |date,table_summery|
+                - if @pref.include?('date')
+                  %tr
+                    %td= date
+                    - if @pref.include?('table')  
+                      %td
+                    - if @pref.include?('remarks')
+                      %td
+                    - if @pref.include?('bill')  
+                      %td
+                    - if @pref.include?('order_id')  
+                      %td
+                    - if @pref.include?('name')  
+                      %td
+                    - if @pref.include?('quantity')                      
+                      %td
+                    - if @pref.include?('sales_cost')  
+                      %td
+                    - if @pref.include?('total_sales_cost')  
+                      %td
+                    - if @pref.include?('time')  
+                      %td
+                    - if @pref.include?('user')  
+                      %td
+                    - if @pref.include?('procurement_cost')  
+                      %td
+                    - if @pref.include?('total_procurement_cost')  
+                      %td
+                -table_summery[:details].each do |table, bill_summery|
+                  - if @pref.include?('table')
+                    %tr
+                      - if @pref.include?('date')                
+                        %td
+                      %td= table
+                      - if @pref.include?('remarks')
+                        %td
+                      - if @pref.include?('bill')  
+                        %td
+                      - if @pref.include?('order_id')  
+                        %td
+                      - if @pref.include?('name')  
+                        %td
+                      - if @pref.include?('quantity')
+                        %td
+                      - if @pref.include?('sales_cost')  
+                        %td
+                      - if @pref.include?('total_sales_cost')  
+                        %td
+                      - if @pref.include?('time')  
+                        %td
+                      - if @pref.include?('user')  
+                        %td
+                      - if @pref.include?('procurement_cost')  
+                        %td
+                      - if @pref.include?('total_procurement_cost')  
+                        %td
+                  -bill_summery[:bills].each do |bill_id,data|
+                    - if @pref.include?('remarks') || @pref.include?('bill') || @pref.include?('time') || @pref.include?('user')
+                      %tr
+                        - if @pref.include?('date')
+                          %td
+                        - if @pref.include?('table')    
+                          %td
+                        - if @pref.include?('remarks')  
+                          %td= data[:remarks]
+                        - if @pref.include?('bill')  
+                          %td= bill_id
+                        - if @pref.include?('order_id')  
+                          %td
+                        - if @pref.include?('name')  
+                          %td
+                        - if @pref.include?('quantity')
+                          %td
+                        - if @pref.include?('sales_cost')  
+                          %td
+                        - if @pref.include?('total_sales_cost')  
+                          %td
+                        - if @pref.include?('time')  
+                          %td= data[:time]
+                        - if @pref.include?('user')  
+                          %td= data[:user]
+                        - if @pref.include?('procurement_cost')  
+                          %td
+                        - if @pref.include?('total_procurement_cost')  
+                          %td
+                    -data[:orders].each do |order_id,order_items|
+                      -order_items.each do |item|
+                        %tr
+                          - if @pref.include?('date')
+                            %td
+                          - if @pref.include?('table')    
+                            %td
+                          - if @pref.include?('remarks')  
+                            %td
+                          - if @pref.include?('bill')  
+                            %td
+                          - if @pref.include?('order_id')
+                            %td= order_id
+                          - if @pref.include?('name')  
+                            %td= item[:name]
+                          - if @pref.include?('quantity')  
+                            %td= item[:quantity]
+                          - if @pref.include?('sales_cost')  
+                            %td= number_to_currency(item[:sales_cost], unit: '')
+                          - if @pref.include?('total_sales_cost')  
+                            %td= number_to_currency(item[:total_sales_cost], unit: '')
+                          - if @pref.include?('time')
+                            %td
+                          - if @pref.include?('user')  
+                            %td
+                          - if @pref.include?('procurement_cost')  
+                            %td= number_to_currency(item[:procurement_cost], unit: '')
+                          - if @pref.include?('total_procurement_cost')
+                            %td= number_to_currency(item[:total_cost], unit: '')
+                    %tr
+                      - if @pref.include?('date')
+                        %td
+                      - if @pref.include?('table')  
+                        %td
+                      - if @pref.include?('remarks')  
+                        %td
+                      - if @pref.include?('bill')  
+                        %td
+                      - if @pref.include?('order_id')
+                        %td
+                      %td Bill Total
+                      %td
+                      %td
+                      %td= number_to_currency(data[:total_sales], unit: '')
+                      - if @pref.include?('time')
+                        %td
+                      - if @pref.include?('user')  
+                        %td
+                      %td
+                      %td= number_to_currency(data[:total_cost], unit: '')
+                  %tr
+                    - if @pref.include?('date')
+                      %td
+                    - if @pref.include?('table')  
+                      %td
+                    - if @pref.include?('remarks')  
+                      %td
+                    - if @pref.include?('bill')  
+                      %td
+                    - if @pref.include?('order_id')
+                      %td
+                    %td Table Total
+                    %td
+                    %td
+                    %td= number_to_currency(bill_summery[:table_total_sales], unit: '')
+                    - if @pref.include?('time')
+                      %td
+                    - if @pref.include?('user')  
+                      %td
+                    %td
+                    %td= number_to_currency(bill_summery[:table_total], unit: '')
+                %tr
+                  - if @pref.include?('date')
+                    %td
+                  - if @pref.include?('table')  
+                    %td
+                  - if @pref.include?('remarks')  
+                    %td
+                  - if @pref.include?('bill')  
+                    %td
+                  - if @pref.include?('order_id')
+                    %td
+                  %td Day Total
+                  %td
+                  %td
+                  %td= number_to_currency(table_summery[:day_total_sales], unit: '')
+                  - if @pref.include?('time')
+                    %td
+                  - if @pref.include?('user')  
+                    %td
+                  %td
+                  %td= number_to_currency(table_summery[:day_total], unit: '')
+                  -total_cost_till_date =total_cost_till_date+table_summery[:day_total]
+                  -total_sales_cost_till_date =total_sales_cost_till_date+table_summery[:day_total_sales]
+              %tr
+                - if @pref.include?('date')
+                  %td
+                - if @pref.include?('table')  
+                  %td
+                - if @pref.include?('remarks')  
+                  %td
+                - if @pref.include?('bill')  
+                  %td
+                - if @pref.include?('order_id')
+                  %td
+                %td Total Cost Till Date
+                %td
+                %td
+                %td= number_to_currency(total_sales_cost_till_date, unit: '')
+                - if @pref.include?('time')
+                  %td
+                - if @pref.include?('user')  
+                  %td
+                %td
+                %td= number_to_currency(total_cost_till_date, unit: '')
+        - else
+          .alert.alert-warning
+            No record found
+        
+            
+                
+
+          
+

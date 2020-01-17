@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Day:
+  = @menu_mapping.day_id
+%p
+  %b Section:
+  = @menu_mapping.section_id
+%p
+  %b Menu card:
+  = @menu_mapping.menu_card_id
+%p
+  %b Merge section:
+  = @menu_mapping.merge_section_id
+
+= link_to 'Edit', edit_menu_mapping_path(@menu_mapping)
+\|
+= link_to 'Back', menu_mappings_path

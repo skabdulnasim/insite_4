@@ -1,0 +1,16 @@
+= form_for @process_composition do |f|
+  - if @process_composition.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@process_composition.errors.count, "error")} prohibited this process_composition from being saved:"
+      %ul
+        - @process_composition.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :product_id
+    = f.number_field :product_id
+  .field
+    = f.label :production_process_id
+    = f.number_field :production_process_id
+  .actions
+    = f.submit 'Save'

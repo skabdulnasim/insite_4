@@ -1,0 +1,33 @@
+.parent_div
+  .divider
+  .form-group.margin-t-15
+    = f.label :thirdparty, :class => 'col-sm-4 control-label'
+    .col-sm-6
+      = f.select :thirdparty, options_for_select(ThirdpartyConfiguration::THIRDPARTY.map { |e| [e.humanize, e] },f.object.thirdparty), { include_blank: "Select Thirdparty"}, {:class => "form-control"}
+    .col-sm-2
+      %a.btn.btn-xs.btn-danger.remove_thirdparty_configuration{:href => "#", :title => "Delete", "data-thirdparty-configuration-id" => f.object.id}
+        %i.mdi-content-remove
+  .form-group.margin-t-15
+    = f.label :api_url, :class => 'col-sm-4 control-label'
+    .col-sm-6
+      = f.text_field :api_url, :class => 'form-control'
+  .form-group.margin-t-15
+    = f.label :api_username, :class => 'col-sm-4 control-label'
+    .col-sm-6
+      = f.text_field :api_username, :class => 'form-control'
+  .form-group.margin-t-15
+    = f.label :api_key, :class => 'col-sm-4 control-label'
+    .col-sm-6
+      = f.text_field :api_key, :class => 'form-control'
+  .form-group.margin-t-15
+    .col-sm-4
+    .col-sm-6
+      = f.check_box :is_product_desc
+      = f.label :is_product_desc, 'Is product description?'
+  .form-group.margin-t-15
+    .col-sm-4
+    .col-sm-6
+      = f.check_box :is_product_image
+      = f.label :is_product_image, 'Is product image?'
+      
+    

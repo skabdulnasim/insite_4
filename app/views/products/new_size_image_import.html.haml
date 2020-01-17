@@ -1,0 +1,20 @@
+- links_arr = [{:title=>"All Products",:url=>products_path,:active_class=>""},{:title=>"Import Product Size Image",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper    
+= render "layouts/flash"
+.card
+  .card-content
+    = form_tag size_image_import_products_path, multipart: true, class: "form-horizontal bordered-row" do
+      %h4 Import Product Size Images
+      - if flash[:error].present?
+        .red.padding-10.white-text.lighten-1
+          =flash[:error]
+      .form-group
+        %label.col-sm-3.control-label Choose file
+        .col-sm-4.margin-t-5
+          = file_field_tag :file, :required => 'required'
+        .col-sm-3  
+          %button.m-btn.blue.waves-effect.waves-light{:name => "action", :type => "submit"}
+            Upload
+      .col-sm-3
+      .col-sm-4
+        %b.padding-10= link_to "Download a sample CSV file...", '/sample_product_size_image.csv', :action => 'download'

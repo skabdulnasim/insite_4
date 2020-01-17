@@ -1,0 +1,105 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Orders",:url=>orders_path,:active_class=>""},{:title=>"Order: #{@order.id}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+#order_quickinfo.p0
+  .col-lg-12.padding-5
+    .card.waves-effect.waves-light
+      .card-content.p0
+        %p.header.teal-text.text-lighten-5.margin-l-15.teal.padding-10
+          ORDER DETAILS
+          %small.teal-text.text-lighten-4="##{@order.id}"
+        %table.data-table
+          %thead
+            %tr
+              %th.font-sz-12.hidden-sm.hidden-md.hidden-xs #
+              %th.font-sz-12 Item
+              %th.font-sz-12 QTY
+              %th.font-sz-12 Customizations
+              %th.font-sz-12.hidden-sm.hidden-md.hidden-xs SORT
+              %th.font-sz-12.hidden-sm.hidden-md.hidden-xs Parcel
+              %th.font-sz-12 Status
+              %th.font-sz-12.hidden-sm.hidden-md.hidden-xs Last Update
+          %tbody
+            -@order.order_details.each do |order_item|
+              %tr
+                %td.font-sz-12.hidden-sm.hidden-md.hidden-xs=order_item.id
+                %td
+                  =order_item.product_name
+                  %br
+                  .grey-text=order_item.preferences
+
+                %td="#{order_item.quantity} #{order_item.product.basic_unit}"
+                %td
+                  - if order_item.order_detail_combinations.present?
+                    %table
+                      %tbody
+                        - order_item.order_detail_combinations.each do |combo|
+                          %tr.text-muted.font-sz-11
+                            %td.border-rht-d-1.padding-l-r-5
+                              %span.text-green.text-uppercase
+                                %i.fa.fa-check{:style => "height: 15px !important;"}
+                                \&nbsp;
+                              = combo.product_name
+                            %td.padding-l-r-5="QTY: #{combo.combination_qty}"
+                  - else
+                    %span.grey-text N/A
+                %td.hidden-sm.hidden-md.hidden-xs=order_item.sort.name
+                %td.hidden-sm.hidden-md.hidden-xs
+                  - if order_item.parcel == 1
+                    Yes
+                  -else
+                    No
+                %td
+                  - if order_item.trash == 1
+                    %span.m-label.red.margin-l-none Cancled
+                  -else
+                    %span.m-label.teal.margin-l-none=order_item.status.humanize
+                %td.hidden-sm.hidden-md.hidden-xs=order_item.created_at.strftime("%d-%m-%Y, %I:%M %p")
+      .card-action.teal.lighten-5
+        - if @order.trash == 0
+          %a.teal-text.text-darken-2.float-r{"data-confirm" => "Are you sure?", :href => "/orders/cancel_order?id=#{@order.id}", :title => "Cancel this order"}
+            %i.mdi-content-remove-circle.smaller
+            Cancel this order
+          .clearfix
+  .clearfix
+  .col-lg-4.col-sm-12.col-xs-12.padding-5
+    .card.waves-effect.waves-purple
+      .card-content.height-150
+        %span.card-title
+          Delivery Details
+        .grey-text.text-darken-1.margin-t-10
+          -get_order_delivery_details(@order)
+      .card-action
+        %i.mdi-content-flag.smaller
+        =@order.delivary_date.strftime("%d %b %Y, %I:%M %p")
+  .col-lg-4.col-sm-12.col-xs-12.padding-5
+    .card.waves-effect.waves-yellow
+      .card-content.height-150
+        %span.card-title
+          Order From
+        .grey-text.text-darken-1.margin-t-10
+          ="This #{@order.source} order was placed by #{@order.consumer_type}"
+          - if @order.consumer.profile.present?
+            ="#{@order.consumer.profile.firstname} #{@order.consumer.profile.lastname} (ID: #{@order.consumer_id})"
+      .card-action
+        - if @order.consumer_type == "User"
+          %i.mdi-hardware-tablet-mac.smaller
+          ="Device ID: #{@order.device_id}"
+        - elsif @order.consumer_type == "Customer" and @order.consumer.profile.present?
+          %i.mdi-communication-ring-volume.smaller
+          ="Contact #{@order.consumer.profile.contact_no}"
+- if @order.billed == 1
+  .col-lg-4.col-sm-12.col-xs-12.padding-5
+    .card.blue.waves-effect.waves-light
+      - _bill = @order.bills.first
+      .card-content.white-text.height-150
+        %h3.header.blue-text.text-lighten-5.margin-t-none
+          %small.blue-text.text-lighten-3=currency
+          =_bill.grand_total
+        .blue-text.text-lighten-4
+          ="Bill ID #{_bill.id} generated on #{_bill.created_at.strftime('%d %b %Y, %I:%M %p')} and current status is #{_bill.status}."
+      %a.white-text{:href => "/bills/#{_bill.id}", :target => "_blank"}
+        .card-action.blue.darken-1.white-text
+          %i.mdi-action-launch.smaller
+          More details
+.clearfix

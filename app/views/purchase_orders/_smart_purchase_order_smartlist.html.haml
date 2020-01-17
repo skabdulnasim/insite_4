@@ -1,0 +1,28 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Name", "name"
+        %th= smart_listing.sortable "Vendor", "vendor_id"
+        %th= smart_listing.sortable "Valid from", "Valid_from"
+        %th= smart_listing.sortable "Valid till", "Valid_till"
+        %th Actions
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td= "##{object.id} #{object.name}"
+          %td.font-sz-11=object.vendor.name
+          %td.font-sz-11
+            =object.valid_from.strftime("%d %b %Y, %I:%M %p") if object.valid_from.present?
+          %td.font-sz-11
+            =object.valid_till.strftime("%d %b %Y, %I:%M %p") if object.valid_till.present?
+          %td              
+            %a.button.m-btn.blue{:href=>"/stores/#{object.store_id}/purchase_order_steps/po_confirmation?smart_po_id=#{object.id}"}
+              %i.mdi-action-subject.left
+              View     
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No purchase order found

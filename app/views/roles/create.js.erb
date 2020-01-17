@@ -1,0 +1,7 @@
+Materialize.toast("User role <%= @role.name %> has been successfully added.", 3000,'green')
+$("#userroles").append("<%=j render @role %>")
+// <% @role=Role.new %>
+// $("#new_role_link").html('<%= j render("form") %>')
+$('#new_role').hide();
+$('#new_role_link').html("Add new user role ...");
+$('#new_role_link').show();

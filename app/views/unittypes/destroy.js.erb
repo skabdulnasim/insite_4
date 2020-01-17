@@ -1,0 +1,6 @@
+$('#branch_type_edit_modal').closeModal();
+<% if @error.present? %>
+  Materialize.toast("<%= @error.message %>", 3000,'red');  
+<% else %>
+  $('#unittype_<%= @unittype.id%>').remove();
+<% end %>

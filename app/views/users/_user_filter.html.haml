@@ -1,0 +1,25 @@
+.padding-10 
+  %b FILTER BY
+= smart_listing_controls_for(:users, {class: "text-left"}) do
+  .filter-title.margin-t-b-0 
+    %i.mdi-action-search.left
+    Search
+  .padding-10 
+    .form-group.filter.input-append
+      .input-group
+        %input.form-control.search{:placeholder => "Search user...", :type => "text", :name=> "filter_user"}
+          %span.input-group-btn
+            %button.btn.btn-primary.disabled{:type => "submit" }
+              %span.glyphicon.glyphicon-search
+  .filter-title.margin-t-b-0 
+    %i.mdi-action-label.left
+    Status                        
+  .padding-l-r-5
+    .checkbox.margin-t-b-2
+      = check_box_tag 'status[]', 0, false,{ :id => "status_0", :class=>"filled-in"}
+      %label.checkbox.inline.margin-l-5{:for=>"status_0", :style=>"padding-left:30px;"} Inactive users
+    .checkbox.margin-t-b-2
+      = check_box_tag 'status[]', 1, false,{ :id => "status_1", :class=>"filled-in"}
+      %label.checkbox.inline.margin-l-5{:for=>"status_1", :style=>"padding-left:30px;"} Active users
+  .padding-10
+  .clearfix                                             

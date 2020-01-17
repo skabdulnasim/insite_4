@@ -1,0 +1,31 @@
+= form_for @loyalty_card_transaction do |f|
+  - if @loyalty_card_transaction.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@loyalty_card_transaction.errors.count, "error")} prohibited this loyalty_card_transaction from being saved:"
+      %ul
+        - @loyalty_card_transaction.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :LoyaltyCard
+    = f.text_field :LoyaltyCard
+  .field
+    = f.label :transaction_type
+    = f.text_field :transaction_type
+  .field
+    = f.label :loyalty_trascaction
+    = f.text_field :loyalty_trascaction
+  .field
+    = f.label :points
+    = f.text_field :points
+  .field
+    = f.label :points_after_transaction
+    = f.text_field :points_after_transaction
+  .field
+    = f.label :equivalent_money
+    = f.text_field :equivalent_money
+  .field
+    = f.label :remarks
+    = f.text_area :remarks
+  .actions
+    = f.submit 'Save'

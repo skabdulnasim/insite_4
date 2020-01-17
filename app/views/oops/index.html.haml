@@ -1,0 +1,31 @@
+#page-wrapper
+  .row
+    .page-header
+      %h3
+        %i.fa.fa-exclamation-circle
+          404
+          %small Error Page
+
+    .page-container
+      %section.err-content
+        .error-page
+          .err-header.col-lg-4
+            %h1
+              404
+          .error-msg.col-lg-8
+            %h3 
+              %i.fa.fa-exclamation-triangle{:style=>"color:#f56954"}
+              - if notice.nil? == false
+                = notice
+              - else
+                Oops! Page not found.
+            %p
+              We could not find the page you were looking for. Meanwhile, you may return to dashboard.
+              %br
+              %br
+              .col-lg-1
+              .col-lg-8
+                %a.btn.btn-success.btn-block{:href=>"#{root_path}"}
+                  %i.fa.fa-reply
+                  Return to Dashboard
+              

@@ -1,0 +1,61 @@
+<!-- <%= response.status %> -->
+<% if(response.status == 'ok') { %>
+  <div class="card card-panel padding-10">
+    <span><small><label for="name"  style="width: 100px;">Customer Name:</label></small> <%= response.data.firstname %> <%= response.data.lastname %></span><br>
+    <span><small><label for="name"  style="width: 100px;">Contact Number:</label></small> <%= response.data.mobile_no %></span>
+  </div>
+  <div>
+    <h5>Select delivery address <a href="#address-fields" class="btn btn-xs btn-link float-r" id="add-new-address">Add New Address</a></h5>
+    <div style="min-height:200px" id="customer-addresses">
+    <% var address_obj = response.data.addresses; 
+      if (address_obj.length > 0) {
+    %>
+      <% for (var i = address_obj.length - 1; i >= 0; i--) { %>
+        <div class="card card-panel padding-10">
+          <input class="with-gap" name="customer_address" type="radio" id="<%= address_obj[i].id %>" value="<%= address_obj[i].id %>" data-address-firstname="<%= address_obj[i].receiver_first_name %>" data-address-lastname="<%= address_obj[i].receiver_last_name %>" data-delivery-address="<%= address_obj[i].delivery_address %>" data-address-landmark="<%= address_obj[i].landmark %>" data-address-city="<%= address_obj[i].city %>" data-address-pincode="<%= address_obj[i].pincode %>" data-address-state="<%= address_obj[i].state %>" data-address-contact="<%= address_obj[i].contact_no %>"/>
+          <label for="<%= address_obj[i].id %>"><%= address_obj[i].receiver_first_name %> <%= address_obj[i].receiver_last_name %></label><br>
+          <span>
+            <%= address_obj[i].delivery_address %>,
+            <%= address_obj[i].landmark %>,
+            <%= address_obj[i].city %> - 
+            <%= address_obj[i].pincode %>,
+            <%= address_obj[i].state %><br>
+            Contact: <%= address_obj[i].contact_no %>
+          </span>
+        </div> 
+      <% };%>
+      <br>
+      <!-- <button class="m-btn m-btn-blue font-lato width-100" name="commit" value="SAVE AND CONTINUE" type="submit" id="use-address" data-customer-id="<%= response.data.id %>">Use this address</button> -->      
+    <% } else { %>
+      <br>
+      <small>No address available for this customer, follow the link given above to add one.</small> 
+    <%  }; %>
+    </div>
+  </div> 
+
+<% }else{ %>
+<div>
+  <div class="alert alert-dismissable m-alert-danger user-reg-alert">
+      <strong>Sorry! </strong> <%= response.messages.simple_message %>
+  </div>
+  <div class="form-group">
+    <input class="form-control border-rad-1" id="address_receiver_first_name" name="address[receiver_first_name]" placeholder="First Name*" type="text">
+  </div>
+  <div class="form-group">
+    <input class="form-control border-rad-1" id="address_receiver_last_name" name="address[receiver_last_name]" placeholder="Last Name*" type="text">
+  </div>
+  <div class="form-group">
+    <input class="form-control border-rad-1" id="email" name="email" placeholder="Email Id*" type="text">
+  </div>
+  <div class="form-group">
+    <input class="form-control border-rad-1" id="gstin" name="gstin" placeholder="gstin" type="text">
+  </div>
+  <div class="form-group">
+    <input class="form-control border-rad-1" id="contact_no" name="address[contact_no]" placeholder="Contact No.*" type="text" value="<%= entered_mobile_no %>">
+  </div>
+  <div class="modal-footer">
+    <input class="m-btn m-btn-green font-lato width-100" name="commit" value="SAVE AND CONTINUE" type="submit" id="register-customer">
+  </div>
+</div>  
+<% }%>
+<div id="address-fields"></div>

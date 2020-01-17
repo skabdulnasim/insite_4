@@ -1,0 +1,71 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Processes required for 
+            %span.fs-title.text-primary #{@product_name}
+        - if !@process_composition_list.empty?            
+          %table.data-table.table-hover#process_dependency_accordion
+            %tbody.panel
+              %tr.data-table__selectable-row
+                %th.col-lg-4 Process Name
+                %th.col-lg-4 Actions
+              - @process_composition_list.each do |process_composition|
+                %tr{"aria-controls" => "process_dependency_collapse_#{process_composition.id}", "aria-expanded" => "false", "data-parent" => "#process_dependency_accordion", "data-toggle" => "collapse", :href => "#process_dependency_collapse_#{process_composition.id}", :role => "button"}
+                  %td.col-lg-6= process_composition.production_process.name
+                  %td.col-lg-6
+                    %a.m-btn.green.m-btn-low-padding.add_process_dependecy{"data-target" =>"#addProcessDependencyModal", "data-toggle" => "modal", "data-process-composition-id"=>process_composition.id,:title => "Add process dependencies"}
+                      %i.mdi-content-add
+                    %a.m-btn.red.m-btn-low-padding.margin-l-5{:href => "#",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete process composition"}
+                      %i.mdi-action-delete
+                  
+                  - process_dependencies = process_composition.depends_on_processes
+                  - if process_dependencies.present?
+                    %tr.collapse.data-table__selectable-row.collapsible-body.light-blue.lighten-5.data-table__selectable-row--is-selected{"aria-labelledby" => "process_dependency_heading#{process_composition.id}", :role => "tabpanel", :id => "process_dependency_collapse_#{process_composition.id}"}
+                      %td{:colspan=>2}
+                        %table.data-table
+                          %tr
+                            %th.col-lg-6 Process Name
+                          - process_dependencies.each do |dependency_process|
+                            %tr
+                              %td.col-lg-6.padding-10.light-blue.lighten-5= dependency_process.production_process.name
+
+        - else
+          No processes found
+
+#addProcessDependencyModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "addProcessDependencyModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      = form_tag(add_process_dependency_product_path method: "post", multipart: true) do
+        .modal-header.m-modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#addProcessDependencyModalLabel.modal-title Add dependencies of process
+        .modal-body
+          .col-md-12
+            .col-md-1
+            .col-md-9
+              %table.data-table
+                %thead
+                  %tr.data-table__selectable-row
+                    %th
+                      %input.checkbox-parent-toggle.filled-in{:type=>"checkbox"}
+                    %th= "PROCESS NAME"
+                %tbody
+                  .process_composition_id
+                    = hidden_field_tag 'process_composition_id', ''
+                    = hidden_field_tag 'product_id', "#{@product_id}"
+                  - @process_composition_list.each do |process_dependency|
+                    %tr.data-table__selectable-row
+                      %td
+                        %input.checkbox-child.filled-in{:value=> "#{process_dependency.production_process_id }",:name=>"selected_processes[]",:type=>"checkbox",:id=>"dependency_processes_#{process_dependency.production_process_id}"}
+                        %label{:for=>"dependency_processes_#{process_dependency.production_process_id}"}
+                      %td= process_dependency.production_process.name
+          .clearfix
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          = submit_tag "Save", class: "btn btn-primary"

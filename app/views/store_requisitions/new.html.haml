@@ -1,0 +1,13 @@
+:javascript
+  $(function() {
+    $('#valid_from_req').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+    $('#valid_till_req').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+  });
+= render "layouts/flash"
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Add new requisition",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+= render 'form'

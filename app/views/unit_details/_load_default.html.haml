@@ -1,0 +1,6 @@
+= form_for @unit_detail,:html => { :class => 'form-horizontal' } do |u|
+  .jumbotron
+    %h1 Hello, user!
+    %p You have not load the default details for you branch.
+    %p
+      = u.submit 'Load default details', :class => "btn btn-primary btn-lg"

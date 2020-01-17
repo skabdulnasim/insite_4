@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @cost_category.name
+%p
+  %b Description:
+  = @cost_category.description
+
+= link_to 'Edit', edit_cost_category_path(@cost_category)
+\|
+= link_to 'Back', cost_categories_path

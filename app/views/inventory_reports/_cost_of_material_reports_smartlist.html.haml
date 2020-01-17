@@ -1,0 +1,29 @@
+- unless smart_listing.empty?
+  / = debug smart_listing.collection
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Sl. No.",'i'
+        %th= smart_listing.sortable "Material Name", "product.name"
+        %th Quantity
+        %th 
+          Cost
+          = "(in #{currency})"
+    %tbody
+      -i=1
+      -smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td 
+            =i  
+          %td=object.product.name
+          -basic_unit = basic_unit_name(object.product.basic_unit_id)
+          %td
+            =object.stock_debit
+            = basic_unit.name
+          %td=object.cost
+          -i+=1
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

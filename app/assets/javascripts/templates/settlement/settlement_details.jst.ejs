@@ -1,0 +1,17 @@
+<div class="center">
+  <br>
+  <br>
+  <h3 class="header txt-align-center"><%= currency %> <%= data.grand_total %></h3>
+  <hr>
+  <div class="txt-align-center font-13">
+    <span class="grey-text">Rs <%= data.grand_total %> is total payable amount.</span>
+  </div>
+  <hr>
+  <br>    
+  <button class="m-btn indigo width-100 waves-effect waves-light margin-t-15" id="bill_settlement" data-currency="<%= currency %>" data-email-id="<%= email_id%>" data-unit-id="<%= data.unit_id%>" data-client-id="<%= data.biller_id%>" data-bill-id="<%= data.id%>" data-bill-amount="<%= data.grand_total%>">
+    <i class="mdi-action-credit-card left"></i>
+    Confirm and save
+  </button>
+
+  <button class="m-btn white cancel_update_bill width-100 grey-text text-darken-3 margin-t-15 waves-effect waves-red" type="button" data-currency="<%= currency %>">Cancel</button>
+</div>

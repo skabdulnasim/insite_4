@@ -1,0 +1,8 @@
+
+<% if(menu_card.length > 0) {%>
+	<% for(var i=0; i<menu_card.length; i++) { %>
+		<option value="<%= menu_card[i].id %>"><%= menu_card[i].name %></option>
+	<%}%>
+ <% } else {%>
+ 	<option value="">No menucard find</option>
+ <% }%>	

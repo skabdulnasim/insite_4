@@ -1,0 +1,35 @@
+= form_for @vehicle, :html => { :class => 'form-horizontal'} do |f|
+  - if @vehicle.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@vehicle.errors.count, "error")} prohibited this vehicle from being saved:"
+      %ul
+        - @vehicle.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-group
+    = f.label :name, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :name, :class => 'form-control', :require => true
+  .form-group
+    = f.label :license_number, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :license_no, :class => 'form-control', :require => true      
+  .form-group
+    = f.label :pincode, :class => 'col-sm-2 control-label'
+    .col-sm-4  
+      = f.text_field :pincode, :class => 'form-control', :require => true
+  .form-group
+    = f.label :contact_no, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :contact_no, :class => 'form-control', :require => true
+  .form-group
+    = f.label :pass_key, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.number_field :pass_key, :class => 'form-control'
+  .form-group
+    = f.label :vehicle_mode, :class=> "col-sm-2 control-label"
+    .col-sm-4
+      = f.select :vehicle_mode, options_for_select({"By road"=> "by_road", "By air"=> "by_air"}, @vehicle.vehicle_mode),{include_blank: "Select vehicle mode"}, {:class=> "form-control", :require => true}
+  .form-group    
+    .col-sm-offset-2.col-sm-10
+      = f.submit "#{t :btn_save}", :class => 'btn btn-success'

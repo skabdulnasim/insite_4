@@ -1,0 +1,30 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Order Id
+        %th Source
+        %th Delivery Address
+        %th Customer
+        %th{:colspan=>'100%'} Order Statuses
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td= object.id
+          %td= object.source
+          %td= object.deliverable.delivery_address
+          %td= object.customer.present? ? object.customer.profile.customer_name : '-'
+          - order_status_logs = object.order_status_logs
+          - if order_status_logs.present?
+            - object.order_status_logs.uniq_by(&:order_status_id).each do |status_log|
+              %td
+                %span.m-label.green= "#{status_log.order_status_name}"
+                = "#{status_log.created_at.strftime("%d-%m-%Y, %I:%M %p")}"
+          - else
+            %td No status present
+  
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  .alert.alert-warning
+    No record found

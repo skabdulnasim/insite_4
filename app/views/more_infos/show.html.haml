@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @more_info.name
+
+= link_to 'Edit', edit_more_info_path(@more_info)
+\|
+= link_to 'Back', more_infos_path

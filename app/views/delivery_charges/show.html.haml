@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Lower limit:
+  = @delivery_charge.lower_limit
+%p
+  %b Upper limit:
+  = @delivery_charge.upper_limit
+%p
+  %b Delivery charge:
+  = @delivery_charge.delivery_charge
+%p
+  %b Unit:
+  = @delivery_charge.unit_id
+
+= link_to 'Edit', edit_delivery_charge_path(@delivery_charge)
+\|
+= link_to 'Back', delivery_charges_path

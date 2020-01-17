@@ -1,0 +1,77 @@
+#cal_tables
+  .col-lg-2
+    #calender{:style =>"float:left;height:20px;"}
+      %h5#month
+        = link_to "<", date: @date.prev_month
+        = @date.strftime("%B %Y")
+        = link_to ">", date: @date.next_month
+      = calendar @date do |date|
+        .date{"data-whatever" => "#{date}",:id => "date#{date}"}
+          - if Date.parse(date.to_s) == Date.parse(params[:date].to_s)
+            %a.date{:href =>"/table_reservations/reservation_list/#{date}","data-whatever" => "#{date}",:id=>"date#{date}",:style=>"color:red"}
+              = date.day
+          - else
+            %a.date{:href =>"/table_reservations/reservation_list/#{date}","data-whatever" => "#{date}",:id=>"date#{date}"}
+              = date.day
+  .col-lg-10
+    .panel.panel-danger
+      .panel-body
+        %ul#myTab.nav.nav-tabs{:role => "tablist"}
+          - @sections.each do |s|
+            %li#sections{:role => "presentation"}
+              %a.tab_section{"aria-controls" => "home", "data-toggle" => "tab", :href => "#", :role => "tab",:id=>"#{s.id}"} 
+                = s.name
+      .panel-footer{:style=>"height:150px;overflow: scroll;"}
+        #tab-content
+          %h2.text-grey.text-center Select a section from above to view it's tables
+#message  
+#timeslot
+  .row.scroll_cust_list
+    %table.table.table-bordered.table-hover
+      
+      %tr
+        %th Customer info
+        %th PAX
+        - for i in (@open_time)..(@closed_time)
+          %th 
+            %center
+              = "#{i}" 
+        %tr
+          %td{:style=>"width:90px;padding:5px;"}
+          
+            %input{:type => "text",:name=>"customer_name",:id=>"customer_name",:placeholder=>"Enter customer name"}/
+            %input{:type => "text",:name=>"customer_name",:id=>"customer_mobile",:placeholder=>"Enter contact no."}/
+            %button.btn.btn-success.btn-xs.btn-block#save{:type => "button"} Save 
+          %td{:style=>"padding:5px;"}
+            %input{:name=>"unit_id", :value => @unit_name.id,:type=>"hidden",:id=>"unit_name"}
+            %input{:name=>"status", :value => "1",:type=>"hidden",:id=>"status"}
+            %input{:name=>"date", :value => params[:date],:type=>"hidden",:id=>"date" }   
+            %input{:name=>"pax",:type=>"number",:id=>"pax",:placeholder=>"Enter Pax"}
+          
+          - for i in (@open_time)..(@closed_time)
+            %td.padding-none.td_time_slot
+              .drop_zone{"data-time-min"=>"#{i}","data-time-max"=>"#{i+1}",:id=>"drop_zone#{i}"}
+        - @table_reservations.each do |tr|
+          - if tr.status != "3"
+            %tr
+              %td.padding-6
+                %h6.margin-b-t-none="Name: #{tr.customer_name}" 
+                %h6.margin-b-t-none="Date: #{tr.created_at.strftime('%d %b %Y, %I:%M %p')}" 
+                %h6.margin-b-t-none="Contact: #{tr.contact_no}"
+                - if tr.section.present?
+                  %h6.margin-b-t-none="Section: #{tr.section.name}" 
+                .update_button{:id=>"update_button#{tr.id}"}     
+              %td.padding-5
+                = tr.head_count
+              - from_time = Time.zone.parse(tr.from_time.to_s).to_time.strftime("%H").to_i
+              - to_time = Time.zone.parse(tr.to_time.to_s).to_time.strftime("%H").to_i
+              - for i in ((@open_time)..(@closed_time))
+                %td.padding-none.box_of_booked_slot
+                  - for j in from_time..(to_time)
+                    - if j==i
+                      .table_div.drop_zone_on_update{:reservation_id=>"#{tr.id}",:id=>"drop_zone_on_update#{tr.id}"}                      
+                        - tr.table_reservation_meta.each do |tm|
+                          %span.label.label-success
+                            = tm.table.name
+                          %br
+          

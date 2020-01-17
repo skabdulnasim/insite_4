@@ -1,0 +1,204 @@
+:javascript
+  $(function() {
+    var dateToday = new Date();
+    var time = dateToday.getHours() + ":" + dateToday.getMinutes() + ":" + dateToday.getSeconds();
+    $('.datepick').datetimepicker({
+      pickTime: false,
+      format: 'YYYY-MM-DD',
+      minDate: dateToday,
+      useCurrent: true
+    });
+    $('.dtpicker').datetimepicker({
+      pickTime: false,
+      format: 'YYYY-MM-DD',
+      useCurrent: true
+    });
+
+    $('.redate').datetimepicker({
+      pickTime: true,
+      format: 'YYYY-MM-DD hh:mm',
+      useCurrent: true
+    });
+
+    $('.timepick').datetimepicker({
+      pickDate: false,
+      pickSeconds: true,
+      format: 'hh:mm:ss',
+      use24hours: true,
+      pick12HourFormat: false
+    });
+  });
+- manual_load_javascript "templates/settlement/settlement_details", "templates/settlement/token", "templates/reservations/quick_details", "templates/menu_products/products" ,"templates/reservations/invoice_details" 
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label.margin-t-15
+            .form-group.input-group.col-md-4{style: "float:left"}
+              = text_field_tag(:date, "#{Date.today.to_s}", class: 'form-control datepick', required: 'true')
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-calendar
+            .form-group.col-md-4.resource{style: "float:left"}
+              = select_tag(:resource, "<option>Select Resource</option>".html_safe, class: 'form-control')
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal.show_details
+              %i.mdi-content-add.left
+              %span.hidden-sm.hidden-xs New Reservation 
+
+      - unless smart_listing.empty?
+        %table.data-table#accordion
+          %thead
+            %tr.data-table__selectable-row
+              %th= smart_listing.sortable "ID", "id"
+              %th Resource
+              %th Customer
+              /%th Slot
+              /%th Date
+              %th Time Slot
+              /%th Created at
+              / %th Get Slip
+          %tbody.panel
+            - smart_listing.collection.each do |object|
+              /= debug object.resource.section.menu_cards.last.id
+              %tr.data-table__selectable-row
+                %td.reservation-quickview{"aria-controls" => "reservation_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#reservation_collapse_#{object.id}", :role => "button", "data-reservation-id"=>object.id,"data-currency"=>currency, :class=>"reservation_collapse_#{object.id}"}
+                  =object.id
+                  =billed_reservation(object)
+                %td.reservation-quickview{"aria-controls" => "reservation_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#reservation_collapse_#{object.id}", :role => "button", "data-reservation-id"=>object.id,"data-currency"=>currency, :class=>"reservation_collapse_#{object.id}"}
+
+                  -reservation_details =  object.reservation_details
+                  -reservation_details.each do |reservation_detail|
+                    - if reservation_detail.is_parent == "yes"
+                      %span.badge.orange
+                        =reservation_detail.resource.name
+                    -else
+                      %span.blue.badge
+                        =reservation_detail.resource.name
+
+                  / = object.resource.name.humanize
+                %td.reservation-quickview{"aria-controls" => "reservation_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#reservation_collapse_#{object.id}", :role => "button", "data-reservation-id"=>object.id,"data-currency"=>currency, :class=>"reservation_collapse_#{object.id}"}
+                  = "#{object.customer.profile.firstname} #{object.customer.profile.lastname}"
+              
+                %td.reservation-quickview{"aria-controls" => "reservation_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#reservation_collapse_#{object.id}", :role => "button", "data-reservation-id"=>object.id,"data-currency"=>currency, :class=>"reservation_collapse_#{object.id}"}
+                  =# "#{object.start_time.strftime("%I:%M %p")}-" "#{object.end_time.strftime("%I:%M %p")}" 
+                  -if object.start_date.present?
+                    = "#{object.start_date.strftime("%d-%m-%Y, %I:%M %p")} To " "#{object.end_date.strftime("%d-%m-%Y, %I:%M %p")}"
+                %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{object.id}", :role => "tabpanel", :id => "reservation_collapse_#{object.id}"}
+                  %td.p0{:colspan=>7,:id=>"reservation_quickinfo_#{object.id}"}
+                    Loading please wait...       
+                        
+        = smart_listing.paginate
+        = smart_listing.pagination_per_page_links
+        %input.current_user_email{:type=>"hidden", :value=>@current_user.email}
+        %br
+        #tokenModal.modal.width-50.bottom-sheet.modal-fixed-footer
+          / Modal content
+          .modal-content.p0
+            .modal-header
+              %h2.modal-title Confirmation slip
+            .modal-body{:style => "height: calc(100vh - 120px);"}
+              #token_content
+            .modal-footer
+              %button.btn.btn-primary.padding-l-r-10.border-radious-2{"data-dismiss" => "modal", :type => "button"} CLOSE
+              %a.btn.btn-success.padding-l-r-10.border-radious-2.print{:href => "#!"} PRINT
+              /%a.btn.btn-success.padding-l-r-10.border-radious-2{:href => "#!"} PRINT TOKEN & CONTINUE
+
+        #orderModal.modal.fade{:role => "dialog"}
+          / Modal content
+          .modal-dialog.modal-md
+            .modal-content
+              .modal-header
+                %button.close{"data-dismiss" => "modal", :type => "button"} ×
+                %h4.modal-title Make Payment
+                #overlay{:style => "background-color: black; color:white; z-index: 999;position: absolute; text-align:center;width: 50%;height: 40px;display: none;margin-left:22%;margin-top:-3px;border-radius:5px;padding-top: 7px;font-weight: bold;"}
+              .modal-body.p0{:style => "max-height: calc(100vh - 212px); overflow-y: auto;"}
+                #menu_product
+              .modal-footer
+                %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close 
+                %a.btn.btn-success.padding-l-r-10.border-radious-2.cofirm-order{:href => "#!"} Confirm     
+              
+        #paymentModal.modal.fade{:role => "dialog"}
+          .modal-dialog.modal-lg
+            .modal-content
+              .modal-header
+                %button.close{"data-dismiss" => "modal", :type => "button"} ×
+                %h4.modal-title Make Payment
+              .modal-body.p0#settlement-model{:style => "height: calc(100vh - 190px);"}
+                .container
+                  .row
+                    .col-lg-5.col-md-5.col-sm-8.col-xs-9.bhoechie-tab-container
+                      .col-lg-3.col-md-3.col-sm-3.col-xs-3.bhoechie-tab-menu
+                        .list-group
+                          %a.list-group-item.list-item.active.text-center{:href => "#"}
+                            %i.fa.fa-money{"aria-hidden" => "true"}
+                            = succeed "Cash" do
+                              %br/
+                          %a.list-group-item.list-item.text-center{:href => "#"}
+                            %i.fa.fa-credit-card{"aria-hidden" => "true"}
+                            = succeed "Card" do
+                              %br/
+                      
+                      .col-lg-9.col-md-9.col-sm-9.col-xs-9.bhoechie-tab{:style => "height: calc(100vh - 190px);"}
+                        / cash section
+                        .bhoechie-tab-content.active
+                          %form.form-horizontal.m-input{:action => ""}
+                            .form-group.padding-20.settlement_mode_checkbox{:style => "border-bottom: 1px dashed #ccc; padding-top: 20px;"}
+                              %input{:class => "filled-in settlement_mode cash_settlement_mode", :id => "filled-in-box-cash", :name => "settlement_mode[]", :type => "checkbox", :value => "cash"}
+                              %label{:for => "filled-in-box-cash"} Pay by Cash 
+                            .form-group.padding-5
+                              .col-sm-4
+                                %label{:for => ""} Amount 
+                              .col-sm-8     
+                                %input{:class => "form-control validate margin-t-b-2 p0 amount_cash", :placeholder => "Enter amount in #{currency}", :type => "text", :id => "cash_settlement_amount"}/
+                        .bhoechie-tab-content
+                          %form.form-horizontal.m-input{:action => ""}
+                            .form-group.padding-20.settlement_mode_checkbox{:style => "border-bottom: 1px dashed #ccc; padding-top: 20px;"}
+                              / card section
+                              %input{:class => "filled-in settlement_mode ", :id => "filled-in-box-card", :name => "settlement_mode[]", :type => "checkbox", :value => "card"}
+                              %label{:for => "filled-in-box-card"} Pay by Card 
+                            .form-group.padding-5
+                              .col-sm-4
+                                %label{:for => ""} Amount 
+                              .col-sm-8     
+                                %input{:class => "form-control validate margin-t-b-2 p0 amount_card", :placeholder => "Enter amount in #{currency}", :type => "text", :id => "card_settlement_amount"}/
+                            .form-group.padding-5    
+                              .col-sm-4
+                                %label{:for => ""} Card No. (Last 4 digit)
+                              .col-sm-8
+                                %input{:class => "form-control validate margin-t-b-2 p0 card_no", :placeholder => "Last 4 digit", :type => "text", :id => "card_number"}/
+                            .form-group.padding-5    
+                              .col-sm-4
+                                %label{:for => ""} Card Type
+                              .col-sm-8
+                                %select{:class => "form-control", :id => "card_type"}
+                                  %option{:value => "debit"} Debit Card
+                                  %option{:value => "credit"} Credit Card 
+                            .form-group.padding-5
+                              .col-sm-4
+                                %label{:for => ""} Merchandiser
+                              .col-sm-8
+                                %select{:class => "form-control", :id => "card_merchandiser"}
+                                  %option{:value => "visa"} VISA
+                                  %option{:value => "mastercard"} MasterCard
+                                  %option{:value => "mastercard"} Other       
+                    .col-lg-4.col-md-4.bg-gray#settlement_details{:style => "height: calc(100vh - 190px);"}
+
+              .modal-footer
+                %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        #invoiceModal.modal.fade{"aria-labelledby" => "invoiceModalLabel", :role => "dialog", :tabindex => "-1"}
+          .modal-dialog.modal-lg{:role => "document"}
+            .modal-content
+              .modal-header
+                %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+                  %span{"aria-hidden" => "true"} ×
+                %h4#myModalLabel.modal-title Invoice
+              .modal-body#invoiceModalBody
+                \...
+              .modal-footer
+                %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+                %button.btn.btn-primary.print-invoice{:type => "button"} Print        
+      - else
+        .alert.alert-warning
+          No reservation found
+       

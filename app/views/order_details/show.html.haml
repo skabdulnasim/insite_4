@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Menu product:
+  = @order_detail.menu_product_id
+%p
+  %b Menu product name:
+  = @order_detail.menu_product_name
+%p
+  %b Quantity:
+  = @order_detail.quantity
+%p
+  %b Repeat quantity:
+  = @order_detail.repeat_quantity
+
+= link_to 'Edit', edit_order_detail_path(@order_detail)
+\|
+= link_to 'Back', order_details_path

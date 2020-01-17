@@ -1,0 +1,16 @@
+- links_arr = [{:title=>"Loyalty Reports",:url=>loyalty_reports_path,:active_class=>""},{:title=>"Report For Membership points Accumulation & Redemption",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="Report for Membership points accumulation & Redemption Between #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/loyalty_reports/membership_points_accumulation.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"}
+              %i.mdi-file-file-download.left
+              CSV
+        = smart_listing_render :membership_points   

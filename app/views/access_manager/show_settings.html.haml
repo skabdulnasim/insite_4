@@ -1,0 +1,127 @@
+= render "layouts/flash"
+- Rails.application.eager_load!
+- classes = ApplicationController.subclasses
+- classes.each do |cls|
+  - cls_name = cls.to_s
+  - if @controller == cls_name
+    - actions = cls.action_methods    
+    - if @ctrl_details.present?
+      = form_tag(access_manager_update_settings_path, method: "post") do  
+        %input{:type=>"hidden", :name=>"controller_name", :value=>"#{cls}"}     
+        - actions_json = JSON.parse(@ctrl_details.controller_actions)
+        .panel.panel-default
+          .panel-heading
+            .panel-title
+              %label.label.label-primary
+                Controller 
+              &nbsp;&nbsp;&nbsp;
+              =cls_name
+          .panel-body  
+            .col-lg-8
+              %label.control-label Select actions:
+              %p.font-sz-11 
+                %b Note:
+                Selected actions will be available in role management to restrict user access to different actions, also try to give add some description about the functiolities of these actions
+              - actions.each do |act|
+                - if actions_json.include? act
+                  .input-group.col-lg-12
+                    %span.input-group-addon
+                      %input.check{:name => "checked_action[]", :type => "checkbox", :value => "#{act}", :id => "#{act}", :checked=>true, :class=>"filled-in"}
+                      %label{:for=>"#{act}"}
+                    %span.input-group-addon{:style=>"width:45%"}
+                      %label.label.label-success{:style=>"float:left"}
+                        Action:
+                      = act
+                    %input{:class => "form-control font-sz-12",:name=>"desc_#{act}",:id => "action_#{act}",:value=>"#{actions_json[act]['action_desc']}", :type => "text", :placeholder => "Please add some short description"}
+                - else
+                  .input-group.col-lg-12
+                    %span.input-group-addon
+                      %input.check{:name => "checked_action[]", :type => "checkbox", :value => "#{act}", :id => "#{act}", :class=>"filled-in"}
+                      %label{:for=>"#{act}"}
+                    %span.input-group-addon{:style=>"width:45%"}
+                      %label.label.label-success{:style=>"float:left"}
+                        Action:
+                      = act
+                    %input{:class => "form-control font-sz-12",:name=>"desc_#{act}", :disabled=>true, :id => "action_#{act}", :type => "text", :placeholder => "Please add some short description"}
+                
+            .col-lg-4
+              %label.control-label Enter controller alias*:
+              -controller_obj = cls_name[0..-12]
+              %input.form-control.col-sm-4{:type=>"text",:name=>"controller_alias", :placeholder=>"Suggestion**: #{controller_obj}",:value=>"#{@ctrl_details.controller_alias}", :required=>true}                       
+              %label.control-label{:style=>"padding-top:20px;"} Enter module name relevant to this controller***
+              %input.form-control.col-sm-4{:type=>"text",:name=>"controller_desc",:value=>"#{@ctrl_details.controller_desc}", :required=>true}                      
+              %label.control-label{:style=>"padding-top:20px;"} Select controller status
+              %select.form-control{:name=>"controller_status"}
+                - if @ctrl_details.controller_status == 1
+                  %option{:value=>"1", :selected=>true} Enable for role management
+                  %option{:value=>"0"} Disable for role management
+                -elsif @ctrl_details.controller_status == 0
+                  %option{:value=>"1"} Enable for role management
+                  %option{:value=>"0", :selected=>true} Disable for role management                        
+              %br
+              Note:
+              %br
+              %span.font-sz-11
+                * This alias will be used for CanCan authentication.
+              %br
+              %span.font-sz-11
+                ** This is a system generated suggestion, may not be always accurate.  
+              %br
+              %span.font-sz-11
+                *** This name will be displayed as module name for this controller.                         
+              %br
+              %br
+              %button.btn.btn-block.btn-social.btn-success{:type=>"submit"}
+                Update controller settings           
+    
+    -else
+      = form_tag(access_manager_save_settings_path, method: "post") do  
+        %input{:type=>"hidden", :name=>"controller_name", :value=>"#{cls}"}     
+        .panel.panel-default
+          .panel-heading
+            .panel-title
+              %label.label.label-primary
+                Controller 
+              &nbsp;&nbsp;&nbsp;
+              =cls_name
+          .panel-body  
+            .col-lg-8
+              %label.control-label Select actions:
+              %p.font-sz-11 
+                %b Note:
+                Selected actions will be available in role management to restrict user access to different actions, also try to give add some description about the functionalities of these actions
+              - actions.each do |act|
+                .input-group.col-lg-12
+                  %span.input-group-addon
+                    %input.check{:name => "checked_action[]", :type => "checkbox", :value => "#{act}", :id => "#{act}", :class=>"filled-in"}
+                    %label{:for=>"#{act}"}
+                  %span.input-group-addon{:style=>"width:45%"}
+                    %label.label.label-success{:style=>"float:left"}
+                      Action:
+                    = act
+                  %input{:class => "form-control font-sz-12",:name=>"desc_#{act}",:id => "action_#{act}", :type => "text", :disabled=>true, :placeholder => "Please add some short description"}
+            .col-lg-4
+              %label.control-label Enter controller alias*:
+              -controller_obj = cls_name[0..-12]
+              %input.form-control.col-sm-4{:type=>"text",:name=>"controller_alias", :placeholder=>"Suggestion**: #{controller_obj}", :required=>true} 
+              %label.control-label{:style=>"padding-top:20px;"} Enter controller description:
+              %input.form-control.col-sm-4{:type=>"text",:name=>"controller_desc", :required=>true}                      
+              %label.control-label{:style=>"padding-top:20px;"} Select controller status
+              %select.form-control{:name=>"controller_status"}
+                %option{:value=>"1"} Enable for role management
+                %option{:value=>"0"} Disable for role management                      
+              %br
+              Note:
+              %br
+              %span.font-sz-11
+                * This alias will be used for CanCan authentication.
+              %br
+              %span.font-sz-11
+                ** This is a system generated suggestion, may not be always accurate. 
+              %br
+              %span.font-sz-11
+                *** This name will be displayed as module name for this controller.                           
+              %br
+              %br
+              %button.btn.btn-block.btn-social.btn-success{:type=>"submit"}
+                Save controller settings

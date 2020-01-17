@@ -1,0 +1,22 @@
+= form_for @combinations_rule, :html => { :class => 'form-horizontal'} do |f|
+  - if @combinations_rule.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@combinations_rule.errors.count, "error")} prohibited this combinations_rule from being saved:"
+      %ul
+        - @combinations_rule.errors.full_messages.each do |msg|
+          %li= msg
+  .form-group
+    = f.label :name, :class => 'col-sm-4 control-label'
+    .col-sm-4
+      = f.text_field :name, :class => 'form-control'
+  .form-group
+    = f.label "Minimum quantity", :class => 'col-sm-4 control-label'
+    .col-sm-4
+      = f.text_field :min_qty, :class => 'form-control'    
+  .form-group
+    = f.label "Maximum quantity", :class => 'col-sm-4 control-label'
+    .col-sm-4
+      = f.text_field :max_qty, :class => 'form-control'
+  .form-group    
+    .col-sm-offset-4.col-sm-6
+      = f.submit 'Save & Continue', :class => 'btn btn-success'        

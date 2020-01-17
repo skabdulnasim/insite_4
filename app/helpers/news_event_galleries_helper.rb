@@ -1,0 +1,2 @@
+module NewsEventGalleriesHelper
+end

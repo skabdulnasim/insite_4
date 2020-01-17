@@ -1,0 +1,19 @@
+= render "layouts/flash"
+.col-sm-3.padding-5
+  = render :partial => 'material_product_filter'
+.col-sm-9.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Branch Products
+            .data-table-header__actions       
+              %a.m-btn.m-btn-teal{:href => "#{add_products_products_path}"}
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs Add products       
+                                                               
+          = smart_listing_render :products
+.clearfix          
+  

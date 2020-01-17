@@ -1,0 +1,33 @@
+%p#notice= notice
+
+%p
+  %b Parent user:
+  = @user_target.parent_user_id
+%p
+  %b Child user:
+  = @user_target.child_user_id
+%p
+  %b Duration:
+  = @user_target.duration
+%p
+  %b From date:
+  = @user_target.from_date
+%p
+  %b To date:
+  = @user_target.to_date
+%p
+  %b Target type:
+  = @user_target.target_type
+%p
+  %b Target amount:
+  = @user_target.target_amount
+%p
+  %b Is approved:
+  = @user_target.is_approved
+%p
+  %b Rejection reason:
+  = @user_target.rejection_reason
+
+= link_to 'Edit', edit_user_target_path(@user_target)
+\|
+= link_to 'Back', user_targets_path

@@ -1,0 +1,12 @@
+- manual_load_javascript "beneficiary.js"
+= render "layouts/flash"
+.col-sm-12.padding-5
+	.main-section__content
+		.example
+			.example__content.p0.min-height-40
+				.data-table-container
+					%header.data-table-header
+						.data-table-header_label
+							%span.fs-title New Beneficiaries
+					= render 'form'
+

@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Title:
+  = @addons_group.title
+%p
+  %b Unit:
+  = @addons_group.unit_id
+
+= link_to 'Edit', edit_addons_group_path(@addons_group)
+\|
+= link_to 'Back', addons_groups_path

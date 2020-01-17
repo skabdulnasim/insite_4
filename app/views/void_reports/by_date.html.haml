@@ -1,0 +1,17 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+
+- links_arr = [{:title=>"Void Report",:url=>nc_report_index_path,:active_class=>""},{:title=>"Void Report By Date",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container     
+        = smart_listing_render :void_sales_by_date

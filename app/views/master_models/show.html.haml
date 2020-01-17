@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @master_model.name
+%p
+  %b Status:
+  = @master_model.status
+
+= link_to 'Edit', edit_master_model_path(@master_model)
+\|
+= link_to 'Back', master_models_path

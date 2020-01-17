@@ -1,0 +1,347 @@
+<div class="col-lg-12 padding-5">
+  <div class="card waves-effect waves-light">
+    <div class="card-content p0">
+      <p class="header teal-text text-lighten-5 teal padding-10">
+        ORDER DETAILS
+        <small class="teal-text text-lighten-4">#<%=response.data.id%></small>
+      </p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="font-sz-12 hidden-sm hidden-md hidden-xs">#</th>
+            <th class="font-sz-12">Item</th>
+            <th class="font-sz-12">QTY</th>
+            <th class="font-sz-12">Size</th>
+            <th class="font-sz-12">Customizations</th>
+            <th class="font-sz-12">Combos</th>
+            <th class="font-sz-12 hidden-sm hidden-md hidden-xs">SORT</th>
+            <th class="font-sz-12 hidden-sm hidden-md hidden-xs">Parcel</th>
+            <th class="font-sz-12">Status</th>
+            <th class="font-sz-12 hidden-sm hidden-md hidden-xs">Last Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for (var i = response.data.order_items.length - 1; i >= 0; i--) { %>
+            <tr>
+              <td class="font-sz-12 hidden-sm hidden-md hidden-xs"><%= response.data.order_items[i].id %></td>
+              <td>
+                <%= response.data.order_items[i].product_name %>
+                <br>
+                <div class="grey-text"><%= response.data.order_items[i].preferences %></div>
+              </td>
+              <td><%= response.data.order_items[i].quantity %> <%= response.data.order_items[i].product_unit %></td>
+              <% if (response.data.order_items[i].size_name != null) {%>
+                <td><%= response.data.order_items[i].size_name %></td>
+              <% } else {%>
+                <td><span class='grey-text'>N/A</span></td>
+              <% } %>
+              <td>
+                <% combo = response.data.order_items[i].customizations; %>
+                <% if (combo.length > 0) {%>
+                  <table>
+                    <tbody>
+                      <% for (var k = combo.length - 1; k >= 0; k--) { %>
+                        <tr class="text-muted font-sz-11">
+                          <td class="border-rht-d-1 padding-l-r-5">
+                            <span class="text-green text-uppercase"><i class="fa fa-check" style="height: 15px !important;"></i> &nbsp;</span>
+                            <%= combo[k].product_name %>
+                          </td>
+                          <td class="padding-l-r-5">
+                            QTY: <%= combo[k].quantity %>
+                          </td>
+                        </tr>
+                      <% }; %>
+                    </tbody>
+                  </table>
+                <% } else {%>
+                  <span class='grey-text'>N/A</span>
+                <% } %>
+              </td>
+
+              <td>
+                <% combo_items = response.data.order_items[i].order_details_combos; %>
+                <% if (combo_items.length > 0) {%>
+                  <table>
+                    <tbody>
+                      <% for (var k = combo_items.length - 1; k >= 0; k--) { %>
+                        <tr class="text-muted font-sz-11">
+                          <td class="border-rht-d-1 padding-l-r-5">
+                            <span class="text-green text-uppercase"><i class="fa fa-check" style="height: 15px !important;"></i> &nbsp;</span>
+                            <%= combo_items[k].product_name %> <br/>
+                            <span class="green text-white badge">Color: <%= combo_items[k].color_name %></span><br/>
+                            <span class="green text-white badge margin-t-5">Size: <%= combo_items[k].size_name %></span>
+                          </td>
+                          <td class="padding-l-r-5">
+                            QTY: <%= combo_items[k].quantity %>
+                          </td>
+                        </tr>
+                      <% }; %>
+                    </tbody>
+                  </table>
+                <% } else {%>
+                  <span class='grey-text'>N/A</span>
+                <% } %>
+              </td>
+
+              <td class="hidden-sm hidden-md hidden-xs"><%= response.data.order_items[i].sort_name %></td>
+              <td class="hidden-sm hidden-md hidden-xs">
+                <% if(response.data.order_items[i].parcel == 1) { %>
+                  Yes
+                <% } else {%>
+                  No
+                <% }%>
+              </td>
+              <td>
+                <span id="cancel_staus_<%=response.data.order_items[i].id%>" class='m-label margin-l-none red hide'>Cancled</span>
+                <div id="kot_cancel_cause_<%=response.data.order_items[i].id%>" class="grey-text hide"></div>
+              <% if(response.data.order_items[i].trash == 1) {%>
+                <span class='m-label red margin-l-none'>Cancled</span>
+                <br>
+                <div class="grey-text"><%= response.data.order_items[i].cancel_cause %></div>
+              <% } else { %>
+                <span id="staus_<%=response.data.order_items[i].id%>" class='m-label teal margin-l-none'><%= response.data.order_items[i].status %></span>
+              <% } %>
+              </td>
+              <td class="hidden-sm hidden-md hidden-xs">
+                <%
+                  var order_det_up_date = new Date(response.data.order_items[i].updated_at);
+                  var order_det_up_date = order_det_up_date.format("dd-mm-yyyy hh:MM TT");
+                %>
+                <%= order_det_up_date %>
+              </td>
+              <td>
+                <% if(response.data.order_items[i].trash == 0 && response.data.billed != 1) {%>
+                  <a id="kotcancel_<%=response.data.order_items[i].id%>" class="teal-text text-darken-2 float-r kot_cancel" data-target="#cancelKotModal_<%=response.data.order_items[i].id%>" title="Cancel this item" data-toggle="modal" data-kot-cancel-id="<%=response.data.order_items[i].id%>" >
+                    Cancel item
+                  </a>
+                  <div class="clearfix"></div>
+                <% } %>
+              </td>
+            </tr>
+
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+    
+      <div class="card-action teal lighten-5 ">
+        <% if(response.data.trash == 0) {%>
+          <!-- Change Urbanpiper Status :
+          <select id="select_urbanpiper_status_<%=response.data.id%>">
+            <option value="Acknowledged">Acknowledged</option>
+            <option value="Food Ready">Food Ready</option>
+            <option value="Dispatched">Dispatched</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+          <input type="button" onClick="changeUrbanpiperStatus('<%=response.data.id%>')" value="Change"> -->
+          <a id="<%=response.data.id%>" class="teal-text text-darken-2 float-r" data-target="#cancelOrderModal_<%=response.data.id%>" title="Cancel this order" data-toggle="modal">
+            <i class="mdi-content-remove-circle smaller"></i>
+            Cancel this order
+          </a>
+          <div class="clearfix"></div>
+        <% } %>
+      </div>
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+<% if (response.data.order_status_logs.length > 0) {%>
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-content height-100" style="margin-top: -20px !important;">
+        <ol class="progtrckr" data-progtrckr-steps="5">
+          <% for (var i = response.data.order_status_logs.length - 1; i >= 0; i--) { %>
+            <li class="progtrckr-done"><span><%= response.data.order_status_logs[i].order_status_name %></span><span class="prog_lower_label font-sz-10"><%= response.data.order_status_logs[i].created_at %></span></li>
+          <% } %>
+        </ol>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<div class="clearfix"></div>
+<div class="col-lg-4 col-sm-12 col-xs-12 padding-5">
+  <div class="card waves-effect waves-purple">
+    <div class="card-content height-150">
+      <span class="card-title">
+        Delivery Details
+      </span>
+      <div class="grey-text text-darken-1 margin-t-10">
+        Order deliverable to <%= response.data.deliverable_type %>
+        <br>
+        <% if(response.data.deliverable_type == "Address") { %>
+          <b><%= response.data.deliverable.receiver_first_name%> <%= response.data.deliverable.receiver_last_name%></b><br>
+          <%= response.data.deliverable.delivery_address%><br>
+          <%= response.data.deliverable.landmark %>, <%= response.data.deliverable.city %> - <%= response.data.deliverable.pincode %> <br>
+          Contact: <%= response.data.deliverable.contact_no %>
+        <% } else if(response.data.deliverable_type == "Customer") { %>
+          <b>
+          <%= response.data.deliverable.additional_information.firstname%>
+          <%= response.data.deliverable.additional_information.lastname%></b><br>
+          Contact: <%= response.data.deliverable.mobile_no %>
+        <% } else if(response.data.deliverable_type == "Section") {%>
+          <b><%= response.data.deliverable.name %> </b>  <br>
+          ID: <%= response.data.deliverable_id %>
+        <% } else if(response.data.deliverable_type == "Table") {%>
+          <b><%= response.data.deliverable.name %> </b>  <br>
+          ID: <%= response.data.deliverable_id %>
+        <%} else {%>  
+          <b><%= response.data.deliverable.name %> </b>  <br>
+          ID: <%= response.data.deliverable_id %>
+        <% } %>
+        <br>
+        <% if ('order_slot' in response.data) { %>
+          Slot: <%= response.data.order_slot.slot_title %> slot
+          (<%= response.data.order_slot.start_time %> - <%= response.data.order_slot.end_time %>)
+        <% } %>
+      </div>
+    </div>
+    <div class="card-action">
+      <%
+        var delivery_date = formatDateTime(response.data.delivary_date);
+      %>
+      <i class="mdi-content-flag smaller"> </i>Delivery date: <%= delivery_date %>
+    </div>
+  </div>
+</div>
+<div class="col-lg-4 col-sm-12 col-xs-12 padding-5">
+  <div class="card waves-effect waves-yellow">
+    <div class="card-content height-150">
+      <span class="card-title">
+        Order From
+      </span>
+      <div class="grey-text text-darken-1 margin-t-10">
+          This <%= response.data.source %> order
+          was placed by <%= response.data.consumer_type %>
+          
+            <%= response.data.consumer_name%> (ID: <%= response.data.consumer_id %>) <br>
+          
+          <% if(response.data.recorded_at) { %>
+            <%
+              var record_date = formatDateTime(response.data.recorded_at);
+            %>
+            Order recorded at <%=record_date%>.
+          <% } %>
+      </div>
+    </div>
+
+    <div class="card-action">
+      <% if(response.data.consumer_type == "User") {%>
+        <i class="mdi-hardware-tablet-mac smaller"> </i>
+        Device ID: <%= response.data.device_id %>
+      <% } else if(response.data.consumer_type == "Customer") {%>
+        <i class="mdi-communication-ring-volume smaller"> </i>
+        <% if(typeof response.data.deliverable != 'undefined') { %>
+          Contact: <%= response.data.deliverable.contact_no %>
+        <% } %>
+      <%} %>
+    </div>
+  </div>
+</div>
+<% if(response.data.billed == 1) {%>
+  <%
+    var billDate = formatDateTime(response.data.bill.created_at);
+  %>
+  <div class="col-lg-4 col-sm-12 col-xs-12 padding-5">
+    <div class="card blue waves-effect waves-light">
+      <div class="card-content white-text height-150">
+        <h3 class="header blue-text text-lighten-5 margin-t-none"><small class="blue-text text-lighten-3"><%= currency%></small> <%= response.data.bill.grand_total%></h3>
+        <div class="blue-text text-lighten-4">
+          Bill ID <%= response.data.bill.id %> generated on <%= billDate %> and current status is <%= response.data.bill.status %>.
+        </div>
+      </div>
+      <a href="/bills/<%= response.data.bill.id%>" class="white-text" target="_blank">
+      <div class="card-action blue darken-1 white-text">
+        <i class="mdi-action-launch smaller"> </i>
+        More details
+      </div>    </a>
+    </div>
+  </div>
+<% } %>
+
+<% if(typeof(response.data.customer) != 'undefined'){%>
+  <div class="col-lg-6 col-sm-12 col-xs-12 padding-5">
+    <div class="card waves-effect waves-purple">
+      <div class="card-content height-150">
+        <span class="card-title">
+          Customer Details
+        </span>
+        </br>
+        </br>
+        <i class="mdi-action-account-circle smaller"> </i> <%=response.data.customer['customer_name'] %>
+        </br>
+        <i class="mdi-social-location-city smaller"> </i>Address: <%=response.data.customer['delivery_address'] %>
+        </br>
+        <i class="mdi-maps-pin-drop smaller"> </i>Pin: <%=response.data.customer['pincode'] %>
+      </div>
+      <div class="card-action">
+        <i class="mdi-hardware-tablet-mac smaller"> </i>Mobile No: <%=response.data.customer['mobile_no'] %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6 col-sm-12 col-xs-12 padding-5">
+    <div class="card waves-effect waves-purple">
+      <div class="height-190">
+        <br/>
+        <span class="card-title margin-l-15">
+          Delivery Location
+        </span>
+
+        <br/>        
+        <img src="//maps.google.com/maps/api/staticmap?center=<%=response.data.latitude %>,<%=response.data.longitude %>&zoom=10&size=370x150&markers=color:red%7Clabel:%7C<%=response.data.latitude %>,<%=response.data.longitude %>&key=AIzaSyBDxCJM6vT9uP_ddJyvRh-5uqjPNKMqKQk"/>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+
+<div aria-hidden='true' aria-labelledby='showOrderCancelModalLebel' class='modal fade' id='cancelOrderModal_<%=response.data.id%>' role='dialog' tabindex='-1'>
+  <div class='modal-dialog' style="width:300px;">
+     <div class="modal-content m-modal-content">
+        <div class="modal-header m-modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h5 class="modal-title">Are you sure?</h5>
+        </div>
+      <div class='modal-body' style="padding:6px;">
+        <div class='col-md-12 form-group'>
+          <input id="id_<%=response.data.id%>" name="name" type="text" placeholder="Enter cause here..." class="form-control">
+          <div id="error_<%=response.data.id%>"></div>
+        </div>
+        <div class='clearfix'></div>
+      </div>
+      <div class='modal-footer'>
+        <button class='btn btn-default' data-dismiss='modal' type='button'>Cancel</button>
+        <button id="<%=response.data.id%>" class='btn btn-default order-canceal-confirm' type='button'>Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% for (var i = response.data.order_items.length - 1; i >= 0; i--) { %>
+  <div aria-hidden='true' aria-labelledby='showKotCancelModalLebel' class='modal fade' id='cancelKotModal_<%=response.data.order_items[i].id%>' role='dialog' tabindex='-1'>
+    <div class='modal-dialog' style="width:300px;">
+       <div class="modal-content m-modal-content">
+          <div class="modal-header m-modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+              <h5 class="modal-title">Are you sure?</h5>
+          </div>
+        <div class='modal-body' style="padding:6px;">
+          <div class='col-md-12 form-group'>
+            <input id="kot_cause_<%=response.data.order_items[i].id%>" name="name" type="text" placeholder="Enter cause here..." class="form-control">
+          </div>
+          <div class='clearfix'></div>
+        </div>
+        <div class='modal-footer'>
+          <button class='btn btn-default' data-dismiss='modal' type='button'>Cancel</button>
+          <button id="kot_<%=response.data.order_items[i].id%>" data-kot-id="<%=response.data.order_items[i].id%>" class='btn btn-default kot-canceal-confirm' type='button'>Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>

@@ -1,0 +1,7 @@
+<% if @resource.present? %>
+	$('#deliverable-resource-container').html('');
+	$('#deliverable-resource-container').append("<%= j render(:partial => 'resources/deliverable_resource', :object => @resource, :as => 'resource') %>");
+  Materialize.toast("Resource found", 3000,'round');
+<% else %>
+  Materialize.toast("Resource not found", 3000,'round');
+<% end %>

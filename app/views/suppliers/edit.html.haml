@@ -1,0 +1,18 @@
+%p#notice= notice
+
+#page-wrapper
+  .row
+    .page-header
+      %h1
+        Supplier Management
+        %small Edit Supplier
+    .page-container 
+      
+      = render 'form'
+      
+      %a{:href => "#{supplier_path(@supplier)}", :class => 'btn btn-primary btn-mini active'}
+        %i.icon-eye-open
+        View
+      %a{:href => "#{suppliers_path}", :class => 'btn btn-primary btn-mini active'}
+        %i.icon-backward
+        Back

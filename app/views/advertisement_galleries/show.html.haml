@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Advertise:
+  = @advertisement_gallery.advertise_id
+
+= link_to 'Edit', edit_advertisement_gallery_path(@advertisement_gallery)
+\|
+= link_to 'Back', advertisement_galleries_path

@@ -1,0 +1,160 @@
+/ = render "layouts/flash"
+/ - links_arr = [{:title=>"All Resource",:url=>resources_path,:active_class=>""},{:title=>"Resource : #{@resource.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+/ - render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+/ %table.table.table-bordered
+/   %tr
+/     %th Name
+/     %th Resource type
+/     %th Properties
+/     %th Actions
+/   %tr
+/     %td= @resource.name
+/     %td= @resource.resource_type.name
+/     %td= @resource.properties
+/     %td
+/       %a{:href => "#{edit_resource_path(@resource)}", :class => 'btn btn-primary btn-mini active'}
+/         %i.icon-edit
+/         Edit
+/       %a{:href => "#{resources_path}", :class => 'btn btn-primary btn-mini active'}
+/         %i.icon-backward
+/         Back
+= render "layouts/flash"
+- links_arr = [{:title=>"All Retail Shops",:url=>'/resources/retail_shops_list/',:active_class=>""},{:title=>"Retail Shop : #{@resource.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+:css
+  .default-sidebar{
+    / width:25% !important;
+    background-color : teal !important;
+    color: white !important;
+  }  
+  #MonthPicker_Button_target_month{
+    float: right;
+    margin-top: -34px;
+    width: 42px;
+    height: 34px;
+    margin-right: 0px;
+  }
+  .ui-datepicker-calendar {
+    display: none;
+  }
+.col-sm-3.padding-5
+  .card
+    .tabbable.tabs-left
+      %ul.nav.nav-tabs.padding-none.width-100
+        %li.active
+          %a{"data-toggle" => "tab", :href => "#d"}
+            %span.float-r.badge= #@all_products.count
+            Owner Details
+        %li
+          %a{"data-toggle" => "tab", :href => "#a"}
+            %span.float-r.badge= #@all_products.count
+            Products and Stocks
+        %li
+          %a{"data-toggle" => "tab", :href => "#target"}
+            %span.float-r.badge= #@all_products.count
+            Targets    
+        %li
+          %a{"data-toggle" => "tab", :href => "#b"}
+            %span.float-r.badge= #@store.stock_purchases.pending_pos.count
+            Manage Commission rule
+        %li
+          %a{"data-toggle" => "tab", :href => "#c"}
+            %span.float-r.badge=#@store.store_requisition_logs.na_requisitions.count
+            Manage Beneficiary  
+    .clearfix
+.col-sm-9.padding-5
+  .tab-content.padding-l-r-none
+    #d.tab-pane.active
+      .main-section__content
+        .example
+          .example__content.p0.min-height-405
+            .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Owner Details
+            - if @resource.customer.present?         
+              .col-sm-12
+                .col-xs-12.col-sm-8
+                  %table.data-table
+                    %tr
+                      %td 
+                        %i.fa.fa-user
+                      %td= @resource.customer.customer_profile.firstname 
+                    %tr
+                      %td
+                        %i.fa.fa-phone
+                      %td= @resource.customer.mobile_no
+                    %tr
+                      %td
+                        %i.fa.fa-map-marker
+                      %td= @resource.customer.addresses.first.delivery_address
+           
+                .col-xs-12.col-sm-4.text-center
+                  %figure
+                    %img.img-circle.img-responsive{:alt => "", :src => "/owner.png",:width => "150px",:height => "150px"}/
+    #a.tab-pane
+      .main-section__content
+        .example
+          .example__content.p0.min-height-405
+            .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Products and Stocks
+              = smart_listing_render :products
+    #target.tab-pane
+      .main-section__content
+        .example
+          .example__content.p0.min-height-405
+            .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title 
+                    Targets
+                    .form-group.filter.input-append.hidden-sm.hidden-xs.right
+                      = smart_listing_controls_for(:targets) do
+                        = select_month(Date.today, class: "search form-control", :prompt => "Select Month")
+                      
+                        /= select_tag :month, options_for_select({"01"=>"Janury","02"=>"February", "03"=>"March","04"=>"April","05"=>"May","06"=>"June","07"=>"July","08"=>"August","09"=>"September","10"=>"Octbor","09"=>"September","09"=>"September"}), class: "search form-control", :prompt => "All categories", style: "width: 129%"
+                        /= select_month(Date.today)
+                        = select_year(Date.today, :start_year => Date.today.year, :end_year => 20.years.from_now.year,class: "search form-control", :prompt => "Select Year")
+              = smart_listing_render :targets          
+    #b.tab-pane
+      .main-section__content
+        .example
+          .example__content.p0.min-height-405
+            .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Commission rule
+                .data-table-header_actions
+                  %a= link_to 'Set Commission Rule', new_resource_commission_rule_path(@resource), :class => 'm-btn green width-100'
+              - CommissionRule.by_resource(@resource).each do |commission_rule|
+                .col-lg-3.padding-5
+                  .card.margin-t-b-0.waves-effect.waves-light.green
+                    .card-content.white-text.height-110
+                      %h4.sm-header.margin-t-none.text-lighten-5
+                        %a.white-text{:href => resource_commission_rule_path(@resource,commission_rule)}=commission_rule.month
+                      .font-sz-12.white-text.table-card-text-13
+                        ="#{I18n.t(:label_updated_at)} #{commission_rule.updated_at.strftime('%d %b %A %Y, %I:%M %p')}"
+                    .card-action.darken-1.white
+                      .col-sm-6.padding-l-r-none      
+                      .col-sm-6.padding-l-r-none
+                        %a.m-btn.m-btn-small.white-text.float-r.green{:href => resource_commission_rule_path(@resource,commission_rule)}
+                          %i.mdi-action-visibility.smaller.left
+                          =I18n.t(:label_view)
+                      .clearfix
+
+
+    #c.tab-pane
+      .main-section__content
+        .example
+          .example__content.p0.min-height-405
+            .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Beneficiaries
+                .data-table-header_actions
+                  .btn-group.float-r.hidden-sm.hidden-xs
+                    = link_to("New Beneficiaries", new_resource_beneficiary_path(:resource_id=>params[:id]), :class=>"m-btn green float-r margin-r-10 waves-effect waves-light")
+
+              = smart_listing_render :benefisiaries   

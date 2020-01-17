@@ -1,0 +1,32 @@
+= form_for @resource_type do |f|
+  - if @resource_type.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+      = "#{pluralize(@resource_type.errors.count, "error")} prohibited this resource_type from being saved:"
+      %ul
+        - @resource_type.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-horizontal.bordered-row.m-input
+    .form-group
+      = f.label :name, :class => 'col-sm-3 control-label'
+      .col-sm-5
+        = f.text_field :name, :class => 'form-control', :required => true
+    .form-group
+      = f.label "Section", :class => 'col-sm-3 control-label'
+      .col-sm-5
+        = f.select :section_id, options_for_select(@sections.map{ |sec| [sec.name, sec.id] },@resource_type.section_id), { include_blank: "Select Section"}, :class => 'form-control',:required => true   
+
+    .form-group
+      = f.label "Availability type", :class => 'col-sm-3 control-label'
+      .col-sm-5
+        = f.select :availability_type, options_for_select({"Selected" => "selected","Always" => "always" },@resource_type.availability_type),{ include_blank: nil}, {:class => "form-control", :required=> true}     
+    
+    = f.fields_for :fields do |builder|
+      = render 'field_fields', f:builder
+    = link_to_add_fields "Add Field", f, :fields, {}, 'm-btn green margin-l-15'
+  .actions
+    = f.submit 'Save', class: 'm-btn btn-success float-r margin-r-5 margin-b-5'
+    //= f.submit 'Save', class: 'm-btn btn-success float-r margin-r-5 margin-b-5'
+    = link_to 'Cancel', resource_types_path, class: 'm-btn btn-danger float-r margin-r-5 margin-b-5'

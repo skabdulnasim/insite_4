@@ -1,0 +1,13 @@
+= form_for @payment_wallet do |f|
+  - if @payment_wallet.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@payment_wallet.errors.count, "error")} prohibited this payment_wallet from being saved:"
+      %ul
+        - @payment_wallet.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .actions
+    = f.submit 'Save'

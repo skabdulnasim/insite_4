@@ -1,0 +1,92 @@
+= render 'physical_types/form'
+
+/= render 'product_units/form'
+
+/= render 'tax_classes/form'
+.row
+  %h5 Product Units
+  .card.col-sm-6    
+    .card-content
+      .row.m0
+        %table.data-table    
+          %tr
+            %th Name
+            %th Multiplier
+            %th Basic Unit
+            %th Action   
+          %tbody#product_unit
+            = render :partial => "product_units/product_unit", :collection => @product_units, :as => "product_unit"
+  .card.col-sm-5
+    .card-content
+      = link_to "Add Product Unit ...", new_product_unit_path, :id=>"new_product_unit_link", remote: true
+.row
+  %h5 Tax Class
+  .card.col-sm-6    
+    .card-content
+      .row.m0
+        %table.data-table    
+          %tr
+            %th Name
+            %th Type 
+            %th Amount
+            %th Amount Type  
+            %th Action 
+          %tbody#taxclass
+            = render :partial => "tax_classes/tax_class", :collection => @tax_classes, :as => "tax_class"
+  .card.col-sm-5
+    .card-content
+      = link_to "Add Tax Class ...", new_tax_class_path, :id=>"new_tax_class_link", remote: true
+.row      
+  %h5 Product Basic Units
+  .card.col-sm-6    
+    .card-content
+      .row.m0
+        %table.data-table    
+          %tr
+            %th Name
+            %th Short name 
+            %th Action    
+          %tbody#product_basic_unit
+            = render :partial => "product_basic_units/product_basic_unit", :collection => @product_basic_unit, :as => "product_basic_unit"
+  .card.col-sm-5
+    .card-content
+      = link_to "Add basic unit ...", new_product_basic_unit_path, :id=>"new_basic_unit_link", remote: true
+#product_unit_edit_modal.modal.modal-fixed-footer
+  .modal-content
+    %h5.font-weight-300 Edit
+    .row
+      .col-sm-5
+        #product_unit_edit_container
+      .col-sm-3
+        %h6.grey-text.font-weight-700 Actions
+        #product_unit_action_container
+
+  .modal-footer
+    %a.modal-action.modal-close.waves-effect.waves-green.btn-flat{:href => "#!"} Close
+
+#product_basic_unit_edit_modal.modal.modal-fixed-footer
+  .modal-content
+    %h5.font-weight-300 Edit
+    .row
+      .col.l12
+        #product_baisc_unit_edit_container
+      / .col.l3
+      /   %h6.grey-text.font-weight-700 Actions
+      /   #product_basic_unit_action_container
+
+  .modal-footer
+    %a.modal-action.modal-close.waves-effect.waves-green.btn-flat{:href => "#!"} Close
+#tax_class_edit_modal.modal.modal-fixed-footer
+  .modal-content
+    %h6.font-weight-300 Edit
+    .row
+      .col.l9
+        #tax_class_edit_container
+      .col.l3
+        %h6.grey-text.font-weight-700 Actions
+        #tax_class_action_container
+
+  .modal-footer
+    %a.modal-action.modal-close.waves-effect.waves-green.btn-flat{:href => "#!"} Close
+    
+  

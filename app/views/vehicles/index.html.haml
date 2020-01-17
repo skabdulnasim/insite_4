@@ -1,0 +1,52 @@
+= render "layouts/flash"
+            
+- if @vehicles.present?
+  .panel.panel-default
+    .panel-heading
+      %i.fa.fa-list
+      AVAILABLE DELIVERY VEHICLES
+    .panel-body
+      
+      %table.table.table-hover{:style=>"border:1px solid #DDD"}
+
+        %tbody
+          - @vehicles.each do |vehicle|
+            %tr
+              %td.module_inactive.text-center{:style => "width: 1%;"}
+              %td.fixed-width-xs
+                %img{:src => "/uploads/flatico/Transport-Van-128.png", :class => "img-thumbnail"} 
+              %td
+                %h4
+                  = vehicle.name
+                %p.module_description
+                  %i.fa.fa-phone
+                  %strong= "#{t :label_contact}: "
+                  = vehicle.contact_no
+                  %br
+                  %i.fa.fa-thumb-tack
+                  %strong= "#{t :label_pincode}: "
+                  = vehicle.pincode
+                  %br
+                  %i.fa.fa-map-marker
+                  %strong License number
+                  = vehicle.license_no
+                
+              %td.col-lg-2.col-xs-3.padding-top-40
+                .btn-group
+                  %a.button.btn.btn-primary{:type => "button",:href => "#{vehicle_path(vehicle)}"} View vehicle
+                  %button.btn.btn-primary.dropdown-toggle{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button"}
+                    %span.caret
+                    %span.sr-only Toggle Dropdown
+                  %ul.dropdown-menu{:role => "menu"}
+                    %li
+                      %a{:href => "#{edit_vehicle_path(vehicle)}"} Edit vehicle details
+                    %li.divider
+                    %li
+                      %a{:href => "#{vehicle_path(vehicle)}",:method => :delete, :data => { :confirm => 'Are you sure?' }} Delete vehicle
+
+-else
+  .jumbotron
+    %h2 No vehicle available
+    %p It seems that your branch don't have any delivery vehicles. Without any delivery vehicle, inter-store transfers will fail. Follow the link given below to add a vehicle.
+    %p
+      %a.btn.btn-primary.btn-lg{:href => "#{new_vehicle_path}"} Learn more                         

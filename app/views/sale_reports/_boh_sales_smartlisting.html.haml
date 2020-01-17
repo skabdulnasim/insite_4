@@ -1,0 +1,119 @@
+:javascript
+  $(document).ready(function(){
+    $("tr.troggler:odd").addClass("odd");
+    $("tr.troggler:not(.odd)").hide();
+    $("tr.troggler:first").show();
+    
+    $("tr.troggler.odd").click(function(){
+        $(this).next("tr.troggler").toggle();
+    });
+  });
+- unless smart_listing.empty?
+  - report_precision = AppConfiguration.get_config_value_of_report('report_precision').to_i
+  - if params[:report_type]=="customer"
+    %table.data-table
+      %thead
+        %tr.data-table__selectable-row.troggler
+          %th= "Customer Name"
+          %th= "Customer Mobile"
+          %th= "Grand Total"
+          %th= "Total Paid Amount"
+          %th= "Boh Amount"
+      %tbody
+        - _t_amt=0;
+        - _t_boh_amt=0;
+        - _t_paid_amt=0;
+        - smart_listing.collection.each do |object|
+          %tr.data-table__selectable-row.troggler
+            %td.font-sz-11="#{object.customer.profile.firstname} #{object.customer.profile.lastname} "
+            %td.font-sz-11="#{object.customer.customer_profile.contact_no}"
+            %td=number_to_currency(object.grand_total, unit: '', precision: report_precision)
+            - _t_amt=_t_amt.to_f+object.grand_total.to_f
+            - _t_boh_amt=_t_boh_amt.to_f+object.boh_amount.to_f
+            - _t_paid_amt=_t_amt.to_f-_t_boh_amt.to_f
+            %td=number_to_currency(_t_paid_amt, unit: '', precision: report_precision)
+            %td=number_to_currency(object.boh_amount, unit: '', precision: report_precision)
+          %tr.data-table__selectable-row.troggler
+            -_customer_bills = Bill.unit_bills(params[:unit_id]).by_customer(object.customer_id).valid_bill.boh_bill.by_recorded_at(params[:from_date],params[:to_date]).order("recorded_at asc")
+            %td{:colspan => "5"}
+              %table.data-table
+                %thead
+                  %tr.data-table__selectable-row
+                    %th= "Bill ID"
+                    %th= "Bill Serial"
+                    %th= "Grand Total"
+                    %th= "Paid Amount"
+                    %th= "Boh Amount"
+                    %th= "Biller"
+                    %th= "Recorded Date"
+                    %th= "Created Date" 
+                %tbody
+                  - _customer_bills.each do |object_bill|
+                    %tr.data-table__selectable-row
+                      %td=object_bill.id
+                      %td=object_bill.serial_no
+                      %td=number_to_currency(object_bill.grand_total, unit: '', precision: report_precision)
+                      - b_t_paid_amt=object_bill.grand_total.to_f-object_bill.boh_amount.to_f
+                      %td=number_to_currency(b_t_paid_amt, unit: '', precision: report_precision)
+                      %td=number_to_currency(object_bill.boh_amount, unit: '', precision: report_precision)
+                      %td=object_bill.biller.present? ? "#{object_bill.biller.profile.firstname} #{object_bill.biller.profile.lastname}" : "#{object.biller_id}"
+                      %td.font-sz-11=object_bill.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+                      %td.font-sz-11=object_bill.created_at.strftime("%d-%m-%Y, %I:%M %p") 
+
+  -else
+    %table.data-table
+      %thead
+        %tr.data-table__selectable-row
+          %th= "Bill ID"
+          %th= "Bill Serial"
+          %th= "Grand Total"
+          %th= "Paid Amount"
+          %th= "Boh Amount"
+          %th= "Biller"
+          %th= "Customer Name"
+          %th= "Customer Mobile"
+          %th= "Recorded Date"
+          %th= "Created Date"             
+    
+      %tbody
+        - _t_amt=0;
+        - _t_boh_amt=0;
+        - smart_listing.collection.each do |object|
+          %tr.data-table__selectable-row
+            %td=object.id
+            %td=object.serial_no
+            %td=number_to_currency(object.grand_total, unit: '', precision: report_precision)
+            - _t_amt=_t_amt.to_f+object.grand_total.to_f
+            - _t_boh_amt=_t_boh_amt.to_f+object.boh_amount.to_f
+            - b_t_paid_amt=object.grand_total.to_f-object.boh_amount.to_f
+            %td=number_to_currency(b_t_paid_amt, unit: '', precision: report_precision)
+            %td=number_to_currency(object.boh_amount, unit: '', precision: report_precision)
+            %td=object.biller.present? ? "#{object.biller.profile.firstname} #{object.biller.profile.lastname}" : "#{object.biller_id}"
+            %td.font-sz-11="#{object.customer.profile.firstname} #{object.customer.profile.lastname} "
+            %td.font-sz-11="#{object.customer.customer_profile.contact_no}"
+            %td.font-sz-11=object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+            %td.font-sz-11=object.created_at.strftime("%d-%m-%Y, %I:%M %p")   
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  .example
+    .example__content.p0
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Summery Of Report
+          .data-table-header__actions    
+        %table.data-table
+          %thead
+            %tr
+              %th Total Bill Amount
+              %th Total Boh Amount
+              %th Total Paid Amount
+          %tbody
+            %tr
+              %td= number_to_currency(_t_amt, unit: '', precision: report_precision)
+              %td= number_to_currency(_t_boh_amt, unit: '', precision: report_precision) 
+              - _t_paid_amt=_t_amt.to_f-_t_boh_amt.to_f
+              %td= number_to_currency(_t_paid_amt, unit: '', precision: report_precision)
+- else
+  .alert.alert-warning
+    No record found

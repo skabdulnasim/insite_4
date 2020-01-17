@@ -1,0 +1,41 @@
+#page-wrapper
+  - if notice 
+    .alert.alert-success.alert-dismissible{:role => "alert"}
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-check.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+        %span.sr-only Close
+      = notice
+  .row
+    .page-header
+      %h2.margin-b-t-none
+        %span.fa-stack
+          %i.fa.fa-circle.fa-stack-2x{:style=>"color:#1abc9c"}
+          %i.fa.fa-newspaper-o.fa-stack-1x.fa-inverse      
+        = @news_event.name
+    .page-container
+      .col-sm-5
+        .panel.panel-default
+          .panel-heading
+            Branches
+            .pull-right
+              = link_to 'Edit', edit_news_event_path(@news_event)
+              \|
+              = link_to 'Back', news_events_path
+          .panel-body{:style => "max-height: 450px !important; overflow: auto !important;"}
+            - @news_event.units.each do |unit|
+              %h4
+                %i.fa.fa-home
+                %b= unit.unit_name
+                = unit.locality
+              %hr
+
+      .col-sm-7
+        - if @news_event.news_event_galleries.present?
+          - @news_event.news_event_galleries.each do |news_event_gallery|
+            .img-thumbnail{:class => news_event_gallery.id}
+              %button.close.remove_ad{"aria-label" => "Close", :type => "button", :id => news_event_gallery.id, :style => "padding: 0px 5px 4px 5px;background-color: #000;border-radius: 14px;margin-left: -22px;"}
+                %span{"aria-hidden" => "true"} &times;
+              = image_tag(news_event_gallery.news_event_image.url(:medium))

@@ -1,0 +1,152 @@
+- child_users = current_user.child_users
+- user_resources = current_user.user_resources.select(:resource_id).uniq
+-if child_users.present?
+	-header_title = "Child Users"
+-else
+	- header_title = "User Resources"
+.card
+	.card-content.p10
+		%h5.header	
+			%span
+				Set Targets product wise
+			- if @user_target.present?
+				- own_target_quantity , due_target_quantity = calculate_target_and_due_amount(@user_target)
+				.col-sm-9.right
+					.col-sm-3
+						Target Period
+						%span.m-label.green.font-w-400 
+							/ = Date::MONTHNAMES[@user_target.from_date.month]
+					.col-sm-3
+						Target Quantity
+						%span.m-label.blue.font-w-400 
+							= own_target_quantity
+					.col-sm-3
+						Due Quantity
+						%span.font-w-400.m-label.parent_due_target_16.red
+							= due_target_quantity
+		.divider
+		.divider
+		.margin-t-15
+		.main-section__content.left{:style=>"width:400px !important;"}
+			.example
+				.example__content.p0
+					.data-table-container
+						.data-table-header{:style=>"background-color:#30B0A3 !important;"}
+							.data-table-header__label.fs-title	
+								Select Products
+							- if params[:target_id].present?
+
+								= smart_listing_controls_for(:user_target_products, {class: "text-left"}) do
+									%input{:type=>"hidden",:name=>"target_type",:value=>params[:target_type]}
+									%input{:type=>"hidden",:name=>"target_id",:value=>params[:target_id]}
+									.form-group.filter.input-append
+										.input-group
+											%input.form-control.search{:placeholder => "Search products...", :type => "text", :name=> "product_search", :style=>"width:150px; float:right;"}
+											%span.input-group-btn
+												%button.btn.orange.disabled{:type => "submit"}
+													%span.glyphicon.glyphicon-search
+							-else
+								= smart_listing_controls_for(:product_list, {class: "text-left"}) do
+									%input{:type=>"hidden",:name=>"target_type",:value=>params[:target_type]}
+									.form-group.filter.input-append
+										.input-group
+											%input.form-control.search{:placeholder => "Search products...", :type => "text", :name=> "product_search", :style=>"width:150px; float:right;"}
+											%span.input-group-btn
+												%button.btn.orange.disabled{:type => "submit"}
+													%span.glyphicon.glyphicon-search
+				.panel.panel-default{:style=>"padding-left:20px; padding-right:20px;"}
+					- if params[:target_id].present?
+						=smart_listing_render :user_target_products
+					-else
+						=smart_listing_render :product_list
+		= form_tag(user_targets_path,method: "post") do
+			%input{:type=>"hidden",:name=>"target_type",:value=>params[:target_type]}
+			%input{:type=>"hidden",:name=>"parent_target_id",:value => @user_target.id}
+			.main-section__content.left{:style=>"width:400px !important;"}
+				.card.margin-l-15
+					.data-table-container
+						.data-table-header
+							.data-table-header__label
+								%h5.header="#{header_title}"
+						.data-table-container
+							%table.data-table
+								- if child_users.present?
+									%thead.panel
+										%tr.data-table__selectable-row
+											%th.col-lg-5.font-bold User Name
+											%th.col-lg-2.font-bold User Role
+									%tbody
+										%input{:type=>"hidden",:name=>"target_for",:value=>"user",:class=>"target_for"}
+										- child_users.each do |user|
+											%tr
+												%td.child_users{"data-child-user-name"=>user.profile.full_name,"child-user-id"=>user.id}
+													=user.profile.full_name
+												%td
+													=user.users_role.role.name
+											%tr
+												%td{:colspan=>"100%"}
+													%ul
+														.collection.user-target-list{:id=>"user_product_list_#{user.id}"}
+															-child_user_target = child_user_targets(user,@user_target.id) #find this method inside user_targets_helper.rb
+															-if child_user_target.present?
+																-user_target_product(child_user_target) #find this method inside user_targets_helper.rb
+											
+								-else
+									%thead.panel
+										%tr.data-table__selectable-row
+											%th.col-lg-5.font-bold Resource Name
+											%th.col-lg-2.font-bold
+									%tbody
+										- if user_resources.present?
+											%input{:type=>"hidden",:name=>"target_for",:value=>"resource",:class=>"target_for"}
+											- user_resources.each do |user_resource|
+												%tr
+													%td.child_users{"data-child-user-name"=>user_resource.resource.name,"child-user-id"=>user_resource.resource.id}
+														=user_resource.resource.name
+													%td
+												%tr
+													%td{:colspan=>"100%"}
+														%ul
+															.collection.user-target-list{:id=>"user_product_list_#{user_resource.resource.id}"}
+																-resource_target = resource_target(user_resource.resource,@user_target.id)
+																-if resource_target.present?
+																	-resource_target_product(resource_target) #find this method inside user_targets_helper.rb
+				.form-group{:style=>"padding:15px !important;"}
+					-if @user_target.present?
+						= text_field_tag :target_month,@user_target.from_date, :class=> 'form-control Default', :placeholder => "Select target month",:required=>true
+					-else	
+						= text_field_tag :target_month,'', :class=> 'form-control Default', :placeholder => "Select target month",:required=>true
+					
+				= submit_tag "create target", class: "m-btn blue right"
+#child-user-modal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showUserTargetTypeModal", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#child-user-modal.modal-title Select child user
+			.modal-body
+				.col-sm-6
+					%h4 Product Information
+					%input#selected-product-id{:name => "selected-product-id", :type => "hidden"}
+					%span#product-info-name
+					%span#product-info-quantity
+					%span#product-info-basic-unit
+				.col-sm-6
+					%h4 User list
+					- if child_users.present?
+						-child_users.each do |user|
+							%input.selected-child-users{:checked => "checked", :id => "child_user_#{user.id}", :type => "checkbox", value: user.id,:name=>"child_users"}
+								%label{for:"child_user_#{user.id}"}
+									= user.profile.full_name
+					-else
+						- if user_resources.present?
+							-user_resources.each do |user_resource|
+								%input.selected-child-users{:checked => "checked", :id => "child_user_#{user_resource.resource.id}", :type => "checkbox", value: user_resource.resource.id,:name=>"child_users"}
+									%label{for:"child_user_#{user_resource.resource.id}"}
+										= user_resource.resource.name
+				.clearfix
+			.modal-footer
+				%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+				= submit_tag "add target", class: "btn btn-primary", id:"confrim_child_user"

@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Bill:
+  = @settlement.bill_id
+%p
+  %b Bill amount:
+  = @settlement.bill_amount
+%p
+  %b Tips:
+  = @settlement.tips
+%p
+  %b User:
+  = @settlement.user_id
+%p
+  %b Status:
+  = @settlement.status
+
+= link_to 'Edit', edit_settlement_path(@settlement)
+\|
+= link_to 'Back', settlements_path

@@ -1,0 +1,25 @@
+= stylesheet_link_tag "step_progress"
+- manual_load_javascript "templates/notifications/po_details"
+= render "layouts/flash"
+.col-sm-3.padding-5
+  = render :partial => 'material_approval_filter'
+.col-sm-9.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Approval alert                                                                 
+          = smart_listing_render :approval_alert
+#showApprovableModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showApprovableModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showApprovableModalLabel.modal-title.approvable-title Approvable details
+      .modal-body
+        #showApprovableModalLabelDetails
+			

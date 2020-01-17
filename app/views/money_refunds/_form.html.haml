@@ -1,0 +1,28 @@
+= form_for @money_refund do |f|
+  - if @money_refund.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@money_refund.errors.count, "error")} prohibited this money_refund from being saved:"
+      %ul
+        - @money_refund.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :customer_id
+    = f.number_field :customer_id
+  .field
+    = f.label :order_id
+    = f.number_field :order_id
+  .field
+    = f.label :paymentmode
+    = f.text_field :paymentmode
+  .field
+    = f.label :refund_amount
+    = f.text_field :refund_amount
+  .field
+    = f.label :account_no
+    = f.text_field :account_no
+  .field
+    = f.label :ifsc_code
+    = f.text_field :ifsc_code
+  .actions
+    = f.submit 'Save'

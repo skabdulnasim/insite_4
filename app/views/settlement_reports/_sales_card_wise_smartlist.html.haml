@@ -1,0 +1,25 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Bill ID", "bill_id" 
+        %th= smart_listing.sortable "Card Type", "card_type"
+        %th= smart_listing.sortable "Card No", "card_no" 
+        %th= smart_listing.sortable "Card Pay Amount", "card_pay_amount"
+        %th= smart_listing.sortable "Bill Amount", "bill_amount"
+        %th= smart_listing.sortable "Date", "created_time"
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object[:bill_id]
+          %td=object[:card_type]
+          %td=object[:card_no]
+          %td=number_to_currency(object[:card_pay_amount], unit: '')
+          %td=number_to_currency(object[:bill_amount], unit: '')
+          %td=object[:created_time]
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

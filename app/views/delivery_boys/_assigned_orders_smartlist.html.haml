@@ -1,0 +1,24 @@
+- unless smart_listing.empty?
+  %table.table.table-bordered
+    %tr.table-header.well
+      %th Select
+      %th Order ID
+      %th Order Source
+      %th Delivery Time
+      %th Order Status
+      %th Order Address
+
+    - smart_listing.collection.each do |order_to_delivery_boy|
+      %tr{:id => "#{order_to_delivery_boy.id}"}
+        %td
+          = check_box_tag 'order_ids[]', order_to_delivery_boy.id, false,{ :id => "order_id_#{order_to_delivery_boy.id}", :class => 'order-ids'}
+          %label.checkbox{:for=>"order_id_#{order_to_delivery_boy.id}"}=""
+        %td= order_to_delivery_boy.id
+        %td= order_to_delivery_boy.source
+        %td= order_to_delivery_boy.delivary_date
+        %td= order_to_delivery_boy.order_status.name
+        %td= order_to_delivery_boy.deliverable.delivery_address
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  No Data Found.

@@ -1,0 +1,31 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row{:style=>"background-color: #aaa;"} 
+        %th Product
+        %th Stock Consumed
+        %th Audit Done By
+        %th Remarks
+        %th Delta stock
+        %th Delta stock price
+        %th= smart_listing.sortable "Date", "created_at"
+    %tbody
+      - smart_listing.collection.each do |object|
+        - object.stock_audit_metas.each do |meta|
+          - user = User.find(object.audit_done_by)
+          - audit_done_by = "#{user.profile.firstname.humanize} #{user.profile.lastname.humanize}" if user.present? and user.profile.present?
+          - audit_done_by ||= "#{user.email}" if user.present?
+          - audit_done_by ||=""
+          %tr.data-table__selectable-row
+            %td=meta.product.name  
+            %td=meta.stock_consumed.present? ? "#{meta.stock_consumed} #{meta.product.basic_unit}" : "-"
+            %td=audit_done_by
+            %td=meta.remarks.present? ? meta.remarks : '-'
+            %td="#{meta.delta_stock} #{meta.product.basic_unit}"
+            %td="#{(meta.delta_stock.to_f * get_product_current_stock_cost(@store.id, meta.product.id).current_price.to_f)} #{currency}"
+            %td.font-sz-12=meta.created_at.strftime('%d-%^b-%Y, %I:%M %p')
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    This store yet not any audit reports

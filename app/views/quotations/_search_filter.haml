@@ -1,0 +1,16 @@
+.card
+  .padding-10 
+    %b FILTER BY
+  = smart_listing_controls_for(:quotations, {class: "text-left"}) do
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-search.left
+      Search
+    .padding-10 
+      .form-group.filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search here.", :type => "text", :name=> "id_filter"}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search  
+      
+  

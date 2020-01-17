@@ -1,0 +1,33 @@
+%p#notice= notice
+
+%p
+  %b Firstname:
+  = @customer_profile.firstname
+%p
+  %b Lastname:
+  = @customer_profile.lastname
+%p
+  %b Contact no:
+  = @customer_profile.contact_no
+%p
+  %b Customer name:
+  = @customer_profile.customer_name
+%p
+  %b Address:
+  = @customer_profile.address
+%p
+  %b Gender:
+  = @customer_profile.gender
+%p
+  %b Age:
+  = @customer_profile.age
+%p
+  %b Dob:
+  = @customer_profile.dob
+%p
+  %b Anniversary:
+  = @customer_profile.anniversary
+
+= link_to 'Edit', edit_customer_profile_path(@customer_profile)
+\|
+= link_to 'Back', customer_profiles_path

@@ -1,0 +1,27 @@
+%section
+  .divider
+  .row.m0
+    .input-field.col.s3.offset-s1
+      = f.label :pincode, "Pincode"
+    .input-field.col.s6.m0
+      = f.text_field :pincode, :autofocus => true, :required => true, :placeholder => "Enter Pincode"
+  .row.m0
+    .input-field.col.s3.offset-s1
+      = f.label :delivery_address, "Address"
+    .input-field.col.s6.m0
+      = f.text_field :delivery_address, :required => true, :placeholder => "Delivery Address"
+  .row.m0
+    .input-field.col.s3.offset-s1
+      = f.label :landmark, "Locality/Landmark"
+    .input-field.col.s6.m0
+      = f.text_field :landmark, :placeholder => "Landmark (optional)"
+  .row.m0
+    .input-field.col.s3.offset-s1
+      = f.label :city, "City"
+    .input-field.col.s6.m0
+      = f.text_field :city, :placeholder => "City"
+  .row.m0
+    .input-field.col.s3.offset-s1
+      = f.label :state, "State"
+    .input-field.col.s6.m0
+      = f.text_field :state, :placeholder => "State"    

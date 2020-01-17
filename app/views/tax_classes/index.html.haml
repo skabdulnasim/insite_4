@@ -1,0 +1,19 @@
+%h1 Listing tax_classes
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @tax_classes.each do |tax_class|
+    %tr
+      %td= tax_class.name
+      %td= link_to 'Show', tax_class
+      %td= link_to 'Edit', edit_tax_class_path(tax_class)
+      %td= link_to 'Destroy', tax_class, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Tax class', new_tax_class_path

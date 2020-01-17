@@ -1,0 +1,33 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %th= smart_listing.sortable "#", "id"
+      %th= smart_listing.sortable "Stock credit", "stock_credit"
+      %th= smart_listing.sortable "Price", "price"
+      %th= smart_listing.sortable "Date", "created_at"
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr   
+          %td=object.id
+          %td="#{object.stock_credit} #{object.product.basic_unit}"
+          %td=object.price
+          %td=object.created_at.strftime("%d %b %Y, %I:%M %p") 
+      
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  %p.warning No records!
+
+
+
+
+
+
+
+        
+
+
+
+
+        

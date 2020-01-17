@@ -1,0 +1,32 @@
+- unless smart_listing.empty?
+  %table.table.pading-10
+    %thead
+      %tr.data-table__selectable-row
+        %th
+        %th.col-lg-2 Brand
+        %th.col-lg-2 Increase By (%)
+        %th.col-lg-2 Decrease By (%)
+        %th.col-lg-1
+        %th.col-lg-1
+        %th
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        - _brand = object.brand_name
+        %tr.data-table__selectable-row.m-input
+          %td
+            =image_tag("icons/product-box-128.png", width: '40', :class => "img-thumbnail")
+          %td
+            =object.brand_name
+          %td
+            = text_field_tag 'brand_name_increase_by', '', class: "form-control allow-numeric-only brand_name_increase_by brand_name_increase_by_sp_#{object.brand_name}", placeholder: "Increase By", 'data-brand-name' => object.brand_name  
+          %td
+            = text_field_tag 'brand_name_decrease_by', '', class: "form-control allow-numeric-only brand_name_decrease_by brand_name_decrease_by_sp_#{object.brand_name}", placeholder: "Decrease By", 'data-brand-name' => object.brand_name  
+          %td
+            = button_tag "Update", :class => 'btn btn-success brand_name_price_btn', :type => 'button', 'data-brand-name' => object.brand_name
+          %td
+            = button_tag "Rule", :class => 'btn btn-success brand_name_price_btn', :type => 'button', 'data-brand-name' => object.brand_name   
+          %td
+            %a.m-btn.blue.lighten-1{:href=>"#{menu_products_path(:brand => _brand, :menu_card => @menu_card)}"}
+              %i.mdi-action-trending-up.left
+              Product    

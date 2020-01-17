@@ -1,0 +1,47 @@
+:javascript
+  $(function() {
+    var dateToday = new Date();
+    $('.datepick').datetimepicker({
+      pickTime: false,
+      format: 'YYYY-MM-DD',
+      minDate: dateToday,
+      useCurrent: true
+    });
+  });
+= render "layouts/flash"
+= form_tag(availabilities_path, method: "post", :class => 'form-horizontal') do
+  .form-group
+    = label_tag(:available_date, "Available Date", :class => 'col-sm-2 control-label')
+    .col-sm-4.input-group
+      = text_field_tag(:available_date, "#{Date.today.to_s}", class: 'form-control datepick', required: 'true')
+      %span.input-group-addon
+        %span.glyphicon.glyphicon-calendar
+
+  .form-group
+    = label_tag(:slot, "Slot", :class => 'col-sm-2 control-label')
+    .col-sm-10
+      - @slots.each do |slot|
+        .col-sm-5
+          = radio_button_tag "slot", "#{slot.id}", required: 'true'
+          = label_tag "slot_#{slot.id}", "#{slot.title}(#{slot.start_time.strftime("%I:%M%p")} to #{slot.end_time.strftime("%I:%M%p")})"
+  /= debug @sections
+  - @sections.each do |section|
+    %h4.header.margin-t-b-0.padding-10
+    %input.parent-check.filled-in{:type=>"checkbox",:id=>"pc#{section.id}",'data-section-id' => "#{section.id}"}
+    %label{:for=>"pc#{section.id}"}
+      ="#{section.name}"
+    .divider 
+    - @resources = section.resources.joins(:resource_type).merge(ResourceType.where(:availability_type => 'selected'))
+    .form-group
+      .col-sm-10
+        - @resources.each do |resource|
+          .col-sm-4
+            = check_box_tag "resources[]", "#{resource.id}", false, :class => "cc-#{section.id} filled-in", :id => resource.id
+            = label_tag "#{resource.id}", "#{resource.name}"
+
+  
+  .form-group
+    .col-sm-4.col-md-offset-2
+      = submit_tag('Save', :class => 'btn btn-success')
+      %a.btn.btn-primary{:href => "#{availabilities_path}"}
+        Cancel

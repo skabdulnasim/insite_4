@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @atmosphere.name
+
+= link_to 'Edit', edit_atmosphere_path(@atmosphere)
+\|
+= link_to 'Back', atmospheres_path

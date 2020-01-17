@@ -1,0 +1,21 @@
+%h1 Listing news_event_galleries
+
+%table
+  %tr
+    %th News event
+    %th News event image
+    %th
+    %th
+    %th
+
+  - @news_event_galleries.each do |news_event_gallery|
+    %tr
+      %td= news_event_gallery.news_event_id
+      %td= news_event_gallery.news_event_image
+      %td= link_to 'Show', news_event_gallery
+      %td= link_to 'Edit', edit_news_event_gallery_path(news_event_gallery)
+      %td= link_to 'Destroy', news_event_gallery, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New News event gallery', new_news_event_gallery_path

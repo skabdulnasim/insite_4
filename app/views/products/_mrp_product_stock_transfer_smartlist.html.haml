@@ -1,0 +1,32 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-4= smart_listing.sortable "Name", "name"
+        %th.col-lg-2 Sku
+        %th.col-lg-2 Current Stock
+        %th.col-lg-4.padding-r-none Quantity
+    %tbody
+      - smart_listing.collection.each do |object| 
+        - if params[:sku_filter].present?
+          - products = Stock.get_product(object.id).set_store(@store.id).available.by_sku(params[:sku_filter]) 
+        - else 
+          - products = Stock.get_product(object.id).set_store(@store.id).available
+
+        - products.each do |product|
+          %tr.data-table__selectable-row
+            %td.col-lg-4=object.name
+            %td.col-lg-2=product.sku
+            %td.col-lg-2
+              %span.label.label-default
+                =number_with_precision(Stock.available_stock(object.id, @store.id, product.sku), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                =object.basic_unit    
+            %td.col-lg-4.padding-r-none
+              .col-lg-6.padding-l-r-none
+                %input.form-control.allow-numeric-only{:name => "filter", autocomplete: "off", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id, :class=>"sku_transfer_qty transfer_quantity_#{product.sku}", :id=>"transfer_product_#{object.id}", "data-sku"=>product.sku, "data-product-name"=>object.name, "data-current-stock"=>number_with_precision(Stock.available_stock(object.id, @store.id, product.sku), :precision => 8, :significant => true, :strip_insignificant_zeros => true)}
+                            
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

@@ -1,0 +1,460 @@
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- manual_load_javascript "templates/purchase_orders/po_mail_details"
+
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+:css
+	.default-sidebar{
+		/ width:25% !important;
+		background-color : teal !important;
+		color: white !important;
+	}  
+.col-sm-3.padding-5
+	.card
+		.tabbable.tabs-left
+			%ul.nav.nav-tabs.padding-none.width-100
+				%li.active
+					%a{"data-toggle" => "tab", :href => "#a"}
+						%span.float-r.badge= @all_products.count
+						Products and Stocks
+				%li
+					%a{"data-toggle" => "tab", :href => "#b"}
+						%span.float-r.badge= @store.stock_purchases.pending_pos.count
+						Manage Purchase Orders
+				%li
+					%a{"data-toggle" => "tab", :href => "#c"}
+						%span.float-r.badge=@store.store_requisition_logs.na_requisitions.count
+						Manage Requisitions
+				%li
+					%a{"data-toggle" => "tab", :href => "#d"}
+						%span.float-r.badge=@store.stock_credit_transfers.delivering.count + @store.stock_credit_transfers.return_delivering.count
+						Manage Stock Transfers
+				%li
+					%a{"data-toggle" => "tab", :href => "#e"}
+						%span.float-r.badge=@store.stock_audits.pending_audit.count
+						Stock Audits
+				%li
+					%a{"data-toggle" => "tab", :href => "#f"}
+						%span.float-r.badge=@store.warehouse_meta.count
+						Manage Warehouse    
+		.clearfix
+		.filter-title.margin-t-b-0
+			%i.mdi-action-open-in-new.left
+			Quick Links
+		.padding-5
+			%a.m-btn.blue.width-100.margin-b-5.text-align-left.waves-effect.waves-light{"data-target" =>"#selectVendorModal", "data-toggle" => "modal"}
+				%i.mdi-editor-border-color.left
+				New purchase order
+			%a.m-btn.blue.width-100.margin-b-5.text-align-left.waves-effect.waves-light{"data-target" =>"#showRequistionModal", "data-toggle" => "modal"}
+				%i.mdi-av-playlist-add.left
+				New requisition
+			%a.m-btn.blue.width-100.margin-b-5.text-align-left.waves-effect.waves-light{"data-target" =>"#showTransferOptionModal", "data-toggle" => "modal"}
+				%i.mdi-action-trending-neutral.left
+				Transfer products
+			%a.m-btn.blue.width-100.margin-b-5.text-align-left.waves-effect.waves-light{"data-target" =>"#showAuditOptionModal", "data-toggle" => "modal"}
+				%i.mdi-av-shuffle.left
+				New stock audit
+			%a.m-btn.blue.width-100.margin-b-5.text-align-left.waves-effect.waves-light{"data-target" =>"#showRakeOptionModal", "data-toggle" => "modal"}
+				%i.mdi-editor-format-list-numbered.left
+				New Warehouse  
+			%a.m-btn.blue.width-100.text-align-left.waves-effect.waves-light{:href =>reports_store_path(@store)}
+				%i.mdi-av-equalizer.left
+				Stock Reports
+
+.col-sm-9.padding-5
+	.tab-content.padding-l-r-none
+		#a.tab-pane.active
+			.main-section__content
+				.example
+					.example__content.p0.min-height-405
+						.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Products
+							%header.data-table-header
+								.row.data-table-header__label
+									= smart_listing_controls_for(:products, {class: "form-inline text-right"}) do
+										.col-md-1
+										.form-group.filter.input-append.hidden-sm.hidden-xs.col-md-2
+											= select_tag :stock_filter, options_for_select({"Menu products"=>"3","In stock"=>"1", "Out of stock"=>"2"}), class: "search form-control", :prompt => "All products", style: "width: 125%"
+										.form-group.filter.input-append.hidden-sm.hidden-xs.col-md-2
+											= select_tag :category, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control", :prompt => "All categories", style: "width: 129%"
+										.form-group.filter.input-append.hidden-sm.hidden-xs.col-md-2
+											%input.form-control.search{:placeholder => "Search name...", :type => "text", :name=> "filter", style: "width: 129%"}
+										.form-group.filter.input-append.hidden-sm.hidden-xs.col-md-2
+											%input.form-control.search{:placeholder => "Search by id...", :type => "text", :name=> "product_id_filter", style: "width: 129%"}
+										.form-group.filter.input-append.hidden-sm.hidden-xs.col-md-2
+											%input.form-control.search{:placeholder => "SKU Search...", :type => "text", :name=> "sku_filter", style: "width: 129%"}
+							= smart_listing_render :products
+		#b.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0.min-height-405
+						.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Manage Purchase Orders
+							%ul.statusTab.nav.nav-tabs{:role => "tablist"}
+								%li.active
+									%a{"data-toggle" => "tab", :href => "#all_po", :role => "tab"} All Purchase Orders
+								%li
+									%a{"data-toggle" => "tab", :href => "#sent_po", :role => "tab"} Sent or Received Purchase Orders
+								%li
+									%a{"data-toggle" => "tab", :href => "#smart_po", :role => "tab"} Smart Purchase Orders
+							.tab-content{:style=>"padding-left:0px; padding-right:0px;"}
+								#all_po.tab-pane.fade.in.active
+									.data-table-header__actions.padding-5
+										= smart_listing_controls_for(:store_purchase_orders, {class: "form-inline text-right"}) do
+											.padding-10 
+												.filter.input-append
+													.input-group
+														%input.form-control.search{:placeholder => "Search PO by id...", :type => "text", :name=> "po_id_filter"}
+															%span.input-group-btn
+																%button.btn.btn-primary.disabled{:type => "submit" }
+																	%span.glyphicon.glyphicon-search
+									= smart_listing_render :store_purchase_orders
+								#sent_po.tab-pane.fade
+									.data-table-header__actions.padding-5.float-r
+										= smart_listing_controls_for(:stock_purchase, {class: "form-inline text-right float-l"}) do
+											%button.btn.btn-default.margin-r-5{:type => "submit" }
+												%i.fa.fa-refresh
+												Refresh
+										= smart_listing_controls_for(:stock_purchase, {class: "form-inline text-right float-l"}) do
+											.form-group.filter.input-append
+												= select_tag :po_status, options_for_select({"Not Received"=>"1","Received"=>"2"}), class: "search form-control", :prompt => "Filter Status"
+											.padding-l-5.float-r
+												.filter.input-append
+													.input-group
+														%input.form-control.search{:placeholder => "Search PO by id...", :type => "text", :name=> "send_rec_po_id_filter"}
+															%span.input-group-btn
+																%button.btn.btn-primary.disabled{:type => "submit" }
+																	%span.glyphicon.glyphicon-search
+									= smart_listing_render :stock_purchase
+								#smart_po.tab-pane.fade
+									= smart_listing_render :smart_purchase_orders
+		#d.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0.min-height-405
+						.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Manage Stock Transfers
+
+							%ul.statusTab.nav.nav-tabs{:role => "tablist"}
+								%li.active
+									%a{"data-toggle" => "tab", :href => "#credit_trans", :role => "tab"} Credit Transactions
+								%li
+									%a{"data-toggle" => "tab", :href => "#debit_trans", :role => "tab"} Debit Transactions
+							.tab-content{:style=>"padding-left:0px; padding-right:0px;"}
+								#credit_trans.tab-pane.fade.in.active
+									.data-table-header__actions.padding-5
+										= smart_listing_controls_for(:transfer_credits, {class: "form-inline text-right"}) do
+											.form-group.filter.input-append
+												= select_tag :credit_status, options_for_select({"New shipment"=>"10","Shipped"=>"20", "Delivering"=>"30","Delivered"=>"100"}), class: "search form-control", :prompt => "All transactions"
+									= smart_listing_render :transfer_credits
+								#debit_trans.tab-pane.fade
+									.data-table-header__actions.padding-5
+										= smart_listing_controls_for(:transfer_debits, {class: "form-inline text-right"}) do
+											.form-group.filter.input-append
+												= select_tag :debit_status, options_for_select({"New shipment"=>"10","Shipped"=>"20", "Delivering"=>"30","Delivered"=>"100"}), class: "search form-control", :prompt => "All transactions"
+									= smart_listing_render :transfer_debits
+
+		#c.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0.min-height-405
+						.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Manage Requisitions
+							%ul.statusTab.nav.nav-tabs{:role => "tablist"}
+								%li.active
+									%a{"data-toggle" => "tab", :href => "#all_req", :role => "tab"}All Requisitions
+								%li
+									%a{"data-toggle" => "tab", :href => "#recv_req", :role => "tab"} Received requisition log
+								%li
+									%a{:href => "#{requisition_summary_store_store_requisitions_path(@store)}"} Summary requisition  
+								%li
+									%a{"data-toggle" => "tab", :href => "#sent_req", :role => "tab"} Sent requisition log
+
+							.tab-content{:style=>"padding-left:0px; padding-right:0px;"}
+								#all_req.tab-pane.fade.in.active
+									= smart_listing_render :store_requisitions
+								#recv_req.tab-pane.fade
+									= smart_listing_render :recv_requisitions
+								#sent_req.tab-pane.fade
+									= smart_listing_render :sent_requisitions
+		#e.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0.min-height-405
+						.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Stock Audits
+							= smart_listing_render :stock_audits
+		#f.tab-pane
+			/ = smart_listing_render :store_racks
+			.main-section__content
+				.example
+					.example__content.p0.min-height-405
+						.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Manage Warehouse
+								.data-table-header__actions
+									%a.m-btn.m-btn-teal{:href => "#","data-target" =>"#showRakeOptionModal", "data-toggle" => "modal"}
+										%i.mdi-content-add.left
+										Add Row
+							/ = smart_listing_render :stock_audits
+								
+							= smart_listing_render :warehouse
+
+
+.clearfix
+
+/ PO Modal
+#showPurchaseModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showPOModalLabel", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog.modal-lg
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#showPOModalLabel.modal-title.purchse-title Purchase order details
+			.modal-body
+				#showPurchaseOModalDetails
+
+#showPurchaseOrderMailModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showPOModalLabel", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog.modal-lg
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#showPOModalLabel.modal-title.purchse-title Purchase Order Mail
+			.modal-body
+
+/ Requisition Modal
+#showRequisitionModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showRequisitionModalLabel", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog.modal-lg
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#showRequisitionModalLabel.modal-title Requisition details
+			.modal-body
+				= form_tag("/stores/#{@store.id}/stock_transfers/custom_create_for_requistion", method: "post",multipart: true) do
+					%input.recipient-type.form-control{:type => "hidden",:name=>"transfer_type", :value=>"trans_to_oth"}
+					#showRequisitionModalDetails
+
+/ Transfer Option Modal
+#showTransferOptionModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showTransferOptionModalLabel", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#showTransferOptionModalLabel.modal-title Select transfer option
+			.modal-body
+				.col-md-12
+					.col-md-3
+						%h4 Option A
+					.col-md-9
+						.btn-group{:style=> "width:100%"}
+							%a.btn.btn-default.dropdown-toggle.text-left.btn-social.btn-primary{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button",:style=> "width:100%"}
+								%i.fa.fa-exchange
+								Select business type
+								%span.caret
+							%ul.dropdown-menu.dropdown-menu-right{:role => "menu",:style=> "width:100%"}
+								- @business_types.each do |business_type|
+									%li
+										%a{:href => "#{new_store_stock_transfer_path(@store)}?business_type=#{business_type}"}= business_type.humanize
+
+				.clearfix
+			.modal-footer
+				%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+
+/ Audit Option Modal
+#showAuditOptionModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showAuditOptionModalLabel", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#showAuditOptionModalLabel.modal-title Select audit option
+			.modal-body
+				.col-md-12
+					.col-md-3
+						%h4 Option A
+					.col-md-9
+						.btn-group{:style=> "width:100%"}
+							%a.btn.btn-default.dropdown-toggle.text-left.btn-social.btn-primary{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button",:style=> "width:100%"}
+								%i.fa.fa-exchange
+								Select business type
+								%span.caret
+							%ul.dropdown-menu.dropdown-menu-right{:role => "menu",:style=> "width:100%"}
+								- @business_types.each do |business_type|
+									%li
+										%a{:href => "#{new_store_stock_audit_path(@store)}?business_type=#{business_type}"}= business_type.humanize
+				.clearfix
+			.modal-footer
+				%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+
+/ Requistion Modal
+#showRequistionModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showRequistionModalLabel", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#showRequistionModalLabel.modal-title Select business type
+			.modal-body
+				.col-md-12
+					.col-md-3
+						%h4 Option A
+					.col-md-9
+						.btn-group{:style=> "width:100%"}
+							%a.btn.btn-default.dropdown-toggle.text-left.btn-social.btn-primary{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button",:style=> "width:100%"}
+								%i.fa.fa-exchange
+								Select business type
+								%span.caret
+							%ul.dropdown-menu.dropdown-menu-right{:role => "menu",:style=> "width:100%"}
+								- @business_types.each do |business_type|
+									%li
+										%a{:href => "#{new_store_store_requisition_path(@store)}?business_type=#{business_type}"}= business_type.humanize
+
+				.clearfix
+			.modal-footer
+				%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+
+#selectVendorModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showTransferOptionModalLabel", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content.m-modal-content
+			= form_tag(new_store_purchase_order_path(@store),method: :get) do
+				.modal-header.m-modal-header
+					%button.close{"data-dismiss" => "modal", :type => "button"}
+						%span{"aria-hidden" => "true"} &times;
+						%span.sr-only Close
+					%h4#showTransferOptionModalLabel.modal-title Select Vendor
+				.modal-body
+					.col-md-12
+						.col-md-1
+						.col-md-9
+							.form-group{:style=> "width:100%"}
+								= select_tag "vendor", options_from_collection_for_select(@vendors, "id", "name"), prompt: "Select Vendor", class: "form-control", required: "true"
+							.form-group{:style=> "width:100%"}
+								= select_tag "business_type", options_for_select(Product::BUSINESS_TYPE), class: "form-control", prompt: "Select Business Type", required: "true"
+					.clearfix
+				.modal-footer
+					%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+					= submit_tag "Proceed", class: "btn btn-primary"
+
+#showRakeOptionModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showRakeOptionModal", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content.m-modal-content
+			= form_tag(store_warehouse_meta_path(@store), method:"post") do
+				.modal-header.m-modal-header
+					%button.close{"data-dismiss" => "modal", :type => "button"}
+						%span{"aria-hidden" => "true"} &times;
+						%span.sr-only Close
+					%h4#showTransferOptionModalLabel.modal-title Create Rack
+				.modal-body
+					.form-group.col-sm-12
+						%label.col-sm-4 No of Rows
+						.col-sm-8.m-input
+							= text_field_tag :row,'',:required => true,:type=>"number"
+					.form-group.col-sm-12
+						%label.col-sm-4 No of Racks(per row)
+						.col-sm-8.m-input
+							=text_field_tag :rack,'',:required => true,:type=>"number"
+					.form-group.col-sm-12
+						%label.col-sm-4 No of Shelves(per rack)
+						.col-sm-8.m-input
+							=text_field_tag :shelf,'',:required => true,:type=>"number"
+					.clearfix
+				.modal-footer
+					%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+					= submit_tag "Create", class: "btn btn-primary"          
+
+
+#AddBinsModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "AddBinsModal", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#showTransferOptionModalLabel.modal-title Create Bin
+			.modal-body
+				.form-group.col-sm-12
+					%label.col-sm-3 Bin Name
+					.col-sm-8.m-input
+						%input.form-control.validate#BinName{:type => "text"}/ 
+				.form-group.col-sm-12
+					%label.col-sm-3 Bin Height
+					.col-sm-8.m-input
+						%input.form-control.validate#BinHeight{:type => "text"}/ 
+				.form-group.col-sm-12
+					%label.col-sm-3 Bin Width
+					.col-sm-8.m-input
+						%input.form-control.validate#BinWidth{:type => "text"}/   
+			.clearfix
+			.modal-footer
+				%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+				%button.m-btn.green.width-30.waves-effect.waves-light#addnewbin{:type => "submit" ,:style=>"margin-left:20px;"}
+					Create          
+
+/ #AddWarehouse.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showRakeOptionModal", :role => "dialog", :tabindex => "-1"}
+/   .modal-dialog
+/     .modal-content.m-modal-content
+/       = form_for([@warehouse_meta.store,@warehouse_meta]) do |f|
+/         .modal-header.m-modal-header
+/           %button.close{"data-dismiss" => "modal", :type => "button"}
+/             %span{"aria-hidden" => "true"} &times;
+/             %span.sr-only Close
+/           %h4#showTransferOptionModalLabel.modal-title Create Warehouse
+/         .modal-body
+/           .form-group.col-sm-12
+/             = f.label :name,"Rack Name",:class => 'col-sm-3'
+/             .col-sm-9.m-input
+/               = f.text_field :name, :required => true, :autofocus => true, :placeholder => "Enter Rack Name", :class => 'form-control'
+/           .form-group.col-sm-12
+/             = f.label :height,"Rack Height",:class => 'col-sm-3'
+/             .col-sm-9.m-input
+/               = f.text_field :height, :placeholder => "Enter Rack Height", :class => 'form-control', autocomplete: 'off'
+/           .form-group.col-sm-12
+/             = f.label :width,"Rack Width",:class => 'col-sm-3'
+/             .col-sm-9.m-input
+/               = f.text_field :width, :placeholder => "Enter Rack Width", :class => 'form-control', autocomplete: 'off'
+							
+/           .clearfix
+/         .modal-footer
+/           %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+/           = submit_tag "Create", class: "btn btn-primary"          
+
+
+#RackModal.modal.fade{"aria-hidden"=>"true", "aria-labelledby"=>"RackModal", :role=>"dialog", :tabindex=>"-1"}
+	.modal-dialog{:style => "width:700px;"}
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%h4#RackModalLabel.modal-title 
+					%span Manage Rack
+					.row 
+						%small.rack-uid{:style=>"margin-left:20px"}
+			.modal-body
+				.row
+					.col-md-6
+						%span.fs-title Products
+						= smart_listing_render :product_stock
+					.com-md-6
+						%span.fs-title Rack
+						.row#ModalRack
+				.clearfix
+			.modal-footer
+				%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+

@@ -1,0 +1,23 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-3= smart_listing.sortable "Menu Cards", "name"
+        %th.col-lg-4 Outlet
+        %th.col-lg-3 Section
+        %th.col-lg-2
+          Action
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td.col-lg-3= object.name
+          %td.col-lg-4= object.unit.unit_name
+          %td.col-lg-3= object.section.name
+          %td.col-lg-2
+            .add-products-to-menu-card.m-btn.green.m-btn-low-padding{"data-menu-card-id"=>object.id,"data-menu-card-name"=>object.name, "data-menu-unit-id" => object.unit_id, "data-inventory-status" => @inventory_status}
+              %i.mdi-content-add
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No menu cards found

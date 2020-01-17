@@ -1,0 +1,37 @@
+= render "layouts/flash"
+
+.card.padding-10
+	.col-lg-6
+		%h3.font-w-400.margin-l-15 Question Details
+	.col-lg-6
+		%a.m-btn.m-btn-teal.right.margin-t-15{:href => "#{edit_question_path(@question)}"}
+			%i.mdi-editor-border-color.left
+			Edit Question
+	%br
+	.col-lg-12
+		%br
+		.col-lg-3= @question.image.present? ? image_tag("#{@question.image}", width: '160', :class => "img-thumbnail") : image_tag("icons/product-box-128.png", width: '140', :class => "img-thumbnail")
+		.col-lg-9
+			.font-w-400.font-sz-18
+				= @question.title
+			%br
+				.col-lg-4{:style=>"margin-left:-15px;"}
+					.font-w-400
+						Question type:
+						= "#{@question.question_type}"
+				.col-lg-4
+					.font-w-400
+						Option type:
+						= "#{@question.option_type}"
+	- if @question.option_type != 'Input'
+		.col-lg-12.margin-t-25
+			.card
+				%h3.font-w-400{:style=>"margin-left:25px;"} Options
+				.divider
+				- @question.options.each do |option|
+					.font-w-400.padding-20.margin-l-5
+						.col-lg-6
+							%i.fa.fa-circle{:style=>"font-size:1rem !important"}
+							= option.title
+						.col-lg-6
+							= option.image.present? ? image_tag("#{option.image}", width: '80', :class => "img-thumbnail") : ''

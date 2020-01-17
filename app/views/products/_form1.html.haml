@@ -1,0 +1,10 @@
+- @categories.each do |category|
+  %ul{:style => "list-style:none"}
+    - if category.parent.blank?
+      %li
+        .checkbox.margin-t-b-2
+          %input.with-gap{:type => "radio", :name => "product[category_id]", :id => category.id, :required => true, :value => category.id, :checked => (category.id == @product.category_id)}
+          %label{:for=>"#{category.id}"}= category.name
+        = render partial: 'subcategory_li', locals: {subcategories: category.subcategories} if category.subcategories.present?
+      
+ 

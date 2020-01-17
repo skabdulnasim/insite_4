@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  name: MyString
+  product_attribute_set: 
+  position: 1
+  is_system_entity: false
+  deleted_at: 2016-05-16 11:57:37
+
+two:
+  name: MyString
+  product_attribute_set: 
+  position: 1
+  is_system_entity: false
+  deleted_at: 2016-05-16 11:57:37

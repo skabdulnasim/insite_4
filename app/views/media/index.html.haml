@@ -1,0 +1,33 @@
+%h1 Listing media
+
+%table
+  %tr
+    %th Media file name
+    %th Media content type
+    %th Media file size
+    %th Media updated at
+    %th Asset
+    %th Asset type
+    %th Properties
+    %th Deleted at
+    %th
+    %th
+    %th
+
+  - @media.each do |medium|
+    %tr
+      %td= medium.media_file_name
+      %td= medium.media_content_type
+      %td= medium.media_file_size
+      %td= medium.media_updated_at
+      %td= medium.asset_id
+      %td= medium.asset_type
+      %td= medium.properties
+      %td= medium.deleted_at
+      %td= link_to 'Show', medium
+      %td= link_to 'Edit', edit_medium_path(medium)
+      %td= link_to 'Destroy', medium, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Medium', new_medium_path

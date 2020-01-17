@@ -1,0 +1,69 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "ID", "id"
+        %th= smart_listing.sortable "Name", "name"
+        %th Current Stock
+        %th.col-lg-5 Quantity
+    %tbody
+      - smart_listing.collection.each do |object|
+        - _product_sizes = object.product_sizes.enabled
+        - _product_colors = object.color_products.enabled
+        %tr.data-table__selectable-row
+          %td
+            =object.id
+          %td{"aria-controls" => "requisition_product_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#requisition_product_accordion", "data-toggle" => "collapse", :href => "#requisition_product_collapse_#{object.id}", :role => "button"}
+            =object.name
+            - if object.local_name.present?
+              %b
+                = " ( #{object.local_name} )"
+          %td
+            %span.label.label-default
+              =number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit
+          %td
+            .input-group
+              %input.form-control.allow-numeric-only.search{:name => "filter", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id,"data-vendor-id"=>"#{@vendor.id if @vendor.present?}","data-product-name"=>object.name,"data-product-unit"=>object.basic_unit, :class=>"requisition_quantity_#{object.id} requisition-product-total-quantity"}
+                / %span.input-group-btn
+                /   %button.btn.btn-primary.add-products-to-temp-cart{:type => "submit","data-product-id"=>object.id,"data-vendor-id"=>"#{@vendor.id if @vendor.present?}","data-product-name"=>object.name,"data-product-unit"=>object.basic_unit}
+                /     %i.fa.fa-plus
+
+        - if _product_sizes.present? || _product_colors.present?        
+          %tr.collapse{"aria-labelledby" => "requisition_product_heading#{object.id}", :role => "tabpanel", :id => "requisition_product_collapse_#{object.id}",:style=>"background-color: rgba(151, 255, 100, 0.2) !important"}  
+            
+            %td{:colspan=>'100%'}
+              / ,:style=>"max-width:200px !important;overflow: auto;white-space: nowrap;"
+              .inner-table
+                %table.po_table
+                  %tbody{:style=>"float:left;"}
+                    %tr
+                      %th{:id=>"p_total_qty_#{object.id}"}= ""  
+                      - _product_colors.each do |cp|
+                        %th
+                          = cp.color.name
+                    - if _product_sizes.present?         
+                      - _product_sizes.each do |ps|            
+                        %tr
+                          %td.m-input= ps.size.name 
+                          - if _product_colors.present?
+                            - _product_colors.each do |cp|         
+                              %td.m-input
+                                %input{:type=>"text", "data-product-id"=>cp.product_id, "data-color-id"=>cp.color_id, "data-color-name"=>cp.color_name, "data-size-id"=>ps.size_id, "data-size-name"=>ps.size_name, :class=>"rq_product_color_size rq_color_size_qty rq_color_size_#{object.id} rq_color_size_#{object.id}_#{cp.color_id}_#{ps.size_id} allow-numeric-only", :value => 0, "data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit,"data-business-type"=>"#{params[:business_type]}"}
+
+                          - else
+                            %td.m-input
+                              %input{:type=>"text", "data-product-id"=>ps.product_id, "data-color-id"=>0, "data-size-id"=>ps.size_id, "data-size-name"=>ps.size_name, :class=>"rq_product_color_size rq_color_size_qty rq_color_size_#{object.id} rq_color_size_#{object.id}_0_#{ps.size_id} allow-numeric-only", :value => 0, "data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit,"data-business-type"=>"#{params[:business_type]}"}
+
+                    - elsif _product_sizes.blank? && _product_colors.present?
+                      %tr
+                        %td.col-lg-1= ""  
+                        - _product_colors.each do |cp|         
+                          %td.m-input.col-lg-1
+                            %input.col-lg-1{:type=>"text", "data-product-id"=>cp.product_id, "data-color-id"=>cp.color_id, "data-color-name"=>cp.color_name, "data-size-id"=>0, :class=>"rq_product_color_size rq_color_size_qty rq_color_size_#{object.id} rq_color_size_#{object.id}_#{cp.color_id}_0 allow-numeric-only", :value => 0, "data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit,"data-business-type"=>"#{params[:business_type]}"}
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

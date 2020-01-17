@@ -1,0 +1,55 @@
+.row.mt30
+  .col.s12.m8.offset-m2.l6.offset-l3
+    %h6.text-center.grey-text.mt10.mb20=I18n.t(:text_welcome_to)
+    %h4.text-center.blue-text.mt30.font-weight-300.text-darken-1=I18n.t(:software_title)
+    .row.license-form.mt30
+      %h6.text-center.grey-text.font-weight-300.text-darken-2.font-12=I18n.t(:text_signup_intro)
+      .mt50
+        .row
+          .col.l10.offset-l1.input-field
+            %i.material-icons.prefix vpn_key
+            %input#icon_prefix.validate.license-key{:type => "text"}
+              %label{:for => "icon_prefix"}=I18n.t(:label_license)
+        .row.center
+          %button.btn-large.btn.waves-effect.waves-light.blue.mt20.validate_license_key{:name => "action", :type => "submit"}
+            =I18n.t(:label_get_started)
+            %i.material-icons.right send  
+    .row.user-form.mt30
+      %h6.text-center.grey-text.font-weight-300.text-darken-2.font-12=I18n.t(:text_profile_info)
+      .mt50
+      .col.s10.offset-s1
+        = form_for :user, url: user_registration_path do |u|
+          %input#subdomain_license_key{ :type=>"hidden", :name=> "auth_key", class: "form-control",:required=>true }
+          .input-field
+            %i.material-icons.prefix email
+            = u.email_field :email, :id => 'icon_email', :required=>true, class: "validate"
+            %label{:for => "icon_email"}=I18n.t(:label_email)
+          .input-field
+            %i.material-icons.prefix lock_outline
+            = u.password_field :password, :id => 'icon_password', :required=>true
+            %label{:for => "icon_password"}=I18n.t(:label_password)
+          .input-field
+            %i.material-icons.prefix lock
+            = u.password_field :password_confirmation, :id => 'icon_confirm_password', :required=>true
+            %label{:for => "icon_confirm_password"}=I18n.t(:label_confirm_password)
+                           
+          = u.fields_for :profile_attributes do |builder|
+            .input-field
+              %i.material-icons.prefix person
+              = builder.text_field :firstname, :id => 'firstname', :required=>true
+              = builder.label :firstname, I18n.t(:label_firstname)
+            .input-field
+              %i.material-icons.prefix person_outline
+              = builder.text_field :lastname, :id => 'lastname', :required=>true
+              = builder.label :lastname, I18n.t(:label_lastname)
+            .input-field
+              %i.material-icons.prefix phone
+              = builder.text_field :contact_no, :id => 'contact_no', :required=>true
+              = builder.label :contact_no, I18n.t(:label_contact)
+              = builder.hidden_field :appurl, :id => 'profile_appurl'
+          = fields_for @account do |ac|
+            .input-field
+              = ac.time_zone_select :timezone 
+              %label Select Timezone
+          .row.center
+            = u.submit I18n.t(:label_sign_up),  class: "btn waves-light waves-effect btn-large blue mt20"

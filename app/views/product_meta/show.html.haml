@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Raw:
+  = @product_metum.raw
+
+= link_to 'Edit', edit_product_metum_path(@product_metum)
+\|
+= link_to 'Back', product_meta_path

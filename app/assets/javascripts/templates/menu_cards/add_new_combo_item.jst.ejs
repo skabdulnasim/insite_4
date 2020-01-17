@@ -1,0 +1,59 @@
+<tr class='data-table__selectable-row' id='combo_cart_item_<%=product_id%>_of_<%=master_product_id%>'>
+
+  <td class='padding-l-r-none'>
+    <input type='checkbox' name='combo_items[]' id='combo_item_<%=product_id%>_of_<%=master_product_id%>' class='combo_items combo_items_product_<%=master_product_id%>' data-master-product-id='<%=master_product_id%>' data-product-id='<%=product_id%>' value='<%=product_id%>' checked>
+    <label for='combo_item_<%=product_id%>_of_<%=master_product_id%>' class='font-sz-11'><%=product_name%></label>
+  </td>
+
+  <td class='padding-l-r-none'>
+    <input class='form-control combo_name_<%=product_id%>_of_<%=master_product_id%>' type='hidden' value='<%=product_name%>'>
+    <div class="padding-l-r-none">
+      <select class="form-control combo_size_<%=product_id%>_of_<%=master_product_id%>">
+        <% for (var i = product_sizes.length - 1; i >= 0; i--) { %>
+          <option value="<%=product_sizes[i].id%>"><%=product_sizes[i].name%></option>
+        <% } %>
+      </select>
+    </div>
+  </td>
+
+  <td class='padding-l-r-none'>
+    <div class="padding-l-r-none">
+      <select class="form-control combo_color_<%=product_id%>_of_<%=master_product_id%>">
+        <% for (var i = product_colors.length - 1; i >= 0; i--) { %>
+          <option value="<%=product_colors[i].id%>"><%=product_colors[i].name%></option>
+        <% } %>
+      </select>
+    </div>
+  </td>
+
+  <td>
+    <span class="margin-t-15" style="display: flex;">
+      <input class='form-control width-100-px combo_quantity combo_quantity_<%=product_id%>_of_<%=master_product_id%>' name='combo_quantity_<%=product_id%>_of_<%=master_product_id%>' placeholder='(required)' type='text' data-master-product-id='<%=master_product_id%>' data-product-id='<%=product_id%>' required>    
+      <select class="form-control width-60-px combo_basic_unit_id_<%=product_id%>_of_<%=master_product_id%>">
+        <% for (var i = product_units.length - 1; i >= 0; i--) { %>
+          <option value="<%=product_units[i].id%>___<%=product_units[i].short_name%>"><%=product_units[i].short_name%></option>
+        <% } %>
+      </select>
+    </span>
+  </td>
+
+  <td class='padding-l-r-none'>
+    <!-- <input class='form-control combo_name_<%=product_id%>' type='hidden' value='<%=product_name%>'> -->
+    <input class='form-control margin-t-15 combo_item_sell_price combo_sell_price_<%=product_id%>_of_<%=master_product_id%> combo_product_sp_<%=master_product_id%>' name='combo_sell_price_<%=product_id%>_of_<%=master_product_id%>' data-master-product-id='<%=master_product_id%>' data-product-id='<%=product_id%>' placeholder='(required)' type='text' disabled required>
+  </td>
+
+</tr>
+
+<script>
+  $(function() {
+    $('.combo_item_sell_price').keyup(function() {
+      master_product_id = $("#add_combo_item_to_mp").attr("data-master-product-id")
+      total_combo_items_sell_price = 0
+      cp_sell_price = $(".sell_price_combo_product_"+master_product_id).val()
+      $(".combo_product_sp_"+master_product_id).each(function(){
+        combo_item_sell_price = $(this).val()
+        total_combo_items_sell_price = parseFloat(total_combo_items_sell_price) + parseFloat(combo_item_sell_price)
+      });
+    });
+  });
+</script>

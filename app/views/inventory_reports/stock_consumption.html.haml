@@ -1,0 +1,29 @@
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Stock consumption report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="Stock consumption between #{params[:from_date]} to #{params[:to_date]}"
+          .data-table-header__actions
+            - type_str = params[:stock_transaction_type].map{|entry| "stock_transaction_type[]=#{entry}"}.join('&')
+            - stor_str = params[:consumption_store].map{|entry| "consumption_store[]=#{entry}"}.join('&')
+            %a.export-purchase-report.m-btn.pink.margin-l-5{:href=>"/inventory_reports/stock_consumption.pdf?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&#{type_str}&#{stor_str}"}
+              %i.mdi-file-file-download.left
+              PDF  
+            %a.export-purchase-report.m-btn.indigo.margin-l-5{:href=>"/inventory_reports/stock_consumption.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&#{type_str}&#{stor_str}"}
+              %i.mdi-file-file-download.left
+              CSV                      
+        %table.data-table
+          %thead
+            %tr.data-table__selectable-row
+              %th Product
+              %th Total Stock Consumed
+          %tbody
+            - @stocks.each do |object|
+              %tr.data-table__selectable-row
+                %th=object.product.name
+                %th="#{object.total_debit} #{object.product.basic_unit}"           

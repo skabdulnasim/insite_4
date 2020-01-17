@@ -1,0 +1,24 @@
+
+= form_for @report_folder do |f|
+  - if @report_folder.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@report_folder.errors.count, "error")} prohibited this report_folder from being saved:"
+      %ul
+        - @report_folder.errors.full_messages.each do |msg|
+          %li= msg
+  .field
+    = f.label :name
+    = f.text_field :name ,:required => true
+  .col-lg-8
+    %ul.list-unstyled  
+    - @master_models.each do |model| 
+      %li.col-md-6
+        .field
+        = f.radio_button(:master_model, model[:id],:required => true)
+        %label{:for=> "report_folder_master_model_#{model[:id]}"}= model[:name]
+    .clearfix
+  .col-lg-4
+    #relation_model
+    %br
+    .actions
+      = f.submit 'Save & Continue', class: "m-btn teal"    

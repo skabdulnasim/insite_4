@@ -1,0 +1,1356 @@
+:javascript
+	$(function() {
+		$('.datepicker').datetimepicker({
+			format: 'YYYY-MM-DD',
+		});
+	});
+= render "layouts/flash"
+.col-sm-3.padding-l-r-none
+	.card
+		.clearfix
+		.filter-title.margin-t-b-0
+			%i.mdi-av-games.left
+			Modules
+		.tabbable.tabs-left
+			%ul.nav.nav-tabs.padding-none
+				%li.active
+					%a{"data-toggle" => "tab", :href => "#g"}
+						General
+				%li
+					%a{"data-toggle" => "tab", :href => "#c"}
+						Catalog
+				%li
+					%a{"data-toggle" => "tab", :href => "#o"}
+						Orders
+				%li
+					%a{"data-toggle" => "tab", :href => "#email"}
+						Email    
+				%li
+					%a{"data-toggle" => "tab", :href => "#i"}
+						Inventory
+				%li
+					%a{"data-toggle" => "tab", :href => "#po"} 
+						Purchase Order
+				%li
+					%a{"data-toggle" => "tab", :href => "#sku"} 
+						Bar Code/QR Code
+				%li
+					%a{"data-toggle" => "tab", :href => "#ven"} 
+						Vendor    
+				%li
+					%a{"data-toggle" => "tab", :href => "#report"} 
+						Report
+				%li
+					%a{"data-toggle" => "tab", :href => "#tsp"} 
+						Pedlar
+				%li
+					%a{"data-toggle" => "tab", :href => "#se"} 
+						Sourcing Executive    
+				%li
+					%a{"data-toggle" => "tab", :href => "#sms"} 
+						Sms    
+				%li
+					%a{"data-toggle" => "tab", :href => "#android"}
+						Android App
+				%li
+					%a{"data-toggle" => "tab", :href => "#tally"}
+						Tally    
+				%li
+					%a{"data-toggle" => "tab", :href => "#approval_settings"}
+						Approval Settings
+						
+		.clearfix
+.col-sm-9#config-container
+	.tab-content.padding-r-none
+		#g.tab-pane.active
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title General Settings
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Inventory Module
+									.col-sm-7
+										- invt_status = (AppConfiguration.get_config_value('inventory_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :inventory_module, 'enabled', invt_status, {"data-conf-key"=>"inventory_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Shipping Module
+									.col-sm-7
+										- shhp_status = (AppConfiguration.get_config_value('shipping_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :shipping_module, 'enabled', shhp_status, {"data-conf-key"=>"shipping_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Bulk Discount on Bill
+									.col-sm-7
+										- bdb_status = (AppConfiguration.get_config_value('bulk_discount_on_bill') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :bulk_discount_on_bill, 'enabled', bdb_status, {"data-conf-key"=>"bulk_discount_on_bill","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever        
+															 
+								.form-group
+									%label.col-sm-4.control-label
+										POS Terminals
+										%br
+										%small.grey-text Browser POS is enabled or not
+									.col-sm-7
+										- posr_status = (AppConfiguration.get_config_value('pos_terminals') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :pos_terminals, 'enabled', posr_status, {"data-conf-key"=>"pos_terminals","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label
+										Tables Module
+										%br
+										%small.grey-text Wheather table orders enabled or not
+									.col-sm-7
+										- tablmod_status = (AppConfiguration.get_config_value('tables_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :tables_module, 'enabled', tablmod_status, {"data-conf-key"=>"tables_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Home Delivery
+									.col-sm-7
+										- homd_status = (AppConfiguration.get_config_value('home_delivery') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :home_delivery, 'enabled', homd_status, {"data-conf-key"=>"home_delivery","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Loyalty Cards
+									.col-sm-7
+										- loyal_status = (AppConfiguration.get_config_value('loyalty_cards') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :loyalty_cards, 'enabled', loyal_status, {"data-conf-key"=>"loyalty_cards","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								
+								.form-group
+									%label.col-sm-4.control-label Customer Unique No
+									.col-sm-7
+										- customer_unique_status = (AppConfiguration.get_config_value('customer_unique_id') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :customer_unique_id, 'enabled', customer_unique_status, {"data-conf-key"=>"customer_unique_id","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever    
+																														
+								.form-group
+									%label.col-sm-4.control-label Stock Expiry Date
+									.col-sm-7
+										- stock_expiry_status = (AppConfiguration.get_config_value('stock_expiry_date') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :stock_expiry_date, 'enabled', stock_expiry_status, {"data-conf-key"=>"stock_expiry_date","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever  
+
+								.form-group
+									%label.col-sm-4.control-label Aply tax on service tax
+									.col-sm-7
+										- aply_tax_on_menu_item_status = (AppConfiguration.get_config_value('aply_tax_on_menu_item') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :aply_tax_on_menu_item, 'enabled', aply_tax_on_menu_item_status, {"data-conf-key"=>"aply_tax_on_menu_item","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever  
+								.form-group
+									%label.col-sm-4.control-label Discount On Subtotal
+									.col-sm-7
+										- discount_on_subtotal_status = (AppConfiguration.get_config_value('discount_on_subtotal') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :discount_on_subtotal, 'enabled', discount_on_subtotal_status, {"data-conf-key"=>"discount_on_subtotal","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+								.form-group
+									%label.col-sm-4.control-label Packaging and Boxing Module
+									.col-sm-7
+										- package_status = (AppConfiguration.get_config_value('package_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :package_module, 'enabled', package_status, {"data-conf-key"=>"package_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label B2B Billing
+									.col-sm-7
+										- b2b_billing_status = (AppConfiguration.get_config_value('b2b_billing') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :b2b_billing, 'enabled', b2b_billing_status, {"data-conf-key"=>"b2b_billing", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled", "class"=>"update_app_config"}
+												%span.lever
+								.form-gropu
+									%label.col-sm-4.control-label Bill Suffix 
+									.col-sm-7
+										- bill_suffix = (AppConfiguration.get_config_value('bill_suffix') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :bill_suffix, 'enabled', bill_suffix, {"data-conf-key"=>"bill_suffix", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config bill_suffix"}
+												%span.lever
+
+								.form-group.bill_suffix_limit{style:"display:none;"}
+									%label.col-sm-4.control-label Bill suffix
+									.col-sm-7
+										- bill_suffix_limit = AppConfiguration.get_config('bill_suffix_limit')
+										.padding-5
+											= text_field_tag :bill_suffix_limit, bill_suffix_limit, :class=>'form-control update_bill_suffix_limit', 'data-conf-key'=> 'bill_suffix_limit'
+
+								.form-gropu
+									%label.col-sm-4.control-label Bill Prefix 
+									.col-sm-7
+										- bill_prefix = (AppConfiguration.get_config_value('bill_prefix') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :bill_prefix, 'enabled', bill_prefix, {"data-conf-key"=>"bill_prefix", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config"}
+												%span.lever
+
+								.form-group.bill_prefix_limit{style:"display:none;"}
+									%label.col-sm-4.control-label Bill prefix
+									.col-sm-7
+										- bill_prefix_limit = AppConfiguration.get_config('bill_prefix_limit')
+										.padding-5
+											= text_field_tag :bill_prefix_limit, bill_prefix_limit, :class=>'form-control update_bill_preix_limit', 'data-conf-key'=> 'bill_prefix_limit'
+								.form-group
+									%label.col-sm-4.control-label Timezone
+									.col-sm-7
+										- zone = Account.find_by_subdomain(request.subdomain).timezone
+										= select_tag :timezone, time_zone_options_for_select(selected = zone), :class=>"form-control update_account", "data-column-name" => "timezone"
+								.form-group
+									%label.col-sm-4.control-label Report Date
+									.col-sm-7
+										- report_date = AppConfiguration.get_config('generate_reports_from_date')
+										.padding-5
+											= text_field_tag :generate_reports_from_date, report_date, :class=> 'form-control update_app_text_config datepicker', "data-conf-key"=>'generate_reports_from_date'		
+										
+		#email.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Email Settings
+							.form-horizontal.bordered-row		
+								.form-group
+									%label.col-sm-4.control-label Send Email to Admin on new bill
+									.col-sm-7
+										- send_admin_bill = (AppConfiguration.get_config_value('send_admin_bill') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_admin_bill, 'enabled', send_admin_bill, {"data-conf-key"=>"send_admin_bill","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Send Email to Customer on bill settlement
+									.col-sm-7
+										- send_customer_bill = (AppConfiguration.get_config_value('send_customer_bill') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_customer_bill, 'enabled', send_customer_bill, {"data-conf-key"=>"send_customer_bill","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Send email to Admin on customer register
+									.col-sm-7
+										- admin_email_status = (AppConfiguration.get_config_value('email_to_admin_customer_register') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :email_to_admin_customer_register, 'enabled', admin_email_status, {"data-conf-key"=>"email_to_admin_customer_register","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever					
+								.form-group
+									%label.col-sm-4.control-label Admin Email to Get Bill Details
+									.col-sm-7
+										- admin_email_bill = AppConfiguration.get_config('admin_email_bill')
+										.padding-5  
+											= text_field_tag :admin_email_bill, admin_email_bill, :class=> 'form-control update_app_text_config', "data-conf-key"=>'admin_email_bill'		
+								.form-group
+									%label.col-sm-4.control-label Email from where Bill will send 
+									.col-sm-7
+										- bill_email = AppConfiguration.get_config('bill_email')
+										.padding-5  
+											= text_field_tag :bill_email, bill_email, :class=> 'form-control update_app_text_config', "data-conf-key"=>'bill_email'
+									%label.col-sm-4.control-label Password		
+									.col-sm-7
+										- bill_email_passwrd = AppConfiguration.get_config('bill_email_passwrd')
+										.padding-5  
+											= password_field :bill_email_passwrd, bill_email_passwrd, :class=> 'form-control update_app_text_config', "data-conf-key"=>'bill_email_passwrd' 		
+											%p
+												%b.red-text** Allowing less secure apps to access your account.
+												%br/ 
+												%b.red-text** Email should be in gmail account.				
+		#tally.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Tally Settings
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label 
+										Tally Company Name
+									.col-sm-7
+										- tally_company_name = AppConfiguration.get_config('tally_company_name')
+										.padding-5  
+											= text_field_tag :tally_company_name, tally_company_name, :class=> 'form-control update_tally_company_name', "data-conf-key"=>'tally_company_name'
+								.form-group
+									%label.col-sm-4.control-label 
+										Tally Godown Name
+									.col-sm-7
+										- tally_godown_name = AppConfiguration.get_config('tally_godown_name')
+										.padding-5  
+											= text_field_tag :tally_godown_name, tally_godown_name, :class=> 'form-control update_tally_godown_name', "data-conf-key"=>'tally_godown_name'
+		#c.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Catalog Settings
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Owner will create edit delete catalog
+									.col-sm-7
+										- losa_status = (AppConfiguration.get_config_value('owner_will_crud_menu') == "1") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :owner_will_crud_menu, 'enabled', losa_status, {"data-conf-key"=>"owner_will_crud_menu","data-value-active"=>"1","data-value-inactive"=>"0", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Edit catalog items anytime
+									.col-sm-7
+										- aemt = (AppConfiguration.get_config_value('always_edit_menu_item') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :always_edit_menu_item, 'enabled', aemt, {"data-conf-key"=>"always_edit_menu_item","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Retail Menu
+									.col-sm-7
+										- retail_menu = (AppConfiguration.get_config_value('retail_menu') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :retail_menu, 'enabled', retail_menu, {"data-conf-key"=>"retail_menu","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever  
+								.form-group
+									%label.col-sm-4.control-label Variable Tax
+									.col-sm-7
+										- variable_tax_status = (AppConfiguration.get_config_value('variable_tax') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :variable_tax, 'enabled', variable_tax_status, {"data-conf-key"=>"variable_tax","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever       
+
+								.form-group
+									%label.col-sm-4.control-label 
+										Veriable tax Five percent limit
+									.col-sm-7
+										- vtax_five_percent_limit = AppConfiguration.get_config('vtax_five_percent_limit')
+										.padding-5  
+											= text_field_tag :vtax_five_percent_limit, vtax_five_percent_limit, :class=> 'form-control update_vtax_five_percent_limit allow-numeric-only', "data-conf-key"=>'vtax_five_percent_limit'
+								.form-group
+									%label.col-sm-4.control-label Follow branch level hierarchy while cloning catalog?
+									.col-sm-7
+										- ccwbh_status = (AppConfiguration.get_config_value('clone_catalog_within_branch_hierarchy') == "1") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :clone_catalog_within_branch_hierarchy, 'enabled', ccwbh_status, {"data-conf-key"=>"clone_catalog_within_branch_hierarchy","data-value-active"=>"1","data-value-inactive"=>"0", "class"=> "update_app_config"}
+												%span.lever
+
+		#sku.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Bar Code/QR Code Settings
+							.form-group
+								%label.col-sm-4.control-label Print QR code
+								.col-sm-7
+									- qrcode_status = (AppConfiguration.get_config_value('qr_code') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :qr_code, 'enabled', qrcode_status, {"data-conf-key"=>"qr_code","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+											%span.lever   	
+							.form-group
+								%label.col-sm-4.control-label Sku Suffix 
+								.col-sm-7
+									- sku_suffix = (AppConfiguration.get_config_value('sku_suffix') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :sku_suffix, 'enabled', sku_suffix, {"data-conf-key"=>"sku_suffix", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config sku_suffix"}
+											%span.lever
+
+							.form-group.sku_suffix_limit{style:"display:none;"}
+								%label.col-sm-4.control-label Sku suffix value
+								.col-sm-7
+									- sku_suffix_limit = AppConfiguration.get_config('sku_suffix_limit')
+									.padding-5
+										= text_field_tag :sku_suffix_limit, sku_suffix_limit, :class=>'form-control update_sku_suffix_limit', 'data-conf-key'=> 'sku_suffix_limit'	
+
+							.form-group
+								%label.col-sm-4.control-label Sku Prefix 
+								.col-sm-7
+									- sku_prefix = (AppConfiguration.get_config_value('sku_prefix') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :sku_prefix, 'enabled', sku_prefix, {"data-conf-key"=>"sku_prefix", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config"}
+											%span.lever
+
+							.form-group.sku_prefix_limit{style:"display:none;"}
+								%label.col-sm-4.control-label Sku prefix value
+								.col-sm-7
+									- sku_prefix_limit = AppConfiguration.get_config('sku_prefix_limit')
+									.padding-5
+										= text_field_tag :sku_prefix_limit, sku_prefix_limit, :class=>'form-control update_sku_preix_limit', 'data-conf-key'=> 'sku_prefix_limit'	
+
+							.form-group.sku_algorithm
+								%label.col-sm-4.control-label Sku By Algorithm
+								.col-sm-7
+									- sku_algorithm_status = (AppConfiguration.get_config_value('sku_algorithm') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :sku_algorithm, 'enabled', sku_algorithm_status, {"data-conf-key"=>"sku_algorithm", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config"}
+											%span.lever			
+
+							.form-group.sku_algo{style:"display:none;"}
+								%label.col-sm-4.control-label Product Category Code
+								.col-sm-7
+									- category_code_status = (AppConfiguration.get_config_value('category_code') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :category_code, 'enabled', category_code_status, {"data-conf-key"=>"category_code", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config"}
+											%span.lever	
+
+							.form-group.sku_algo{style:"display:none;"}
+								%label.col-sm-4.control-label Product Vendor Code
+								.col-sm-7
+									- vendor_code_status = (AppConfiguration.get_config_value('vendor_code') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :vendor_code, 'enabled', vendor_code_status, {"data-conf-key"=>"vendor_code", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config"}
+											%span.lever		
+							.form-group.sku_algo{style:"display:none;"}
+								%label.col-sm-4.control-label Product Color Code
+								.col-sm-7
+									- color_code_status = (AppConfiguration.get_config_value('color_code') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :color_code, 'enabled', color_code_status, {"data-conf-key"=>"color_code", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config"}
+											%span.lever		
+
+							.form-group.sku_algo{style:"display:none;"}
+								%label.col-sm-4.control-label Product Size Code
+								.col-sm-7
+									- size_code_status = (AppConfiguration.get_config_value('size_code') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :size_code, 'enabled', size_code_status, {"data-conf-key"=>"size_code", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config"}
+											%span.lever	
+
+							.form-group.sku_algo{style:"display:none;"}
+								%label.col-sm-4.control-label Product Serial No
+								.col-sm-7
+									- product_serial_status = (AppConfiguration.get_config_value('product_serial') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :product_serial, 'enabled', product_serial_status, {"data-conf-key"=>"product_serial", "data-value-active"=>"enabled", "data-value-inactive"=>"disabled","class"=>"update_app_config"}
+											%span.lever																				
+
+																				
+
+		#o.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Order Settings
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Accept new orders?
+									.col-sm-7
+										- nwor_status = (AppConfiguration.get_config_value('accept_new_order') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :accept_new_order, 'enabled', nwor_status, {"data-conf-key"=>"accept_new_order","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever        
+								.form-group
+									%label.col-sm-4.control-label Accept offline orders?
+									.col-sm-7
+										- oost_status = (AppConfiguration.get_config_value('offline_order') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :offline_order, 'enabled', oost_status, {"data-conf-key"=>"offline_order","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+												
+								.form-group
+									%label.col-sm-4.control-label Check product stock while ordering?
+									.col-sm-7
+										- scoo_status = (AppConfiguration.get_config_value('stock_check_on_order') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :stock_check_on_order, 'enabled', scoo_status, {"data-conf-key"=>"stock_check_on_order","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Check stock of ingredients if a product is out of stock?
+									.col-sm-7
+										- crst_status = (AppConfiguration.get_config_value('check_raw_product_stock') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :check_raw_product_stock, 'enabled', crst_status, {"data-conf-key"=>"check_raw_product_stock","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Check Lot stock
+									.col-sm-7
+										- check_lot_stock_enabled_status = (AppConfiguration.get_config_value('ckeck_lot_stock') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :ckeck_lot_stock, 'enabled', check_lot_stock_enabled_status, {"data-conf-key"=>"ckeck_lot_stock","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever        
+								.form-group
+									%label.col-sm-4.control-label Apply roundoff in bill amount?
+									.col-sm-7
+										- abroff_status = (AppConfiguration.get_config_value('apply_bill_roundoff') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :apply_bill_roundoff, 'enabled', abroff_status, {"data-conf-key"=>"apply_bill_roundoff","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Discount on Item
+									.col-sm-8
+										- discount_status = (AppConfiguration.get_config_value('discount_on_item') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :discount_on_item, 'enabled', discount_status, {"data-conf-key"=>"discount_on_item","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+	 
+								.form-group
+									%label.col-sm-4.control-label For which order status item stock will be debited?
+									.col-sm-7
+										- ordst_status = AppConfiguration.get_config_value('reduce_stock_on_order_status')
+										.padding-5
+											- OrderDetail::STATUSES.each do |status|
+												- flag = ordst_status == status ? true : false
+												= radio_button_tag :order_detail_status, status, flag, {"data-conf-key"=>"reduce_stock_on_order_status","data-value-active"=>"#{status}","data-value-inactive"=>"#{status}", "class"=> "update_app_config with-gap",:id=>"#{status}"}
+												%label{:for => "#{status}"}=status.humanize
+
+								.form-group
+									%label.col-sm-4.control-label 
+										Number Of Offline Orders For Pos
+									.col-sm-7
+										- number_of_offline_orders = AppConfiguration.get_config('number_of_offline_orders')
+										.padding-5  
+											= text_field_tag :number_of_offline_orders, number_of_offline_orders, :class=> 'form-control update_number_of_offline_orders allow-numeric-only', "data-conf-key"=>'number_of_offline_orders'
+								.form-group
+									%label.col-sm-4.control-label Future Order
+									.col-sm-8
+										- future_order_status = (AppConfiguration.get_config_value('future_order') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :future_order, 'enabled', future_order_status, {"data-conf-key"=>"future_order","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Upload Bevco Order
+									.col-sm-8
+										- upload_bevco_order_status = (AppConfiguration.get_config_value('upload_bevco_order') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :upload_bevco_order, 'enabled', upload_bevco_order_status, {"data-conf-key"=>"upload_bevco_order","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+								.form-group
+									%label.col-sm-4.control-label 
+										Knowlarity Phone No
+									.col-sm-7
+										- kono_phone_no = AppConfiguration.get_config('knowlarity_phone_no')
+										.padding-5  
+											= text_field_tag :knowlarity_phone_no, kono_phone_no, :class=> 'form-control update_knowlarity_phone_no', "data-conf-key"=>'knowlarity_phone_no'	
+										.red-text.font-sz-12
+											%b Note: Put Knowlarity Phone no by Comma (,) separator.
+											%br 
+											%b Ex: 6366370232,8902316887	
+								.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Show Order Notifications
+									.col-sm-7
+										- order_notification_status = (AppConfiguration.get_config_value('order_notification') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :order_notification, 'enabled', order_notification_status, {"data-conf-key"=>"order_notification","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever        
+															 
+
+		#i.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Inventory Settings
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Auto adjust store requisition
+									.col-sm-8
+										- aasr_status = (AppConfiguration.get_config_value('req_auto_adjust') == "1") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :req_auto_adjust, '1', aasr_status, {"data-conf-key"=>"req_auto_adjust","data-value-active"=>"1","data-value-inactive"=>"0", "class"=> "update_app_config"}
+												%span.lever
+											 
+								.form-group
+									%label.col-sm-4.control-label Safety stock alert
+									.col-sm-8
+										- ssa_status = (AppConfiguration.get_config_value('safety_stock_alert') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :safety_stock_alert, 'enabled', ssa_status, {"data-conf-key"=>"safety_stock_alert","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+																					 
+												
+								.form-group
+									%label.col-sm-4.control-label Stock reorder level alert
+									.col-sm-8
+										- rol_status = (AppConfiguration.get_config_value('stock_reorder_level_alert') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :stock_reorder_level_alert, 'enabled', rol_status, {"data-conf-key"=>"stock_reorder_level_alert","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Stock audit alert
+									.col-sm-8
+										- saal_status = (AppConfiguration.get_config_value('stock_audit_alert') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :stock_audit_alert, 'enabled', saal_status, {"data-conf-key"=>"stock_audit_alert","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Threshold audit alert
+									.col-sm-8
+										- threshold_status = (AppConfiguration.get_config_value('threshold_audit_alert') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :threshold_audit_alert, 'enabled', threshold_status, {"data-conf-key"=>"threshold_audit_alert","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever        
+								
+								.form-group
+									%label.col-sm-4.control-label Allow stock transfer to secondary stores
+									.col-sm-8
+										- sttst_status = (AppConfiguration.get_config_value('stock_transfer_to_secondary_store') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :stock_transfer_to_secondary_store, 'enabled', sttst_status, {"data-conf-key"=>"stock_transfer_to_secondary_store","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Stock expiry alert 
+									.col-sm-8
+										- stex_status = (AppConfiguration.get_config_value('stock_expiry_alert') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :stock_expiry_alert, 'enabled', stex_status, {"data-conf-key"=>"stock_expiry_alert","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", "data-dependent-container"=>"stock_expires_upto"}
+												%span.lever
+										#stock_expires_upto
+											.form-group
+												%label.col-sm-4.control-label 
+													Stock expires upto how many days
+												.col-sm-7
+													- stock_expires_upto = AppConfiguration.get_config('stock_expires_upto')
+													.padding-5  
+														= text_field_tag :stock_expires_upto, stock_expires_upto, :class=> 'form-control update_app_text_config', "data-conf-key"=>'stock_expires_upto'
+		#android.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Android App Settings
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Inventory Module
+									.col-sm-8
+										- apinvm_status = (AppConfiguration.get_config_value('app_inventory_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_inventory_module, 'enabled', apinvm_status, {"data-conf-key"=>"app_inventory_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Reprint Orders
+									.col-sm-8
+										- aprepord_status = (AppConfiguration.get_config_value('app_reprint_orders') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_reprint_orders, 'enabled', aprepord_status, {"data-conf-key"=>"app_reprint_orders","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Reports Module
+									.col-sm-8
+										- reportm_status = (AppConfiguration.get_config_value('app_reports_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_reports_module, 'enabled', reportm_status, {"data-conf-key"=>"app_reports_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label FOS Module
+									.col-sm-8
+										- fosm_status = (AppConfiguration.get_config_value('app_fos_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_fos_module, 'enabled', fosm_status, {"data-conf-key"=>"app_fos_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Home Delivery Module
+									.col-sm-8
+										- ahdm_status = (AppConfiguration.get_config_value('app_home_delivery_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_home_delivery_module, 'enabled', ahdm_status, {"data-conf-key"=>"app_home_delivery_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Table Orders Module
+									.col-sm-8
+										- atom_status = (AppConfiguration.get_config_value('app_table_orders_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_table_orders_module, 'enabled', atom_status, {"data-conf-key"=>"app_table_orders_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Protect user activity with PIN
+									.col-sm-8
+										- puawp_status = (AppConfiguration.get_config_value('app_protect_user_activity_with_pin') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_protect_user_activity_with_pin, 'enabled', puawp_status, {"data-conf-key"=>"app_protect_user_activity_with_pin","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Print KOT
+									.col-sm-8
+										- apkot_status = (AppConfiguration.get_config_value('app_print_kot') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_print_kot, 'enabled', apkot_status, {"data-conf-key"=>"app_print_kot","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Print Bill
+									.col-sm-8
+										- apbill_status = (AppConfiguration.get_config_value('app_print_bill') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_print_bill, 'enabled', apbill_status, {"data-conf-key"=>"app_print_bill","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Reprint Bill
+									.col-sm-8
+										- apbill_reprint_status = (AppConfiguration.get_config_value('app_reprint_bill') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_reprint_bill, 'enabled', apbill_reprint_status, {"data-conf-key"=>"app_reprint_bill","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever                        
+								.form-group
+									%label.col-sm-4.control-label Settlement with Paynear Device
+									.col-sm-8
+										- aswpnr_status = (AppConfiguration.get_config_value('app_settlement_with_paynear') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :app_settlement_with_paynear, 'enabled', aswpnr_status, {"data-conf-key"=>"app_settlement_with_paynear","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever   
+
+								.form-group
+									%label.col-sm-4.control-label Print Discount Details
+									.col-sm-7
+										- print_discunt_details_status = (AppConfiguration.get_config_value('print_discunt_details_status') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :print_discunt_details_status, 'enabled', print_discunt_details_status, {"data-conf-key"=>"print_discunt_details_status","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever   
+
+								.form-group
+									%label.col-sm-4.control-label Print MRP/Sell Price
+									.col-sm-7
+										- print_mrp_sell_price = (AppConfiguration.get_config_value('print_mrp_sell_price') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :print_mrp_sell_price, 'enabled', print_mrp_sell_price, {"data-conf-key"=>"print_mrp_sell_price","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever                      
+
+							.form-horizontal.bordered-row
+		#ad.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Advance Settings
+							.form-horizontal.bordered-row
+								No configurations available yet
+		#clr.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Clear Data
+							.form-horizontal.bordered-row
+								No configurations available yet
+		#report.tab-pane     
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container    
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Report Settings
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Sale Report send by email
+									.col-sm-8
+										- report_email_status = (AppConfiguration.get_config_value('report_send_by_email') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :report_send_by_email, 'enabled', report_email_status, {"data-conf-key"=>"report_send_by_email","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label 
+										Email for send sale Report
+										%br
+											= "(Ex: a@gmail.com,b@gmail.com)"
+									.col-sm-7
+										- email_sale_detail = AppConfiguration.get_config('email_for_send_sale_details')
+										.padding-5
+											= text_field_tag :email_for_send_sale_details, email_sale_detail, :class=> 'form-control update_email_for_send_sale_details', "data-conf-key"=>'email_for_send_sale_details'        
+								.form-group
+									%label.col-sm-4.control-label 
+										Decimal Place Needs
+										%br To Be Shown In Report
+									.col-sm-7
+										- report_precision = AppConfiguration.get_config('report_precision')
+										.padding-5  
+											= text_field_tag :report_precision, report_precision, :class=> 'form-control update_report_precision', "data-conf-key"=>'report_precision'
+								.form-group
+									%label.col-sm-4.control-label Zero quantity sale in report
+									.col-sm-8
+										- zero_qty_sale_report_status = (AppConfiguration.get_config_value('zero_qty_sale_report') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :zero_qty_sale_report_status, 'enabled', zero_qty_sale_report_status, {"data-conf-key"=>"zero_qty_sale_report","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+		#tsp.tab-pane     
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container    
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Travelling Sales Person Settings
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Tsp Module
+									.col-sm-7
+										- tsp_status = (AppConfiguration.get_config_value('tsp_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :tsp_module, 'enabled', tsp_status, {"data-conf-key"=>"tsp_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Can Tsp get resource stock
+									.col-sm-7
+										- tsp_get_resource_stock_status = (AppConfiguration.get_config_value('tsp_get_resource_stock') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :tsp_get_resource_stock, 'enabled', tsp_get_resource_stock_status, {"data-conf-key"=>"tsp_get_resource_stock","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+								.form-group
+									%label.col-sm-4.control-label Item Remarks
+									.col-sm-7
+										- item_remarks_status = (AppConfiguration.get_config_value('item_remarks') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :item_remarks, 'enabled', item_remarks_status, {"data-conf-key"=>"item_remarks","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever  
+								.form-group
+									%label.col-sm-4.control-label Pedler work on offline
+									.col-sm-7
+										- pwo_status = (AppConfiguration.get_config_value('pedler_work_on_offline') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :pedler_work_on_offline, 'enabled', pwo_status, {"data-conf-key"=>"pedler_work_on_offline","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Bit wise resource allocation
+									.col-sm-7
+										- bwra_status = (AppConfiguration.get_config_value('bit_wise_resource_allocation') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :pedler_work_on_offline, 'enabled', bwra_status, {"data-conf-key"=>"bit_wise_resource_allocation","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever  
+								.form-group
+									%label.col-sm-4.control-label Live Tracking and Timeline
+									.col-sm-7
+										- live_tracking_status = (AppConfiguration.get_config_value('live_tracking_and_timeline') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :live_tracking_and_timeline, 'enabled', live_tracking_status, {"data-conf-key"=>"live_tracking_and_timeline","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+								.form-group
+									%label.col-sm-4.control-label Resource order as order history
+									.col-sm-7
+										- resource_order_history_status = (AppConfiguration.get_config_value('resource_order_history') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :resource_order_history, 'enabled', resource_order_history_status, {"data-conf-key"=>"resource_order_history","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+								.form-group
+									%label.col-sm-4.control-label User and resource targets
+									.col-sm-7
+										- user_resource_target_status = (AppConfiguration.get_config_value('user_and_resource_target') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :user_and_resource_target, 'enabled', user_resource_target_status, {"data-conf-key"=>"user_and_resource_target","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config","data-dependent-container"=>"tagret_status_dependent"}
+												%span.lever
+											.clearfix
+											.grey-text.font-sz-12
+												%b Note:
+												This role can initiate target to his subordinate role.
+										#tagret_status_dependent
+											.padding-5
+												- Role.order('created_at asc').each do |role|
+													- role_status = (AppConfiguration.get_config_value("initiate_target_by_#{role.name}") == "enabled") ? true : false
+													= check_box_tag "initiate_target_by_#{role.name}", 'enabled', role_status, {"data-conf-key"=>"initiate_target_by_#{role.name}","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config col-sm-3 user_target_role",:id=>"initiate_target_by_#{role.name}"}
+													%label{:for => "initiate_target_by_#{role.name}"}=role.name.humanize   					
+
+								.form-group
+									%label.col-sm-4.control-label Calculate incentive and commission
+									.col-sm-7
+										- incentive_commission_status = (AppConfiguration.get_config_value('incentive_commission') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :incentive_commission, 'enabled', incentive_commission_status, {"data-conf-key"=>"incentive_commission","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever                                        
+											 
+											
+								/ .form-group
+								/   %label.col-sm-4.control-label 
+								/     Manager Message
+								/   .col-sm-7
+								/     - manager_message = AppConfiguration.get_config('manager_message')
+								/     .padding-5
+								/       = text_field_tag :manager_message, manager_message, :class=> 'form-control update_app_text_config', "data-conf-key"=>'manager_message'
+								/ .form-group
+								/   %label.col-sm-4.control-label 
+								/     Executive Message
+								/   .col-sm-7
+								/     - sales_executive_message = AppConfiguration.get_config('sales_executive_message')
+								/     .padding-5
+								/       = text_field_tag :sales_executive_message, sales_executive_message, :class=> 'form-control update_app_text_config', "data-conf-key"=>'sales_executive_message' 
+
+								.form-group
+									%label.col-sm-4.control-label Distribution
+									.col-sm-7
+										- distribution_config_status = (AppConfiguration.get_config_value('distribution_config') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :distribution_config, 'enabled', distribution_config_status, {"data-conf-key"=>"distribution_config","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+
+		#se.tab-pane     
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container    
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Sourcing Executive
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Sourcing Executive Module
+									.col-sm-7
+										- se_status = (AppConfiguration.get_config_value('sourceing_exe_module') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :sourceing_exe_module, 'enabled', se_status, {"data-conf-key"=>"sourceing_exe_module","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+		#ven.tab-pane     
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container    
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Vendor
+							.form-group
+								%label.col-sm-4.control-label Vendor Email
+								.col-sm-7
+									- vendor_email_status = (AppConfiguration.get_config_value('vendor_email') == "enabled") ? true : false
+									.switch.padding-5
+										%label
+											= check_box_tag :vendor_email, 'enabled', vendor_email_status, {"data-conf-key"=>"vendor_email","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+											%span.lever
+							.form-group
+								%label.col-sm-4.control-label Admin Email
+								.col-sm-7
+									- admin_email = AppConfiguration.get_config('admin_email')
+									.padding-5
+										= text_field_tag :admin_email, admin_email, :class=> 'form-control update_admin_email', "data-conf-key"=>'admin_email'
+							.form-group
+								%label.col-sm-4.control-label Admin Email Password
+								.col-sm-7
+									- admin_email_password = AppConfiguration.get_config('admin_email_password')
+									.padding-5
+										= password_field_tag :admin_email_password, admin_email_password, :class=> 'form-control update_admin_email_password', "data-conf-key"=>'admin_email_password'
+							.form-group
+								%label.col-sm-4.control-label 
+									CC Emails
+									%br
+										= "(Ex: a@gmail.com,b@gmail.com)"
+								.col-sm-7
+									- cc_emails = AppConfiguration.get_config('cc_emails')
+									.padding-5
+										= text_field_tag :cc_emails, cc_emails, :class=> 'form-control update_app_text_config', "data-conf-key"=>'cc_emails'
+		#sms.tab-pane     
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container    
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title SMS Setting
+
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label SMS Sender Id
+									.col-sm-7
+										- sms_sender_id = AppConfiguration.get_config('sms_sender_id')
+										.padding-5  
+											= text_field_tag :sms_sender_id, sms_sender_id, :class=> 'form-control update_app_text_config', "data-conf-key"=>'sms_sender_id'
+										.clearfix
+											.grey-text.font-sz-12
+												%b Note:
+												Sender Id Must be same as SMS GATEWAY and must be approved by GATEWAY.
+								.form-group
+									%label.col-sm-4.control-label Admin Mobile No to Get Bill Details on Bill Settlement
+									.col-sm-7
+										- admin_phone = AppConfiguration.get_config('generate_admin_phone')
+										.padding-5  
+											= text_field_tag :generate_admin_phone, admin_phone, :class=> 'form-control update_app_text_config', "data-conf-key"=>'generate_admin_phone'
+								.form-group
+									%label.col-sm-4.control-label Send Bill summary to admin
+									.col-sm-8
+										- send_bill_summary_status = (AppConfiguration.get_config_value('send_bill_summary_to_admin') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_bill_summary_to_admin, 'enabled', send_bill_summary_status, {"data-conf-key"=>"send_bill_summary_to_admin","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever         
+								.form-group
+									%label.col-sm-4.control-label Send SMS To Customer On Order Confirm
+									.col-sm-7
+										- send_confirm_sms = (AppConfiguration.get_config_value('send_confirm_sms') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_confirm_sms, 'enabled', send_confirm_sms, {"data-conf-key"=>"send_confirm_sms","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+								.form-group
+									%label.col-sm-4.control-label Send Sms to customer on order status change
+									.col-sm-8
+										- send_sms_on_status_change_status = (AppConfiguration.get_config_value('send_sms_on_status_change') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_sms_on_status_change, 'enabled', send_sms_on_status_change_status, {"data-conf-key"=>"send_sms_on_status_change","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", "data-dependent-container"=>"order_status_dependent"}
+												%span.lever  
+											.clearfix
+											.grey-text.font-sz-12
+												%b Note:
+												This configuration will send sms to customer on order status change.
+										#order_status_dependent
+											.padding-5
+												- OrderDetail::STATUSES.each do |status|
+													- ordsms_status = (AppConfiguration.get_config_value("send_sms_for_order_status_#{status}") == "enabled") ? true : false
+													= check_box_tag "send_sms_for_order_status_#{status}", 'enabled', ordsms_status, {"data-conf-key"=>"send_sms_for_order_status_#{status}","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config col-sm-3",:id=>"send_sms_for_order_status_#{status}"}
+													%label{:for => "send_sms_for_order_status_#{status}"}=status.humanize          
+								.form-group
+									%label.col-sm-4.control-label Send Delivery Confirmation OTP To Customer (RUNNER)
+									.col-sm-8
+										- deliver_otp_status = (AppConfiguration.get_config_value('send_delivery_confirmation') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_delivery_confirmation, 'enabled', deliver_otp_status, {"data-conf-key"=>"send_delivery_confirmation","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever         
+								.form-group
+									%label.col-sm-4.control-label Send Sms to Customer on Bill Settlement
+									.col-sm-7
+										- send_sms_status = (AppConfiguration.get_config_value('send_customer_sms') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_customer_sms, 'enabled', send_sms_status, {"data-conf-key"=>"send_customer_sms","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever     
+								.form-group
+									%label.col-sm-4.control-label Send Sms to Admin On Bill Settlement
+									.col-sm-7
+										- send_admin_sms_status = (AppConfiguration.get_config_value('send_admin_sms') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_admin_sms, 'enabled', send_admin_sms_status, {"data-conf-key"=>"send_admin_sms","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+								.form-group
+									%label.col-sm-4.control-label Send SMS to Customer with Bill details (Item Name,sku) on Bill Settlement
+									.col-sm-7
+										- send_bill_details_to_customer_status = (AppConfiguration.get_config_value('send_bill_details_to_customer') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_bill_details_to_customer, 'enabled', send_bill_details_to_customer_status, {"data-conf-key"=>"send_bill_details_to_customer","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever     
+								.form-group
+									%label.col-sm-4.control-label Send SMS for not visiting (PEDLER)
+									.col-sm-7
+										- send_notification_for_not_visiting_status = (AppConfiguration.get_config_value('send_notification_for_not_visiting') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :send_notification_for_not_visiting, 'enabled', send_notification_for_not_visiting_status, {"data-conf-key"=>"send_notification_for_not_visiting","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever                                 
+												
+
+		#po.tab-pane     
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container    
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Purchase Order Settings														
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Invoice Date Mandatory
+									.col-sm-7
+										- invoice_date_status = (AppConfiguration.get_config_value('invoice_date') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :invoice_date, 'enabled', invoice_date_status, {"data-conf-key"=>"invoice_date","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label Smart PO
+									.col-sm-7
+										- smart_po = (AppConfiguration.get_config_value('smart_po') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :smart_po, 'enabled', smart_po, {"data-conf-key"=>"smart_po","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group
+									%label.col-sm-4.control-label On Behalf PO
+									.col-sm-7
+										- on_behalf_po = (AppConfiguration.get_config_value('on_behalf_po') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :on_behalf_po, 'enabled', on_behalf_po, {"data-conf-key"=>"on_behalf_po","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								
+								.form-group
+									%label.col-sm-4.control-label Auto adjust purchase order
+									.col-sm-8
+										- aapo_status = (AppConfiguration.get_config_value('purchase_order_auto_adjust') == "1") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :purchase_order_auto_adjust, '1', aapo_status, {"data-conf-key"=>"purchase_order_auto_adjust","data-value-active"=>"1","data-value-inactive"=>"0", "class"=> "update_app_config"}
+												%span.lever
+								
+								.form-group
+									%label.col-sm-4.control-label Percentage applied on lending price
+									.col-sm-8
+										- percentage_status = (AppConfiguration.get_config_value('Percentage_applied_on_lending_price') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :Percentage_applied_on_lending_price, 'enabled', percentage_status, {"data-conf-key"=>"Percentage_applied_on_lending_price","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+
+								.form-group
+									%label.col-sm-4.control-label Barcode on catlog product
+									.col-sm-8
+										- barcode_status = (AppConfiguration.get_config_value('barcode_on_catalog_product') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :barcode_on_catalog_product, 'enabled', barcode_status, {"data-conf-key"=>"barcode_on_catalog_product","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Smart Receive
+									.col-sm-8
+										- smart_receive = (AppConfiguration.get_config_value('smart_receive') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :smart_receive, 'enabled', smart_receive, {"data-conf-key"=>"smart_receive","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								.form-group
+									%label.col-sm-4.control-label Auto Generate Sku
+									.col-sm-8
+										- auto_sku = (AppConfiguration.get_config_value('auto_generate_sku') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :auto_generate_sku, 'enabled', auto_sku, {"data-conf-key"=>"auto_generate_sku","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever 
+								.form-group.uniqe_sku_for_stock
+									%label.col-sm-4.control-label Uniqe Sku for Stock
+									.col-sm-8
+										- uniqe_sku = (AppConfiguration.get_config_value('uniqe_sku_for_stock') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :uniqe_sku_for_stock, 'enabled', uniqe_sku, {"data-conf-key"=>"uniqe_sku_for_stock","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+								.form-group.uniqe_stock_for_color_size
+									%label.col-sm-4.control-label Uniuq stock for color and size
+									.col-sm-8
+										- uniqe_stock_for_color_size_status = (AppConfiguration.get_config_value('uniqe_stock_for_color_size') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :uniqe_stock_for_color_size, 'enabled', uniqe_stock_for_color_size_status, {"data-conf-key"=>"uniqe_stock_for_color_size","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever  
+								.form-group
+									%label.col-sm-4.control-label Auto Generate Batch
+									.col-sm-7
+										- auto_batch = (AppConfiguration.get_config_value('auto_generate_batch_no') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :auto_generate_batch_no, 'enabled', auto_batch, {"data-conf-key"=>"auto_generate_batch_no","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever				
+								.form-group
+									%label.col-sm-4.control-label Price for color and size
+									.col-sm-8
+										- price_for_color_size_status = (AppConfiguration.get_config_value('price_for_color_size') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :price_for_color_size, 'enabled', price_for_color_size_status, {"data-conf-key"=>"price_for_color_size","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever  
+																 
+								.form-group
+									%label.col-sm-4.control-label Input tax for stock purchase
+									.col-sm-8
+										- iptax_status = (AppConfiguration.get_config_value('stock_input_tax') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :stock_input_tax, 'enabled', iptax_status, {"data-conf-key"=>"stock_input_tax","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", "data-dependent-container"=>"input_tax_dependent"}
+												%span.lever
+											.clearfix
+											.grey-text.font-sz-12
+												%b Note:
+												This configuration will calculate input tax amounts at the time receiving purchase order items in inventory.
+
+										- iptax_type = (AppConfiguration.get_config_value('stock_input_tax_type'))
+										#input_tax_dependent
+											%input.with-gap{:type=>"radio", :name => "input_tax_type", :id=>"input_type_inclusive", :checked => (iptax_type == "inclusive"), "data-conf-key"=>"stock_input_tax_type","data-value-active"=>"inclusive","data-value-inactive"=>"exclusive", "class"=> "update_app_config"}
+											%label{:for=>"input_type_inclusive"} Inclusive
+											%input.with-gap{:type=>"radio", :name => "input_tax_type", :id=>"input_type_exclusive", :checked => (iptax_type == "exclusive"), "data-conf-key"=>"stock_input_tax_type","data-value-active"=>"exclusive","data-value-inactive"=>"inclusive", "class"=> "update_app_config"}
+											%label{:for=>"input_type_exclusive"} Exclusive      
+
+								.form-group
+									%label.col-sm-4.control-label Different Barcode On Two Level
+									.col-sm-7
+										- different_barcode_on_two_level = (AppConfiguration.get_config_value('different_barcode_on_two_level') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :different_barcode_on_two_level, 'enabled', different_barcode_on_two_level, {"data-conf-key"=>"different_barcode_on_two_level","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+												%span.lever
+
+								/ .form-group
+								/ 	%label.col-sm-4.control-label Stock Identity
+								/ 	.col-sm-7
+								/ 		- stock_identity_status = (AppConfiguration.get_config_value('stock_identity') == "enabled") ? true : false
+								/ 		.switch.padding-5
+								/ 			%label
+								/ 				= check_box_tag :stock_identity, 'enabled', stock_identity_status, {"data-conf-key"=>"stock_identity","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+								/ 				%span.lever       
+		#approval_settings.tab-pane
+			.main-section__content
+				.example
+					.example__content.p0
+						.data-table-container
+							%header.data-table-header
+								.data-table-header__label
+									%span.fs-title Approval Settings
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Purchase order approval
+									.col-sm-8
+										- _purchase_order_approval = (AppConfiguration.get_config_value('purchase_order_approval') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :purchase_order_approval, 'enabled', _purchase_order_approval, {"data-conf-key"=>"purchase_order_approval","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", "data-dependent-container"=>"purchase_order_approval_role"}
+												%span.lever
+								#purchase_order_approval_role
+									- _all_roles = Role.order('created_at asc')
+									- _all_roles.each do |role|
+										.form-group
+											.col-sm-4
+											.col-sm-7
+												- _approval = (AppConfiguration.get_config_value("#{role.name}_purchase_order_approval") == "enabled") ? true : false
+												.padding-5
+													= check_box_tag "#{role.name}_purchase_order_approval", 'enabled', _approval, {"data-conf-key"=>"#{role.name}_purchase_order_approval","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+													%label{:for=>"#{role.name}_purchase_order_approval"}= role.name.humanize
+
+							.form-horizontal.bordered-row
+								.form-group
+									%label.col-sm-4.control-label Purchase order cancel approval
+									.col-sm-8
+										- _po_cancellation_approval = (AppConfiguration.get_config_value('po_cancellation_approval') == "enabled") ? true : false
+										.switch.padding-5
+											%label
+												= check_box_tag :po_cancellation_approval, 'enabled', _po_cancellation_approval, {"data-conf-key"=>"po_cancellation_approval","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", "data-dependent-container"=>"po_cancellation_approval_role"}
+												%span.lever
+								#po_cancellation_approval_role
+									- _all_roles = Role.order('created_at asc')
+									- _all_roles.each do |role|
+										.form-group
+											.col-sm-4
+											.col-sm-7
+												- _approval_by_role = (AppConfiguration.get_config_value("#{role.name}_po_cancellation_approval_role") == "enabled") ? true : false
+												.padding-5
+													= check_box_tag "#{role.name}_po_cancellation_approval_role", 'enabled', _approval_by_role, {"data-conf-key"=>"#{role.name}_po_cancellation_approval_role","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}
+													%label{:for=>"#{role.name}_po_cancellation_approval_role"}= role.name.humanize
+
+:javascript
+	$(document).ready(function() {
+		var iptax_status = "#{AppConfiguration.get_config_value('stock_input_tax')}";
+		var smssendcust_status = "#{AppConfiguration.get_config_value('send_sms_on_status_change')}";
+		var stex_status = "#{AppConfiguration.get_config_value('stock_expiry_alert')}";
+		var purchase_order_approval_status = "#{AppConfiguration.get_config_value('purchase_order_approval')}";
+		var po_cancellation_approval_status = "#{AppConfiguration.get_config_value('po_cancellation_approval')}";
+		var target_status = "#{AppConfiguration.get_config_value('user_and_resource_target')}";
+		if(iptax_status == "disabled") {
+			$("#input_tax_dependent").hide();
+		}  
+		if(smssendcust_status == "disabled") {
+			$("#order_status_dependent").hide();
+		}
+		if(stex_status == "disabled") {
+			$("#stock_expires_upto").hide();
+		}
+		if(purchase_order_approval_status == "disabled") {
+			$("#purchase_order_approval_role").hide();
+		}
+		if(target_status == "disabled") {
+			$("#tagret_status_dependent").hide();
+		}
+		if(po_cancellation_approval_status == "disabled"){
+			$("#po_cancellation_approval_role").hide();	
+		}
+	});

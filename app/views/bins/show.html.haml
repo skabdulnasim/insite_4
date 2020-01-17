@@ -1,0 +1,27 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @bin.name
+%p
+  %b Height:
+  = @bin.height
+%p
+  %b Width:
+  = @bin.width
+%p
+  %b Breadth:
+  = @bin.breadth
+%p
+  %b Row no:
+  = @bin.row_no
+%p
+  %b Store rack:
+  = @bin.store_rack
+%p
+  %b Unique identify no:
+  = @bin.unique_identify_no
+
+= link_to 'Edit', edit_bin_path(@bin)
+\|
+= link_to 'Back', store_rack_bins_path(@bin.store_rack.id)

@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Reservation date:
+  = @reservation.reservation_date
+%p
+  %b Pax:
+  = @reservation.pax
+%p
+  %b Customer:
+  = @reservation.customer
+%p
+  %b Resource:
+  = @reservation.resource
+%p
+  %b Slot:
+  = @reservation.slot
+
+= link_to 'Edit', edit_reservation_path(@reservation)
+\|
+= link_to 'Back', reservations_path

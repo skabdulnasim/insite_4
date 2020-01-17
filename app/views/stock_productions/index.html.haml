@@ -1,0 +1,23 @@
+%h1 Listing stock_productions
+
+%table
+  %tr
+    %th Production store
+    %th Store
+    %th Status
+    %th
+    %th
+    %th
+
+  - @stock_productions.each do |stock_production|
+    %tr
+      %td= stock_production.kitchen_store_id
+      %td= stock_production.store_id
+      %td= stock_production.status
+      %td= link_to 'Show', stock_production
+      %td= link_to 'Edit', edit_stock_production_path(stock_production)
+      %td= link_to 'Destroy', stock_production, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Stock production', new_stock_production_path

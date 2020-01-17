@@ -1,0 +1,41 @@
+- unless smart_listing.empty?
+	%table.data-table#accordion
+		%tr{:style=>"background:#ddd;"}
+			%th Customer Name
+			%th Phone No
+			%th Email
+			%th Address
+			%th Total Bill Amount
+		- smart_listing.collection.each do |object|
+			- bill_amount = get_total_bill_amount_by_date(object,@from_datetime,@to_datetime,@unit_id)
+			-if bill_amount > 0
+				%tr.data-table__selectable-row
+					%td
+						%i.fa.fa-user
+						- if object.customer_profile.customer_name.present?
+							= object.customer_profile.customer_name
+						- else
+							= "#{object.try(:customer_profile).try(:firstname)} #{object.try(:customer_profile).try(:lastname)}"
+					-if object.mobile_no.present?		
+						%td= object.mobile_no 
+					- else
+						%td -
+					- if object.email.present?	
+						%td= object.email 
+					- else
+						%td -
+					- if object.customer_profile.address.present?	
+						%td= object.customer_profile.address
+					
+					- elsif object.addresses.present?
+						%td= object.addresses.first.delivery_address
+					- else
+						%td -
+					%td 
+						= "#{currency}" "."
+						=bill_amount
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		No orders found

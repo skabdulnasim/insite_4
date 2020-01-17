@@ -1,0 +1,46 @@
+.main-section__content.left{:style=>"width:600px !important;"}
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Currencies
+      =smart_listing_render(:currency)
+.main-section__content.right{:style=>"width:400px !important;"}
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header{:style=>"background-color:green !important;"}
+          .data-table-header__label
+            %span.fs-title{:style=>"color:white;"} Selected Currencies
+    .panel.panel-default#selected_currency_panel{:style=>"padding-left:20px; padding-right:20px;"}
+      -@accepted_currencies.each do |accepted_currency|
+        .card.grey{:style=>"height:35px;padding:5px;"}
+          %span.currency_name
+            =accepted_currency.country_currency.currency_code
+          %span{:style=>"margin-left:55px;"}
+            ="1 #{accepted_currency.country_currency.currency_code}"
+            %i.fa.fa-exchange{:style=>"color:green;"}
+            %span{:id=>"currency_multipliler_#{accepted_currency.country_currency_id}"} 
+              ="#{accepted_currency.multiplier}"
+            ="#{currency}"
+          %span{:style=>"float:right;padding:2px;"}
+            %button.m-btn.orange.m-btn-low-padding.open_modal{"data-base-currency"=>"#{currency}","data-selected-currency"=>"#{accepted_currency.country_currency.currency}","data-currency-code"=>"#{accepted_currency.country_currency.currency_code}","data-currency-id"=>"#{accepted_currency.country_currency_id}","data-module"=>"edit_module","data-multiplier"=>accepted_currency.multiplier}
+              %i.mdi-editor-border-color{:style=>"font-size:1em;"}
+
+#currencyModal.modal.fade{:role => "dialog"}
+  .modal-dialog
+    / Modal content
+    .modal-content
+      .modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"} ×
+        %h4.modal-title Currency Selection
+      .modal-body
+        .example
+          .example__content.p0#selected_currency
+            .data-table-container
+              %header.data-table-header
+                .data-table-header__label#conversion-module    
+      .modal-footer
+        %button.btn.btn-primary#currency_final_selection{:type => "button"} Add to Selection
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

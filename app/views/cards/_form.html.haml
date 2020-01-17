@@ -1,0 +1,34 @@
+= form_for @card, :html => { :class => 'form-horizontal'} do |f|
+  - if @card.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@card.errors.count, "error")} prohibited this card from being saved:"
+      %ul
+        - @card.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :no
+    = f.text_field :no
+  .field
+    = f.label :valid_upto
+    = f.date_select :valid_upto
+  .field
+    = f.label :type
+    = f.text_field :type
+  .field
+    = f.label :bank
+    = f.text_field :bank
+  .field
+    = f.label :cvv
+    = f.number_field :cvv
+  .field
+    = f.label :merchandiser
+    = f.text_field :merchandiser
+  .field
+    = f.label :name_on_card
+    = f.text_field :name_on_card
+  .field
+    = f.label :amount
+    = f.number_field :amount
+  .actions
+    = f.submit 'Save'

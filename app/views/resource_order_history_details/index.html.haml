@@ -1,0 +1,31 @@
+%h1 Listing resource_order_history_details
+
+%table
+  %tr
+    %th Menu product
+    %th Product
+    %th Product name
+    %th User
+    %th Unit
+    %th Recorded at
+    %th Remrks
+    %th
+    %th
+    %th
+
+  - @resource_order_history_details.each do |resource_order_history_detail|
+    %tr
+      %td= resource_order_history_detail.menu_product_id
+      %td= resource_order_history_detail.product_id
+      %td= resource_order_history_detail.product_name
+      %td= resource_order_history_detail.user_id
+      %td= resource_order_history_detail.unit_id
+      %td= resource_order_history_detail.recorded_at
+      %td= resource_order_history_detail.remrks
+      %td= link_to 'Show', resource_order_history_detail
+      %td= link_to 'Edit', edit_resource_order_history_detail_path(resource_order_history_detail)
+      %td= link_to 'Destroy', resource_order_history_detail, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Resource order history detail', new_resource_order_history_detail_path

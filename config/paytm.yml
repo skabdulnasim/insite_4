@@ -1,0 +1,19 @@
+defaults: &defaults
+  PAYTM_MERCHANT_KEY: '8z8A&OfSP23yTWyz'
+  WEBSITE: 'APPSTAGING'
+  MID: 'OTCFOO25397775981659'
+  INDUSTRY_TYPE_ID: 'Retail'
+  CHANNEL_ID: 'WAP'
+  payment_url: 'https://securegw-stage.paytm.in/theia/processTransaction'
+
+# Development environment
+development:
+  <<: *defaults
+
+# Test Enviroment
+test:
+  <<: *defaults
+
+# Production Environment
+production:
+  <<: *defaults

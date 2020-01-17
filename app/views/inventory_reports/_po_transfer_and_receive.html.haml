@@ -1,0 +1,43 @@
+- unless smart_listing.empty?
+	%table.data-table
+		%thead
+			%th Product
+			%th Stock transfer amount
+			%th Transfer from
+			%th Stock received amount
+			%th Receive to
+			%th Back to store
+			%th from date
+			%th to date 
+		%tbody
+			- smart_listing.collection.each do |object|
+				- object.stock_transfer_meta.each do |st|
+					%tr
+						- _product = Product.find(st.product_id)
+						%td= _product.package_component.present? ?  _product.product_name(_product) : _product.name
+						- _from_store = Store.find(params[:transfer_store_id])
+						%td
+							= st.quantity_transfered
+							%smal= st.product.basic_unit
+						%td
+							= _from_store.name
+							%small= store_type_tag(_from_store.store_type)
+						- _to_store = Store.find(params[:receive_store_id])
+
+						%td
+							= st.quantity_received
+							%small= st.product.basic_unit
+						%td
+							= _to_store.name
+							%small= store_type_tag(_to_store.store_type)
+						%td
+							= "#{st.quantity_transfered - st.quantity_received}"
+							%smal= st.product.basic_unit
+						%td= params[:from_date]
+						%td= params[:to_date]
+					
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	.p.warning No record
+

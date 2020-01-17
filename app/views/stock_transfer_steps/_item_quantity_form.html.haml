@@ -1,0 +1,15 @@
+= form_for @stock_transfer, url: wizard_path,:html => { :class => 'transfer_autosubmit_form', :remote => true } do |f|
+  = hidden_field_tag :store_id, @store.id
+  .col-lg-3.p0
+    %h4.strong.grey-text.text-darken-3 Item Quantity
+    %p.grey-text Provide quantity of every selected items which you want to transfer.
+    #form-autosave-message
+  .col-lg-9
+    - if @stock_transfer.errors.any?
+      #error_explanation
+        %h2= "#{pluralize(@stock_transfer.errors.count, "error")} prohibited this transfer from being saved:"
+        %ul
+          - @stock_transfer.errors.full_messages.each do |msg|
+            %li= msg
+    = f.fields_for :stock_transfer_meta do |builder|
+      = render "stock_transfer_meta_fields", :f => builder

@@ -1,0 +1,56 @@
+- unless smart_listing.empty?
+  - report_precision = AppConfiguration.get_config_value_of_report('report_precision').to_i
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Bill ID", "id" 
+        %th="Bill Serial"
+        %th= "Amount Without Tax"
+        %th= smart_listing.sortable "Total Tax", "tax_amount"
+        %th= smart_listing.sortable "Discount", "discount"
+        %th= smart_listing.sortable "Total", "grand_total"
+        %th="BOH Amount"
+        %th="User"
+        %th="Customer"
+        %th="Date"
+        %th="Created Date"             
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.id
+          %td=object.serial_no
+          %td=number_to_currency(object.bill_amount, unit: '', precision: report_precision)
+          %td=number_to_currency(object.tax_amount, unit: '', precision: report_precision)
+          %td=number_to_currency(object.discount, unit: '', precision: report_precision)
+          %td=number_to_currency(object.grand_total, unit: '', precision: report_precision)
+          %td=number_to_currency(object.boh_amount, unit: '', precision: report_precision)
+          %td=object.biller.present? ? "#{object.biller.profile.firstname} #{object.biller.profile.lastname}" : "#{object.biller_id}"
+          %td.font-sz-11=object.customer.customer_profile.customer_name
+          %td.font-sz-11=object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+          %td.font-sz-11=object.created_at.strftime("%d-%m-%Y, %I:%M %p")   
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  .example
+    .example__content.p0
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Summery Of Report
+          .data-table-header__actions    
+        %table.data-table
+          %thead
+            %tr
+              %th Total Bill Amount (without Tax)
+              %th Total Tax
+              %th Total Discount
+              %th Total Roundoff 
+              %th Total Pax
+              %th Total Bill Amount (with Tax)
+              %th Total Cash 
+              %th Total Card
+              %th Total Loyalty Card
+              %th Total Third Party
+             
+- else
+  .alert.alert-warning
+    No record found

@@ -1,0 +1,11 @@
+<tr class='data-table__selectable-row' id="cart_item_color_<%= color_id %>">
+  <td>
+    <%=color_name%>
+    <input type="hidden" name="product[color_products_attributes][<%=key%>][color_id]" value="<%=color_id%>">
+  </td>
+  
+  <td>
+    <input id="color_products_attributes_<%=key%>__destroy" name="product[color_products_attributes][<%=key%>][_destroy]" type="hidden" value="false">
+    <a href="#" class="remove_color" data-color-id="<%= color_id %>">Remove</a>
+  </td>
+</tr>

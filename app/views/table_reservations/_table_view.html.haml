@@ -1,0 +1,108 @@
+
+#cal_tables
+  .col-lg-2
+    #calender{:style =>"float:left;height:20px;"}
+      %h5#month
+        = link_to "<", date: @date.prev_month
+        = @date.strftime("%B %Y")
+        = link_to ">", date: @date.next_month
+      = calendar @date do |date|
+        .date{"data-whatever" => "#{date}",:id => "date#{date}"}
+          - if Date.parse(date.to_s) == Date.parse(params[:date].to_s)
+            %a.date{:href =>"/table_reservations/reservation_list/#{date}","data-whatever" => "#{date}",:id=>"date#{date}",:style=>"color:red"}
+              = date.day
+          - else
+            %a.date{:href =>"/table_reservations/reservation_list/#{date}","data-whatever" => "#{date}",:id=>"date#{date}"}
+              = date.day
+  .col-lg-10
+    .row#table_view_id
+      - @table_reservations.each do |tr|
+        - if !tr.table_reservation_meta.present? && tr.status != "3"
+          - from_time = Time.zone.parse(tr.from_time.to_s).to_time.strftime("%H").to_i
+          - to_time = Time.zone.parse(tr.to_time.to_s).to_time.strftime("%H").to_i
+          .draggable{"customer-id" => "#{tr.id}", "from-time" => "#{from_time}", :id => "customer#{tr.id}", "to-time" => "#{to_time}","head-count"=>"#{tr.head_count}"}
+            %center
+              %small
+                ="Name: #{tr.customer_name}"
+                ="Time: #{from_time}-#{to_time}"
+                ="PAX: #{tr.head_count}"
+                - if tr.section.name.present?
+                  ="Section: #{tr.section.name}"
+                - if tr.reservation_date == Date.today && tr.from_time.strftime("%H:%M") <= Time.now.to_formatted_s(:time)
+                  %button.btn.btn-warning.btn-xs.cancel_table_r{:type => "button",:id=>"cancel_reservation#{tr.id}",:onclick=>"update_reservation(this,'#{tr.id}')"}
+                    Cancel
+
+                            
+              .on_update{:id=>"on_update#{tr.id}",:style=>"width:100%;"}
+      .modal_button
+        %button.btn.btn-info.btn-circle.btn-xs{"data-target" => ".bs-example-modal-lg", "data-toggle" => "modal", :type => "button",:style=>"margin:24px;"}   
+          %i.fa.fa-plus-square
+#message_table 
+#timeslot_table
+  .row
+    %ul#myTab.nav.nav-tabs{:role => "tablist"}
+      - @sections.each do |c|
+        %li#sections{:role => "presentation"}
+          %a.customer{"aria-controls" => "home", "data-toggle" => "tab", :href => "#table#{c.id}", :role => "tab",:id=>"#{c.id}"} 
+            = c.name 
+    .tab-content
+      - @sections.each do |c|
+        .tab-pane{:role => "tabpanel",:id=>"table#{c.id}"}
+          %table.table.table-bordered.table-hover
+            %tr
+              %th Table info
+              - for i in (@open_time)..(@closed_time)
+                %th 
+                  %center
+                    = "#{i}"
+            
+              - c.tables.each do |tr|
+                %tr
+                  %td
+                    = "Table Name: #{tr.name}"
+                    %br
+                    = "Table Capacity: #{tr.capacity}"
+                  - for i in (@open_time)..(@closed_time)
+                    %td.box_of_booked_slot{:table_id=>"#{tr.id}",:id=>"booked#{i}#{tr.id}",:class=>"drop_on_update",:table_capacity=>"#{tr.capacity}","data-time-min"=>"#{i}","data-time-max"=>"#{i+1}"}
+                      - if tr.table_reservation_meta.present?
+                        - tr.table_reservation_meta.each do |t|
+                          - from_time = TableReservation.get_on_date_reservation_from_time(t.table_reservation.id,params[:date].to_s)
+                          - to_time = TableReservation.get_on_date_reservation_to_time(t.table_reservation.id,params[:date].to_s)
+                          - if from_time.present? && to_time.present?
+                            - for j in from_time..(to_time)
+                              - if j==i
+                                .table_div.padding-l-r-none.drop_zone_on_update{:reservation_id=>"#{tr.id}",:id=>"drop_zone_on_update#{tr.id}"}
+                                  %span.label.label-success
+                                    = t.table_reservation.customer_name
+                    
+.modal.fade.bs-example-modal-lg{"aria-hidden" => "true", "aria-labelledby" => "myLargeModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header{:style=>"background-color:#C8F7C5;"}
+        %h3 Add new customer
+      .modal-body
+        %form.form-inline
+          .form-group
+            %input.form-control{:type => "text",:name=>"customer_name",:id=>"customer_name_t",:placeholder=>"Enter customer name"}
+            %input{:name=>"unit_id", :value => @unit_name.id,:type=>"hidden",:id=>"unit_name"}
+            %input{:name=>"status", :value => "1",:type=>"hidden",:id=>"status"}
+            %input{:name=>"date", :value => params[:date],:type=>"hidden",:id=>"date" }
+          .form-group
+            %input.form-control{:type => "text",:name=>"customer_name",:id=>"customer_mobile_t",:placeholder=>"Enter contact no."}
+          .form-group
+            %input.form-control{:name=>"pax",:type=>"number",:id=>"pax_t",:placeholder=>"Enter Pax"}
+        - for i in (@open_time)..(@closed_time)
+          .col-lg-1.padding-l-r-none.margin-t-5{:style=>"height:50px; border:1px solid #dfdfdf;"}
+            .drop_zone{"data-time-min"=>"#{i}","data-time-max"=>"#{i+1}",:id=>"drop_zone#{i}",:style=>"width:100%;height:50px;"}  
+              =i   
+        .clearfix
+      .modal-footer
+        %button.btn.btn-success#save_on_table{:type => "button"}
+          Save details      
+             
+        
+          
+              
+
+                  
+                

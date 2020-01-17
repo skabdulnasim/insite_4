@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @customer_state.name
+
+= link_to 'Edit', edit_customer_state_path(@customer_state)
+\|
+= link_to 'Back', customer_states_path

@@ -1,0 +1,142 @@
+- links_arr = [{:title=>"Sale Reports",:url=>sale_reports_path,:active_class=>""},{:title=>"Sales by Branch",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+= render "layouts/flash"
+//= debug @unit_arr
+%ul.collapsible{"data-collapsible" => "accordion"}
+  %li
+    .collapsible-header
+      %b Column preferences
+    .collapsible-body
+      %p.col-lg-12
+        = form_tag(save_report_preferences_sale_reports_path, method: "post", :class=>"padding-20") do
+          - get_sale_summery_sales_preferences(current_user.unit_id,'sales_summery_report_by_date_range')
+          = hidden_field_tag :report_key, "sales_summery_report_by_date_range"
+          = hidden_field_tag :unit_id, current_user.unit_id          
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+            Save preferences
+      .clearfix
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title=" Summary Report Between #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/sale_reports/sale_summery.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&units=#{@unit_arr}"}
+              %i.mdi-file-file-download.left
+              CSV
+        - preferences = ReportPreference.by_unit(current_user.unit_id).by_key('sales_summery_report_by_date_range').first
+        - @pref = preferences.present? ? JSON.parse(preferences.allowed_attributes) : ["branch_name","grand_total","material_cost","percentage","unpaid_amt","settled_amt","cash","card","third_party","loyalty_card","discount"]        
+        %table.data-table
+          %thead
+            %tr.data-table__selectable-row
+              - if @pref.include?('branch_name')            
+                %th Branch Name
+              - if @pref.include?('grand_total')  
+                %th Grand Total
+              - if @pref.include?('material_cost')  
+                %th Material Cost
+              - if @pref.include?('percentage')  
+                %th Percentage(%)
+              - if @pref.include?('unpaid_amt')  
+                %th Unpaid Amt
+              - if @pref.include?('settled_amt')  
+                %th Settled Amt
+              - if @pref.include?('cash')  
+                %th Cash
+              - if @pref.include?('card')  
+                %th Card
+              - if @pref.include?('third_party')  
+                %th Third Party
+              - if @pref.include?('loyalty_card')  
+                %th Loyalty
+              - if @pref.include?('discount')   
+                %th Discount
+          %tbody
+            - summery_total_sale = 0
+            - summery_meterial_cost = 0
+            - summery_total_settlement = 0
+            - summery_unpaid_amount = 0
+            - summery_cash_sale = 0
+            - summery_card_sale = 0
+            - summery_third_sale = 0
+            - summery_loyalty_sale = 0
+            - summery_discount = 0
+            - total_percentage = 0
+            - @unit_arr.each do|unit_id|
+              - if unit_id.present?
+                - if @from_date.to_date < "2016-04-01".to_date
+                  - @from_date = "2016-04-01"
+                - unit = Unit.find(unit_id) 
+                - unit_detail_options = unit.unit_detail.options if unit.unit_detail.present?
+                - _from_datetime = @from_date.to_date.beginning_of_day+unit_detail_options[:day_closing_time].to_i.hours if unit.unit_detail.present?
+                - _from_datetime ||= @from_date.to_date.beginning_of_day
+                - _to_datetime = @to_date.to_date.end_of_day+unit_detail_options[:day_closing_time].to_i.hours if unit.unit_detail.present?
+                - _to_datetime ||= @to_date.to_date.end_of_day   
+                - settlement_data = get_settlement_data_by_date(unit_id,_from_datetime,_to_datetime)
+                - _total_sale = Bill.unit_bills(unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum{|data| data.grand_total}
+                - meterial_cost = get_meterial_cost(unit_id,_from_datetime,_to_datetime)
+                - total_discount = Bill.unit_bills(unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum{|data| data.discount}
+                - unpaid_amount = _total_sale.to_f - settlement_data[:total_settlement].to_f
+                - summery_total_sale = summery_total_sale + _total_sale
+                - summery_meterial_cost = summery_meterial_cost + meterial_cost
+                - summery_unpaid_amount = summery_unpaid_amount + unpaid_amount
+                - summery_total_settlement = summery_total_settlement + settlement_data[:total_settlement].to_i
+                - summery_cash_sale = summery_cash_sale + settlement_data[:cash_sale].to_i
+                - summery_card_sale = summery_card_sale + settlement_data[:card_sale].to_i
+                - summery_third_sale = summery_third_sale + settlement_data[:third_party_sale].to_i
+                - summery_loyalty_sale = summery_loyalty_sale + settlement_data[:loyalty_card_sale].to_i
+                - summery_discount = summery_discount + total_discount
+                - percentage = (meterial_cost/_total_sale)*100
+                - percentage = (percentage.is_a?(Float) && percentage.nan?) ? 0 : percentage
+                - total_percentage = (summery_meterial_cost/summery_total_sale)*100
+                - total_percentage = (total_percentage.is_a?(Float) && total_percentage.nan?) ? 0 : total_percentage
+                %tr.data-table__selectable-row
+                  - if @pref.include?('branch_name')
+                    %td=unit.unit_name
+                  - if @pref.include?('grand_total')  
+                    %td=number_to_currency(_total_sale, unit: '')
+                  - if @pref.include?('material_cost')  
+                    %td=number_to_currency(meterial_cost, unit: '')
+                  - if @pref.include?('percentage')  
+                    %td=number_to_currency(percentage, unit: '')
+                  - if @pref.include?('unpaid_amt')  
+                    %td=number_to_currency(unpaid_amount, unit: '')
+                  - if @pref.include?('settled_amt')
+                    %td=number_to_currency(settlement_data[:total_settlement], unit: '')
+                  - if @pref.include?('cash')
+                    %td=number_to_currency(settlement_data[:cash_sale], unit: '') 
+                  - if @pref.include?('card')
+                    %td=number_to_currency(settlement_data[:card_sale], unit: '')
+                  - if @pref.include?('third_party')
+                    %td=number_to_currency(settlement_data[:third_party_sale], unit: '')
+                  - if @pref.include?('loyalty_card')
+                    %td=number_to_currency(settlement_data[:loyalty_card_sale], unit: '')
+                  - if @pref.include?('discount')
+                    %td=number_to_currency(total_discount, unit: '')
+            %tr.data-table__selectable-row
+              %th.total-text Total
+              - if @pref.include?('grand_total')  
+                %th.total-value=number_to_currency(summery_total_sale, unit: '')
+              - if @pref.include?('material_cost')   
+                %th.total-value=number_to_currency(summery_meterial_cost, unit: '')
+              - if @pref.include?('percentage')
+                %th.total-value=number_to_currency(total_percentage, unit: '')
+              - if @pref.include?('unpaid_amt')             
+                %th.total-value=number_to_currency(summery_unpaid_amount, unit: '')
+              - if @pref.include?('settled_amt')
+                %th.total-value=number_to_currency(summery_total_settlement, unit: '') 
+              - if @pref.include?('cash')
+                %th.total-value=number_to_currency(summery_cash_sale, unit: '')
+              - if @pref.include?('card')
+                %th.total-value=number_to_currency(summery_card_sale, unit: '')
+              - if @pref.include?('third_party')
+                %th.total-value=number_to_currency(summery_third_sale, unit: '')
+              - if @pref.include?('loyalty_card')
+                %th.total-value=number_to_currency(summery_loyalty_sale, unit: '') 
+              - if @pref.include?('discount') 
+                %th.total-value=number_to_currency(summery_discount, unit: '')  
+        %br      
+        %span.padding-10="  ** Unpaid amount represent unsettled COD amount also."          
+

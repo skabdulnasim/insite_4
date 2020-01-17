@@ -1,0 +1,42 @@
+- unless smart_listing.empty?
+  .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+    %table.data-table{:style=>"margin-top:70px;"}
+      %thead
+        %tr.success
+          %th{ :style => "font-size:16px;text-align: center;" }
+            Sl No.
+          %th{ :style => "font-size:16px;text-align: center;" }
+            %i.fa.fa-male
+            Executive Name
+          %th{ :style => "font-size:16px;text-align: center;" }
+            %i.fa.fa-building
+            Zone/Branch
+          %th{ :style => "font-size:16px;text-align: center;" }  
+            %i.fa.fa-list
+            No of Nodes
+          %th{ :style => "font-size:16px;text-align: center;" }
+            %i.fa.fa-calendar 
+            Today's Targer
+          %th{ :style => "font-size:16px;text-align: center;" }
+            %i.fa.fa-check-circle 
+            Today Completed
+      %tbody.panel
+        -i =0
+        - smart_listing.collection.each do |user|
+          %tr.data-table__selectable-row.loadallocation{"data-id" => user.id,"data-target" => "#source_execModal", "data-toggle" => "modal", :target => "_blank","data-user_name"=>user.profile.full_name}
+            %td{ :style => "font-size:14px; text-align: center;" } 
+              =user.id
+            %td{ :style => "font-size:14px; text-align: center;" } 
+              =user.profile.full_name
+            %td{ :style => "font-size:14px; text-align: center;" } 
+              =user.unit.unit_name
+            %td{ :style => "font-size:14px; text-align: center;" } 
+              =count_allocations(user.id)
+            %td{ :style => "font-size:14px; text-align: center;" }
+              =count_todays_allocation(user.id)
+            %td{ :style => "font-size:14px; text-align: center;" } 0
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning{:style=>"margin-top:100px;"}
+    No record found  

@@ -1,0 +1,158 @@
+- unless smart_listing.empty?
+  - preferences = ReportPreference.by_unit(current_user.unit_id).by_key('sales_report_by_date').first
+  - @pref = preferences.present? ? JSON.parse(preferences.allowed_attributes) : ["bill_id","deliverables_at","bill_amount_without_tax","total_tax","discount","total","status","user","remarks"]
+  - report_precision = AppConfiguration.get_config_value_of_report('report_precision').to_i
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        - if @pref.include?('bill_id')
+          %th= smart_listing.sortable "Bill ID", "id" 
+        - if @pref.include?('bill_serial')
+          %th="Bill Serial"
+        - if @pref.include?('order_source')
+          %th.hidden-sm.hidden-md.hidden-xs= "Order Source"          
+        - if @pref.include?('deliverables_at')
+          %th.hidden-sm.hidden-md.hidden-xs= "Deliverables At"
+        - if @pref.include?('bill_amount_without_tax')
+          %th= "Bill Amount (without Tax)"
+        - if @pref.include?('total_tax')
+          %th= smart_listing.sortable "Total Tax", "tax_amount"
+        - if @pref.include?('discount')
+          %th= smart_listing.sortable "Discount", "discount"
+        - if @pref.include?('total')
+          %th= smart_listing.sortable "Total", "grand_total"
+        - if @pref.include?('pax')  
+          %th= smart_listing.sortable "Pax", "pax"
+        - if @pref.include?('roundoff')  
+          %th= smart_listing.sortable "Roundoff", "roundoff"  
+        - Bill.report_attributes.each do |key, attributes|
+          - if key == "payment"
+            - attributes.each do |attribute|
+              - if @pref.include?(attribute.parameterize)
+                %th= attribute.humanize
+          - if key == "tax"
+            - attributes.each do |attribute|
+              - if @pref.include?(attribute.parameterize)
+                %th= attribute.humanize
+          - if key == "third_party"
+            - attributes.each do |attribute|
+              - if @pref.include?(attribute.parameterize)
+                %th= attribute.humanize  
+        - if @pref.include?('status')
+          %th="Status"
+        - if @pref.include?('user')
+          %th="User"
+        - if @pref.include?('remarks')
+          %th="Remarks"
+        - if @pref.include?('date')
+          %th="Date"
+        - if @pref.include?('created_at')
+          %th="Created Date"
+        - if @pref.include?('customer')
+          %th="Customer"
+        - if @pref.include?('section_name')
+          %th="Section"
+        - if @pref.include?('third_party_order_id')
+          %th="Third Party Order Id"
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          - if @pref.include?('bill_id')
+            %td=object.id
+          - if @pref.include?('bill_serial')
+            %td="#{object.prefix}""#{object.serial_no}""#{object.suffix}"
+          - if @pref.include?('order_source')
+            %td.hidden-sm.hidden-md.hidden-xs= object.orders.first.source              
+          - if @pref.include?('deliverables_at')
+            %td.hidden-sm.hidden-md.hidden-xs= show_delivery_name(object.orders.first) 
+          - if @pref.include?('bill_amount_without_tax')
+            %td=number_to_currency(object.bill_amount, unit: '', precision: report_precision)
+          - if @pref.include?('total_tax')
+            %td=number_to_currency(object.tax_amount, unit: '', precision: report_precision)
+          - if @pref.include?('discount')
+            %td=number_to_currency(object.discount, unit: '', precision: report_precision)
+          - if @pref.include?('total')
+            %td=number_to_currency(object.grand_total, unit: '', precision: report_precision)
+          - if @pref.include?('pax')  
+            %td= object.pax
+          - if @pref.include?('roundoff')  
+            %td= object.roundoff
+          - Bill.report_attributes.each do |key, attributes|
+            - if key == "payment"
+              - attributes.each do |attribute|
+                - if @pref.include?(attribute.parameterize)
+                  %td= number_to_currency(object.payment(attribute), unit: '', precision: report_precision)
+            - if key == "tax"
+              - attributes.each do |attribute|
+                - if @pref.include?(attribute.parameterize)
+                  %td= number_to_currency(object.tax(attribute), unit: '', precision: report_precision)
+            - if key == "third_party"
+              - attributes.each do |attribute|
+                - if @pref.include?(attribute.parameterize)
+                  %td= number_to_currency(object.third_party(attribute), unit: '', precision: report_precision) 
+          - if @pref.include?('status')
+            %td=object.status.humanize
+          - if @pref.include?('user')
+            %td=object.biller.present? ? "#{object.biller.profile.firstname} #{object.biller.profile.lastname}" : "#{object.biller_id}"
+          - if @pref.include?('remarks')
+            %td.font-sz-11=object.remarks
+          - if @pref.include?('date')
+            %td.font-sz-11=object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+          - if @pref.include?('created_at')
+            %td.font-sz-11=object.created_at.strftime("%d-%m-%Y, %I:%M %p") 
+          - if @pref.include?('customer')  
+            %td= object.customer.present? ? "#{object.customer.customer_profile.firstname} #{object.customer.customer_profile.lastname} (#{object.customer.customer_profile.contact_no})" : "-"
+          - if @pref.include?('section_name')
+            %td= object.section.present? ? object.section.name : "-"
+          - if @pref.include?('third_party_order_id')
+            %td= object.orders.first.third_party_order_id
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  %header.data-table-header
+    .data-table-header__label
+      %span.fs-title Summary Of Report
+    .data-table-header__actions    
+  %table.data-table
+    %thead
+      %tr
+        %th Total Bill Amount (without Tax)
+        %th Total Tax
+        %th Total Discount
+        - if @pref.include?('roundoff') 
+          %th Total Roundoff 
+        - if @pref.include?('pax')   
+          %th Total Pax
+        %th Total Bill Amount (with Tax)
+        %th Total Cash 
+        %th Total Card
+        %th Total Loyalty Card
+        %th Total Third Party
+        - ThirdPartyPayment.uniq.pluck(:third_party_payment_option_name).each do |tppo|
+          -if @pref.include?(tppo.parameterize)
+            %th= tppo.humanize
+    %tbody
+      - settlement_data = Bill.get_unit_settlement_data(@unit_id,@from_datetime,@to_datetime)
+      - third_party_settlements = Bill.get_unit_third_party_settlement_data(@unit_id,@from_datetime,@to_datetime)
+      %tr
+        %td=number_to_currency(@total_sale[0].total_bill_amount.to_f, unit: '', precision: report_precision)
+        %td=number_to_currency(@total_sale[0].total_tax.to_f, unit: '', precision: report_precision)
+        %td=number_to_currency(@total_sale[0].total_discount.to_f, unit: '', precision: report_precision)
+        - if @pref.include?('roundoff') 
+          %td=number_to_currency(@total_sale[0].total_roundoff.to_f, unit: '', precision: report_precision)
+        - if @pref.include?('pax')  
+          %td=number_to_currency(@total_sale[0].total_pax.to_f, unit: '', precision: report_precision)
+        %td=number_to_currency(@total_sale[0].total_grand_total.to_f, unit: '', precision: report_precision) 
+        %td=number_to_currency(settlement_data[:cash_sale].to_f, unit: '', precision: report_precision)
+        %td=number_to_currency(settlement_data[:card_sale].to_f, unit: '', precision: report_precision)
+        %td=number_to_currency(settlement_data[:loyalty_card_sale].to_f, unit: '', precision: report_precision)
+        - total_3rd_party = 0
+        - third_party_settlements.each do |key,value|
+          - total_3rd_party = total_3rd_party + value.to_f
+        %td=number_to_currency(total_3rd_party, unit: '', precision: report_precision) 
+        / %td=number_to_currency(settlement_data[:third_party_sale].to_f, unit: '', precision: report_precision) 
+        - third_party_settlements.each do |key,value|
+          -if @pref.include?(key.parameterize)
+            %td=number_to_currency(value.to_f, unit: '', precision: report_precision) 
+- else
+  .alert.alert-warning
+    No record found

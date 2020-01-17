@@ -1,0 +1,61 @@
+= render "layouts/flash"                       
+- if @stores.present?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Available Stores
+            .data-table-header
+              %a.m-btn.teal.waves-effect.waves-light{:href => new_store_path}
+                Add new store   
+          %table.data-table
+            %tbody
+              - @stores.each do |store|
+                %tr.data-table__selectable-row
+                  %td.fixed-width-xs.p0.padding-t-b-none
+                    =get_store_type_logo(store.store_type)
+                  %td
+                    %h4
+                      = store.name
+                      %small
+                        = store_type_tag(store.store_type)
+                        = store_priority_tag(store.store_priority)
+                    %p.module_description.hidden-sm.hidden-xs
+                      %i.fa.fa-map-marker
+                      %strong= "#{t :label_address}: "
+                      = store.address
+                      %br
+                      %i.fa.fa-thumb-tack
+                      %strong= "#{t :label_pincode}: "
+                      = store.pincode
+                      %br
+                      %i.fa.fa-phone
+                      %strong= "#{t :label_contact}: "
+                      = store.contact_number
+                      - if store.tin_no.present?
+                        %br
+                        %i.fa.fa-thumb-tack
+                        %strong= "#{t :label_tinno}: "
+                        = store.tin_no
+                      - if store.tan_no.present?
+                        %br
+                        %i.fa.fa-thumb-tack
+                        %strong= "#{t :label_tanno}: "
+                        = store.tan_no  
+                    
+                  %td
+                    .btn-group.float-r.hidden-sm.hidden-xs
+                    = get_store_link_by_store_type(store)
+                  %td
+                    %a.m-btn.blue{:href => "#{edit_store_path(store)}", :title=>"edit store"}
+                      %i.mdi-editor-border-color
+                    %a.m-btn.green{:href => "#{add_products_store_path(store)}", :title=>"add Product"}
+                      %i.mdi-content-add
+-else
+  .jumbotron
+    %h2 No store available
+    %p It seems that your branch don't have any stores. Follow the link given below to add a store.
+    %p
+      %a.btn.btn-primary.btn-lg{:href => "#{new_store_path}"} Learn more                         

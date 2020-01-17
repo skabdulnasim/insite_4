@@ -1,0 +1,21 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %th Store
+      %th Unit
+      %th Transfer Cost (#{currency})
+    %tbody
+      - summery_total_price = 0
+      - smart_listing.collection.each do |object|
+        - summery_total_price = summery_total_price + object.total_price.to_f
+        %tr.data-table__selectable-row      
+          %td=object.store.name
+          %td=object.store.unit.unit_name          
+          %td=number_to_currency(object.total_price.to_f, unit: '')
+      %tr.data-table__selectable-row
+        %td.total-text Total
+        %td.total-value --
+        %td.total-value=number_to_currency(summery_total_price, unit: '')   
+- else
+  %p.warning No records!
+

@@ -1,0 +1,52 @@
+- unless smart_listing.empty?     
+  %table.data-table
+    %thead
+      %tr
+        %th.col-sm-2 Resource
+        %th District
+        %th Resource State
+        %th Last Visited by
+        %th Last Visited Date
+        %th Aging Days
+        %th Recorded Date
+        %th{:style => "padding-right: 0px !important;"} Synced Date
+    
+    %tbody
+      - smart_listing.collection.each do |resource|
+        - _visiting_history = last_visiting_history(resource)
+        - _aging_days = aging_days(resource)
+        /=debug aging_days
+        %tr
+          %td= "#{resource.name} (#{resource.unique_identity_no})"
+          %td= get_district_name_by_resource(resource)
+          - if resource.customer.present? 
+            - if resource.customer.customer_state.present? 
+              %td= resource.customer.customer_state.name
+            - else
+              %td 
+                %label.label.label-danger No State
+          - else
+            %td
+              %label.label.label-danger Has no Customer  
+          - if _visiting_history.present?  
+            %td= "#{_visiting_history.user.profile.firstname}" " #{_visiting_history.user.profile.lastname}"
+            %td= _visiting_history.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+            %td= "#{_aging_days}" " Days"
+            %td= _visiting_history.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+            %td= _visiting_history.created_at.strftime("%d-%m-%Y, %I:%M %p")
+          - else 
+            %td
+              %label.label.label-danger Not Visited
+            %td 
+              %label.label.label-danger Not Visited
+            %td= "#{_aging_days}" " Days"
+            %td= resource.created_at.strftime("%d-%m-%Y, %I:%M %p")
+            %td= resource.created_at.strftime("%d-%m-%Y, %I:%M %p")
+
+            
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  %br                 
+- else
+  .alert.alert-warning
+    No record found

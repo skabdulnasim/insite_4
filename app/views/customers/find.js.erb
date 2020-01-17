@@ -1,0 +1,18 @@
+$("#right-sheet-modal").openModal({
+  ready: function() {
+    $('.bottom-sheet').removeClass('bottom-sheet-complete');
+  },
+  complete: function() {
+    $('.bottom-sheet').addClass('bottom-sheet-complete');
+  }
+});   
+$('#modal-data-container').html("");
+<% if @customer.present? %>
+  $("#right-sheet-modal-header").html("Select Delivery Address");
+  $('#modal-data-container').append("<%= j render(:partial => 'customers/customer', :object => @customer.reload, :as => 'customer') %>");
+<% else %>
+  <% @customer = Customer.new(:mobile_no => params[:login]) %>
+  Materialize.toast("Customer not found", 3000,'round');
+  $("#right-sheet-modal-header").html("Register New Customer");
+  $('#modal-data-container').append("<%= j render(:partial=> 'form') %>");
+<% end %>

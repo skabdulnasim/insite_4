@@ -1,0 +1,26 @@
+<div class="row">
+  <div class="col s4">
+    <span class="grey-text">Item</span><br>
+    <span><%=response[0].product_name%></span>
+  </div>
+  <div class="col s4">
+    <span class="grey-text">Price</span><br>
+    <span><%=response[0].properties.sell_price%></span>
+  </div>  
+  <div class="col s4">
+    <span class="grey-text">SKU</span><br>
+    <span><%=response[0].sku%></span>
+  </div>    
+</div>
+<div class="row">
+  <div class="input-field col s12">
+    <input type="text" id="item-upc-input" autofocus="true" placeholder="Enter item serial or UPC">
+    <label for="item-upc">UPC</label>
+    <input type="hidden" id='upc-item-catalog-id' value="<%=catalog_id%>">
+    <input type="hidden" id='upc-item-menu-product-id' value="<%=response[0].menu_product_id%>">
+    <input type="hidden" id='upc-item-name' value="<%=response[0].product_name%>">
+    <input type="hidden" id='upc-item-sell-price' value="<%=response[0].properties.sell_price%>">
+    <input type="hidden" id='upc-item-currency' value="<%=currency%>">
+    <input type="hidden" id='upc-item-sku' value="<%=response[0].sku%>">
+  </div>
+</div>

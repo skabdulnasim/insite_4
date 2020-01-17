@@ -1,0 +1,23 @@
+- links_arr = [{:title=>"All Products",:url=>"#",:active_class=>"col-breadcrumb-selected"},] 
+= render "layouts/flash"
+.col-sm-3.padding-5
+  = render :partial => 'process_filter'
+.col-sm-9.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Production Process
+            .data-table-header__actions
+              - if can? :new, ProductionProcess    
+                / %a.m-btn.blue{:href=>"#"} 
+                /   %i.mdi-file-cloud-upload.left
+                /   %span.hidden-sm.hidden-xs Bulk upload       
+                %a.m-btn.blue.margin-l-5{:href=>new_production_process_path}
+                  %i.mdi-content-add.left
+                  %span.hidden-sm.hidden-xs Add new process
+                                                               
+          = smart_listing_render :production_processes
+.clearfix          

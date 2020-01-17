@@ -1,0 +1,122 @@
+!!!
+%html
+  %head
+    %meta{:charset => "utf-8"}
+      %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
+      %meta{:content => "#4285f4", :name => "theme-color"}
+      %meta{:content => "Yottolabs Pvt Ltd", :name => "author"}
+      %title 
+
+        = "#{@module_title} | #{I18n.t('brand.name')} | #{I18n.t('brand.parent')}"
+      / Core CSS - Include with every page
+      = stylesheet_link_tag "application","oken-input-facebook", "ghpages-materialize","material","admin_panel","query-builder", :media => "all"
+      = stylesheet_link_tag "ghpages-materialize","material","admin_panel","query-builder", :media => "all"
+      %link{:href => "http://fonts.googleapis.com/css?family=Roboto:900,500,300,700,400", :rel => "stylesheet", :type => "text/css"}
+      // Loading Essential JS files in header
+      = javascript_include_tag "application", "jquery.steps.min.js"
+      = javascript_include_tag params[:controller] if Inventory::Application.assets.find_asset("#{params[:controller]}.js")
+      = csrf_meta_tags
+  %body
+    %header
+      .navbar-fixed       
+        %nav
+          .nav-wrapper
+            %ul.left.margin-r-5.padding-l-r-5
+              %li
+                .logo-wrapper
+                  %a.sidebar-collapse.top-nav.waves-block.waves-light{"data-activates" => "nav-mobile", :href => "#",:style=>"float:left; color:#FFF; cursor:pointer"}
+                    %i.mdi-navigation-menu
+            .module-title
+              - get_module_name(@module_id,@module_title) #Application Helper
+            - if current_user.present?
+              %ul.top-right-navbar.hide-on-med-and-down.right
+                %li
+                  %a.waves-effect.waves-block.waves-light.chat-collapse.load-notifications{:href => "#","data-activates"=>"chat-out","data-unit-id"=>current_user.unit_id}
+                    %i.mdi-social-notifications              
+                %li
+                  %a.waves-effect.waves-light{:class=>"dropdown-button", :href=>"#!", "data-activates"=>"dropdown1"}
+                    .col-sm-9.p0
+                      = "#{current_user.profile.firstname.humanize} #{current_user.profile.lastname.humanize}"
+                      %br
+                      %small= "#{current_user.role.name.humanize}"
+                      %br
+                      %small= "#{current_user.unit.unit_name} (#{current_user.unit.unittype.unit_type_name})"
+                    .col-sm-3
+                      %i.mdi-navigation-arrow-drop-down
+      - if current_user.present?
+        %ul#dropdown1.dropdown-content.p0.margin-t-50
+          %li.width-100
+            %a{:href => profile_user_path(current_user)}="Profile (#{current_user.email})"
+          %li.width-100
+            %a{:href => destroy_user_session_path, :method => "delete"} Logout 
+      = render 'layouts/material_sidebar'
+      = render 'layouts/right_sidebar'
+  %main
+    #material-page-wrapper
+      = yield
+
+  %footer
+    .clearfix
+    // Loading Other JS files in footer
+    = yield(:head)
+    = javascript_include_tag "jquery.metisMenu","bootstrap.min","sb-admin","materialize","templates/loader"
+    = javascript_include_tag "#{FAYE_SERVER_URL}.js"
+    .footer-navbits
+      .col-lg-6.col-sm-6.hidden-sm.hidden-xs
+        %span
+          &copy;
+          ="#{Time.now.year}"
+          %a{:href=>"//www.yottolabs.com",:target=>"_blank", :style=>"color:#FFF !important"} Yottolabs     
+      .col-lg-6.col-sm-12
+        %span.float-r=I18n.t('brand.parent')
+      .clearfix      
+    - if current_user.present?
+      :javascript
+        $(document).ready(function() {
+          $(".sidebar-collapse").sideNav({
+            edge: 'left', // Choose the horizontal origin  
+          });
+          $(".chat-collapse").sideNav({
+            edge: 'right', // Choose the horizontal origin  
+            defaultOpen:false,
+            menuWidth: 300,
+          });
+          $('.chat-close-collapse').click(function() {
+            $('.chat-collapse').sideNav('hide');
+          });
+          $('.sidebar-close-collapse').click(function() {
+            $('.sidebar-collapse').sideNav('hide');
+          });            
+          $(".dropdown-button").dropdown(); 
+
+          ////////////////////////////// FAYE PUSH NOTIFICATION JS //////////////////////////////
+          $(function() {
+            var url = "#{FAYE_SERVER_URL}";
+            var faye = new Faye.Client(url);
+
+            var notification_channel = "#{get_unit_push_channel_name('portal','generic')}";
+            faye.subscribe(notification_channel, function(data) {
+              console.log(data);
+              Materialize.toast(data.json_data.description, 5000)
+            });
+
+            var sales_channel = "#{get_unit_push_channel_name('portal','new_order')}";
+            faye.subscribe(sales_channel, function(data) {
+              console.log(data);
+              request = $.ajax({
+                url:"/app_configurations/check_app_config",
+                method:"GET",
+                data:{config_key:"order_notification"}
+              });
+              request.success(function(data){
+                if(data["status"] == "enabled"){
+                  Materialize.toast("<span>A new order placed ID: "+data.order.id+"</span> <a class='btn-flat yellow-text' href='/orders/"+data.order.id+"' target='_blank'/>DETAILS<a>", 10000)
+                }
+              });
+              request.fail(function(){
+                alert("ajax error in cheking app config");
+              });
+            });
+          });        
+        });
+        

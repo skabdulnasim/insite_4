@@ -1,0 +1,18 @@
+- links_arr = [{:title=>"Roles permission report",:url=>user_role_reports_path,:active_class=>""}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="Roles Permission Report"
+          .data-table-header__actions
+            .form-group
+              %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/user_role_reports/role_permission.csv"}
+                %i.mdi-file-file-download.left
+                CSV
+        = smart_listing_render :user_role_report
+

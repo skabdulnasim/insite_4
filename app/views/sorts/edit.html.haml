@@ -1,0 +1,14 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Edit SORT
+        = render 'form'
+
+
+= link_to 'Show', @sort
+\|
+= link_to 'Back', sorts_path

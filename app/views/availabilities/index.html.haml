@@ -1,0 +1,55 @@
+= render "layouts/flash"
+.col-sm-12.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Availabilities
+            .data-table-header__actions  
+              %a.m-btn.m-btn-teal{:href => "#{new_availability_path}"}
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs New Availability
+          
+          %table.data-table
+            %thead
+              %tr.data-table__selectable-row
+                %th.col-sm-4
+                  Resource
+                %th.col-sm-4
+                  Available date
+                %th.col-sm-4
+                  Slot
+
+            %tbody.panel
+              - @availabilities.each do |availability|
+                %tr
+                  %td= availability.resource.name
+                  %td= availability.available_date
+                  %td= availability.slot.title
+                  
+/ = render "layouts/flash"
+/ %h1 Listing availabilities
+
+/ %table
+/   %tr
+/     %th Available date
+/     %th Slot
+/     %th Resource
+/     %th
+/     %th
+/     %th
+
+/   - @availabilities.each do |availability|
+/     %tr
+/       %td= availability.available_date
+/       %td= availability.slot.title
+/       %td= availability.resource.name
+/       %td= link_to 'Show', availability
+/       %td= link_to 'Edit', edit_availability_path(availability)
+/       %td= link_to 'Destroy', availability, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+/ %br
+
+/ = link_to 'New Availability', new_availability_path

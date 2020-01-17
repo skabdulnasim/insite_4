@@ -1,0 +1,59 @@
+%table.data-table
+	%thead
+		%tr.data-table__selectable-row
+			%th= smart_listing.sortable "Bill ID", "id"
+			%th="Product"
+			%th="Price"
+			%th="Quantity"
+			%th="Sku"
+			%th="Total Price"
+			%th="Refund Mode"
+			%th="Customer Name"
+			%th="Remarks"
+			%th="Created Date" 
+			%th="Stock add"
+	%tbody
+		- _total_price = 0
+		- smart_listing.collection.each do |object|
+			- _total_price = _total_price + (object.price.to_f * object.quantity.to_f)
+			%tr.data-table__selectable-row
+				%td=object.bill_id
+				%td=object.product.name
+				%td=object.price
+				%td=object.quantity
+				%td=object.sku.present? ? object.sku : "_"
+				%td=object.price.to_f * object.quantity.to_f
+				%td=object.refund_mode.present? ? object.refund_mode : "_" 
+				- if object.bill.customer.present? 
+					- if object.bill.customer.customer_profile.customer_name.present?
+						%td="#{object.bill.customer.customer_profile.customer_name}"
+					- else
+						%td="#{object.bill.customer.try(:customer_profile).try(:firstname)} #{object.bill.customer.try(:customer_profile).try(:lastname)}"	
+				- else
+					%td="...."
+				%td=object.remarks
+				%td.font-sz-11=object.created_at.strftime("%d-%m-%y, %I:%M %p")
+				%td=object.added_to_stock.present? ? "true" : "false"
+= smart_listing.paginate
+= smart_listing.pagination_per_page_links
+.example
+	.example__content.p0
+		.data-table-container#according{"aria-multiselectable" => "true", :role => "tablist"}
+			%header.data-table-header
+				.data-table-header__lable
+					%span.fs-title Summary of Report
+				.data-table-header__actions
+			%table.data-table
+				%thead
+					%tr
+						%th Total Price
+						%th Total Quantity
+				%tbody
+					%tr
+						%td= _total_price
+						%td= smart_listing.collection.sum(:quantity)
+          	
+
+
+
+		 

@@ -1,0 +1,37 @@
+#page-wrapper
+  - if notice 
+    .alert.alert-success.alert-dismissible{:role => "alert"}
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-check.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+        %span.sr-only Close
+      = notice
+  .row
+    .col-lg-12
+      .page-header
+        %h1
+          Account Management
+          %small
+            Manage Accounts
+            %a{:href => "http://176.9.20.35:8084/subdomains/new", :target => "_new"}
+              %button.btn.btn-xs{:type => "submit"} 
+                %i.fa.fa-plus-square
+                New Account
+      .page-container
+        %table.table.table-bordered
+          %tr.table-header.well
+            %th Subdomain Name
+            %th Owner Name
+            %th Email Id
+            %th Actions
+        
+          - @accounts.each do |account|
+            %tr
+              %td= account.subdomain
+              %td= "#{account.user.profile[:firstname]} #{account.user.profile[:lastname]}"
+              %td= account.user.email
+              %td
+                - if can? :destroy, Account        
+                  %span= link_to image_tag( 'delete.gif'), account, :method => :delete, :data => { :confirm => 'Are you sure?' }

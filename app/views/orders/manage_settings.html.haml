@@ -1,0 +1,47 @@
+= render "layouts/flash"
+.col-sm-12
+  %h4 Manage Order Settings
+  .panel.panel-default
+    .panel-heading
+      Order statuses
+      %button.btn.btn-primary.btn-xs.float-r{"data-target" => "#statusAddmodal", "data-toggle" => "modal"} 
+        %i.fa.fa-plus-square
+        Add new status
+    .panel-body
+      .row.col-sm-10
+        %table.table.table-bordered
+          %tr.well
+            %th Name
+            %th Color
+            %th Action
+            
+          - @order_statuses.each do |status|
+            %tr
+              %td= status.name
+              %td.col-sm-1
+                .input-group
+                  .input-group-addon{:style => "background-color : #{status.color_code}"}
+                  .form-control
+                    = status.color_code
+              %td              
+                - if can? :show, Unit  
+                  %a.btn.btn-sm.btn-success{:href => "#{order_status_path(status)}", :title => "View order"}
+                    %i.fa.fa-search-plus.fa-lg
+                - if can? :edit, Unit
+                  %a.btn.btn-sm.btn-info{:href => "#{edit_order_status_path(status)}", :title => "Edit order"} 
+                    %i.fa.fa-edit.fa-lg
+                - if can? :destroy, Unit
+                  %a.btn.btn-sm.btn-danger{:href => "#{order_status_path(status)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete order"}
+                    %i.fa.fa-trash-o.fa-lg
+  #statusAddmodal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+    .modal-dialog
+      .modal-content        
+        .modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#statusAddmodalLabel.modal-title Add new order status
+        .modal-body{:style => "min-height: 200px;"}                
+          = render 'order_statuses/form'                                   
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close

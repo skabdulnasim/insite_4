@@ -1,0 +1,16 @@
+#page-wrapper
+  .row
+    .page-header
+      %h2.margin-b-t-none
+        %span.fa-stack
+          %i.fa.fa-circle.fa-stack-2x{:style=>"color:#e74c3c"}
+          %i.fa.fa-flag.fa-stack-1x.fa-inverse      
+        Menu Management
+        %small
+          Edit combinations rule
+    .page-container
+      .col-sm-12
+        = render "layouts/flash"
+
+        = render 'form'
+

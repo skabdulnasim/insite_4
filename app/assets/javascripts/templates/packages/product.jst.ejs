@@ -1,0 +1,51 @@
+<!-- <div class="alert blue margin-t-15" style="text-align:center;">
+  <strong>ADD PRODUCT TO PRODUCT MASTER</strong>
+</div>
+ -->
+<div class="col-lg-6">
+  <div class="form-group margin-t-15 outer_product_details outer_product_name">
+    <input class="product_name form-control border-rad-1 inner_product_details product_search" placeholder="Name*" type="text">
+  </div>
+
+  <div class="form-group outer_product_basic_unit outer_product_details">
+    <select class="form-control product_basic_unit inner_product_details" required="required"><option value="">-- Choose Basic Unit --</option>
+    <% for (var i = response.data.basic_units.length - 1; i >= 0; i--) { %>
+      <option value="<%= response.data.basic_units[i].id %>"><%= response.data.basic_units[i].short_name %></option>
+    <% };%>
+    </select>
+  </div>
+
+  <div class="form-group outer_product_category outer_product_details">
+    <select class="form-control product_category inner_product_details" required="required"><option value="">-- Choose Category --</option>
+    <% for (var j = response.data.categories.length - 1; j >= 0; j--) { %>
+      <option value="<%= response.data.categories[j].id %>"><%= response.data.categories[j].name %></option>
+    <% };%>
+    </select>
+  </div>
+
+  <div class="form-group margin-t-15 outer_product_quantity outer_product_details allow-numeric-only">
+    <input class="product_quantity form-control border-rad-1" placeholder="Product quantity*" type="text">
+  </div>
+
+  <div class="form-group outer_menu_cards outer_product_details">
+    <select class="form-control menu_cards" required="required"><option value="">-- Choose Menu Card --</option>
+    <% if (response.data.menu_cards.length > 0) { %>
+      <% for (var k = response.data.menu_cards.length - 1; k >= 0; k--) { %>
+        <option value="<%= response.data.menu_cards[k].id %>"><%= response.data.menu_cards[k].name %></option>
+      <% } %>
+    <% } %>
+    </select>
+  </div>
+
+  <div class="form-group outer_menu_categories outer_product_details">
+    
+  </div>
+
+  <div class="form-group">
+    <input class="m-btn m-btn-green font-lato width-100 add-products" name="commit" value="ADD PRODUCT" type="submit" data-subunit-id="<%= subunit_id %>">
+  </div>
+
+  <div class="form-group">
+    <input class="m-btn m-btn-red font-lato width-100 remove-products" name="commit" value="REMOVE PRODUCT" type="submit" data-subunit-id="<%= subunit_id %>">
+  </div>
+</div>

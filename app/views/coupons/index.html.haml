@@ -1,0 +1,45 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Coupons
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_coupon_path}"}
+              %i.mdi-content-add.left
+              New Coupon           
+        %table.data-table    
+          %tr
+            %th Coupon Id
+            %th Coupon Name
+            %th Coupon Code
+            %th Coupon Type
+            %th Amount Type
+            %th Amount
+            %th Status
+            %th Count
+            %th From Date
+            %th To Date
+            %th Actions
+
+          - @coupons.each do |coupon|
+            %tr
+              %td= coupon.id
+              %td= coupon.name
+              %td= coupon.code
+              %td= coupon.coupon_type
+              %td= coupon.amount_type
+              %td= coupon.amount
+              %td= coupon.status
+              %td= coupon.count
+              %td= coupon.valid_from
+              %td= coupon.valid_to
+              %td
+                %a.m-btn.green.m-btn-low-padding{:href => "#{coupon_path(coupon)}", :title => "View Coupon"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_coupon_path(coupon)}", :title => "Edit Coupon"} 
+                  %i.mdi-editor-border-color
+                %a.m-btn.red.m-btn-low-padding{:href => "#{coupon_path(coupon)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete coupon promotion"}
+                  %i.mdi-action-delete  

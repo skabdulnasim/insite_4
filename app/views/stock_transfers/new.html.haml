@@ -1,0 +1,9 @@
+%script{:src => "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"}
+
+%link{:href => "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css", :rel => "stylesheet"}/
+
+- manual_load_javascript "stores"
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"New stock transfer",:url=>"#!",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+= render "layouts/flash"
+= render 'form'

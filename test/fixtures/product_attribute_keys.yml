@@ -1,0 +1,27 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  attribute_code: MyString
+  label: MyString
+  input_type: MyString
+  default_value: MyText
+  is_unique: false
+  is_required: false
+  is_comparable: false
+  is_sortable: false
+  is_system_entity: false
+  position: 1
+  deleted_at: 2016-05-16 13:12:35
+
+two:
+  attribute_code: MyString
+  label: MyString
+  input_type: MyString
+  default_value: MyText
+  is_unique: false
+  is_required: false
+  is_comparable: false
+  is_sortable: false
+  is_system_entity: false
+  position: 1
+  deleted_at: 2016-05-16 13:12:35

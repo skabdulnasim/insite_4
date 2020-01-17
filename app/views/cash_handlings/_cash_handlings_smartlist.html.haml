@@ -1,0 +1,59 @@
+- manual_load_javascript "templates/cash_handlings/denomination_details"
+- unless smart_listing.empty?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Cash Handling Summary
+              .row.white.padding-5.float-r   
+                %a.m-btn.blue.waves-effect.waves-light.white-text.margin-r-5{:href =>  new_cash_in_path, :title => "Cash In"}
+                  %i.fa.fa-money.left
+                  =I18n.t(:label_cash_in) 
+                %a.m-btn.blue.waves-effect.waves-light.white-text.margin-r-5{:href =>  new_cash_out_path, :title => "Cash Out"}
+                  %i.fa.fa-money.left
+                  =I18n.t(:label_cash_out)
+                .clearfix
+              %br
+          %table.data-table.accordion
+            %thead
+              %tr.data-table__selectable-row
+                %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Id", "id"
+                %th.hidden-sm.hidden-md.hidden-xs  Type
+                %th.hidden-sm.hidden-md.hidden-xs 
+                  Amount
+                  %br
+                  ="(in #{currency})"
+                %th.hidden-sm.hidden-md.hidden-xs
+                  User Email
+                %th.hidden-sm.hidden-md.hidden-xs Reason
+                %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Synced Date", "created_at"
+                
+              %tbody.panel
+              - smart_listing.collection.each do |object|
+                %input.current_unit_id{:type=>"hidden", :value=>object.unit_id}
+                %tr.data-table__selectable-row.denomination-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-transaction-id"=>object.id,:class=>"cash_details_collapse_#{object.id}","data-action"=>"view_denomination"}
+                  %td=object.id
+                  %td=get_transaction_type(object)
+                  %td.td.hidden-sm.hidden-md.hidden-xs=object.available_amount
+                  - if object.user.present?
+                    %td.hidden-sm.hidden-md.hidden-xs=object.user.email
+                  - else
+                    %td.hidden-sm.hidden-md.hidden-xs= '_' 
+                  %td.hidden-sm.hidden-md.hidden-xs=object.pay_transaction.reason
+                  %td.hidden-sm.hidden-md.hidden-xs=object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+                  
+
+                %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{object.id}", :role => "tabpanel", :id => "collapse_#{object.id}"}
+                  %td.p0{:colspan=>10,:id=>"denomination_quickinfo_#{object.id}"}
+                    Loading please wait...  
+               
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links
+          %input.current_user_id{:type=>"hidden", :value=>current_user.id}
+          %br
+- else
+  .alert.alert-warning
+    No cash handlings found
+                

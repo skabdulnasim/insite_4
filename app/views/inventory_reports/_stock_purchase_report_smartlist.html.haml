@@ -1,0 +1,50 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Stock Receive ID
+        %th PO Reference
+        %th Vendor
+        /%th.col-lg-4 Products
+        %th Total Tax
+        %th
+          Total Amount
+          %br
+          (Incusive Tax)
+        %th PO Sent on
+        %th System PO Received on
+        %th Invoice Date
+    %tbody
+      - total_tax = 0
+      - total_price = 0
+      - smart_listing.collection.each do |object|
+        - price = object.stocks.inject(0){|result, stock| result + stock.price}
+        - tax = object.stocks.inject(0){|result, stock| result + stock.stock_taxes.inject(0){|data,stock_tax| data + stock_tax.tax_amount} }
+        - total_tax = total_tax + tax
+        - total_price = total_price + price
+        %tr
+          %td=object.id
+          %td
+            =object.purchase_order.name
+            %br
+            %small="ID: #{object.purchase_order.id}"
+          %td=object.purchase_order.vendor.name  
+          /%td.col-lg-4="#{object.stocks.map{|stock| stock.product.name + " " + stock.stock_credit.to_s + stock.product.basic_unit}.join(" | ")}"
+          %td=tax
+          %td=price
+          %td=object.created_at.strftime('%d-%^b-%Y, %I:%M %p')
+          %td=object.updated_at.strftime('%d-%^b-%Y, %I:%M %p')
+          %td=object.invoice_date.present? ? object.invoice_date.strftime('%d-%^b-%Y, %I:%M %p') : "-"
+      %tr.data-table__selectable-row
+        %td.total-text Total
+        %td.total-value --
+        %td.total-value --
+        %td.total-value=number_to_currency(total_tax, unit: '')
+        %td.total-value=number_to_currency(total_price, unit: '') 
+        %td.total-value --     
+            
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  .alert.alert-warning
+    No record found

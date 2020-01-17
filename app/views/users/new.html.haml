@@ -1,0 +1,7 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Users",:url=>users_path,:active_class=>""},{:title=>"Add new user",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render 'new_staff_form'
+
+             
+

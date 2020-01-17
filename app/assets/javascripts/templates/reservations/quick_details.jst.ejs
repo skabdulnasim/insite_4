@@ -1,0 +1,95 @@
+<div class="col-lg-12 padding-5">
+  
+</div>
+<div class="clearfix"></div>
+<div class="col-lg-4 col-sm-12 col-xs-12 padding-5">
+  <div class="card waves-effect waves-purple">
+    <div class="card-content height-150">
+      <span class="card-title">
+        Customer Details
+      </span>
+      <div class="grey-text text-darken-1 margin-t-10">
+        <b><%= response.customer.customer_name%></b><br>
+        <b>Sex: <%= response.customer.gender%></b><br>
+        <b>Address: <%= response.customer.address%></b><br>
+        <b>Contact: <%= response.customer.mobile_no%></b><br>
+      </div>
+    </div>
+  </div>
+</div>
+<% console.log(response.resources) %>
+<div class="col-lg-4 col-sm-12 col-xs-12 padding-5">
+  <div class="card waves-effect waves-yellow">
+    <div class="card-content height-150">
+      <%  for(var i in response.resources ){ %>
+        <span class="card-title">
+          <%= response.resources[i].resource_type %> Details
+        </span>
+        <div class="grey-text text-darken-1 margin-t-10">
+          <b><%= response.resources[i].name%></b></br>
+          <% for (var key in response.resources[i].resource_properties) { %>
+            <b><%= response.resources[i].resource_properties[key] %></b>
+          <% } %>
+        </div>
+        <% if (response.resources[i].hasOwnProperty("child_resources")){  %>
+          <% for (var child in response.resources[i].child_resources){ %>
+            <span class="card-title">
+              <%= response.resources[i].child_resources[child].resource_type %> Details
+            </span>
+            <div class="grey-text text-darken-1 margin-t-10">
+              <b><%= response.resources[i].child_resources[child].name%></b></br>
+              <% for (var child_key in response.resources[i].child_resources[child].resource_properties) { %>
+                <b><%= response.resources[i].child_resources[child].resource_properties[child_key] %></b>
+              <% } %>
+            </div>
+          <% } %>
+        <% } %>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<div class="col-lg-4 col-sm-12 col-xs-12 padding-5">
+  <div class="card blue waves-effect waves-light">
+    <div class="card-content white-text height-150">
+      <span class="card-title header white-text">
+        Reservation Deatils
+      </span>
+      <div class="blue-text text-lighten-4">
+        <b>Reservation Date: <%= response.reservation_date%> </b><br>
+        <b>Time: <%=response.start_time%>-<%=response.end_time%></b></br>
+        <% if(response.bill_id !=null) { %>
+          <% 
+            var created_at = formatDateTime(response.bill_date); 
+          %>
+          Bill ID <%=response.bill_id %> generated on <%=created_at%>  and current status is <%=response.bill_status%>.
+        <% } %>  
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="col-lg-12">
+  <% if(response.bill_id ==null) { %>
+    
+  <% } %> 
+  <% if((response.bill_id !=null) && (response.bill.status !='paid')) { %>
+    <div class="col-sm-4 right">
+      <button class="m-btn teal reservation-settlement-link width-100 waves-effect waves-light" data-action="settle_bill" data-bill-id="<%= response.bill.id %>" data-currency="<%= currency %>" data-bill-amount="<%= response.bill.grand_total%>">
+        <i class="mdi-action-credit-card left"></i>
+        Make Settlement
+      </button>      
+    </div>
+  <% } %>   
+  <% if((response.bill_id !=null) && (response.bill.status =='paid')) { %>
+    <div class="col-sm-4 right">
+      <a class="m-btn green white-text width-100 generate-invoice" target="_blank" data-toggle="modal" data-target="#invoiceModal" data-bill-id="<%= response.bill.id %>" data-currency="<%= currency %>" data-page-type="a5">Print Bill (in A5)</a>      
+    </div>
+  <% } %>   
+  <div class="clearfix"></div>
+  <br>
+</div>
+
+
+
+  

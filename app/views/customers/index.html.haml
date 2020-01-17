@@ -1,0 +1,97 @@
+= render "layouts/flash"
+- manual_load_javascript "templates/customers/wallet_transactions", "templates/customers/account_transactions"
+.col-sm-12
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              .col-sm-2
+                %span.fs-title Customers
+              - if AppConfiguration.get_config_value('tsp_module') == "enabled"
+                .col-sm-3
+                  = smart_listing_controls_for(:customers, {class: "text-left"}) do
+                    .form-group.filter.input-append
+                      .input-group
+                        %input.form-control.search{:placeholder => "Search here.", :type => "text", :name=> "id_filter"}
+                          %span.input-group-btn
+                            %button.btn.btn-primary.disabled{:type => "submit" }
+                              %span.glyphicon.glyphicon-search
+                .col-sm-3
+                  = smart_listing_controls_for(:customers, {class: "text-left"}) do
+                    .form-group.filter.input-append
+                      .input-group
+                        %input.form-control.search{:placeholder => "Search resource.", :type => "text", :name=> "resource_filter"}
+                          %span.input-group-btn
+                            %button.btn.btn-primary.disabled{:type => "submit" }
+                              %span.glyphicon.glyphicon-search  
+                .col-sm-2
+                  %a.m-btn.blue{"data-target" => "#customerBulkUpload", "data-toggle" => "modal"} 
+                    %i.mdi-file-cloud-upload.left
+                    %span.hidden-sm.hidden-xs upload Customer
+                    .clearfix 
+              - else
+                .col-sm-3
+                  = smart_listing_controls_for(:customers, {class: "text-left"}) do
+                    .form-group.filter.input-append
+                      .input-group
+                        %input.form-control.search{:placeholder => "Search here.", :type => "text", :name=> "id_filter"}
+                          %span.input-group-btn
+                            %button.btn.btn-primary.disabled{:type => "submit" }
+                              %span.glyphicon.glyphicon-search
+                .col-sm-3
+                  %a.m-btn.blue{"data-target" => "#customerBulkUpload", "data-toggle" => "modal"} 
+                    %i.mdi-file-cloud-upload.left
+                    %span.hidden-sm.hidden-xs upload Customer
+                    .clearfix 
+              .col-sm-2  
+                %a.m-btn.m-btn-teal.waves-effect.waves-light{:href => "#{new_customer_path}"}
+                  %i.mdi-content-add.left
+                  %span.hidden-sm.hidden-xs new                             
+        .col-sm-8{:style=>"padding-left: 0px !important;"} 
+          = smart_listing_render :customers
+        .col-sm-4
+          - if AppConfiguration.get_config_value('b2b_billing') == 'enabled'
+            .row#config{"data-useid"=>"account-data"}
+            #account-data
+          - else
+            .row#config{"data-useid"=>"wallet-data"}
+            #wallet-data
+= render "customer_bulk_upload_from"           
+
+
+:javascript
+  $(document).ready(function() {
+    return $(document).on("click", ".customer-quickview", function() {
+      var customer_id, data, loader, request;
+      customer_id = $(this).data("customer-id");
+      data = {
+        loader_type: 'color-spinner'
+      };
+      loader = JST['templates/loader'](data);
+      $("#customer_quickinfo_" + customer_id).html(loader);
+      request = $.ajax({
+        type: 'GET',
+        url: "/customers/" + customer_id + ".json",
+        dataType: "json"
+      });
+      request.done(function(data, textStatus, jqXHR) {
+        var result;
+        console.log($("#config").data("useid"))
+        if ($("#config").data("useid") == "account-data"){
+          result = JST["templates/customers/account_transactions"](data);
+          $("#account-data").html(result);
+        }else{
+          result = JST["templates/customers/wallet_transactions"](data);
+          $("#wallet-data").html(result);
+        }
+      });
+      request.error(function(jqXHR, textStatus, errorThrown) {
+        $("#wallet-data").html(textStatus);
+      });
+    });
+  });
+  
+          
+  

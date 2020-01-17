@@ -1,0 +1,40 @@
+- unless smart_listing.empty?
+  - smart_listing.collection.each do |object|
+    .product-card.col-lg-3.col-xs-12.col-sm-12.padding-5
+      .card.margin-t-b-0.waves-effect.waves-light{:class=>"#{get_catalog_color(object.mode)}"}
+        .card-content.white-text.height-200
+          %h4.sm-header.margin-t-none.text-lighten-5
+            %small.font-sz-11.white-text.table-card-text-13
+              ="##{object.id}"
+            %a.white-text{:href => menu_card_path(object)}=object.name
+          .font-sz-12.white-text.table-card-text-13
+            ="#{I18n.t(:label_updated_at)} #{object.updated_at.strftime('%d %b %A %Y, %I:%M %p')}"
+          %h5.white-text.margin-b-2
+            ="#{I18n.t(:label_scope)}:"
+            %span.float-r=object.scope.humanize            
+          %h5.white-text.margin-b-2
+            ="#{I18n.t(:label_section)}:"
+            %span.float-r=object.section.name.humanize
+          %h5.white-text.margin-b-2
+            ="#{I18n.t(:text_no_of_products)}:"
+            %span.float-r.m-label.white.grey-text.text-darken-3=object.menu_products.count
+        .card-action.darken-1.white
+          .col-sm-6.padding-l-r-none
+            - menu_mode_status = (object.mode == 1) ? true : false
+            .switch.margin-l-5
+              %label
+                = check_box_tag :menu_mode, '1', menu_mode_status, {"data-id"=>"#{object.id}","data-mode-active"=>"1","data-mode-inactive"=>"0", "class"=> "update_menu_mode"}
+                %span.lever.margin-l-r-none        
+          .col-sm-6.padding-l-r-none
+            %a.m-btn.m-btn-small.white-text.float-r{:href => menu_card_path(object),:class=>"#{get_catalog_color(object.mode)}"}
+              %i.mdi-action-visibility.smaller.left
+              =I18n.t(:label_view)
+          .clearfix
+  .clearfix
+  .row
+    = smart_listing.paginate
+    = smart_listing.pagination_per_page_links
+  %br
+- else
+  .alert.alert-warning
+    No menu cards found

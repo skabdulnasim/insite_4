@@ -1,0 +1,43 @@
+<h6 style="padding: 5px 5px; ">
+  <span class="grey-text">Subtotal</span>
+  <span class="grey-text text-darken-1 right"><%=currency%>. <%=bill_response.bill_amount%></span>
+</h6>
+<h6 style="padding: 5px 5px; ">
+  <span class="grey-text">Tax</span>
+  <span class="grey-text text-darken-1 right"><%=currency%>. <%=bill_response.tax_amount%></span>
+</h6>
+<h6 style="padding: 5px 5px; ">
+  <span class="grey-text">Discount</span>
+  <span class="green-text right"><%=currency%>. <%=bill_response.discount%></span>
+</h6>
+<h6 style="border-top: 1px dashed #ccc; padding: 8px 5px; ">
+  <span class="grey-text">Total</span>
+  <strong class="grey-text text-darken-3 right"><%=currency%>. <%=bill_response.grand_total%></strong>
+</h6>
+<div class="white" style="border: 1px solid #eee;">
+  <span style="font-size: 16px; font-weight: 300; padding: 5px 5px;" class="right">Amount Payable</span>
+  <br>
+  <br>
+  <span class="right red-text text-lighten-2" style="font-size: 18px; font-weight: 500; padding: 5px 5px;"><%=currency%>. <%=bill_response.grand_total%></span>
+  <div class="clearfix"></div>
+  <input type="hidden" id='settlement_bill_id' name='settlement_bill_id' value="<%=bill_response.id%>">
+  <input type="hidden" id='settlement_bill_amount' name='settlement_bill_amount' value="<%=bill_response.grand_total%>">
+</div>
+<br>
+<div class="p10">
+  <div class="row m0">
+    <div class="col s8 p0">
+      <label for="bill_discount" class="col-sm-4 control-label">Promo Code</label>
+      <input type="text" class="form-control margin-t-b-2 p0" id="promo_code_<%= bill_response.id%>" placeholder="Enter promo code">
+    </div>
+    <div class="col s4 p0">
+      <a class="check_promo_code right mt30 cursor-pointer" data-bill-id="<%= bill_response.id %>" data-bill-amount="<%= bill_response.bill_amount %>" data-currency="<%= currency %>">Check</a>
+    </div>      
+  </div>
+  <div class="form-group p0">
+    <input type="text" class="form-control validate p0 allow-numeric-only" id="promo_value_<%= bill_response.id%>" placeholder="Discount Amount">
+  </div>            
+  <div class="form-group p0">
+    <button class="btn orange apply_promo_code waves-effect waves-light width-100" type="button" data-bill-id="<%= bill_response.id %>" data-currency="<%= currency %>" data-action='view_bill'>Apply</button>
+  </div>                                        
+</div>

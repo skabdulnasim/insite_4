@@ -1,0 +1,200 @@
+= javascript_include_tag "purchase_orders"
+= render "layouts/flash"  
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Confirm purchase order",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)
+
+%script{:src=>"https://code.jquery.com/ui/1.12.1/jquery-ui.js"}
+
+:javascript
+  $(function() {
+    $(".product_search").each(function(){
+      $(this).autocomplete({
+        source: "/products/search_products",
+        select: function(event, ui) {
+          $(this).val(ui.item.name);
+          return false;
+        }
+      }).data('uiAutocomplete')._renderItem = function(ul, item) {
+        return $('<li class="collection-item">').append('<a>' + item.name + '</a>').appendTo(ul);
+      };
+    });
+  });  
+
+:css
+  .ui-autocomplete {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    float: left;
+    display: none;
+    min-width: 160px;
+    _width: 160px;
+    margin: 2px 0 0 0;
+    list-style: none;
+    background-color: #ffffff;
+    border-color: #ccc;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-style: solid;
+    border-width: 1px;
+  }
+  .ui-menu-item{
+    display: block;
+    padding:10px;
+    clear: both;
+    font-weight: normal;
+    line-height: 18px;
+    white-space: nowrap;
+    border-bottom:1px solid #ccc;
+    margin-left:-40px;
+  }
+  .ui-menu-item:last-child {
+    border: none;
+  }
+  .ui-menu-item:hover { 
+    background-color: #EFEFEF;
+    cursor: pointer;
+  }
+  .ui-corner-all{
+    color: #616567;
+  }
+  .ui-helper-hidden-accessible{
+    display: none;
+  }
+
+.loader
+  .loader-center
+    .sending{:style=>"color:white;font-size:22px;font-weight:600;margin-top:280px;"} Sending.....
+    .loader-container.goo2
+      %div
+      %div
+      %div
+      %div
+      %div
+  .loader-bg
+
+.col-lg-12.p0
+  = render 'wizard', current_step: "step_2", completed_steps: ["step_1"]
+  .card.m0
+    .card-content.padding-10
+      %header.data-table-header
+        .col-lg-8
+          .font-sz-16
+            %b
+              PO name: 
+            = @smart_po.name.humanize
+            %b.margin-l-30
+              Vendor: 
+            = "#{@smart_po.purchase_orders.first.vendor.name}"
+        .col-lg-4
+          = link_to 'Save and send', "#", :class=>"m-btn green send_all_po float-r margin-l-10", 'data-smart-po-id' => @smart_po.id
+          = link_to 'Save', "#{store_path(@store)}", :class=>"m-btn green float-r"
+      .margin-t-25
+      .col-lg-12
+        - @smart_po.purchase_orders.each do |po|
+          .col-lg-4
+            .card.padding-5{:style=>"height:450px;"}
+              .card.padding-10{:style=>"height:80px;overflow-y:auto;"}
+                %b
+                  Outlet:
+                = "#{po.unit.unit_name}"
+                %br
+                %b
+                  Store: 
+                = "#{po.store.name}"
+              .card{:style=>"height:64px;"}
+                %table.col-lg-12.table-striped
+                  %thead
+                    %tr
+                      %td.padding-10{:colspan=>3}
+                        .form-group.filter.input-append{:style=>"width: 100%;margin-top: 5px;margin-right:10px;"}
+                          .input-group
+                            %input.form-control{:placeholder => "Add Products", :type => "text", :class => "product_search", :style => "height:36px;", "data-po-id"=>po.id, :id=>"product_search_val_#{po.id}"}
+                              %span.input-group-btn
+                                %a.m-btn.green.m-btn-low-padding.product_add_btn{"data-po-id"=>po.id, :id=>"product_add_btn_#{po.id}", "data-store-id"=>po.store.id }
+                                  %i.mdi-content-add
+              .card{:style=>"height:280px;overflow-y:auto;"}
+                %table.col-lg-12.table-striped
+                  %thead
+                    %tr.data-table__selectable-row
+                      %th.padding-l-r-none.col-lg-1
+                      %th.padding-l-r-none.col-lg-5 Product
+                      %th.padding-l-r-none.col-lg-2
+                        Current Stock
+                      %th.padding-l-r-none.col-lg-4 Quantity
+                  %tbody{:class=>"po_table_#{po.id} po_table", "data-po-id"=>po.id}
+                    - po.purchase_order_metum.each do |_pom|    
+                      - product_sizes = ProductSize.by_product_id(_pom.product_id).enabled
+                      - product_colors = ColorProduct.by_product_id(_pom.product_id).enabled     
+                      %tr.data-table__selectable-row{:id=>"pom_tr_#{_pom.id}"}
+                        %td.col-lg-1
+                          = check_box_tag "selected_pom[]", "#{_pom.id}", true, :class=>"checkbox-child filled-in pom_checkbox", "data-pom-id" => "#{_pom.id}",:id=>"pom_#{_pom.id}", "data-product-name" => "#{_pom.product.name}"
+                          %label.font-sz-11{:for=>"pom_#{_pom.id}"}
+                        %td.col-lg-5{"aria-controls" => "po_confirmation_collapse_#{_pom.id}", "aria-expanded" => "false", "data-toggle" => "collapse", :href => "#po_confirmation_collapse_#{_pom.id}", :role => "button"}
+                          = _pom.product.name
+                          - if _pom.product.local_name.present?
+                            %b
+                              = " ( #{_pom.product.local_name} )"
+                        %td.col-lg-2
+                          %span.label.label-default
+                            = number_with_precision(get_product_current_stock(po.store_id, _pom.product.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                            = _pom.product.basic_unit
+                        %td.col-lg-4.m-input
+                          .row.margin-l-r-none
+                            .col-lg-9.padding-l-r-none
+                              %input.allow-numeric-only.form-control{:type => "text", :id=>"pom_qty_#{_pom.id}", :class=>"pom_qty", :value => "#{_pom.product_amount}", "data-pom-id" => "#{_pom.id}", "data-product-name" => "#{_pom.product.name}", "data-product-basic-unit" => "#{_pom.product.basic_unit}"}
+                            .col-lg-3.padding-l-r-none
+                              %br
+                              = "#{_pom.product.basic_unit}"
+
+                      - if product_colors.present? || product_sizes.present?        
+                        %tr.collapse.light-blue.lighten-5{"aria-labelledby" => "po_confirmation_heading#{_pom.id}", :role => "tabpanel", :id => "po_confirmation_collapse_#{_pom.id}"}    
+                          
+                          %td{:colspan=>'100%'}
+                            .inner
+                              %table.po_table
+                                %tbody{:style=>"float:left;"}
+                                  %tr
+                                    %th.fix.col-lg-1= ""  
+                                    - product_colors.each do |cp|
+                                      %th.col-lg-1
+                                        = cp.color.name
+                                  - if product_sizes.present?   
+                                    - product_sizes.each do |ps|   
+                                      %tr
+                                        %td.m-input.fix.col-lg-1{:style=>"margin-left: -45px !important;"}= ps.size.name 
+                                        - if product_colors.present?
+                                          - product_colors.each do |cp|
+                                            - _po_metum_descriptions = PurchaseOrderMetumDescrption.set_purchase_order_metum_descriptions(_pom.purchase_order_id,_pom.id,_pom.product_id,cp.color_id,ps.size_id).first
+                                            -  if _po_metum_descriptions.present?
+                                              - _po_metum_description_quentity = _po_metum_descriptions.quantity
+                                            - else
+                                              - _po_metum_description_quentity = 0
+                                            %td.m-input.col-lg-1
+                                              %input.col-lg-1{:type=>"text", "data-product-id"=>cp.product_id, "data-color-id"=>cp.color_id, "data-size-id"=>ps.size_id, "data-po-id"=>po.id, "data-pom-id"=>_pom.id, :class=>"podm_color_size allow-numeric-only podm_color_size_#{_pom.id}", :value => _po_metum_description_quentity,"data-product-name" => "#{_pom.product.name}", "data-product-basic-unit" => "#{_pom.product.basic_unit}", "data-product-basic-unit" => "#{_pom.product.basic_unit}"}
+                                        - else
+                                          - _po_metum_descriptions = PurchaseOrderMetumDescrption.set_purchase_order_metum_descriptions(_pom.purchase_order_id,_pom.id,_pom.product_id,0,ps.size_id).first
+                                          -if _po_metum_descriptions.present?
+                                            -_po_metum_description_quentity = _po_metum_descriptions.quantity
+                                          - else
+                                            -_po_metum_description_quentity = 0
+                                          %td.m-input.col-lg-1
+                                            %input.col-lg-1{:type=>"text", "data-product-id"=>ps.product_id, "data-color-id"=>0, "data-size-id"=>ps.size_id, "data-po-id"=>po.id, "data-pom-id"=>_pom.id, :class=>"podm_color_size allow-numeric-only podm_color_size_#{_pom.id}", "data-product-basic-unit" => "#{_pom.product.basic_unit}", :value => _po_metum_description_quentity} 
+
+                                  - elsif product_sizes.blank? && product_colors.present?
+                                    %tr
+                                      %td.col-lg-1= ""  
+                                      - product_colors.each do |cp| 
+                                        - _po_metum_descriptions = PurchaseOrderMetumDescrption.set_purchase_order_metum_descriptions(_pom.purchase_order_id,_pom.id,_pom.product_id,cp.color_id,0).first
+                                        -if _po_metum_descriptions.present?
+                                          -_po_metum_description_quentity = _po_metum_descriptions.quantity
+                                        - else
+                                          -_po_metum_description_quentity = 0
+                                        %td.m-input.col-lg-1
+                                          %input.col-lg-1{:type=>"text", "data-product-id"=>cp.product_id, "data-color-id"=>cp.color_id, "data-size-id"=>0, "data-po-id"=>po.id, "data-pom-id"=>_pom.id, :class=>"podm_color_size allow-numeric-only podm_color_size_#{_pom.id}", "data-product-basic-unit" => "#{_pom.product.basic_unit}", :value => _po_metum_description_quentity} 
+
+      .col-lg-12
+        .col-lg-8
+        .col-lg-4
+          = link_to 'Save and send', "#", :class=>"m-btn green send_all_po float-r margin-l-10", 'data-smart-po-id' => @smart_po.id
+          = link_to 'Save', "#{store_path(@store)}", :class=>"m-btn green float-r"

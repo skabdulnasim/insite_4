@@ -1,0 +1,16 @@
+%table.table.table-bordered
+  %tr
+    %th Name
+    %th Percentage Ammount
+    %th Fixed Ammount
+    %th Actions
+
+  - section_tax_groups.each do |tax_group|
+    %tr
+      %td= tax_group.name
+      %td= "#{tax_group.total_amnt} %"
+      %td= "#{tax_group.fixed_amount}"
+      %td
+        = link_to 'Show', tax_group
+        = link_to 'Edit', edit_tax_group_path(tax_group)
+        = link_to 'Destroy', tax_group, :method => :delete, :data => { :confirm => 'Are you sure?' }

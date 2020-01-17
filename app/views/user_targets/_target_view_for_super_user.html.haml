@@ -1,0 +1,21 @@
+- p user
+- user_target = user
+- if user_target.present?
+	%tr
+		/%td= user_target.parent_user.profile.full_name
+		%td= user_target.child_user.profile.full_name
+		%td= user_target.child_user.role.name
+		%td= user_target.duration
+		%td= Date::MONTHNAMES[user_target.from_date.month]
+		%td= user_target.target_type.humanize
+		%td 
+			-target_amount = user_target.target_amount
+			-if user_target.target_type == "by_product"
+				-target_amount = user_target.user_target_products.sum(:target_quantity)
+			= target_amount
+		/ %td= user_target.is_approved
+		/ %td= user_target.rejection_reason
+	/ - child_user_targets =  user.child_user.child_user_targets.by_date(Date.today.next_month) 
+	/ - if child_user_targets.present?
+	/ 	-child_user_targets.each do |child_user|
+	/ 		= render partial:"user_targets/target_view_for_super_user", :object => child_user,:as => 'user'

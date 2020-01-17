@@ -1,0 +1,6 @@
+$('#new_unittype').hide();
+$('#new_branch_type_link').show();
+$('#unittypes').append('<%= j render(@unittype) %>')
+Materialize.toast("Branch type <%= @unittype.unit_type_name %> has been successfully created.", 3000)
+<% @unittype = Unittype.new %>
+$('#new_branch_type_link').hide().after('<%= j render("form") %>')

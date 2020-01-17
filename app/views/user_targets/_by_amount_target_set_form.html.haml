@@ -1,0 +1,100 @@
+
+- if Role.has_parent?(current_user.role)
+  - _own_target_details = current_user.own_targets.by_date(Date.today.next_month).last
+  - if _own_target_details.present?
+    .col-lg-12.padding-r-none
+      .card
+        .card-content.p10
+          %h5.font-w-400 Own Target Details
+          .divider
+          .margin-l-15.margin-t-15
+            .row
+              %span.font-w-400 Target set by :
+              %span.margin-l-15= " #{_own_target_details.parent_user.profile.full_name}"
+              %br
+              %span.font-w-400 Total target :
+              %span.margin-l-22.m-label.green= " #{_own_target_details.target_amount} btl"
+              %br
+              %span.font-w-400 Target timeline :
+              %span.margin-l-15= " From #{_own_target_details.from_date} To #{_own_target_details.to_date}"
+- else
+  - _own_target_details = current_user.child_user_targets.by_date(Date.today.next_month).last
+
+.row
+  .col.col-lg-12
+    .card  
+      .card-content.p10
+        %h5.header Set Targets For Users
+        .divider
+        .margin-t-15
+        .col-lg-12
+          .col-lg-9
+            #wizard_vertical
+              / = render :partial => 'user_targets/nested_users', :object => current_user.role, :as => "role"
+              - _users = []
+              - _users.push current_user
+              = render partial: 'user_targets/nested_roles_users', locals: {users: _users, role: current_user.role}
+
+          .col-lg-3.padding-r-none
+            .card
+              .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+                %header.data-table-header
+                  .data-table-header__label
+                    %span.fs-title Target Details
+                = form_for @user_target, :html => { :class => 'target_set_form'} do |f|
+                  = hidden_field_tag "target_type","by_amount"
+                  / = f.hidden_field :parent_user_id, :class => 'form-control', :value => current_user.id
+                  / = f.hidden_field :child_user_id, :class => 'form-control', :value => ''
+                  = f.hidden_field :is_approved, :class => 'form-control', :value => 0
+                  .padding-10
+                    = f.submit 'Save Target', :class => 'm-btn green width-100' 
+                  .filter-title.margin-t-b-0
+                    %i.mdi-action-label.left
+                    Enter Details Below
+                  .padding-10
+                    - _target_type = _own_target_details.present? ? _own_target_details.target_type : ''
+                    - _duration = _own_target_details.present? ? _own_target_details.duration : ''
+                    - _from_date = _own_target_details.present? ? _own_target_details.from_date : ''
+                    - _to_date = _own_target_details.present? ? _own_target_details.to_date : ''
+                    - _target_month = _duration == 'monthly' ? _from_date.strftime("%m/%Y") : ''
+                    - _date_class = _duration == 'monthly' ? 'dn' : ''
+                    - _month_class = _duration == 'monthly' ? '' : 'dn'
+                    .form-group
+                      = f.select :target_type, options_for_select(UserTarget::TARGET_TYPE.map{ |_type| [ "#{_type.humanize}", "#{_type}"] }, _target_type), { include_blank: "Select target type"}, :class => 'form-control',:required => true
+                    .form-group
+                      = f.select :duration, options_for_select(UserTarget::DURATION.map{ |_duration| [ "#{_duration.humanize}", "#{_duration}"] }, _duration), { include_blank: "Select target duration"}, :class => 'form-control',:required => true
+                    .form-group
+                      #target_from.input-group.date{:class=>_date_class}
+                        = f.text_field :from_date, :class => "form-control", :placeholder => "Target From", :value => _from_date
+                        %span.input-group-addon
+                          %span.glyphicon.glyphicon-calendar      
+                    .form-group
+                      #target_to.input-group.date{:class=>_date_class}
+                        = f.text_field :to_date, :class => "form-control", :placeholder => "Target till", :value => _to_date
+                        %span.input-group-addon
+                          %span.glyphicon.glyphicon-calendar
+                    .form-group#monthly_target{:class=>_month_class}
+                      = text_field_tag :target_month, _target_month, :class=> 'form-control Default', :placeholder => "Select target month"
+                        
+                  .filter-title.margin-t-b-0 
+                    %i.mdi-action-label.left
+                    Selected Users
+                  .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                    %ul.collection.user-target-list
+                      %li.collection-item.no-user-selected
+                        %div
+                          No users selected
+
+                  .filter-title.margin-t-b-0 
+                    %i.mdi-action-label.left
+                    Selected Resources
+                  .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                    %ul.collection.resource-target-list
+                      %li.collection-item.no-resource-selected
+                        %div
+                          No resource selected
+
+          / .col-lg-5.col-sm-5.padding-r-none
+          /   .main-section__content
+          /     .example
+          /       .example__content.p0

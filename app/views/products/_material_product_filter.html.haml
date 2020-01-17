@@ -1,0 +1,37 @@
+.card
+  .padding-10 
+    %b FILTER BY
+  = smart_listing_controls_for(:products, {class: "text-left"}) do
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-search.left
+      Search
+    
+    .padding-10 
+      .filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search products...", :type => "text", :name=> "filter"}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search
+
+    .padding-10 
+      .filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search product by Id", :type => "text", :name=> "product_id_filter"}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search
+      
+    .padding-10 
+      .filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "By item code, Brand, Mfr", :type => "text", :name=> "itemcode_brand_mfr",  autofocus: true}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search   
+                                              
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-list.left
+      Categories          
+    .padding-10.height-350{:style => "overflow-y: auto; position: sticky;"} 
+      = render 'products/listing_category'

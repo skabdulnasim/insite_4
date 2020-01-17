@@ -1,0 +1,14 @@
+- links_arr = [{:title=>"Return policy", :url=>return_policies_path, :active_class=>""}, {:title=>"Save Return policy", :url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+= render "layouts/flash"
+.col-sm-12.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container
+          
+          = render 'form'
+
+
+
+

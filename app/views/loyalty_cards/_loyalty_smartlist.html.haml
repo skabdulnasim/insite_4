@@ -1,0 +1,40 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr
+        %th Card serial
+        %th Name on card
+        %th Card type
+        %th Card class
+        %th Customer
+        %th Points
+        %th Equivalent money
+        %th Valid from
+        %th Valid till
+        %th Status
+        %th
+        %th
+        %th
+    %tbody
+      - smart_listing.collection.each do |loyalty_card|
+        %tr
+          %td= loyalty_card.card_serial
+          %td= loyalty_card.name_on_card
+          %td= loyalty_card.card_type
+          %td= loyalty_card.card_class
+          %td= loyalty_card.customer_id
+          %td= loyalty_card.total_valid_point
+          %td= loyalty_card.total_valid_amount
+          %td= loyalty_card.valid_from
+          %td= loyalty_card.valid_till
+          %td= loyalty_card.status
+          %td= link_to 'Show', 'loyalty_cards/'+loyalty_card.card_serial
+          %td= link_to 'Edit', edit_loyalty_card_path(loyalty_card)
+          %td= link_to 'Destroy', loyalty_card, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+  %br
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No cards found

@@ -1,0 +1,14 @@
+- if @pos_terminals.present?
+  - @pos_terminals.each do |pos|
+    .col-sm-3
+      .card.blue.waves-effect.waves-light
+        .card-content
+          .card-title.white-text=pos.name
+          %br
+          .blue-text.text-lighten-3="ID: #{pos.id}"
+        .card-action.blue.darken-1
+          .right
+            = link_to "GO to pos", pos, :class=>"m-btn m-btn-small white grey-text text-darken-3"
+          .clearfix
+- else
+  = link_to "Add new POS Terminal", new_pos_terminal_path

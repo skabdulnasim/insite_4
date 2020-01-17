@@ -1,0 +1,228 @@
+= render "layouts/flash"
+- manual_load_javascript "templates/menu_cards/add_new_product", "templates/menu_cards/add_new_addon", "templates/menu_cards/set_new_addon", "templates/menu_cards/add_new_combo_item", "templates/menu_cards/set_new_combo"
+- links_arr = [{:title=>I18n.t(:manage_calatog), :url=>menu_cards_path,:active_class=>""},{:title=>"#{@menu_card.name}",:url=>menu_card_path(@menu_card),:active_class=>""},{:title=>"Add products",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+:javascript
+  $(function ()
+  {
+    $("#wizard").steps({
+      headerTag: "h3",
+      bodyTag: "section",
+      transitionEffect: "slideLeft",
+      onFinished: function (event, currentIndex)
+      {
+          var form = $("#add_product_form");
+          form.submit();
+      }      
+    });
+  });
+/ mproduct_type=combo_product
+%input.mproduct_type{:type=>"hidden", :value=>params[:mproduct_type]}
+#wizard
+  %h3="#{t(:label_add)} #{t(:title_categories)}"
+  %section.card
+    =form_for @menu_card, :html => { :class => 'card-content'} do |f|
+      %h3.grey-text.margin-t-none Categories
+      %ul.margin-l-30.margin-t-15
+        - load_menu_category_list(@root_categories, f)
+        %br
+        %li
+          = link_to_add_fields "#{t(:label_add)} #{t(:text_root)} #{t(:title_category)}", f, :menu_categories, {}, ""
+      %br
+      =f.submit "#{I18n.t(:btn_save)} #{I18n.t(:title_categories)}", :class=>"m-btn green"
+  %h3="#{t(:label_add)} #{t(:title_products)}"
+  %section.p0
+    .main-section__content.padding-r-none
+      .example
+        .example__content.p0
+          .data-table-container
+            %header.data-table-header
+              .data-table-header__label
+                %input.current_user_email{:type=>"hidden", :value=>@current_user.email}
+                = smart_listing_controls_for(:products, {class: ""}) do
+                  .col-sm-2.padding-5 
+                    %span.fs-title Filter Products
+                  .col-sm-2.padding-5
+                    .form-group.filter.input-append.hidden-sm.hidden-xs
+                      = select_tag :catrgory, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control", :prompt => "All categories"
+                    .clearfix
+                  .col-sm-2.padding-5
+                    .form-group.filter.input-append.margin-t-b-0
+                      %input.form-control.search{:placeholder => "Search by name...", :type => "text", :name=> "filter"} 
+                  .col-sm-2.padding-5
+                    %center
+                      %button.m-btn.indigo{:type=>"submit"} Apply Filter
+                
+            =form_for @menu_card, :html => { :class => 'form-horizontal', :id=>"add_product_form"} do |f|
+              .col-sm-2.card.padding-l-r-none.margin-t-b-0
+                .filter-title.margin-t-b-0
+                  %i.mdi-action-search.left
+                  AVAILABLE PRODUCTS
+                .min-height-405
+                  = smart_listing_render :products 
+              .col-sm-10.padding-l-r-none.margin-t-b-0
+                %table.data-table#accordion    
+                  %thead
+                    %tr.data-table__selectable-row
+                      %th Selected Product      
+                      %th 
+                        Sell Price 
+                        %br
+                        (Without Tax)
+                      %th 
+                        Procured
+                        %br
+                        Cost
+                      %th Tax Group
+                      %th Category 
+                      %th 
+                        Cost
+                        %br Category 
+                      - if @inventory_status == 'enabled'
+                        %th Store
+                      %th SORT
+                      %th 
+                        Unit 
+                        %br Currency
+                      %th 
+                        Delivery 
+                        %br Mode
+                      %th 
+                        Max Order 
+                        %br Quantity
+                  %tbody.m-input.panel.menu-product-list
+    .clearfix
+
+/ Addon products Modal
+#addonsModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "addonsModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#addonsModalLabel.modal-title Select extra combinations/addons
+      .modal-body
+        .col-sm-4.padding-5
+          .card
+            .filter-title.margin-t-b-0
+              %i.mdi-action-search.left
+              FILTER PRODUCTS
+            = smart_listing_controls_for(:addon_products, {class: "text-right"}) do
+              .padding-10
+                .form-group.filter.input-append.hidden-sm.hidden-xs
+                  = select_tag :catrgory, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control", :prompt => "All categories"
+              .padding-10
+                .form-group.filter.input-append
+                  .input-group
+                    %input.form-control.search{:placeholder => "Search by name...", :type => "text", :name=> "filter"}
+                      %span.input-group-btn
+                        %button.btn.btn-default.disabled{:type => "submit" }
+                          %span.glyphicon.glyphicon-search                      
+            .filter-title.margin-t-b-0
+              %i.mdi-action-search.left
+              SELECT PRODUCTS
+            = smart_listing_render :addon_products
+        .col-sm-8.padding-5
+          .main-section__content.padding-r-none
+            .example
+              .example__content.p0
+                .data-table-container
+                  %header.data-table-header
+                    .data-table-header__label
+                      %span.fs-title Combination/Addon Rules
+                    %button.m-btn.green.margin-t-b-2.float-r#add_addon_to_item{:type=>"submit", "data-dismiss"=>"modal"} Add Combinations
+
+                  .min-height-405
+                    %table.data-table    
+                      %thead
+                        %tr.data-table__selectable-row
+                          %th Combination Type
+                          %th Rule
+                      %tbody
+                        - @combination_types.each do |combination|
+                          %tr
+                            %td=combination.name
+                            %td= select_tag "combination_rule_#{combination.id}", options_from_collection_for_select(CombinationsRule.all, "id", "name"), :class=>"form-control"
+                    .divider
+                    .clearfix
+                    %header.data-table-header
+                      .data-table-header__label
+                        %span.fs-title Selected Combinations/Addon Items
+                    %input#addon_master_id{:type=>"hidden", :value=>""}
+                    %input#addon_master_key{:type=>"hidden", :value=>""}
+                    %input#combination_types_data{:type=>"hidden", :value=>@combination_types.map { |e| "#{e.id}___#{e.name}" }.join('~~~') }
+                    %table.data-table    
+                      %thead
+                        %tr.data-table__selectable-row
+                          %th.col-lg-3 Item      
+                          %th.col-lg-2 
+                            Price
+                            %br
+                            ="(in #{currency})"
+                          %th.col-lg-4 Quantity
+                          %th.col-lg-3 Type
+                      %tbody.addon-product-list.m-input
+        .clearfix
+.clearfix
+
+/ Addon products Modal
+#comboItemsModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "comboItemsModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#comboItemsModalLabel.modal-title
+      .modal-body
+        .col-sm-4.padding-5
+          .card
+            .filter-title.margin-t-b-0
+              %i.mdi-action-search.left
+              FILTER PRODUCTS
+            = smart_listing_controls_for(:menu_card_combo_items, {class: "text-right"}) do
+              .padding-10
+                .form-group.filter.input-append.hidden-sm.hidden-xs
+                  = select_tag :menu_category, options_for_select(build_menu_categories(@menu_card.id).map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control", :prompt => "Menu Category"
+              .padding-10
+                .form-group.filter.input-append
+                  .input-group
+                    %input.form-control.search{:placeholder => "Search by name...", :type => "text", :name=> "filter"}
+                      %span.input-group-btn
+                        %button.btn.btn-default.disabled{:type => "submit" }
+                          %span.glyphicon.glyphicon-search                      
+            .filter-title.margin-t-b-0
+              %i.mdi-action-search.left
+              SELECT PRODUCTS
+            = smart_listing_render :menu_card_combo_items
+        .col-sm-8.padding-5
+          .main-section__content.padding-r-none
+            .example
+              .example__content.p0
+                .data-table-container
+                  %header.data-table-header
+                    .total_sp
+                    .margin-l-15.remaining_sp
+                    .data-table-header__label
+                      %span.fs-title
+                    %button.m-btn.green.margin-t-b-2.float-r#add_combo_item_to_mp{:type=>"submit", "data-dismiss"=>"modal"} Add Combo Items
+
+                  .min-height-405
+                    %header.data-table-header
+                      .data-table-header__label
+                        %span.fs-title Selected Combo Items
+
+                    %table.data-table    
+                      %thead
+                        %tr.data-table__selectable-row
+                          %th Item
+                          %th Size
+                          %th Color
+                          %th Quantity
+                          %th 
+                            Sell Price
+                            %br
+                            ="(in #{currency})"
+                      %tbody.combo-product-list.m-input
+        .clearfix 

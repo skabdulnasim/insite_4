@@ -1,0 +1,45 @@
+.main-section__content
+	.example
+		.example__content.p0
+			.data-table-container
+				%header.data-table-header
+					.data-table-header__label
+						%span.fs-title Listing Areas
+					.data-table-header__actions
+						%a.m-btn.m-btn-teal{:href => "#{new_area_path}"}
+							%i.mdi-content-add.left
+							New Area
+- unless smart_listing.empty?
+	%table.data-table
+		%thead
+			%tr
+				%th.col-lg-3  
+					%strong Sl No
+				%th.col-lg-3  
+					%strong Area Name
+				%th.col-lg-3
+					%strong Area Descriptions
+				%th.col-lg-3 
+					%strong Area status
+		%tbody
+			- sl = 1
+			- smart_listing.collection.each do |area|
+				%tr
+					%td.col-lg-3
+						= sl
+					%td.col-lg-3  
+						= area.name
+					%td.col-lg-3 
+						= area.descriptions
+					%td.col-lg-3
+						= area.status
+					%td.col-lg-3
+						%a.m-btn.orange.m-btn-low-padding{:href => "#{edit_area_path(area)}", :title => "Edit area"} 
+							%i.mdi-editor-border-color
+						%a.m-btn.red.m-btn-low-padding{:title => "Remove area",:href => "#{area_path(area)}",:method => :delete,:method => :delete, :data => { :confirm => 'Are you sure?' } }
+							%i.mdi-action-delete
+					- sl += 1
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+-else
+	%p.warning No records!

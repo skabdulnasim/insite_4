@@ -1,0 +1,19 @@
+%li.timeline-inverted
+  .timeline-circ.circ-xl.blue
+    %i.material-icons room
+  .row.m0.timeline-entry.mt15
+    .card.m0.col.width-100.pointer
+      .card-content.p5
+        %h6.m0
+          %span.label.teal=unit.unittype.unit_type_name.humanize
+          %span=unit.unit_name
+          %a.right.new_unit_link.grey-text{"data-remote" => "true", :href => "/units/new?unit_parent=#{unit.id}"} Add Unit
+          %br
+          %a.right.edit_unit_link.grey-text{"data-remote" => "true", :href => "/units/#{unit.id}/edit"} Edit
+        %p.grey-text.ml5
+          %span.font-08="Address: #{unit.address}"
+  - _child_units = Unit.set_parent_unit(unit.id)
+  - _css_class = _child_units.present? ? "visible" : "invisible"
+  %ul.timeline.collapse-lg.timeline-hairline{:class=>"nested-content-of-unit-#{unit.id} #{_css_class}"}
+    - if _child_units.present?
+      = render :partial => 'units/nested_unit', :collection => _child_units, :as => "unit"

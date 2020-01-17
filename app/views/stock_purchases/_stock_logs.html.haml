@@ -1,0 +1,65 @@
+- unless smart_listing.empty?
+	.main-section__content
+		.example
+			.example__content.p0
+				.data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+					%header.data-table-header
+						.data-table-header__label
+							%span.fs-title Consumstion Logs
+							 
+					%table.data-table
+						%thead
+							%tr.data-table__selectable-row
+								%th.txt-align-center{:rowspan=>2}="Purchase id"  
+								%th.txt-align-center{:rowspan=>2}="Product"
+								%th.txt-align-center{:rowspan=>2}="Craeted at"
+								%th.txt-align-center{:colspan=>4}="Consumption Log"
+								%th
+							%tr
+								%th.txt-align-center Consume For
+								%th.txt-align-center Consume Qty  
+								%th.txt-align-center Consume Time
+								%th.txt-align-center Consume Transaction
+								
+						%tbody.panel
+							- smart_listing.collection.each do |object|
+								%tr.data-table__selectable-row
+									%td.txt-align-center=object.stock_transaction_id
+									%td.txt-align-center=object.product.name
+									%td.txt-align-center=object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+									%td
+									%td
+									%td
+									%td
+									%td
+										%i.fa.fa-print.right.printdetails
+								%tr
+									%td
+									%td
+									%td
+										- if object.consumption_log.present?
+											-JSON.parse(object.consumption_log).each do |cl|
+												- if cl["consumed_for"] == "stock_purchase"
+													- consumed_for = "Purchase cancel"
+													- clas = "badge badge-danger"
+												- else
+													- consumed_for = cl["consumed_for"]
+													- clas = "badge"
+												%td.txt-align-center
+													%span{:class=> "#{clas}"}
+														=consumed_for
+												%td.txt-align-center 
+													="#{cl["consumed_quantity"]} #{object.product.basic_unit}"
+												%td.txt-align-center 
+													=cl["time"]
+												%td.txt-align-center 
+													=cl["stock_transaction_id"]	
+											%td
+												%i.fa.fa-print.right.printdetails
+
+					= smart_listing.paginate
+					= smart_listing.pagination_per_page_links
+					
+- else
+	.alert.alert-warning
+		No Record Found

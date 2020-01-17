@@ -1,0 +1,25 @@
+= form_for @product_attribute_group do |f|
+  - if @product_attribute_group.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@product_attribute_group.errors.count, "error")} prohibited this product_attribute_group from being saved:"
+      %ul
+        - @product_attribute_group.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .field
+    = f.label :product_attribute_set
+    = f.text_field :product_attribute_set
+  .field
+    = f.label :position
+    = f.number_field :position
+  .field
+    = f.label :is_system_entity
+    = f.check_box :is_system_entity
+  .field
+    = f.label :deleted_at
+    = f.datetime_select :deleted_at
+  .actions
+    = f.submit 'Save'

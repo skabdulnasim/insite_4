@@ -1,0 +1,19 @@
+%h1 Listing physical_types
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @physical_types.each do |physical_type|
+    %tr
+      %td= physical_type.name
+      %td= link_to 'Show', physical_type
+      %td= link_to 'Edit', edit_physical_type_path(physical_type)
+      %td= link_to 'Destroy', physical_type, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Physical type', new_physical_type_path

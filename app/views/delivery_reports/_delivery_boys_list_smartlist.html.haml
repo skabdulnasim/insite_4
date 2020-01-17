@@ -1,0 +1,45 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %th{:style=>"font-size:1em;font-weight: bold;"} Delivery Boy name
+      %th{:style=>"font-size:1em;font-weight: bold;"} Order collection count
+      %th{:style=>"font-size:1em;font-weight: bold;"} Delivery count
+      %th{:style=>"font-size:1em;font-weight: bold;"} Order Date
+      %th{:style=>"font-size:1em;font-weight: bold;"} Payment mode
+      %th{:style=>"font-size:1em;font-weight: bold;"}= "Collection Amount (#{currency})"
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        - delivery_boy_orders = object.orders.by_recorded_at(@from_datetime,@to_datetime)
+        %tr.bg-gray
+          %td{:style=>"font-size:1em;font-weight: 500;"}= object.name
+          %td= delivery_boy_orders.Picked?.count
+          %td= delivery_boy_orders.Delivered?.count
+          %td
+          %td
+          %td
+        - delivery_boy_orders.each do |db_order|
+          %tr
+            %td
+            %td
+            %td
+            %td= db_order.recorded_at.strftime("%Y-%m-%d")
+            %td
+            %td
+            - bills = db_order.bills
+            - bills.each do |bill|
+              - bill_payments = bill.payments
+              - bill_payments.each do |payment|
+                %tr
+                  %td
+                  %td
+                  %td
+                  %td
+                  %td= payment.paymentmode_type == 'ThirdPartyPayment' ? payment.paymentmode.third_party_payment_option_name : payment.paymentmode_type
+                  %td= payment.paymentmode.amount
+
+      
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  %p.warning No records!

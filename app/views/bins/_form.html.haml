@@ -1,0 +1,29 @@
+= form_for([@bin.store_rack, @bin]) do |f|
+  - if @bin.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@bin.errors.count, "error")} prohibited this bin from being saved:"
+      %ul
+        - @bin.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .field
+    = f.label :height
+    = f.text_field :height
+  .field
+    = f.label :width
+    = f.text_field :width
+  .field
+    = f.label :breadth
+    = f.text_field :breadth
+  .field
+    = f.label :row_no
+    = f.number_field :row_no
+  
+  .field
+    = f.label :unique_identify_no
+    = f.text_field :unique_identify_no
+  .actions
+    = f.submit 'Save'

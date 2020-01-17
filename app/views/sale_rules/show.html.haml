@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @sale_rule.name
+%p
+  %b Status:
+  = @sale_rule.status
+%p
+  %b Type:
+  = @sale_rule.sale_rule_type
+%p
+  %b Valid from:
+  = @sale_rule.valid_from
+%p
+  %b Valid till:
+  = @sale_rule.valid_till
+
+= link_to 'Edit', edit_sale_rule_path(@sale_rule)
+\|
+= link_to 'Back', sale_rules_path

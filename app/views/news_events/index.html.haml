@@ -1,0 +1,31 @@
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Adverrisements
+          .data-table-header__actions
+            - if can? :new, Sort    
+              %a.m-btn.m-btn-teal.waves-effect.waves-light{:href => "#{new_news_event_path}"}
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs Add new
+        - @news_events.each do |news_event|
+          .col-lg-4
+            .panel.panel-default
+              .panel-heading
+                .panel-title
+                  %a{:href => news_event_path(news_event)}
+                    %b= "# #{news_event.id} #{news_event.name.humanize}"
+                  .pull-right
+                    - if can? :edit, NewsEvent
+                      %a{:href => edit_news_event_path(news_event), :title => "Click to edit this advertisement", :style => "color:#000;"}
+                        %i.fa.fa-edit.fa-lg{:class=> "icon_edit"}
+                    - if can? :trash, NewsEvent
+                      &nbsp;
+                      %a{:href => news_event_path(news_event),:method => 'delete', :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Do you want to trash this news event?')) }, :title => "Trash this news", :style => "color:#000;"}
+                        %i.fa.fa-trash-o.fa-lg
+              .panel-body
+                = image_tag(news_event.news_event_galleries[0].news_event_image.url(:medium)) if news_event.news_event_galleries.present?

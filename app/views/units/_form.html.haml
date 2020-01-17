@@ -1,0 +1,65 @@
+- manual_load_javascript "jquery.geocomplete"
+%script{:src => "http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBq5JlSzFQkPFTx5kT7w-d2gRzwZzeO8Y8"}
+:javascript
+  $( document ).ready(function() {
+    $("#unit_address").geocomplete()
+  });
+= form_for setup_unit(@unit),:html => { :class => '', :multipart => true, :remote => true } do |f|
+  - unless @unittypes.present?
+    .alert.alert-dismissable.alert-danger{:style => "visibility: visible; opacity: 1; display: block; transform: translateY(0px);"}
+      %h5 Oh Snap!
+      %p="No branch types available in hierarchy under #{@parent_unit.unittype.unit_type_name}. To add an unit/branch under this branch either you have to add a new branch type under #{@parent_unit.unittype.unit_type_name} or reorder existing branch type hierarchy."
+      %br
+      %p
+        %a.btn.white.grey-text{:href => "#"} Add new branch type
+  - else
+    .grey.lighten-4.p10
+      .row.m0
+        %h6.form-intro.grey-text
+          %i.material-icons.left room
+          ="Branch/Unit (under #{@parent_unit.unit_name})"
+        .pl40
+          .input-field.col.s3.p0
+            = f.text_field :unit_name, :required=>true, :autofocus=>true
+            = f.label :unit_name, "Branch/Unit name"
+          .input-field.col.s3
+            = f.text_field :address, :required=>true
+            = f.label :address
+          .input-field.col.s3.p0
+            = f.select :unittype_id, options_for_select(@unittypes.map{ |ut| [ut.unit_type_name, ut.id]}, @unit.unittype_id), { include_blank: "Select Branch Type"},  {:class => "browser-default",:required => true}  
+            - if @parent_unit.id == 1
+              - unit_parent = 1
+            - else  
+              - unit_parent = @parent_unit.id
+            = f.hidden_field :unit_parent, :value => unit_parent
+          .input-field.col.s3.p0
+            = f.time_zone_select :time_zone, nil,{ include_blank: "Select Time Zone"}, {:class => "browser-default"}
+      .row
+        .col.l4.s12.p3  
+          %h6.form-intro.grey-text
+            %i.material-icons.left widgets
+            Stores  
+          = f.fields_for :stores do |builder|
+            = render 'store_fields', f: builder
+          = link_to_add_fields "Add a Store...", f, :stores, {}, "grey-text"
+        .col.l4.s12.p3
+          %h6.form-intro.grey-text
+            %i.material-icons.left border_outer
+            Sections
+          = f.fields_for :sections do |builder|
+            = render 'section_fields', f: builder
+          = link_to_add_fields "Add a Section...", f, :sections, {}, "grey-text"
+        .col.l4.s12.p3
+          %h6.form-intro.grey-text
+            %i.material-icons.left transform
+            SORT  
+          = f.fields_for :sorts do |builder|
+            = render 'sort_fields', f: builder
+          = link_to_add_fields "Add a SORT...", f, :sorts, {}, "grey-text"
+        / .col.s3  
+      .row.m0
+        .input-field
+          %button.btn.blue.waves-effect.waves-light.right{:type => "submit"}
+            Save
+          /= f.submit 'Save', :class => 'btn blue waves-effect waves-light right'
+        .clearfixboth

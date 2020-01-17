@@ -1,0 +1,30 @@
+%p#notice= notice
+
+%p
+  %b No:
+  = @card.no
+%p
+  %b Valid upto:
+  = @card.valid_upto
+%p
+  %b Type:
+  = @card.type
+%p
+  %b Bank:
+  = @card.bank
+%p
+  %b Cvv:
+  = @card.cvv
+%p
+  %b Merchandiser:
+  = @card.merchandiser
+%p
+  %b Name on card:
+  = @card.name_on_card
+%p
+  %b Amount:
+  = @card.amount
+
+= link_to 'Edit', edit_card_path(@card)
+\|
+= link_to 'Back', cards_path

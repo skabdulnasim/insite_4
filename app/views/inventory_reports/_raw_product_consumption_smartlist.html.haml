@@ -1,0 +1,53 @@
+- unless smart_listing.empty?
+
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Raw Product
+        %th Opening Stock
+        %th Credit
+        %th Total Stock
+        %th Debit
+        %th Closing Stock
+        %th Menu Products
+        %th Total sale quantity
+        %th Total consumption
+
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        - _current_stocks = Stock.get_product_consumption_stock_report(@store.id,object.id,@from_datetime,@to_datetime)
+        %tr
+          %td= "# " + object.id.to_s + " " + object.name + " (" + object.basic_unit + ")"
+          %td= _current_stocks[:opening_stock].round(2)
+          %td= _current_stocks[:total_credit].round(2)
+          %td= _current_stocks[:opening_stock].round(2) + _current_stocks[:total_credit].round(2)
+          %td= _current_stocks[:total_debit].round(2)
+          %td= _current_stocks[:closing_stock].round(2)
+          %td
+          %td
+          %td
+          
+        - _menu_products = ProductComposition.set_raw_product(object.id)
+        - _menu_products.each do |menu_product|
+          - _inventory_quantity = menu_product.inventory_quantity
+          - _order_details = OrderDetail.select("sum(quantity) as total_sale_quantity").by_date_range(@from_datetime,@to_datetime).by_product(menu_product.product_id).valid_item.set_unit(@store.unit_id)
+          /=debug _order_details
+          %tr
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td= menu_product.product.name
+            - _total_sale_quantity = _order_details[0][:total_sale_quantity].present? ?  _order_details[0][:total_sale_quantity].to_f : 0
+            %td= _total_sale_quantity.round(2).to_s + "(" + menu_product.product.basic_unit + ")"
+            %td= (_total_sale_quantity * _inventory_quantity).round(2).to_s + " (" + object.basic_unit + ")"
+          
+            
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  .alert.alert-warning
+    No record found

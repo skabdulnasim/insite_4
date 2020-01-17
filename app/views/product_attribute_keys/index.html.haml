@@ -1,0 +1,13 @@
+- links_arr = [{:title=>"Products",:url=>products_path,:active_class=>""},{:title=>"Manage Attributes",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper    
+= render "layouts/flash"
+.col-sm-12.padding-5.col.s12
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Listing Attributes
+            = link_to 'Add New Attribute', new_product_attribute_key_path, :class=>"m-btn blue waves-effect waves-light"
+          = smart_listing_render :attributes

@@ -1,0 +1,39 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"PO transfer and receive",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title PO Transfer and Receive report
+          .data-table-header__label
+            %span.fs-title="Transfer from #{Store.find(params[:transfer_store_id]).name} to #{Store.find(params[:receive_store_id]).name}" 
+          .data-table-header__actions
+            = smart_listing_controls_for(:po_transfer_and_receive, {class: "form-inline float-l margin-l-30"}) do       
+              .form-group.from_date.input-append.stock-report-input
+                = hidden_field_tag :transfer_type, '', :value=>params[:transfer_type]
+          .data-table-header__actions
+            %a.btn.dropdown-button{"data-activates" => "dropdown2", :href => "#!"}
+              Export
+              %i.mdi-navigation-arrow-drop-down.right
+            %ul#dropdown2.dropdown-content
+              %li.width-100
+                %a.export-indent-report{:href=>"/inventory_reports/pending_stock_receive.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&transfer_store_id=#{params[:transfer_store_id]}&receive_store_id=#{params[:receive_store_id]}"}
+                  CSV 
+
+        = smart_listing_render :po_transfer_and_receive
+

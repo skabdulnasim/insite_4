@@ -1,0 +1,74 @@
+- manual_load_javascript "templates/stores/transfer_details"
+  
+.col-lg-12
+  = render "layouts/flash"
+  .row
+    .col-lg-3.col-sm-6.col-xs-6.col-xxs-12
+      .smallstat.box
+        %i.fa.fa-key.red
+        %span.title Passkey
+        %span.value=@vehicle.pass_key
+    .col-lg-3.col-sm-6.col-xs-6.col-xxs-12
+      .smallstat.box
+        %i.fa.fa-star.blue
+        %span.title New shipments
+        %span.value= @vehicle.stock_transfers.pickup_pending.count
+    .col-lg-3.col-sm-6.col-xs-6.col-xxs-12
+      .smallstat.box
+        %i.fa.fa-refresh.yellow
+        %span.title Processing shipment
+        %span.value= @vehicle.stock_transfers.shipped.count
+    .col-lg-3.col-sm-6.col-xs-6.col-xxs-12
+      .smallstat.box
+        %i.fa.fa-check-square-o.green
+        %span.title Completed Shipment
+        %span.value= @vehicle.stock_transfers.delivered.count
+
+  .panel.panel-default
+    .panel-heading
+      %i.fa.fa-list
+      VEHICLE ACTIVITIES & ACTIONS
+    .panel-body
+      / tabs left
+      .col-md-3
+        .tabbable.tabs-left
+          %ul.nav.nav-tabs.padding-none
+            %li
+              %a{"data-toggle" => "tab", :href => "#a"} 
+                %span.float-r.badge= @vehicle.stock_transfers.pickup_pending.count
+                New shipment request
+            %li.active
+              %a{"data-toggle" => "tab", :href => "#b"} 
+                %span.float-r.badge= @vehicle.stock_transfers.shipped.count
+                Currently processing shipments
+            %li
+              %a{"data-toggle" => "tab", :href => "#c"}
+                %span.float-r.badge= @vehicle.stock_transfers.delivered.count
+                Completed Shipments             
+      .col-md-9               
+        .tab-content
+          #a.tab-pane
+            %h3.margin-t-none Pickup new shipments
+            = smart_listing_render :pending_shipments
+            
+          #b.tab-pane.active
+            %h3.margin-t-none Currently processing shipments
+            = smart_listing_render :processing_shipments
+            
+          #c.tab-pane
+            %h3.margin-t-none Delivered shipments  
+            = smart_listing_render :delivered_shipments
+                  
+/ Shipment Modal
+#showShipmentModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showShipmentModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg
+    .modal-content
+      .modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showShipmentModalLabel.modal-title Shipment details
+      .modal-body
+        = form_tag("/stock_transfers/update_status", method: "post") do
+          %input.recipient-type.form-control{:type => "hidden",:name=>"transfer_type", :value=>"trans_to_oth"}
+          #showShipmentModalDetails                             

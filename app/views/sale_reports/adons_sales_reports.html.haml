@@ -1,0 +1,21 @@
+.main-section__content
+	.example
+		.example__content.p0.min-height-405
+			.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+				%header.data-table-header
+					.data-table-header__label
+						%span.fs-title Addon Sales
+						%br
+						%span{:style=>"color:blue;font-size:12px;"}
+							= "From #{params[:from_date]} -To- #{params[:to_date]}"
+							
+					.data-table-header__actions
+						.form-group
+							= smart_listing_controls_for(:addons_report, {class: "form-inline float-l margin-l-30"}) do
+								= hidden_field_tag :from_date, "#{params[:from_date]}"
+								= hidden_field_tag :to_date, "#{params[:to_date]}"
+								= hidden_field_tag :unit_id, "#{params[:unit_id].present? ? params[:unit_id] : current_user.unit_id}"
+								= select_tag "section", options_from_collection_for_select(@sections, "id", "name"),class: "form-control", prompt: 'Select Section' 
+							%a.m-btn.export-by-addonn-sales-report.indigo.margin-l-5{:href=>"#{adons_sales_reports_sale_reports_path}.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{params[:unit_id]}"}
+								%i.mdi-file-file-download.left csv
+			= smart_listing_render :addons_report

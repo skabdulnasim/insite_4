@@ -1,0 +1,24 @@
+%p#notice= notice
+
+%p
+  %b Resource:
+  = @resource_order_history.resource_id
+%p
+  %b User:
+  = @resource_order_history.user_id
+%p
+  %b Unit:
+  = @resource_order_history.unit_id
+%p
+  %b Recorded at:
+  = @resource_order_history.recorded_at
+%p
+  %b Latitude:
+  = @resource_order_history.latitude
+%p
+  %b Longitude:
+  = @resource_order_history.longitude
+
+= link_to 'Edit', edit_resource_order_history_path(@resource_order_history)
+\|
+= link_to 'Back', resource_order_histories_path

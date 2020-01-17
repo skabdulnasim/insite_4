@@ -1,0 +1,68 @@
+= form_for @cancelation_policy, :html => { :class => 'form-horizontal' } do |f|
+  - if @cancelation_policy.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@cancelation_policy.errors.count, "error")} prohibited this cancelation_policy from being saved:"
+      %ul
+        - @cancelation_policy.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-horizontal.bordered-row.m-input.col-sm-12
+    .form-group.col-sm-12
+      = f.label :cancellation_allowed,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.radio_button(:cancellation_allowed, true,:id=>"cancellation_allowed_yes", :checked => true)
+        %label{:for=> "cancellation_allowed_yes"}= "Yes"
+        = f.radio_button(:cancellation_allowed, false,:id=>"cancellation_allowed_no")
+        %label{:for=> "cancellation_allowed_no"}= "No"
+    .form-group.col-sm-12
+      = f.label :plolicy,"Cancelation Policy",:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.text_field :plolicy, :required => true, :autofocus => true, :placeholder => "Enter Cancelation Policy", :class => 'form-control', autocomplete: 'off'
+    .form-group.col-sm-12
+      = f.label :is_refundable,"Is Refundable",:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.radio_button(:is_refundable, true,:id=>"is_refundable_yes", :checked => true)
+        %label{:for=> "is_refundable_yes"}= "Yes"
+        = f.radio_button(:is_refundable, false,:id=>"is_refundable_no")
+        %label{:for=> "is_refundable_no"}= "No"
+    .form-group.col-sm-12
+      = f.label :cancelation_allowed_since_deliverable,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.text_field :cancelation_allowed_since_deliverable, :required => true, :autofocus => true, :placeholder => "Enter cancelation allowed since deliverable", :class => 'form-control', autocomplete: 'off'   
+    .form-group.col-sm-12
+      = f.label :cancelation_not_allowed_state,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.select :cancelation_not_allowed_state, options_for_select(OrderStatus.all.map{ |u| [u.name, u.name] }, @cancelation_policy.cancelation_not_allowed_state), { include_blank: "Select an OrderStatus"}, :class => 'form-control',:required => true
+    .form-group.col-sm-12
+      = f.label :unit_id,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.select :unit_id, options_for_select(Unit.all.map{ |u| [u.unit_name, u.id] }, @cancelation_policy.unit_id), { include_blank: "Select an unit"}, :class => 'form-control',:required => true
+    / .form-group.col-sm-12
+    /   = f.label :is_delivery_charge_refandable,:class => 'col-sm-2 control-label'
+    /   .col-sm-10.input-field
+    /     = f.radio_button(:is_delivery_charge_refandable, true,:id=>"is_delivery_charge_refandable_yes", :checked => true)
+    /     %label{:for=> "is_delivery_charge_refandable_yes"}= "Yes"
+    /     = f.radio_button(:is_delivery_charge_refandable, false,:id=>"is_delivery_charge_refandable_no")
+    /     %label{:for=> "is_delivery_charge_refandable_no"}= "No"
+    .form-group.col-sm-12
+      = f.label :cancelation_charge_type,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.select :cancelation_charge_type, options_for_select({"By Amount" => "amount","By Percentage(%)" => "percentage"},@cancelation_policy.cancelation_charge_type), { include_blank: "Select charge type"}, {:class => "form-control"}
+    .form-group.col-sm-12
+      = f.label :cancelation_charge,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.text_field :cancelation_charge
+    .form-group.col-sm-12
+      = f.label :refund_in,:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.select :refund_in, options_for_select({"Cash" => "cash","Customer Walet" => "c_walet","Thirdparty Walet" => "th_walet","Bank" => "Bank"},@cancelation_policy.refund_in), { include_blank: "Select Refund in"}, {:class => "form-control"}
+    = f.fields_for :cancelation_causes do |builder|
+      = render 'cancelation_cause_fields', f:builder
+    = link_to_add_fields "Add Cancelation Cause", f, :cancelation_causes, {}, 'm-btn green margin-l-15 add_cancelation_causes'
+    
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        = f.submit 'Save', :class => 'btn btn-success btn-lg'
+        %a.btn.btn-primary.btn-lg{:href => "#"}
+          Cancel   
+    

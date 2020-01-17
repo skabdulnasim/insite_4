@@ -1,0 +1,19 @@
+%h1 Listing more_infos
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @more_infos.each do |more_info|
+    %tr
+      %td= more_info.name
+      %td= link_to 'Show', more_info
+      %td= link_to 'Edit', edit_more_info_path(more_info)
+      %td= link_to 'Destroy', more_info, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New More info', new_more_info_path

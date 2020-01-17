@@ -1,0 +1,121 @@
+:css
+	.invoice_table{
+		width:85%;
+		overflow: hidden;
+		background: #FFF;
+		color: #024457; 
+		margin-left:auto;
+		margin-right:auto;
+	}
+	.invoice_table_hdr{
+		background-color: #167F92;
+		padding: 1em;
+	}
+	.invoice_table_td{
+		background-color: #D2DCDB;
+		color: #000;
+		padding: 1em;
+		text-align:center;
+	}
+
+%div{:style => "width:100%; height:100%,border:1px solid black"}
+	%div{:style=>"margin-top:10px; margin-left:40px;"}
+		%div{:style=>"min-height: 180px; width:95%;"}
+			%div.dont-break-out{:style=>"float: left; width: 40%;  margin: 2px 10px; display: inline; "}
+				-vendor = @stock_purchase.purchase_order.vendor
+				%span{:style=>'font-weight: 600;'}
+					Vendor Details :
+				%br
+				%span{:style=>"font-weight: 400;"}
+					= vendor.name
+				%br
+				%span
+					= vendor.address
+				%br
+				%span
+					= vendor.address_phone_no
+				%br
+				%span
+					= vendor.email
+				%br
+				%span
+					= vendor.gst_hash
+			%div.dont-break-out{:style=>"float: right; width: 40%;  margin: 2px 10px; display: inline; "}
+				- unit_details = @stock_purchase.purchase_order.unit
+				%span{:style=>'font-weight: 600;'}
+					Unit Details
+				%br
+				%span{:style=>"font-weight: 400;"}
+					= unit_details.unit_name
+				%br
+				%span
+					= unit_details.address
+				%br
+				%span
+					= unit_details.pincode
+				%br
+				%span
+					= unit_details.phone
+		%div{:style=>"min-height: 100px; width:95%;background-color: #D2DCDB;border: 1px solid #e3e3e3;border-radius: 2px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset;"}
+			%div.dont-break-out{:style=>"float: left; width: 40%;  margin: 2px 10px; display: inline; "}
+				%span{:style=>'font-weight: 600;'}
+					Purchase Details :
+				%br
+				%span
+					Purchase order Id:
+					= @stock_purchase.purchase_order.id
+				%br
+				%span
+					Stock Purchase Id:
+					= @stock_purchase.id
+				%br
+				%span
+					invoice No:
+					= @stock_purchase.invoice_no
+			%div.dont-break-out{:style=>"float: right; width: 40%;  margin: 2px 10px; display: inline; "}	
+				%span{:style=>'font-weight: 600;'}
+				%br
+				%span
+					GRN No:
+					= @stock_purchase.grn_no
+				%br
+				%span
+					Invoice Date:
+					= @stock_purchase.invoice_date
+				%br
+				%span
+					PO Amount:
+					= @stock_purchase.total_amount
+			
+		%br			
+		%table.mytable.invoice_table{:border=>1}
+			%thead
+				%tr
+					%th.invoice_table_hdr Sl no
+					%th.invoice_table_hdr Product Name
+					%th.invoice_table_hdr Product SKU
+					%th.invoice_table_hdr Quantity
+					%th.invoice_table_hdr Landing Price
+					%th.invoice_table_hdr Discount
+					%th.invoice_table_hdr Sub Total
+			%tbody
+				- sl = 1
+				- stock = @stock_purchase.stocks
+				- @stock_purchase.purchase_order.purchase_order_metum.each do |po_metum|
+					- product_stock_details = stock.get_product(po_metum.product_id).first
+					- quantity = product_stock_details.stock_credit
+					- product_unit = product_stock_details.product.basic_unit
+					- stock_price = product_stock_details.price
+					- if po_metum.transaction_unit_id.present?
+						- quantity = (product_stock_details.stock_credit/po_metum.product_transaction_unit.basic_unit_multiplier).to_f
+						- product_unit = po_metum.product_transaction_unit.product_unit_name
+					%tr
+						%td.invoice_table_td= sl
+						%td.invoice_table_td= po_metum.product.name
+						%td.invoice_table_td= product_stock_details.sku
+						%td.invoice_table_td= "#{quantity} #{product_unit}"
+						%td.invoice_table_td= "#{product_stock_details.landing_price.round(2)}/#{product_unit}"
+						/ "#{(stock_price/quantity).round(2)}/#{product_unit}"
+						%td.invoice_table_td= product_stock_details.stock_price.present? ? product_stock_details.stock_price.discount_price : "0.0"
+						%td.invoice_table_td= stock_price
+					-sl += 1

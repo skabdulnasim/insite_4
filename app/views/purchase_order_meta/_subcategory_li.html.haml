@@ -1,0 +1,32 @@
+%ul{:style => "list-style:none"}
+  - subcategories.each do |sub|
+    %li.categories_action_list{:id => "#{sub.id}"}
+      //= sub.name
+      #accordion.panel-group
+        .panel.panel-default
+          .panel-heading
+            %h4.panel-title
+              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#category#{sub.id}"}
+                = sub.name
+          .panel-collapse.collapse{:id => "category#{sub.id}"}
+            .panel-body
+              - if ProductManagement::get_products_by_cat_id(sub.id).any?
+                - ProductManagement::get_products_by_cat_id(sub.id).each do |pro_sub|
+                  - _sub_product_details = ProductManagement::get_product_details_by_id(pro_sub.id)
+                  .row
+                    .input-group
+                      %span.input-group-addon
+                        %input{:type => "checkbox", :name => "checked_raw[]", :class => "check", :id => pro_sub.id, :value => pro_sub.id}
+
+                      %span.input-group-addon
+                        = pro_sub.name
+                      %span.input-group-addon
+                        Current Stock :
+                        =number_with_precision(get_product_current_stock(@store.id, pro_sub.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                        = _sub_product_details.basic_unit
+
+                      = text_field_tag "quantity#{pro_sub.id}", nil, placeholder:"Enter quantity", class: 'form-control numeric-only'
+                      .input-group-addon                         
+                        =_sub_product_details.basic_unit
+                  %br       
+                = render partial: 'store_requisition_meta/subcategory_li', locals: {subcategories: sub.subcategories} if sub.subcategories.present?

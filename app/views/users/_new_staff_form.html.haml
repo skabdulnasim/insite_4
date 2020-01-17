@@ -1,0 +1,102 @@
+- manual_load_javascript "templates/units/select_unit","jquery.geocomplete", "templates/units/select_parent_user"
+%script{:src => "http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyDz0LX0g0LOQAJDit-o4LPGmLLzYHJ07CE"}
+:javascript
+  $( document ).ready(function() {
+    $("#profile_address").geocomplete()
+  });
+  function setParent(val) {
+    document.getElementById("user_parent_user_id").value=val.value;
+  }
+
+= form_for @user,:html => { :class => 'form-horizontal' }, url: users_create_user_path do |u|
+  - if @user.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+      = "#{pluralize(@user.errors.count, "error")} prohibited this product from being saved:"
+  .col-sm-9.padding-5
+    .main-section__content
+      .example
+        .example__content.p0.min-height-300
+          .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title User Information 
+            .form-horizontal.bordered-row.m-input  
+              .form-group
+                = u.label :email, :class => 'col-sm-4 control-label'
+                .col-sm-6.input-field
+                  = u.email_field :email, :placeholder=>"Enter valid email ID",:required=>true, :class => 'form-control validate'
+              .form-group
+                = u.label :password, :class => 'col-sm-4 control-label'
+                .col-sm-6.input-field            
+                  = u.password_field :password, :placeholder=>"Enter Password",:required=>true, class: "form-control validate"
+              .form-group
+                = u.label :password_confirmation, :class => 'col-sm-4 control-label'
+                .col-sm-6.input-field            
+                  = u.password_field :password_confirmation,:placeholder=>"Re-enter Password",:required=>true, class: "form-control validate"
+                  = u.hidden_field :status, :value=>"1"
+                  = u.hidden_field :parent_user_id, :value=>""
+
+              = fields_for :profile do |u_p|
+                .form-group
+                  = u_p.label "First name", :class => 'col-sm-4 control-label'
+                  .col-sm-6.input-field                     
+                    = u_p.text_field :firstname,:required=>true, :class => 'form-control validate', :placeholder=>"Required"
+                .form-group
+                  = u_p.label "Last name", :class => 'col-sm-4 control-label'
+                  .col-sm-6.input-field                 
+                    = u_p.text_field :lastname, :required=>true, class: "form-control validate", :placeholder=>"Required"
+                .form-group
+                  = u_p.label "Contact number", :class => 'col-sm-4 control-label'
+                  .col-sm-6.input-field                 
+                    = u_p.text_field :contact_no, :required=>true, class: "form-control validate", :placeholder=>"Required"
+                .form-group
+                  = u_p.label :address, :class => 'col-sm-4 control-label'
+                  .col-sm-6
+                    = u_p.text_field :address,:placeholder=>"Street no",:required=>true, class: "form-control"
+                .form-group
+                  = u_p.label :city, :class => 'col-sm-4 control-label'
+                  .col-sm-6
+                    = u_p.text_field :city,:placeholder=>"City",:required=>true, class: "form-control"
+                .form-group
+                  = u_p.label :zip_code, :class => 'col-sm-4 control-label'
+                  .col-sm-6
+                    = u_p.text_field :zip_code,:placeholder=>"Zip code",:required=>true, class: "form-control"
+                .form-group
+                  = u_p.label :state, :class => 'col-sm-4 control-label'
+                  .col-sm-6
+                    = u_p.text_field :state,:placeholder=>"State",:required=>true, class: "form-control"
+                .form-group
+                  = u_p.label :country, :class => 'col-sm-4 control-label'
+                  .col-sm-6
+                    = u_p.text_field :country,:value=>"India",:required=>true, class: "form-control"                   
+                .form-group
+                  - _api_base_url = "http://#{(AppConfiguration.get_config_value('site_url')).to_s}/"
+                  = u_p.hidden_field :appurl,:value=>"#{_api_base_url}"
+  .col-sm-3.padding-5
+    .main-section__content
+      .example
+        .example__content.p0.min-height-300
+          .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Actions
+            .padding-5
+              %button.m-btn.green.width-100.waves-effect.waves-light{:type=>"submit"} 
+                Save user details
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              User role
+            .padding-5
+              / = select_tag "role_id", options_from_collection_for_select(@roles, "id", "name"), prompt: "Select role",:required=>true, class: "form-control"
+              = select_tag "role_id", options_for_select(@roles.map{ |role| [role.name.humanize, role.id] }), { prompt: "Select role",:required=>true, class: "form-control"}
+
+            #ajax-parent-user-section            
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              User branch
+            .padding-5.min-height-100
+              = select_tag "reg_unittype_id", options_from_collection_for_select(@unittypes, "id", "unit_type_name"), prompt: "Select Branch Type",:required=>true, class: "form-control margin-b-5"
+              #text-selector
+      

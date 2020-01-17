@@ -1,0 +1,36 @@
+- @filters = Array.new
+
+- @form_data[:report_selectors].each do |filter_col|
+  - data_type = get_data_type(filter_col)
+  - unless data_type =="text"
+    - tmp = Hash.new
+    - tmp[:id]= filter_col
+    - tmp[:label]= filter_col
+    - tmp[:type] = data_type
+    - @filters << tmp
+  
+- @filter_json = @filters.to_json
+
+%table.newtable{:align => "center", :border => "0", :cellpadding => "0", :cellspacing => "0", :width => "100%"}
+  %tbody
+    %tr
+      %th{:width => "35%"} Columns
+      %th.aligncenter{:width => "10%"} Group By
+      %th.aligncenter{:width => "10%"} Order By
+  = form_for @report, method: "post", url: customize_step_report_folder_report_path(@report_folder,@report,5) do |f|
+    - @filters.each do |row| 
+      %tr
+        %td{:nowrap => ""}= row[:label].humanize
+        %td.aligncenter
+          -label = row[:type] == "datetime" ? "date(#{row[:label]})" : row[:label]
+          = f.radio_button :group_attribute, label, id: "report_group_attribute_#{row[:id]}", class: "with-gap"
+          %label{:for=>"report_group_attribute_#{row[:id]}"}
+        %td.aligncenter
+          = f.radio_button :order_attribute, label, id: "report_order_attribute_#{row[:id]}", class: "with-gap"
+          %label{:for=>"report_order_attribute_#{row[:id]}"}
+    %tr
+      %td  
+        #cvbutton{:align => "center"}
+        %br
+          = f.submit "Reset", :type => "reset", :class=>"m-btn white grey-text"
+          = f.submit "Next", :class=>"m-btn teal"

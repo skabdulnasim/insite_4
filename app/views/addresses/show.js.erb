@@ -1,0 +1,11 @@
+<% if @address.present? %>
+  $('#deliverable-container').html('');
+  $('#deliverable-container').append("<%= j render(:partial => 'addresses/deliverable_address', :object => @address, :as => 'address') %>");
+  $("#right-sheet-modal").closeModal({
+    complete: function() {
+      $('.bottom-sheet').addClass('bottom-sheet-complete');
+    }
+  }); 
+<% else %>
+  Materialize.toast("Address not found", 3000);
+<% end %>

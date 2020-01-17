@@ -1,0 +1,35 @@
+-unless smart_listing.empty?
+	%table.data-table
+		%tr
+			%td Plan Name
+			%td Item Name
+			%td Despatch Quantity
+			%td Despatch Quantity for the Year
+			%td Despatch Quantity for Last Year
+			%td Product Unit
+		- smart_listing.collection.each do |store|
+			- store_order_details,total_dispatch_quantity = fetch_store_order_details(store,@from_datetime,@to_datetime)
+			%tr
+				%td=store.name
+				%td -
+				%td= total_dispatch_quantity.to_f.round(0)
+				%td -
+				%td -
+				%td -
+			
+			- if store_order_details.present?
+				-store_order_details.each do |order_detail|
+					-current_year_product_dispatch,previous_year_product_dispatch = current_year_and_previous_year_product_dispatch(order_detail.product_id,store.id)
+					%tr
+						%td - 
+						%td=order_detail.product.name
+						%td="#{order_detail.total_quantity.to_f.round(0)} "
+						%td= "#{current_year_product_dispatch.to_f.round(0)} "
+						%td= "#{previous_year_product_dispatch.to_f.round(0)} "
+						%td= "#{order_detail.product.basic_unit}"
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+-else
+	.alert.alert-warning
+		%td
+			No record found

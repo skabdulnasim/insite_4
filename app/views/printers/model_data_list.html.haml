@@ -1,0 +1,9 @@
+%ul.list-unstyled  
+- @model_datas.each do |model_data|
+  %li
+    .field 
+      = label :assignable_id,model_data[:name] do 
+        = check_box_tag("assignable_id[]", model_data[:id],is_checked_model_data_assignable(model_data[:id],@assignable_id))
+        = t model_data[:name]
+=# debug @model_datas
+=# debug params[:printer_id] 

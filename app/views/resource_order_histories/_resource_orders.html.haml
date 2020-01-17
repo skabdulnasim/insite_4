@@ -1,0 +1,56 @@
+-unless smart_listing.empty?
+	.example
+		.example__content.p0
+			.data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+				%table.data-table#accordion
+					%thead
+						%tr.data-table__selectable-row
+							%th SL no
+							%th Resource
+							%th Device id
+							%th Recorded at
+							%th Created at
+							%th Map Location
+					- i=1
+					%tbody.panel
+						-smart_listing.collection.each do |resource_order|
+							%tr.data-table__selectable-row.resource_order{"data-toggle" => "collapse","aria-controls" => "collapse_#{resource_order.id}", :href=>"#collapse_#{resource_order.id}","data-resource_order-id"=>"#{resource_order.id}","data-resource-lat"=>"#{resource_order.latitude}","data-resource-long"=>"#{resource_order.longitude}"}
+								%td 
+									=i
+								%td 
+									= "#{resource_order.resource.name}" "(#{resource_order.resource.unique_identity_no})"
+								%td 
+									= resource_order.device_id
+								%td
+									= resource_order.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+								%td	
+									=resource_order.created_at.strftime("%d-%m-%Y, %I:%M %p")
+								%td
+									.margin-t-b-2
+										= image_tag "//maps.google.com/maps/api/staticmap?center=#{resource_order.latitude},#{resource_order.longitude}&zoom=100&size=100x80&markers=color:red%7Clabel:%7C#{resource_order.latitude},#{resource_order.longitude}&key=AIzaSyBDxCJM6vT9uP_ddJyvRh-5uqjPNKMqKQk"
+							%tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{resource_order.id}", :role => "tabpanel", :id => "collapse_#{resource_order.id}"}
+								%td.grey{:colspan=>1}
+									%h2.text-white.text-align-left{:style=>"font-weight:bold;"} Order Details
+									%p.header.white-text.teal.padding-10 
+										%b.white-text
+											="##{resource_order.id} (recorded at : #{resource_order.recorded_at.strftime("%d-%m-%Y, %I:%M %p")})"
+									.cardwaves-effect.waves-light	
+										%table.data-table#accordion
+											%thead
+												%tr.data-table__selectable-row
+													%th{:style=>"font-weight:bold;"} Item Name
+													%th{:style=>"font-weight:bold;"} Quantity
+											%tbody.panel
+												-resource_order.resource_order_history_details.each do |resource_order_details|
+													%tr
+														%td
+															= resource_order_details.product_name
+														%td 
+															= resource_order_details.quantity
+								%td{:colspan=>6}
+									.resource_order_map{:style=> "width: 100%;height:300px;", :id=>"resource_order_#{resource_order.id}"}
+							- i+=1
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+-else
+	%p.warning no data found

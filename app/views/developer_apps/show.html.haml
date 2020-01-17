@@ -1,0 +1,23 @@
+%p#notice= notice
+%p
+  %b App ID:
+  = @developer_app.id
+%p
+  %b Name:
+  = @developer_app.name
+%p
+  %b App secret:
+  = Base64.decode64(@developer_app.app_secret)
+%p
+  %b Description:
+  = @developer_app.description
+%p
+  %b Is active:
+  = @developer_app.is_active
+%p
+  %b Website:
+  = @developer_app.website
+
+= link_to 'Edit', edit_developer_app_path(@developer_app)
+\|
+= link_to 'Back', developer_apps_path

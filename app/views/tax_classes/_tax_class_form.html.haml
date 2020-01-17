@@ -1,0 +1,84 @@
+.panel.panel-default
+  .panel-heading
+    Tax Classes
+    - if can? :new, TaxClass  
+      / Button trigger modal
+      %button.btn.btn-primary.btn-xs.float-r{"data-target" => "#taxClassmodal", "data-toggle" => "modal"}
+        %i.fa.fa-plus-square
+        Add new tax class
+  .panel-body
+    .row.col-sm-10
+      %table.table.table-bordered
+        %tr.well
+          %th Name
+          %th Type
+          %th Ammount
+          %th Ammount Type
+          %th Actions
+      
+        - @tax_classes.each do |tax_class|
+          %tr
+            %td= tax_class.name
+            %td= tax_class.tax_type
+            %td= tax_class.ammount
+            %td= tax_class.amount_type.humanize
+            %td                  
+              - if can? :edit, TaxClass  
+                %a.btn.btn-sm.btn-info.edit-product-tax{"data-target" => "#productTaxAddmodal", "data-toggle" => "modal", :title => "Edit branch type", :id => "#{tax_class.id}" , :title => "Edit branch type"} 
+                  %i.fa.fa-edit.fa-lg
+              - if can? :destroy, TaxClass      
+                %a.btn.btn-sm.btn-danger{:href => "#{tax_class_path(tax_class)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete branch type"}
+                  %i.fa.fa-trash-o.fa-lg
+      .digg_pagination
+        .page_info
+          =# page_entries_info @tax_class_pagination
+        = paginate @tax_class_pagination            
+    
+/ Modal
+#taxClassmodal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-sm
+    .modal-content
+      = form_for @tax_class, :html => { :class => 'form-inline' } do |f|        
+        .modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#myModalLabel.modal-title New tax class          
+        .modal-body.m-input  
+          .form-group
+            = f.select :operation_type, options_for_select(TaxClass::OPERTAION_TYPE), { :prompt=>"Select a operation type" }, {:class => "form-control"}
+          .form-group
+            = f.select :tax_type, options_for_select({"Simple" => "simple", "Cess" => "cess"}), { :prompt=>"Select a tax type" }, {:class => "form-control"}
+          .form-group
+            = f.text_field :name, :class => "form-control", :required => true, :placeholder => "Enter tax class name"
+            / %input.form-control{:placeholder => :tax_class_name, :type => "text", :name => 'tax_class[name]', :require => 'true'}
+          .form-group
+            = f.select :amount_type, options_for_select(TaxClass::AMOUNT_TYPES), { :prompt=>"Select a tax type" }, {:class => "form-control"}
+            =# f.select :amount_type, options_for_select({"Simple" => "simple", "Cess" => "cess"}), { :prompt=>"Select a tax type" }, {:class => "form-control"}            
+          .form-group
+            = f.text_field :ammount, :class => "form-control", :required => true, :placeholder => "Enter tax class amount"
+            / %input.form-control{:placeholder => :tax_ammount, :type => "text", :name => 'tax_class[ammount]', :require => 'true'}    
+          
+        .modal-footer
+          .form-group
+            %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+            
+            = f.submit 'Save', :class => "btn btn-success"
+#productTaxAddmodal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "productTypeEditmodalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content
+      =form_tag(products_product_tax_update_path, :method => 'post', multipart: true, :html => { :class => 'form-horizontal' }) do 
+        .modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#productTypeEditmodalLabel.modal-title ADD
+        .modal-body                                             
+          .form-group
+            %label.col-sm-2.control-label{:for => "product_tax"} 
+            .col-sm-10
+              #reciveproducttaxvalue                                                
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          %button.btn.btn-primary.add-to-cart{:type => "submit"} Save              
+                    

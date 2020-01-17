@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @resource_state.name
+%p
+  %b Color code:
+  = @resource_state.color_code
+%p
+  %b State priority:
+  = @resource_state.state_priority
+%p
+  %b Trash:
+  = @resource_state.trash
+
+= link_to 'Edit', edit_resource_state_path(@resource_state)
+\|
+= link_to 'Back', resource_states_path

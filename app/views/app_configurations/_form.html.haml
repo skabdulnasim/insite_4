@@ -1,0 +1,72 @@
+.panel.panel-default
+  .panel-heading Default Settings
+  .panel-body
+    = form_for @app_configuration do |f|
+      - if @app_configuration.errors.any?
+        #error_explanation
+          %h2= "#{pluralize(@app_configuration.errors.count, "error")} prohibited this app_configuration from being saved:"
+          %ul
+            - @app_configuration.errors.full_messages.each do |msg|
+              %li= msg
+      - if @app_configurations.present?
+        #callout-stacked-modals.bs-callout.bs-callout-success
+          %h4 Requisition Module
+          - if @req_auto_adjust.present? 
+            Auto adjust store requisition :
+            %label
+              %input#optionsRadios1{ :checked => ( @req_auto_adjust == "1" ? true : false ), :name => "req_auto_adjust", :type => "radio", :value => "1"}
+                Yes
+            %label
+              %input#optionsRadios2{:checked => ( @req_auto_adjust == "0" ? true : false ), :name => "req_auto_adjust", :type => "radio", :value => "0"}
+                No
+          - else
+            %a.btn.btn-primary{:href => basic_configurations_app_configurations_path, :role => "button"} Load
+            
+        #callout-stacked-modals.bs-callout.bs-callout-warning
+          %h4 Purchase Order Module
+          - if @purchase_order_auto_adjust.present? 
+            Auto adjust purchase order : 
+            %label
+              %input#optionsRadios1{ :checked => ( @purchase_order_auto_adjust == "1" ? true : false ), :name => "purchase_order_auto_adjust", :type => "radio", :value => "1"}
+                Yes
+            %label
+              %input#optionsRadios2{:checked => ( @purchase_order_auto_adjust == "0" ? true : false ), :name => "purchase_order_auto_adjust", :type => "radio", :value => "0"}
+                No
+          - else
+            %a.btn.btn-primary{:href => basic_configurations_app_configurations_path, :role => "button"} Load
+
+        #callout-stacked-modals.bs-callout.bs-callout-danger
+          %h4 Menu Module
+          - if @owner_will_crud_menu.present? 
+            Owner will create edit delete menu : 
+            %label
+              %input#optionsRadios1{ :checked => ( @owner_will_crud_menu == "1" ? true : false ), :name => "owner_will_crud_menu", :type => "radio", :value => "1"}
+                Yes
+            %label
+              %input#optionsRadios2{:checked => ( @owner_will_crud_menu == "0" ? true : false ), :name => "owner_will_crud_menu", :type => "radio", :value => "0"}
+                No
+          - else
+            %a.btn.btn-primary{:href => basic_configurations_app_configurations_path, :role => "button"} Load
+
+        #callout-stacked-modals.bs-callout.bs-callout-success
+          %h4 Stock Management Module
+          - if @low_over_stock_alert.present? 
+            Enable low/ over stock alert : 
+            %label
+              %input#optionsRadios1{ :checked => ( @low_over_stock_alert == "1" ? true : false ), :name => "low_over_stock_alert", :type => "radio", :value => "1"}
+                Yes
+            %label
+              %input#optionsRadios2{:checked => ( @low_over_stock_alert == "0" ? true : false ), :name => "low_over_stock_alert", :type => "radio", :value => "0"}
+                No
+          - else
+            %a.btn.btn-primary{:href => basic_configurations_app_configurations_path, :role => "button"} Load
+
+        .actions
+          = f.submit 'Save', :class => 'btn btn-success btn-lg'
+      - else
+        =# AppConfiguration.load_basic_configurations()
+        .jumbotron
+          %h1 Hello, user!
+          %p It seems like you did not load your basic configurations.
+          %p
+            %a.btn.btn-primary.btn-lg{:href => basic_configurations_app_configurations_path, :role => "button"} Load basic configurations

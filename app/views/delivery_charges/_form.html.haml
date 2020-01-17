@@ -1,0 +1,30 @@
+= form_for @delivery_charge , :html => { :class => 'form-horizontal' } do |f|
+  - if @delivery_charge.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@delivery_charge.errors.count, "error")} prohibited this delivery_charge from being saved:"
+      %ul
+        - @delivery_charge.errors.full_messages.each do |msg|
+          %li= msg
+  .form-horizontal.bordered-row.m-input     
+    .form-group
+      = f.label :lower_limit,:class => 'col-sm-4 control-label'
+      .col-sm-6.input-field
+        = f.text_field :lower_limit, :required => true, :autofocus => true, :placeholder => "Enter Lower Limit", :class => 'form-control validate', autocomplete: 'off'   
+    .form-group
+      = f.label :upper_limit,:class => 'col-sm-4 control-label'
+      .col-sm-6.input-field
+        = f.text_field :upper_limit, :required => true, :autofocus => true, :placeholder => "Enter Upper Limit", :class => 'form-control validate', autocomplete: 'off'   
+
+    .form-group
+      = f.label :delivery_charge,:class => 'col-sm-4 control-label'
+      .col-sm-6.input-field
+        = f.text_field :delivery_charge, :required => true, :autofocus => true, :placeholder => "Enter Delivery charge", :class => 'form-control validate', autocomplete: 'off'
+    
+      = f.hidden_field :unit_id, :value => current_user.unit_id
+
+  .form-group
+    .col-sm-7
+    .col-sm-3
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'
+      %a.btn.btn-primary.btn-lg{:href => delivery_charges_path}
+        Cancel  

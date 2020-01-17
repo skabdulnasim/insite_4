@@ -1,0 +1,29 @@
+.card
+  .padding-10 
+    %b FILTER BY
+  = smart_listing_controls_for(:approval_alert, {class: "text-left"}) do
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-list.left
+      Approvable Type          
+    .padding-10{:style => "overflow-y: scroll; position: sticky; height: 100px;"}
+      %ul{:style => "list-style:none; padding:0px;"}
+        %li
+          .checkbox
+            = radio_button_tag 'approvable_type', "PurchaseOrder", false,{ :id => "approvable_type_purchase_order", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"approvable_type_purchase_order", :style=>"padding-left:30px;"}= "Purchase Order" 
+
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-list.left
+      Approval Status          
+    .padding-10{:style => "overflow-y: scroll; position: sticky; height: 150px;"}
+      %ul{:style => "list-style:none; padding:0px;"}
+        %li
+          .checkbox
+            = radio_button_tag 'is_approve', "true", false,{ :id => "is_approve_true", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"is_approve_true", :style=>"padding-left:30px;"}= "Approved"
+          .checkbox
+            = radio_button_tag 'is_approve', "false", false,{ :id => "is_approve_false", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"is_approve_false", :style=>"padding-left:30px;"}= "Pending" 
+          .checkbox
+            = radio_button_tag 'is_approve', "reject", false,{ :id => "is_approve_reject", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"is_approve_reject", :style=>"padding-left:30px;"}= "Reject"  

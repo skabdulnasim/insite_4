@@ -1,0 +1,69 @@
+- unless smart_listing.empty?
+	.main-section__content
+		.example
+			.example__content.p0
+				.data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+					%header.data-table-header
+						.data-table-header__label
+							%span.fs-title Listing Proformas
+					%table.data-table#accordion
+						%thead
+							%tr.data-table__selectable-row
+								%th= smart_listing.sortable "ID", "id"
+								%th Discount
+								%th
+									%small
+										Grand total
+										%br
+										= "(in #{currency})"
+								%th Proforma amount
+								%th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable 'Recorded Date','Recorded at'
+								%th Remarks
+								%th Tax amount
+								%th Roundoff
+								%th Serial no
+								%th Status
+								%th Unit
+								%th Device
+								%th Customer
+								%th User
+						%tbody.panel
+							- smart_listing.collection.each do |object|
+								%tr.data-table__selectable-row
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.id
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.discount
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.grand_total
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.proforma_amount
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.recorded_at
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.remarks
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.tax_amount
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.roundoff
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.serial_no
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.status
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										=	object.orders[0].unit.unit_name
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.device_id
+									%td.hidden-sm.hidden-md.hidden-xs.proforma-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= object.orders[0].customer.present? ? object.orders[0].customer.customer_profile.customer_name : "-"
+									%td.hidden-sm.hidden-md.hidden-xs.bill-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href=> "#collapse_#{object.id}", :role => "button", "data-proforma-id"=>object.id, :class=>"proforma_collapse_#{object.id}","data-action"=>"view_proforma"}
+										= "#{object.orders[0].unit.users[0].profile.firstname} #{object.orders[0].unit.users[0].profile.lastname}"
+								%tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{object.id}", :role => "tabpanel", :id => "collapse_#{object.id}"}
+									%td.p0{:colspan=>9,:id=>"proforma_quickinfo_#{object.id}"}
+										Loading please wait... 
+
+					= smart_listing.paginate
+					= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		No bills found

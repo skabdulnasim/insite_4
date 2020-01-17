@@ -1,0 +1,15 @@
+.form-group
+  = f.label :image, :class => 'col-sm-3 control-label'
+  .col-sm-7
+    .col-sm-8.margin-t-5
+      = f.file_field :image, placeholder: "Field Name"
+    .col-sm-4
+      - product_image = ProductImage.find_by_id(f.object.id)
+      - if product_image.present?
+        = image_tag(product_image.image, width: '55', height: '45')
+      - else
+        = image_tag("icons/product-box-128.png", width: '55', height: '45', :class => "img-thumbnail")
+  
+  .col-sm-2
+    %a.btn.btn-xs.btn-danger.remove_product_images{:href => "#", :title => "Delete", "data-product-image-id" => f.object.id}
+      %i.mdi-content-remove

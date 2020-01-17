@@ -1,0 +1,8 @@
+= content_tag_for :div, unittype, class: "row m0" do
+  .card.mb0.handle
+    .card-content
+      .row.m0
+        .col.l8.s8{:class=>"unittype_name_of_#{unittype.id}"}
+          %span=unittype.unit_type_name.humanize
+        .col.l4.s4
+          = link_to "Edit", edit_unittype_path(unittype), :class=>"right modal-trigger edit_branch_type_link", remote: true

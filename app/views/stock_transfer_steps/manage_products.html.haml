@@ -1,0 +1,21 @@
+- manual_load_javascript "stores"
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"New stock transfer",:url=>"#!",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+= render "layouts/flash"
+.col-lg-12.p0
+  = render 'wizard', current_step: "step_2", completed_steps: ["step_1"]
+  .card.m0
+    .card-content.padding-10
+      #item-form-container
+        - if @stock_transfer.store_requisition_log_id == nil
+          = render "item_form"
+      .divider
+      #item-quantity-form-container
+        = render "item_quantity_form"
+      .clearfix
+      %hr
+      .wizard.vertical
+        .actions.clearfix.clearfixboth
+          %ul{"aria-label" => "Pagination", :role => "menu"}
+            %li.button_finish{"aria-hidden" => "false", :style => "display: block;"}
+              = link_to "Next", "#{store_stock_transfer_steps_path(@store,@stock_transfer)}/confirmation", :class => 'finish_button'

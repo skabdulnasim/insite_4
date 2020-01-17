@@ -1,0 +1,30 @@
+= render "layouts/flash"
+= javascript_include_tag "custom_add"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Adverrisements
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal.waves-effect.waves-light{:href => "#{new_advertisement_path}"}
+              %i.mdi-content-add.left
+              %span.hidden-sm.hidden-xs Add new
+        - @advertisements.each do |advertisement|
+          .col-lg-4
+            .panel.panel-default
+              .panel-heading
+                .panel-title
+                  %a{:href => advertisement_path(advertisement)}
+                    %b= "# #{advertisement.id} #{advertisement.name.humanize}"
+                  .pull-right
+                    - if can? :edit, Advertisement
+                      %a{:href => edit_advertisement_path(advertisement), :title => "Click to edit this advertisement", :style => "color:#000;"}
+                        %i.fa.fa-edit.fa-lg{:class=> "icon_edit"}
+                    - if can? :trash, Advertisement
+                      &nbsp;
+                      %a{:href => advertisement_path(advertisement),:method => 'delete', :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Do you want to trash this menu card?')) }, :title => "Trash this menu card", :style => "color:#000;"}
+                        %i.fa.fa-trash-o.fa-lg
+              .panel-body
+                = image_tag(advertisement.advertisement_galleries[0].advertisement_image.url(:medium)) if advertisement.advertisement_galleries.present?

@@ -1,0 +1,8 @@
+%ul#nav-mobile.side-nav.fixed
+  %li.logo
+    %a.sidebar-close-collapse.float-r.hidden-lg.hidden-md{:href => "#"}
+      %i.mdi-navigation-close
+    %a#logo-container.brand-logo{:href => root_url}
+      = image_tag "logo_insite2.png", :height => "30px"
+  - render_sidenavbar_links params[:controller], params[:action]
+  %div

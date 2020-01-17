@@ -1,0 +1,60 @@
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });           
+  });
+= form_for @coupon, :html => { :class => 'form-horizontal'}  do |f|
+  - if @coupon.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@coupon.errors.count, "error")} prohibited this coupon from being saved:"
+      %ul
+        - @coupon.errors.full_messages.each do |msg|
+          %li= msg
+
+  .col-sm-12
+    .form-group
+      = f.label :coupon_type, :class => 'col-sm-3 control-label'
+      .col-sm-9
+        = f.select :coupon_type, options_for_select(Coupon::COUPON_TYPE), { :include_blank=> false }, { :class => "form-control", :require => true}
+    .form-group
+      = f.label :name, :class => 'col-sm-3 control-label'
+      .col-sm-9
+        = f.text_field :name, :class => 'form-control', :require => true
+    .form-group
+      = f.label :amount_type, :class => 'col-sm-3 control-label'
+      .col-sm-9
+        = f.select :amount_type, options_for_select(Coupon::AMOUNT_TYPE), { :include_blank=> false }, { :class => "form-control", :require => true}
+    .form-group
+      = f.label :amount, :class => 'col-sm-3 control-label'
+      .col-sm-9
+        = f.text_field :amount, :class => 'form-control', :require => true
+    .form-group
+      = f.label :status, :class => 'col-sm-3 control-label'
+      .col-sm-9
+        = f.select :status, options_for_select(Coupon::STATUS), {:include_blank => false}, {:class => "form-control", :require => true}
+    .form-group
+      = f.label :count, :class => 'col-sm-3 control-label'
+      .col-sm-9
+        = f.text_field :count, :class => 'form-control', :require => true
+    .form-group
+      = f.label :valid_from, :class => 'col-sm-3 control-label'
+      .col-sm-9
+        = f.text_field :valid_from, :class => 'form-control datepick', :require => true
+    .form-group
+      = f.label :valid_to, :class => 'col-sm-3 control-label'
+      .col-sm-9
+        = f.text_field :valid_to, :class => 'form-control datepick', :require => true
+
+    %br
+    %br
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        = f.submit 'Save', :class => 'btn btn-success btn-md'
+        %a.btn.btn-primary.btn-md{:href => coupons_path}
+          Cancel
+
+
+  
+

@@ -1,0 +1,63 @@
+/ %h1 Listing slots
+
+/ %table
+/   %tr
+/     %th Title
+/     %th Start time
+/     %th End time
+/     %th Duration
+/     %th
+/     %th
+/     %th
+
+/   - @slots.each do |slot|
+/     %tr
+/       %td= slot.title
+/       %td= slot.start_time.strftime("%I:%M%p")
+/       %td= slot.end_time.strftime("%I:%M%p")
+/       %td= slot.duration
+/       %td= link_to 'Show', slot
+/       %td= link_to 'Edit', edit_slot_path(slot)
+/       %td= link_to 'Destroy', slot, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+/ %br
+
+/ = link_to 'New Slot', new_slot_path
+
+
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing slots
+          .data-table-header__actions
+            - if can? :new, Slot    
+              %a.m-btn.m-btn-teal.waves-effect.waves-light{:href => "#{new_slot_path}"}
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs Add new SLOT 
+
+
+        %table.data-table.white
+          %tr.table-header.well
+            %th Tltle
+            %th Type
+            %th Start_Time
+            %th End_time
+            %th Durations
+            %th Actions
+
+          - @slots.each do |slot|
+            %tr
+              %td= slot.title
+              %td= slot.slot_type.present? ? slot.slot_type : '-'
+              %td= slot.start_time.strftime("%I:%M%p")
+              %td= slot.end_time.strftime("%I:%M%p")
+              %td= slot.duration 
+              %td
+                = link_to 'Show', slot
+                = link_to 'Edit', edit_slot_path(slot)
+                = link_to 'Destroy', slot, :method => :delete, :data => { :confirm => 'Are you sure?' }

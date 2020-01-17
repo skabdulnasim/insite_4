@@ -1,0 +1,131 @@
+:javascript
+  $(function() {
+    $('#payment_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+      maxDate: new Date()
+    });
+  });
+- unless smart_listing.empty?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Listing Stock Purchase
+              %a.m-btn.indigo.margin-l-5.export-shop-sumary-report.float-r{:href=>"#{payment_details_vendor_path}.csv"}
+                %i.mdi-file-file-download.left
+                CSV
+          %table.data-table#accordion
+            %thead
+              %tr.data-table__selectable-row
+                %th= smart_listing.sortable "ID", "id"
+                %th.hidden-sm.hidden-md.hidden-xs= 'Purchase Order'
+                %th= smart_listing.sortable "Status", "status"
+                %th 
+                  %small
+                    Total Amount 
+                    %br
+                    ="(in #{currency})"
+                %th
+                  %small
+                    Due Amount
+                    %br 
+                    ="(in #{currency})"
+                %th
+                  %small
+                    GRN No.
+                %th= smart_listing.sortable "Invoice No", "invoice_no"
+                %th= smart_listing.sortable "Invoice Date", "invoice_date"
+                %th= smart_listing.sortable "Invoice Amount", "invoice_amount"
+                %th.hidden-sm.hidden-md.hidden-xs= 'Send At'
+                %th.hidden-sm.hidden-md.hidden-xs= 'Received At'
+                %th
+            %tbody.panel
+              - smart_listing.collection.each do |object|
+                %tr.data-table__selectable-row
+                  %td.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    =object.id
+                  %td.hidden-sm.hidden-md.hidden-xs.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    = "#(#{object.purchase_order_id})""#{object.purchase_order.name}"
+                    -if object.cancellation_status.present?
+                      %span.m-label.red
+                        = object.cancellation_status
+                  %td.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    =get_payment_status(object)
+                  - paid_amount = object.paid_amount? ? object.paid_amount : 0 
+                  - due_amount = object.total_amount - paid_amount if object.total_amount.present?
+                  %td.hidden-sm.hidden-md.hidden-xs.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    / = object.stocks.sum(:price).round
+                    = stock_purchase_total_price(object.id)
+                  %td.hidden-sm.hidden-md.hidden-xs.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    = due_amount
+                  %td
+                    - if object.grn_no.present?
+                      = object.grn_no
+                    -else
+                      = "-"
+                  %td.hidden-sm.hidden-md.hidden-xs.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    = object.invoice_no.present? ? object.invoice_no : '-'
+
+                  %td.hidden-sm.hidden-md.hidden-xs.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    = object.invoice_date.present? ? object.invoice_date : '-'
+
+                  %td.hidden-sm.hidden-md.hidden-xs.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    = object.invoice_amount.present? ? object.invoice_amount : '-'
+
+                  %td.hidden-sm.hidden-md.hidden-xs.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    =object.created_at.strftime("%d-%m-%Y, %I:%M %p")  
+                  %td.hidden-sm.hidden-md.hidden-xs.stock-purchase-quickview{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", "data-stock-purchase-id"=>object.id,"data-currency"=>currency, :class=>"stock_purchase_collapse_#{object.id}","data-action"=>"view_stock_purchase"}
+                    =object.updated_at.strftime("%d-%m-%Y, %I:%M %p") 
+                  %td
+                    - if object.payment_status == "paid"
+                      %a.m-btn.blue.margin-b-5.text-align-left.waves-effect.waves-light.disabled
+                        %i.fa.fa-credit-card
+                    -else
+                      %a.m-btn.blue.margin-b-5.text-align-left.waves-effect.waves-light.stock-purchase-payment{"data-target" =>"#showPaymentModal", "data-toggle" => "modal","data-stock-purchase-id"=>object.id, "data-due-amount" => due_amount, "data-currency"=> currency}
+                        %i.fa.fa-credit-card
+                  %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{object.id}", :role => "tabpanel", :id => "collapse_#{object.id}"}
+                    %td.p0{:colspan=>9,:id=>"stock_purchase_quickinfo_#{object.id}"}
+                      Loading please wait... 
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links
+          %br
+
+          / Payment Modal
+          #showPaymentModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showPaymentModalLabel", :role => "dialog", :tabindex => "-1"}
+            .modal-dialog
+              .modal-content.m-modal-content
+                .modal-header.m-modal-header
+                  %button.close{"data-dismiss" => "modal", :type => "button"}
+                    %span{"aria-hidden" => "true"} &times;
+                    %span.sr-only Close
+                  %h4#showRequistionModalLabel.modal-title.payment-title Make a payment 
+                .modal-body
+                  = form_tag(stock_purchase_payments_path, method: "post", :class => 'form-horizontal') do
+                    .col-sm-12.input-group
+                      .col-sm-4  
+                        = select_tag :payment_mode, options_for_select({"Cash"=>"cash","Card"=>"card", "Cheque" => "cheque", "NEFT" => "neft"}),class: 'form-control', required: 'true'
+                      = hidden_field_tag :'vendor_id', nil, :value => @vendor.id
+                      = hidden_field_tag :'stock_purchase_id', nil, class: "stock_purchase_id_payment"
+                      .col-sm-4
+                        = text_field_tag :'payment_amount', nil, placeholder: 'Enter amount..', required: 'true',class: 'allow-numeric-only form-control border-radious-4'
+                        = hidden_field_tag :'due_amount', nil, placeholder: 'Enter amount..', class: 'form-control'
+                      .col-sm-4
+                        = text_field_tag :'details', nil, placeholder: 'Enter cheque no',class: 'border-radious-4 form-control', id: "cheque_details", disabled: true, style: "display: none"
+                        = text_field_tag :'details', nil, placeholder: 'Enter NEFT no',class: 'border-radious-4 form-control', id: "neft_details", disabled: true, style: "display: none"
+
+                      .col-sm-4
+                        .form-group.from_date.input-append
+                          = text_field_tag :payment_date, '', class: "search form-control form-control-small-pad", placeholder: "Payment Date", autocomplete: :off, :style => "padding: 6px 10px;"
+                    .clearfix
+                    .modal-footer
+                      %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+                      = submit_tag "Save", class: "btn btn-primary payment-save"
+
+
+
+- else
+  .alert.alert-warning
+    No Stock Purchase Found

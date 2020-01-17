@@ -1,0 +1,34 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %tr.data-table__selectable-row
+        %th{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"}= smart_listing.sortable "Approvable Type", "approvable_type"
+        %th{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"}= smart_listing.sortable "Approvable ID", "approvable_id"
+        %th{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"}= smart_listing.sortable "Status", "is_approve"
+        %th{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"}= smart_listing.sortable "Created At", "created_at"
+        %th{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"}= smart_listing.sortable "Updated At", "updated_at"
+    %tbody
+      - smart_listing.collection.each do |object| 
+        %tr.click_approvable.data-table__selectable-row{"data-target" => "#showApprovableModal", "data-toggle" => "modal", 'data-approvable-id'=> "#{object.approvable_id}", 'data-vendor-name' => "#{object.approvable.vendor.name}", "data-approvable-type" =>"#{object.approvable_type}",:id=>"approvable_#{object.approvable.id}"}
+          %td{:style => "border-right: 1px solid #ccc"}
+            - if object.approvable_type == "PurchaseOrder"
+              %span.badge.blue.padding-5.margin-t-2
+                #{object.approvable_type}
+          %td{:style => "border-right: 1px solid #ccc"}="#{object.approvable_id}"
+          %td{:style => "border-right: 1px solid #ccc"}
+            - if object.is_approve == "true"
+              %span.badge.green.padding-5.margin-t-2
+                Approved
+            - elsif object.is_approve == "false"
+              %span.badge.gray.padding-5.margin-t-2
+                Pending
+            - else
+              %span.badge.red.padding-5.margin-t-2
+                Rejected
+          %td{:style => "border-right: 1px solid #ccc"}="#{object.created_at}"
+          %td{:style => "border-right: 1px solid #ccc"}="#{object.updated_at}"
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No records found!.          

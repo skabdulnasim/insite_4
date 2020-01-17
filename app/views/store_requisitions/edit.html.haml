@@ -1,0 +1,19 @@
+:javascript
+  $(function() {
+    $('#valid_from_req').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+    $('#valid_till_req').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+  });
+#page-wrapper
+  .row
+    .page-header
+      %h2
+        %i.fa.fa-cubes
+        Store Management
+        %small Edit requisition
+    .page-container
+
+      = render 'form'

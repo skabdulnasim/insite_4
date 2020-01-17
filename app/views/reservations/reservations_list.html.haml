@@ -1,0 +1,19 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+  });
+= render "layouts/flash"
+- manual_load_javascript "templates/reservations/list_resources"
+%script{:src => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.js"}
+%link{:href => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.css", :rel => "stylesheet"}/
+.col-sm-3.padding-5
+  = render :partial => "reservation_filter"
+.col-sm-9.padding-5
+  = smart_listing_render :reservations
+= render 'new_reservation'
+= render 'register_customer'   

@@ -1,0 +1,83 @@
+/ %h1 Listing menu_mappings
+
+/ %table
+/   %tr
+/     %th Day
+/     %th Section
+/     %th Menu card
+/     %th Merge section
+/     %th
+/     %th
+/     %th
+
+/   - @menu_mappings.each do |menu_mapping|
+/     %tr
+/       %td= menu_mapping.day_id
+/       %td= menu_mapping.section_id
+/       %td= menu_mapping.menu_card_id
+/       %td= menu_mapping.merge_section_id
+/       %td= link_to 'Show', menu_mapping
+/       %td= link_to 'Edit', edit_menu_mapping_path(menu_mapping)
+/       %td= link_to 'Destroy', menu_mapping, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+/ %br
+
+/ = link_to 'New Menu mapping', new_menu_mapping_path
+
+
+/ view changed
+
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Menu Mappings
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_menu_mapping_path}"}
+              %i.mdi-content-add.left
+              New Menu Mapping 
+
+        %table.data-table.table-striped   
+          %tr
+            %th{:style=>"font-weight:bold;"} Day
+            %th{:style=>"font-weight:bold;"} Merge section
+            %th{:style=>"font-weight:bold;"} Menu card
+            %th{:style=>"font-weight:bold;"} Actions
+
+          / - @menu_mappings.each do |menu_mapping|
+          /   %tr
+          /     %td= menu_mapping.day.name
+          /     %td= menu_mapping.merge_section.name
+          /     %td= menu_mapping.menu_card.name
+          /     %td
+
+          - @days.each do |day|
+            %tr
+              %td{:style=>"font-weight:bold;"}= Day.find(day).name
+              %td= ""
+              %td= ""
+              %td
+            - @merge_sections.each do |merge_section|
+              - @menu_mappings_day_section_wise = MenuMapping.where(:day_id=>day,:merge_section_id=>merge_section).by_unit_id(@current_user.unit_id)
+              - if @menu_mappings_day_section_wise.present?
+                %tr
+                  %td= ""
+                  %td{:style=>"font-weight:bold;"}= Section.find(merge_section).name
+                  %td= ""
+                  %td
+                    %a.m-btn.blue.m-btn-low-padding{:href => "#{edit_menu_mapping_path(@menu_mappings_day_section_wise.first)}", :title => "Edit menu mapping"} 
+                      %i.mdi-editor-border-color
+                - @menu_mappings_day_section_wise.each do |menu_mapping|
+                  %tr
+                    %td= ""
+                    %td= ""
+                    %td= menu_mapping.menu_card.name
+                    %td
+                      .switch{:style=>"margin-left:-18px;"}
+                        %label
+                          = check_box_tag :status_enable_disable, 'enabled', menu_mapping.status == "active" ? true : false, {"class"=> "menu_mapping_status_update", "id"=>"menu_mapping_status_update_#{menu_mapping.id}","data-menu-mapping-id"=>menu_mapping.id}
+                          %span.lever.float-l
+              

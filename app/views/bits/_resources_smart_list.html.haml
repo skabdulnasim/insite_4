@@ -1,0 +1,17 @@
+- unless smart_listing.empty?
+	.panel.panel-default{:style=>"padding-left:20px; padding-right:20px;"}
+		%p.text-info *Please click on (+) button to add resource and (-) to remove it 
+		-smart_listing.collection.each do|resource|
+			.card.grey
+				%b 
+					=resource.name
+				- if is_allocated_to_bit(resource.id) == false
+					%a.m-btn.green.m-btn-low-padding.resource{:style=>"float:right;","data-resource-id"=>resource.id,"data-resource-name"=>resource.name,:class=>"action_for_resource#{resource.id}"}
+						%i.fa.fa-plus
+				- else
+					%a.m-btn.red.m-btn-low-padding.resource{:style=>"float:right;","data-resource-id"=>resource.id,"data-resource-name"=>resource.name,:class=>"action_for_resource#{resource.id}"}
+						%i.fa.fa-minus
+			%br
+	= smart_listing.paginate
+-else
+	%p.warning No Resource found

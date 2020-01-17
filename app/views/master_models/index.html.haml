@@ -1,0 +1,21 @@
+%h1 Listing master_models
+
+%table
+  %tr
+    %th Name
+    %th Status
+    %th
+    %th
+    %th
+
+  - @master_models.each do |master_model|
+    %tr
+      %td= master_model.name
+      %td= master_model.status
+      %td= link_to 'Show', master_model
+      %td= link_to 'Edit', edit_master_model_path(master_model)
+      %td= link_to 'Destroy', master_model, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Master model', new_master_model_path

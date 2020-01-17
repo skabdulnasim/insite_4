@@ -1,0 +1,42 @@
+= render "layouts/flash"
+- Rails.application.eager_load!
+- @classes = ApplicationController.subclasses   
+.col-lg-8      
+  %table.table.table-hover.table-bordered
+    %thead
+      %tr.table-header     
+        %th Controller name
+        %th Controller status
+    %tbody
+    - @classes.each do |cls|
+      %tr
+        %td
+          =cls
+        %td
+          - if @active_ctrls.present?
+            - if @active_ctrls.include? cls.to_s
+              %span.label.label-success
+                Active
+            - else
+              %span.label.label-danger
+                Inactive
+          - else
+            %span.label.label-danger
+              Inactive
+.col-lg-4
+  .panel.panel-success2
+    .panel-heading
+      Configure controller
+    .panel-body
+      =form_for @acm, :url => access_manager_show_settings_path, :html => { :class => 'form-horizontal' } do |f| 
+        %label.control-label
+          Select controller
+        = f.select :controller_name, options_for_select(@classes.map{ |ut| [ut, ut] }), { include_blank: "Select controller"}, :class => 'form-control',:required => true  
+        %br
+
+        %button.btn.btn-success.btn-block.btn-sm{:type=>"submit"}
+          Proceed to next step
+          &nbsp;&nbsp;&nbsp;
+          %i.fa.fa-arrow-circle-o-right.fa-lg    
+
+        

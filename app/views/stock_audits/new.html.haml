@@ -1,0 +1,6 @@
+- manual_load_javascript "stores"  
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"New stock audit",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+= render "layouts/flash"
+/=debug @stock_products.first.product.name
+= render 'form'

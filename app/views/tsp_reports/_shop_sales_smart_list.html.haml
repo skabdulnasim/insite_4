@@ -1,0 +1,39 @@
+- unless smart_listing.empty?
+	%table.data-table
+		%tr
+			%th Shop Name
+			%th District Name
+			%th TSP Name
+			%th Item Name
+			%th Quantity
+			%th Product Unit
+		-smart_listing.collection.each do |resource|
+			%tr
+				%td="#{resource.name} (#{resource.unique_identity_no})"
+				%td= get_district_name_by_resource(resource)
+				- tsp = fetch_tsp(resource,params[:from_date],params[:to_date]) 
+				%td= tsp.present? ? "#{tsp.firstname} #{tsp.lastname}" : "-"
+
+				%td
+				%td
+				%td
+			-if params[:store_id].present?
+				- resource_orders = fetch_resource_orders(resource,@from_datetime,@to_datetime,params[:store_id])
+			-else
+				- resource_orders = fetch_resource_orders(resource,@from_datetime,@to_datetime)
+			- if resource_orders.present?
+				-	resource_orders.each do |order_detail|
+					%tr	
+						%td -
+						%td -
+						%td -
+						%td=order_detail.product.name
+						%td="#{order_detail.total_quantity.to_f.round(0)}"
+						%td="#{order_detail.product.basic_unit}"
+	%p= "resources : #{@resources.length}"
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+-else
+	.alert.alert-warning
+		%td
+			No record found

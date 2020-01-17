@@ -1,0 +1,2 @@
+module PaymentWalletsHelper
+end

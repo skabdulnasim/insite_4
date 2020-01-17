@@ -1,0 +1,37 @@
+%h1 Listing visiting_histories
+
+%table
+  %tr
+    %th User
+    %th Day
+    %th Recorded at
+    %th Resource
+    %th In time
+    %th Out time
+    %th Latitude
+    %th Longitude
+    %th Visiting type
+    %th Visting reason
+    %th
+    %th
+    %th
+
+  - @visiting_histories.each do |visiting_history|
+    %tr
+      %td= visiting_history.user_id
+      %td= visiting_history.day
+      %td= visiting_history.recorded_at
+      %td= visiting_history.resource_id
+      %td= visiting_history.in_time
+      %td= visiting_history.out_time
+      %td= visiting_history.latitude
+      %td= visiting_history.longitude
+      %td= visiting_history.visiting_type
+      %td= visiting_history.visting_reason
+      %td= link_to 'Show', visiting_history
+      %td= link_to 'Edit', edit_visiting_history_path(visiting_history)
+      %td= link_to 'Destroy', visiting_history, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Visiting history', new_visiting_history_path

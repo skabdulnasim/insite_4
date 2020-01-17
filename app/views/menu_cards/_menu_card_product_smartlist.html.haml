@@ -1,0 +1,387 @@
+:javascript
+  $(function(){
+    $('.toggle_mp_select_all').on('click', function() {
+      if (this.checked) {
+        $('.toggle_mp_class').each(function() {
+          this.checked = true;
+        });
+      } else {
+        $('.toggle_mp_class').each(function() {
+          this.checked = false;
+        });
+      }
+    });
+
+    $('.toggle_mp_class').on('click', function() {
+      if ($('.toggle_mp_class:checked').length === $('.toggle_mp_class').length) {
+        $('.toggle_mp_select_all').prop('checked', true);
+      } else {
+        $('.toggle_mp_select_all').prop('checked', false);
+      }
+    });
+  });
+
+=# debug menu
+/ - if menu.parent.present?
+/   .col-lg-3
+/     %h5
+/       %i.mdi-action-label-outline
+/       =menu.name
+/ - else
+/   .divider
+/   .col-lg-3
+/     %h4.header
+/       %i.mdi-action-label
+/       =menu.name
+.clearfix
+- if @menu_card.unit.unittype_id == 3
+  - if @menu_card.section.master_section_id.present?
+    - _section = Section.find(@menu_card.section.master_section_id)
+    - _thirdparty_configurations = _section.thirdparty_configurations
+- elsif @menu_card.unit.unittype_id == 1
+  - _section = @menu_card.section
+  - _thirdparty_configurations = _section.thirdparty_configurations
+
+- unless smart_listing.empty?
+  / - _menu_products = menu.menu_products.by_menu_card(@menu_card.id)
+  / - if _menu_products.present?
+  .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+    / - _menu_products.each do |mp|
+    %table.data-table#menu_product_accordion
+      - if _thirdparty_configurations.present? 
+        %thead.panel
+          %tr.data-table__selectable-row
+            %th.col-lg-1
+              / - if @menu_card.unit.unittype_id == 1
+              = check_box_tag('toggle_mp_select', "", false, :id => "toggle_mp_select", :class => "toggle_mp_select_all")
+              = label_tag("toggle_mp_select","")
+            %th.col-lg-2
+              Category
+            / - if @menu_card.unit.unittype_id == 3
+            /   - if @menu_card.section.master_section_id.present?
+            /     - if _thirdparty_configurations.any?{|hash| hash['thirdparty'] == "urban_piper"}
+            /       %th.col-lg-2
+            /         Thirdparty Action
+            %th.col-lg-7
+              Menu Product Details
+      %tbody.panel
+        - smart_listing.collection.each do |mp|
+          %tr.data-table__selectable-row
+            %td.col-lg-1
+              / - if @menu_card.unit.unittype_id == 1
+              - if _thirdparty_configurations.present? 
+                = check_box_tag('toggle_mp_id[]', "#{mp.id}", false, :id => "toggle_mp_id_#{mp.id}", :class => "toggle_mp_class")
+                = label_tag("toggle_mp_id_#{mp.id}","")
+            %td.col-lg-2{"aria-controls" => "menu_product_collapse_#{mp.id}", "aria-expanded" => "false", "data-parent" => "#menu_product_accordion", "data-toggle" => "collapse", :href => "#menu_product_collapse_#{mp.id}", :role => "button"}
+              - if mp.menu_category.parent.present?
+                %i.mdi-action-label-outline
+                  = mp.menu_category.name
+              - else
+                %i.mdi-action-label
+                  = mp.menu_category.name
+            / - if @menu_card.unit.unittype_id == 3
+            /   - if @menu_card.section.master_section_id.present?
+            /     - if _thirdparty_configurations.any?{|hash| hash['thirdparty'] == "urban_piper"}      
+            /       %td.col-lg-2{"aria-controls" => "menu_product_collapse_#{mp.id}", "aria-expanded" => "false", "data-parent" => "#menu_product_accordion", "data-toggle" => "collapse", :href => "#menu_product_collapse_#{mp.id}", :role => "button"}
+            /         - _enable_action = ThirdpartyItemAction.menu_product_and_action(mp.id,"enable")
+            /         -if _enable_action.present? 
+            /           %span.badge.green.padding-5.margin-t-2
+            /             Enable
+            /         -else
+            /           %span.badge.badge-danger.padding-5.margin-t-2
+            /             Disable
+            %td.col-lg-7{"aria-controls" => "menu_product_collapse_#{mp.id}", "aria-expanded" => "false", "data-parent" => "#menu_product_accordion", "data-toggle" => "collapse", :href => "#menu_product_collapse_#{mp.id}", :role => "button"}
+              .collapsible-header{:class=>"#{get_menu_product_mode_color(mp.mode)}", :id=>"product_header_#{mp.id}"}
+                %i.mdi-maps-local-restaurant
+                =mp.product.name
+                %span.m-label.white.blue-text.float-r{:style=>"line-height:1.3em; margin-top:0.8em"}
+                  =@currency
+                  %span{:class=>"sp_wot_#{mp.id}"}=mp.sell_price_without_tax
+                - if mp.is_unit_currency == 'Yes'
+                  %span.m-label.white.blue-text.float-r{:style=>"line-height:1.3em; margin-top:0.8em"}
+                    =unit_currency(mp.menu_card.unit_id)
+                    %span{:class=>"sp_wt_uc_#{mp.id}"}=mp.unit_currency_price.round(2)
+          %tr.collapse.data-table__selectable-row.collapsible-body.light-blue.lighten-5.data-table__selectable-row--is-selected{"aria-labelledby" => "menu_product_heading#{mp.id}", :role => "tabpanel", :id => "menu_product_collapse_#{mp.id}"}
+            %td
+            %td{:colspan=>3}
+              %table.data-table
+                %tr
+                  %td.col-lg-6.padding-10.light-blue.lighten-5 
+                    .form-horizontal.bordered-row.m-input
+                      QUICK EDIT
+                      .form-group.p0
+                        %label.col-sm-5.control-label Is unit currency ?
+                        .col-sm-7.input-field{:style =>"margin-top:0px;"}
+                          =select_tag "is_unit_currency", options_for_select({"Yes"=>"Yes","No"=>"No"}, mp.is_unit_currency), {:class=> "form-control is_unit_currency_#{mp.id} is_unit_currency_change",:prompt => "Is unit currency", "data-menu-product-id"=>mp.id}
+                      - if mp.is_unit_currency == "Yes"
+                        - if mp.menu_card.unit.unit_currency.present? && mp.menu_card.unit.conversion_rate.present?
+                          .form-group.p0{:id=>"unit_currency_sale_price_#{mp.id}"}
+                            %label.col-sm-5.control-label="Sell price (#{mp.menu_card.unit.unit_currency})"
+                            .col-sm-7.input-field
+                              - _tax_val_cal = 0
+                              - if AppConfiguration.get_config_value('variable_tax') == 'enabled'  
+                                - _total_amnt_cal = 0
+                                - mp.tax_group.tax_classes.each do |tc|
+                                  - if tc.tax_type == 'variable'
+                                    - if (tc.lower_limit..tc.upper_limit).include?(mp.sell_price_without_tax)
+                                      - _total_amnt_cal = _total_amnt_cal + tc[:ammount].to_f
+                                - _tax_val_cal = _total_amnt_cal
+                              - else 
+                                - _tax_val_cal = mp.tax_group.total_amnt
+                              = text_field_tag :unit_currency_price, mp.unit_currency_price, :placeholder=>"Enter price in unit currency", :class => "form-control validate sell_unit_currency_price_all_#{mp.id} sell_unit_currency_price_all_keyup allow-numeric-only", "data-menu-product-id"=>mp.id, "data-unit-conversion_rate"=>mp.menu_card.unit.conversion_rate,"data-tax-rate"=>_tax_val_cal
+                      - else
+                        - if mp.menu_card.unit.unit_currency.present? && mp.menu_card.unit.conversion_rate.present?
+                          .form-group.p0{:id=>"unit_currency_sale_price_#{mp.id}", :style => "display:none;"}
+                            %label.col-sm-5.control-label="Sell price (#{mp.menu_card.unit.unit_currency})"
+                            .col-sm-7.input-field
+                              - _tax_val_cal = 0
+                              - if AppConfiguration.get_config_value('variable_tax') == 'enabled'  
+                                - _total_amnt_cal = 0
+                                - mp.tax_group.tax_classes.each do |tc|
+                                  - if tc.tax_type == 'variable'
+                                    - if (tc.lower_limit..tc.upper_limit).include?(mp.sell_price_without_tax)
+                                      - _total_amnt_cal = _total_amnt_cal + tc[:ammount].to_f
+                                - _tax_val_cal = _total_amnt_cal
+                              - else 
+                                - _tax_val_cal = mp.tax_group.total_amnt
+                              = text_field_tag :unit_currency_price, mp.unit_currency_price, :placeholder=>"Enter price in unit currency", :class => "form-control validate sell_unit_currency_price_all_#{mp.id} sell_unit_currency_price_all_keyup allow-numeric-only", "data-menu-product-id"=>mp.id, "data-unit-conversion_rate"=>mp.menu_card.unit.conversion_rate,"data-tax-rate"=>_tax_val_cal
+                      .form-group.p0
+                        %label.col-sm-5.control-label="Sell price without tax (#{@currency})"
+                        .col-sm-7.input-field
+                          - if mp.is_unit_currency == "Yes"
+                            = text_field_tag :sell_price, mp.sell_price_without_tax, :placeholder=>"Enter selling price", :class => "form-control validate sell_price_wot_#{mp.id} allow-numeric-only", :readonly => "readonly"
+                          - else
+                            = text_field_tag :sell_price, mp.sell_price_without_tax, :placeholder=>"Enter selling price", :class => "form-control validate sell_price_wot_#{mp.id} allow-numeric-only"
+                      .form-group.p0
+                        %label.col-sm-5.control-label="Procurement price (#{@currency})"
+                        .col-sm-7.input-field
+                          = text_field_tag :procurement_price, mp.procured_price, :placeholder=>"Enter procurement price", :class => "form-control validate procure_price_#{mp.id} allow-numeric-only"
+                      .form-group.p0
+                        %label.col-sm-5.control-label Status
+                        .col-sm-7.input-field
+                          =select_tag "mode", options_for_select({ "Active" => "1", "Inactive" => "0" }, "#{mp.mode}"), :class=> "form-control mode_#{mp.id}"               
+                      .form-group.p0
+                        %label.col-sm-5.control-label Tax group
+                        .col-sm-7.input-field
+                          =select_tag "mode", options_from_collection_for_select(@menu_card.section.tax_groups, "id", "name", mp.tax_group_id), :class=> "form-control  tax_group_#{mp.id}"  
+                      .form-group.p0
+                        %label.col-sm-5.control-label Promo code
+                        .col-sm-7.input-field
+                          =select_tag "promo_code", options_for_select(@alpha_promotion_codes.map{ |apc| [apc.promo_code, apc.id] }, mp.alpha_promotion_id), {:class=> "form-control promo_code_#{mp.id}"}
+                      .form-group.p0
+                        %label.col-sm-5.control-label Bill Destination
+                        .col-sm-7.input-field
+                          =select_tag "bill_destination_id", options_for_select(@bill_destinations.map{ |bd| [bd.name, bd.id] }, mp.bill_destination_id), {:class=> "form-control bill_destination_#{mp.id}"}    
+                      .form-group.p0
+                        %label.col-sm-5.control-label Delivery Mode
+                        .col-sm-7.input-field
+                          =select_tag "delivery_mode", options_for_select(MenuProduct::DELIVERY_MODES.map{ |d_m| [d_m, d_m] }, mp.delivery_mode), {:class=> "form-control delivery_mode_#{mp.id}"}
+                      .form-group.p0
+                        %label.col-sm-5.control-label="Maximum Order Quantity"
+                        .col-sm-7.input-field
+                          = text_field_tag :max_order_qty, mp.max_order_qty, :placeholder=>"Enter maximum order quantity", :class => "form-control validate max_order_qty_#{mp.id}"
+                      .form-group.p0
+                        %label.col-sm-5.control-label Commission Capping Type
+                        .col-sm-7.input-field
+                          =select_tag "commission_capping_type", options_for_select(MenuProduct::COMMISSION_CAPPING_TYPE.map{ |c_c| [c_c, c_c] }, mp.commission_capping_type), {:class=> "form-control commission_capping_type_#{mp.id}"}
+                      .form-group.p0
+                        %label.col-sm-5.control-label="Commission Capping"
+                        .col-sm-7.input-field
+                          = text_field_tag :commission_capping, mp.commission_capping, :placeholder=>"Enter commission capping", :class => "form-control validate commission_capping_#{mp.id}"
+                      .form-group
+                        %button.update_menu_product.m-btn.green.waves-effect.waves-light{"data-id"=>mp.id,"data-product-name"=>mp.product.name} quick Update
+                        %a.col-lg-6{:href=>edit_menu_product_path(mp), :target=>"_blank"} Update more details
+                  / %ul#profile-page-about-details.collection.z-depth-1.col-lg-6.margin-t-b-0
+                  %td.col-lg-6.padding-10.light-blue.lighten-5
+                    %ul.collection
+                      %li.mp-rule-quick-overview.collection-item{"aria-controls" => "mp_rule_collapse_#{mp.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_rule_collapse_#{mp.id}", :role => "button", "data-menu-product-id"=>mp.id, :class=>"mp_rule_collapse_#{mp.id}"}
+                        %span.grey-text.text-darken-4
+                          %i.mdi-content-add
+                          Add Rule
+                        .secondary-content.grey-text.text-darken-4{:style=>"margin-top: -10px;"}
+                          %a.m-btn.green.m-btn-low-padding.menu_product_rule_add{"data-target" =>"#addMenuProductRuleModal", "data-toggle" => "modal", "data-menu-product-id"=>mp.id}
+                            %i.mdi-content-add
+                      %li.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "mp_rule_heading#{mp.id}", :role => "tabpanel", :id => "mp_rule_collapse_#{mp.id}",:style=>'width:100%;'}
+                        Loading please wait...
+                    %ul#profile-page-about-details.collection.z-depth-1.margin-t-b-0
+                      %li.collection-item
+                        %span.grey-text.darken-1
+                          %i.mdi-hardware-keyboard-arrow-right
+                          Menu product ID
+                        .secondary-content.grey-text.text-darken-4=mp.id
+                      %li.collection-item
+                        %span.grey-text.darken-1
+                          %i.mdi-hardware-keyboard-arrow-right
+                          Product ID
+                        .secondary-content.grey-text.text-darken-4=mp.product_id
+                      %li.collection-item
+                        %span.grey-text.darken-1
+                          %i.mdi-action-account-balance-wallet
+                          Tax
+                        - if AppConfiguration.get_config_value('variable_tax') == 'enabled'  
+                          - _total_amnt = 0
+                          - mp.tax_group.tax_classes.each do |tc|
+                            - if tc.tax_type == 'variable'
+                              - if (tc.lower_limit..tc.upper_limit).include?(mp.sell_price_without_tax)
+                                - _total_amnt = _total_amnt + tc[:ammount].to_f
+                          .secondary-content.grey-text.text-darken-4="#{_total_amnt} %"
+                        - else 
+                          .secondary-content.grey-text.text-darken-4="#{mp.tax_group.total_amnt} %"
+
+                      %li.collection-item
+                        %span.grey-text.darken-1
+                          %i.mdi-action-bookmark-outline
+                          Sell price
+                        .secondary-content.grey-text.text-darken-4
+                          =@currency
+                          %span{:class=>"sp_wot_#{mp.id}"}=mp.sell_price_without_tax
+                      %li.collection-item
+                        %span.grey-text.darken-1
+                          %i.mdi-action-bookmark
+                          Sell price with tax
+                        .secondary-content.grey-text.text-darken-4
+                          =@currency
+                          %span{:class=>"sp_wt_#{mp.id}"}=mp.sell_price
+                      %li.collection-item
+                        %span.grey-text.darken-1
+                          %i.mdi-action-dns
+                          Store
+                        .secondary-content.grey-text.text-darken-4
+                          =mp.store.name if mp.store_id.present?
+                      %li.collection-item
+                        %span.grey-text.darken-1
+                          %i.mdi-action-input
+                          SORT
+                        .secondary-content.grey-text.text-darken-4
+                          =mp.sort.name if mp.sort.present?
+                      %li.collection-item
+                        %span.grey-text.darken-1
+                          %i.mdi-action-event
+                          Created at
+                        .secondary-content.grey-text.text-darken-4=mp.created_at.strftime("%d %b %Y, %I:%M %p")
+                      %li.collection-item
+                        %span.grey-text.darken-1
+                          %i.mdi-notification-event-available
+                          Last updated at
+                        .secondary-content.grey-text.text-darken-4{:class=>"last_up_#{mp.id}"}=mp.updated_at.strftime("%d %b %Y, %I:%M %p")
+                    .clearfix
+              - if mp.product.lots.by_store(mp.store_id).active.not_expiry.present?
+                .data-table-container.collection.z-depth-1.col-lg-12{"aria-multiselectable" => "true", :role => "tablist"}
+                  %table.data-table#accordion{:style => "width:100%;"}
+                    %thead
+                      %tr
+                        %th.collection-item= "Lot Id"
+                        %th.collection-item= "Size"
+                        %th.collection-item= "Color"
+                        %th.collection-item= "Sku"
+                        %th.collection-item= "Batch"
+                        %th.collection-item= "Stock Quantity"
+                        %th.collection-item= "Sell Price Without Tax"
+                        %th.collection-item= "Sell Price"
+                        %th.collection-item= "Expiry Date"
+                        %th.collection-item= "Stock Id"
+                        %th.collection-item= "Mrp"
+                        %th.collection-item= "Actions"
+                        %th.collection-item= "Add Rule"
+
+                    %tbody.panel
+                    - mp.product.lots.by_store(mp.store_id).active.not_expiry.each do |mp_lot|
+                      %tr.data-table__selectable-row
+                        %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.id
+                        -if mp_lot.size_name.present?
+                          %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.size_name
+                        -else
+                          %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= "-"
+                        -if mp_lot.color_name.present?
+                          %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.color_name
+                        -else
+                          %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= '-'  
+                        %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.sku
+                        -if mp_lot.batch_no.present?
+                          %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.batch_no
+                        -else
+                          %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= '-' 
+                        %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.stock_qty
+                        %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.sell_price_without_tax
+                        %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.sell_price
+                        %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.expiry_date
+                        %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.stock_id
+                        %td.mp-lot-quick-overview.collection-item{"aria-controls" => "mp_lot_collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#mp_lot_collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}= mp_lot.mrp
+                        %td.collection-item
+                          .switch
+                            %label
+                              = check_box_tag :mode_enable_disable, 'enabled', mp_lot.mode == 0 ? true : false, {"class"=> "mode_enable_disable", "id"=>"mode_enable_disable#{mp_lot.id}","data-lot-id"=>mp_lot.id, "data-menu-card-id" => @menu_card.id}
+                              %span.lever.float-l
+                        %td.collection-item      
+                          %a.m-btn.green.m-btn-low-padding#add_lot{"data-target" =>"#addLotModal", "data-toggle" => "modal", "data-lot-id"=>mp_lot.id}
+                            %i.mdi-content-add   
+
+                      %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "mp_lot_heading#{mp_lot.id}", :role => "tabpanel", :id => "mp_lot_collapse_#{mp_lot.id}"}
+                        %td.p0.yellow.lighten-3{:colspan=>12,:id=>"mp_lot_quickinfo_#{mp_lot.id}"}
+                          Loading please wait...
+
+    .padding-5
+      = smart_listing.paginate
+      = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found
+.clearfix            
+/ - if menu.submenucategories.present?
+/   = render :partial => 'menu', :collection => menu.submenucategories.set_parent_category(menu.id)
+
+#addLotModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "addLotModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      = form_tag(allocate_sale_rules_to_lots_menu_card_path method: "post", id:params[:id], multipart: true) do
+        .modal-header.m-modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#addLotModalLabel.modal-title Add lots to menu products
+        .modal-body
+          .col-md-12
+            .col-md-1
+            .col-md-9
+              %table.data-table
+                %thead
+                  %tr.data-table__selectable-row
+                    %th
+                      %input.checkbox-parent-toggle.filled-in{:type=>"checkbox"}
+                    %th= "SALE RULE ID"
+                    %th= "SALE RULE NAME"
+                %tbody
+                  #mp_lot_id
+                    = hidden_field_tag 'lot_id', ''
+                  - @sale_rules.by_specific_type('by_lot').set_sale_rule_type_in('specific,bill_buster'.split(',')).each do |sale_rule|
+                    %tr.data-table__selectable-row
+                      %td
+                        %input.checkbox-child.filled-in{:value=> "#{sale_rule.id}",:name=>"selected_sale_rules[]",:type=>"checkbox", "data-sale-rule-id" => "#{sale_rule.id}",:id=>"sale_rule_#{sale_rule.id}", "data-sale-rule-name" => "#{sale_rule.name}"}
+                        %label{:for=>"sale_rule_#{sale_rule.id}"}        
+                      %td=sale_rule.id
+                      %td=sale_rule.name
+          .clearfix
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          = submit_tag "Save", class: "btn btn-primary"
+
+#addMenuProductRuleModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "addMenuProductRuleModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      = form_tag(allocate_sale_rules_to_menu_products_menu_card_path method: "post", id:params[:id], multipart: true) do
+        .modal-header.m-modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#addLotModalLabel.modal-title Add sale rules to menu products
+        .modal-body
+          .col-md-12
+            .col-md-1
+            .col-md-9
+              .menu_product_id
+                = hidden_field_tag 'menu_product_id', ''
+              .all_sale_rules
+          .clearfix
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          = submit_tag "Save", class: "btn btn-primary"

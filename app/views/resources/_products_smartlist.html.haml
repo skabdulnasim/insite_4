@@ -1,0 +1,24 @@
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+        - unless smart_listing.empty?
+          %table.data-table
+            %tr
+              %th= smart_listing.sortable "ID", "id"
+              %th= smart_listing.sortable "Name", "name"
+              %th= "Category"
+              %th= "Stock"
+            - smart_listing.collection.each do |object|
+              %tr
+                %td= object.id
+                %td= object.name
+                %td= object.category.name
+                %td
+                  = resource_product_current_stock(params[:id],object.id).present? ? resource_product_current_stock(params[:id],object.id) : '0'
+                  = object.basic_unit
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links  
+        - else
+          .alert.alert-warning
+            No resource found          

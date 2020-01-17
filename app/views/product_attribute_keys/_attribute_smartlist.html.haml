@@ -1,0 +1,30 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Attribute code
+        %th Label
+        %th Input type
+        %th Unique?
+        %th Required?
+        %th Comparable?
+        %th Sortable?
+        %th System entity?
+        %th
+        %th
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td= link_to "#{object.attribute_code}", object
+          %td= object.label
+          %td= object.input_type
+          %td= object.is_unique
+          %td= object.is_required
+          %td= object.is_comparable
+          %td= object.is_sortable
+          %td= object.is_system_entity
+          %td= link_to 'Edit', edit_product_attribute_key_path(object)
+          %td= link_to 'Destroy', object, :method => :delete, :data => { :confirm => 'Are you sure?' }          
+- else
+  .alert.alert-warning
+    No attributes found                

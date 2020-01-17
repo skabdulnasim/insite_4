@@ -1,0 +1,90 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+
+    $('#to_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+
+    $('#delivery_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+
+  $('.show_pop').popover('hide');
+  });
+- unless smart_listing.empty?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Listing Orders 
+              %span.float-r               
+                = form_tag(order_accumulation_orders_path, method: "post",multipart: true) do
+                  = hidden_field_tag :future_orders_array
+                  = hidden_field_tag :store_id, smart_listing.collection.first.order_details.first.store_id
+                  %button.m-btn.blue.float-r#order_accumulation{:type=>"submit"}
+                    %i.mdi-action-trending-up.left
+                    Aggregate Order
+               
+          %table.data-table#accordion
+            %thead
+              %tr.data-table__selectable-row  
+                %th
+                  %input.checkbox-parent-toggle.filled-in{:type=>"checkbox",:id=>"parent_check"}
+                  %label{:for=>"parent_check"}              
+                %th
+                  = smart_listing.sortable "ID", "id"
+                %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Deliver To", "deliverable_id"
+                %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Source", "source"
+                %th= smart_listing.sortable "Recorded Date", "recorded_at"
+                %th= smart_listing.sortable "Synced Date", "created_at"
+                %th= smart_listing.sortable "Delivery Date", "delivary_date"
+                %th= smart_listing.sortable "Status", "order_status_id"
+                %th= "Change state"
+            %tbody.panel
+              - smart_listing.collection.each do |object|
+                %tr.data-table__selectable-row
+                  %td
+                    - if object.is_requisitioned.nil? || object.is_requisitioned == 0
+                      %input.checkbox-child.filled-in.select-future-order{:value=> "#{object.id }",:name=>"select_future_orders[]",:type=>"checkbox",:id=>"future_order_#{object.id}", 'data-order-id'=>"#{object.id}", :class => "remove_checkbox_#{object.id}"}
+                      %label{:for=>"future_order_#{object.id}"} 
+                    - else
+                      %input.filled-in{:type=>"checkbox",:id=>"order_#{object.id}", :disabled => 'disabled', :checked => 'checked'}
+                      %label{:for=>"order_#{object.id}"} 
+                  %td.hidden-sm.hidden-md.hidden-xs.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+                    = object.id
+                    = billed_order(object)
+                    = order_stock_issue_status(object)
+                  %td.hidden-sm.hidden-md.hidden-xs.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+                    = show_delivery_name(object)
+                  %td.hidden-sm.hidden-md.hidden-xs.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+                    = object.source.humanize
+                  %td.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+                    = object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+                  %td.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+                    = object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+                  %td.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+                    = object.delivary_date.strftime("%d-%m-%Y, %I:%M %p")  
+                  %td.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+                    = show_order_status(object)  
+                  %td
+                    %label.col-sm-4.control-label 
+                    - order_status = (object.order_status_id != 8) ? true : false
+                    .switch.padding-5
+                      %label
+                        = check_box_tag :order_status, 'enabled', order_status, {"data-order-id"=>object.id,"data-value-active"=>2,"data-value-inactive"=>8, "class"=> "update_order_status"}
+                        %span.lever
+                %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{object.id}", :role => "tabpanel", :id => "order_collapse_#{object.id}"}
+                  %td.p0{:colspan=>8,:id=>"order_quickinfo_#{object.id}"}
+                    Loading please wait...
+                %input.current_user_id{:type=>"hidden", :value=>current_user.id}    
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links
+          %br
+- else
+  .alert.alert-warning
+    No orders found

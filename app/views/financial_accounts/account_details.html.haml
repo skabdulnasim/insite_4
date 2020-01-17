@@ -1,0 +1,157 @@
+- links_arr = [{:title=>"Account Details",:url=>account_details_financial_accounts_path,:active_class=>""}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+
+- manual_load_javascript "templates/financial_account_transactions/quick_details"
+- if @unit_financial_account.present?
+	.card.padding-10
+		.col-lg-12
+			.card
+				.card-content
+					%h5.font-w-400 
+						Outlet Account Details
+						.float-r
+							.m-btn.blue{"data-target" =>"#outletTransactionHistoryModal", "data-toggle" => "modal", :title => "View outlet account transaction history", :id=>"outlet_id_#{current_user.unit_id}", "data-unit-id" => current_user.unit_id, "data-unit-name" => current_user.unit.unit_name, "data-customer-acc-no" => @unit_financial_account.acc_no, :style=>"margin-top:-15px;"}
+								View Ledger
+					.divider
+					.margin-t-15
+						.row
+							.col-lg-12
+								.col-lg-4
+									%span.font-w-400 Account No :
+									%span.margin-l-22.m-label.green.font-w-400= "#{@unit_financial_account.acc_no}"
+								.col-lg-4
+									%span.font-w-400 Current Balance :
+									%span.margin-l-22.m-label.green.font-w-400= "#{currency}. #{@unit_financial_account.current_balance}"
+								.col-lg-4
+									%span.font-w-400 Total Credit :
+									%span.margin-l-22.m-label.green.font-w-400= "#{currency}. #{@unit_financial_account.total_credit}"
+							.col-lg-12.padding-t-b-10
+								.col-lg-4
+									%span.font-w-400 Total Debit :
+									%span.margin-l-22.m-label.green.font-w-400= "#{currency}. #{@unit_financial_account.total_debit}"
+								.col-lg-4
+									%span.font-w-400 Account Type :
+									%span.margin-l-22.m-label.green.font-w-400= "#{@unit_financial_account.account_type.upcase}"
+								.col-lg-4
+									%span.font-w-400 Created At :
+									%span.margin-l-22.m-label.green.font-w-400= @unit_financial_account.created_at.strftime("%Y-%m-%d")
+
+		.col-lg-12
+			.margin-t-15
+				.card
+					.card-content
+						%h5.font-w-400 Customer Account Details
+						.divider
+						.margin-t-15
+							.main-section__content
+								.example
+									.example__content.p0
+										.data-table-container           
+											%table.data-table    
+												%tr
+													%th Customer Name
+													%th Account Id
+													%th Phone No
+													%th Account No
+													%th Current Balance
+													%th Total Credit
+													%th Total Debit
+													%th Due Amount
+												- @customers.each do |customer|
+													%tr
+														- c_name = customer.customer_profile.customer_name.present? ? customer.customer_profile.customer_name : "#{customer.try(:customer_profile).try(:firstname)} #{customer.try(:customer_profile).try(:lastname)}"
+														%td= c_name
+														%td= customer.financial_account.id if customer.financial_account.present? 	 	
+														%td= customer.mobile_no
+														- customer_financial_account = customer.financial_account
+														- acc_no = customer_financial_account.present? ? customer_financial_account.acc_no : ''
+														%td= acc_no
+														%td= customer_financial_account.present? ? customer_financial_account.current_balance : '-'
+														%td= customer_financial_account.present? ? customer_financial_account.total_credit : '-'
+														%td= customer_financial_account.present? ? customer_financial_account.total_debit : '-'
+														- if customer_financial_account.present?
+															%td= customer_financial_account.current_balance < 0 ? customer_financial_account.current_balance * -1 : 0
+														- else
+															%td -	
+														%td
+															%a.m-btn.green.m-btn-low-padding.customer_account_transaction{"data-target" =>"#transactionHistoryModal", "data-toggle" => "modal", :title => "View account transaction history", :id=>"customer_id_#{customer.id}", "data-customer-id" => customer.id, "data-customer-name" => c_name, "data-customer-acc-no" => acc_no}
+																%i.mdi-action-visibility
+
+	#transactionHistoryModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "transactionHistoryModalLabel", :role => "dialog", :tabindex => "-1"}
+		.modal-dialog{:style => "width:90% !important"}
+			.modal-content.m-modal-content
+				.modal-header.m-modal-header
+					%button.close{"data-dismiss" => "modal", :type => "button"}
+						%span{"aria-hidden" => "true"} &times;
+						%span.sr-only Close
+					%h4#transactionHistoryModalLabel.modal-title Customer Account Transaction History
+				.modal-body
+					#customer-account
+					.col-md-12
+						%table.data-table
+							%thead
+								%tr.data-table__selectable-row
+									%th Amount
+									%th Transaction Type
+									%th Payment Mode
+									%th Receiver
+									%th Device
+									%th Date
+									%th Purpose
+									%th Remarks
+							%tbody#customer_account_transaction_details
+					.clearfix
+				.modal-footer
+					%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+
+	#outletTransactionHistoryModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "outletTransactionHistoryModalLabel", :role => "dialog", :tabindex => "-1"}
+		.modal-dialog{:style => "width:90% !important"}
+			.modal-content.m-modal-content
+				.modal-header.m-modal-header
+					%button.close{"data-dismiss" => "modal", :type => "button"}
+						%span{"aria-hidden" => "true"} &times;
+						%span.sr-only Close
+					%h4#outletTransactionHistoryModalLabel.modal-title Outlet Account Transaction History
+				.modal-body
+					#outlet-account
+						%span.font-w-400= current_user.unit.unit_name
+						%span.margin-l-22.m-label.green.font-w-400= @unit_financial_account.acc_no
+						%span.float-r{:style=>"margin-top:-12px;"}
+							%a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/financial_accounts/account_details.csv?unit_id=#{@unit_id}&account_holder_type=Unit"}
+								%i.mdi-file-file-download.left
+								CSV
+						.margin-t-5
+						.divider
+					.col-md-12
+						%table.data-table
+							%thead
+								%tr.data-table__selectable-row
+									%th Amount
+									%th Transaction Type
+									%th Payment Mode
+									%th Receiver
+									%th Device
+									%th Date
+									%th Purpose
+									%th Remarks
+							%tbody#outlet_account_transaction_details
+								- if @outlet_account_transactions.present?
+									- @outlet_account_transactions.each do |outlet_ledger|
+										%tr.data-table__selectable-row
+											%td= outlet_ledger.amount
+											%td= outlet_ledger.transaction_type
+											%td= outlet_ledger.fat_paymentmode_type.split('Fat')[1]
+											%td= outlet_ledger.user.profile.full_name
+											%td= outlet_ledger.device_id
+											- if outlet_ledger.recorded_at.present?
+												%td= outlet_ledger.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+											- else	
+												%td= outlet_ledger.created_at.strftime("%d-%m-%Y, %I:%M %p")
+											%td= outlet_ledger.purpose
+											%td= outlet_ledger.remarks
+					.clearfix
+				.modal-footer
+					%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+- else
+	.alert.alert-warning
+		No Account found					

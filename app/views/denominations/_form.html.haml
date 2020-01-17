@@ -1,0 +1,37 @@
+= form_for @denomination do |f|
+  - if @denomination.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@denomination.errors.count, "error")} prohibited this denomination from being saved:"
+      %ul
+        - @denomination.errors.full_messages.each do |msg|
+          %li= msg
+  .col-sm-6
+    .form-group
+      = f.label "Name", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :name do
+          = f.text_field :name, :class => 'form-control', :required => true
+  
+    .form-group
+      = f.label "Value", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :value do
+          = f.text_field :value, :class => 'form-control', :required => true
+    
+    .form-group
+      = f.label :"Denomination Image", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = f.file_field :image, :class => 'form-control'
+    
+    .form-group
+      = f.select :country_id, options_for_select(@countries.map{ |country| [country.name, country.id] }), { include_blank: "Select country"}, :class => 'form-control'
+      
+    .control-group
+      .col-sm-offset-2.col-sm-10
+        = f.submit 'Save', :class => 'btn btn-success btn-lg'   
+        %a{:href => denominations_path, :class => 'btn btn-primary btn-lg'}
+          %i.icon-backward
+          Cancel
+
+
+

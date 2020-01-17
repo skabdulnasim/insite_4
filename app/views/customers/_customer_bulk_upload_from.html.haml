@@ -1,0 +1,19 @@
+#customerBulkUpload.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "customerBulkUpload", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Bulk upload customers
+      .modal-body
+        = form_tag(import_customers_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          .form-group
+            %label.col-sm-4.control-label Choose file
+            .col-sm-8
+              %input{:name => "file", :type => "file", :required => 'required'}              
+          .modal-footer
+            .col-sm-6
+              = link_to "Download Sample CSV file...", '/customer.csv', :action => 'download'
+            %button.m-btn{"data-dismiss" => "modal", :type => "button"} Close          
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Upload file", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Your all previous category data will be deleted. Are you sure?')) }}

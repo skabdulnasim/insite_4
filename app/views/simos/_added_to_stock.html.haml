@@ -1,0 +1,146 @@
+.clearfix 
+  .col-lg-12.col-sm-12.padding-5
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title 
+                  SIMO Details
+            %table.data-table
+              %thead
+                %tr.data-table__selectable-row  
+                  %th.col-md-2 Input Product
+                  %th.col-md-1 Quantity
+                  %th.col-md-1 Wastage
+                  %th.col-md-8{:colspan => 5} Output Products
+                %tr.data-table__selectable-row
+                  %th.col-md-2
+                  %th.col-md-1
+                  %th.col-md-1
+                  %th.col-md-3 Name
+                  %th.col-md-1 Expected Quantity
+                  %th.col-md-1 Actual Quantity
+                  %th.col-md-1 Weight
+                  %th.col-md-2 Price
+              %tbody
+                %tr
+                  %td.col-md-2= @simo.simo_input_product.product.name
+                  %td.col-md-1= "#{@simo.simo_input_product.quantity}" "(#{@simo.simo_input_product.product.conjugated_unit})"
+                  %td.col-md-1= "#{@simo.simo_input_product.wastage}" "(#{@simo.simo_input_product.product.conjugated_unit})"
+                  %td.col-md-3
+                  %td.col-md-1
+                  %td.col-md-1
+                  %td.col-md-1
+                  %td.col-md-2
+                - @simo.simo_input_product.simo_output_products.each do |sop|
+                  %tr.data-table__selectable-row
+                    %td.col-md-2
+                    %td.col-md-1
+                    %td.col-md-1
+                    %td.col-md-3= sop.product.name
+                    %td.col-md-1= "#{sop.expected_quantity}" "(#{sop.product.basic_unit })"
+                    %td.col-md-1= "#{sop.actual_quantity}" "(#{sop.product.basic_unit })"
+                    %td.col-md-1= "#{sop.total_weight}" "(#{@simo.simo_input_product.product.conjugated_unit})"
+                    %td.col-md-2= "#{sop.price}" "(in #{currency})"
+
+
+.card
+  .margin-t-15
+    %table.data-table
+      %thead
+        %tr.data-table__selectable-row
+          %th.col-lg-2
+            / = check_box_tag "parent_check", nil, false, :class=>"checkbox-parent-toggle filled-in checked_all_products"
+            %label.padding-l-35{:for=>"parent_check"} Product 
+          %th.col-lg-1  Quantity
+          - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+            %th.col-lg-1  SKU
+            %th.col-lg-1  Model No
+            %th.col-lg-1  Size
+            %th.col-lg-1  Color
+            %th.col-lg-1  Batch No
+          - if AppConfiguration.get_config_value('retail_menu') == 'enabled'  
+            %th.col-lg-1  MRP
+          - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+            %th.col-lg-1  Mfg Date
+            - if AppConfiguration.get_config_value('stock_expiry_date') == 'enabled'   
+              %th.col-lg-1  Exp Date
+            -if @simo.isStockAdded == 1
+              %th.col-lg-1 Print
+      %tbody.test
+        - @simo.simo_input_product.simo_output_products.each do |object|
+          - stock = Stock.find_by_transaction_type_and_transaction_id_and_product_id("SimoInputProduct",object.simo_input_product_id,object.product_id)
+          %tr.data-table__selectable-row.data-table__selectable-row--is-selected
+            - _product = Product.find(stock.product_id)
+            - _product_name = _product.package_component.present? ?  _product.product_name(_product) : stock.product.name    
+            - _barcode_product_name = _product.package_component.present? ?  _product.package_component.name : stock.product.name     
+            %td.padding-r-5.col-lg-2= "#{_product_name}"
+            %td.padding-r-5.col-lg-1= stock.stock_credit.present? ? "#{stock.stock_credit} #{stock.product.basic_unit}" : '-'
+            - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+              %td.padding-r-5.col-lg-1= stock.sku.present? ? "#{stock.sku}" : '-'
+              %td.padding-r-5.col-lg-1= stock.model_number.present? ? "#{stock.model_number}" : '-'
+              %td.padding-r-5= stock["size"].present? ? "#{stock['size']}" : '-'
+              %td.padding-r-5= stock.color_name.present? ? "#{stock.color_name}" : '-'
+              %td.padding-r-5= stock.batch_no.present? ? "#{stock.batch_no}" : '-'
+            - if AppConfiguration.get_config_value('retail_menu') == 'enabled'
+              %td.padding-r-5= stock.stock_price.mrp.present? ? "#{stock.stock_price.mrp}" : '-'
+            - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+              %td.padding-r-5= stock.mfg_date.present? ? stock.mfg_date.strftime("%d-%m-%Y") : ""  
+              - if AppConfiguration.get_config_value('stock_expiry_date') == 'enabled'  
+                %td.padding-r-5= stock.expiry_date.present? ? stock.expiry_date.strftime("%d-%m-%Y") : ""  
+              %td.padding-5
+                - _mfg_date = stock.mfg_date.present? ? stock.mfg_date.strftime("%d-%m-%Y") : '-'
+                - _batch_no = stock.batch_no.present? ? stock.batch_no : '-'
+                - exp_date = stock.expiry_date.present? ? stock.expiry_date.strftime("%d-%m-%Y") : "-"
+                - _model_number = stock.model_number.present? ? stock.model_number : '-'
+                - _qty = stock.stock_credit.present? ? "#{stock.stock_credit} #{stock.product.basic_unit}" : '-'
+                - _color_class = stock.is_barcode_printed == 1 ? 'green' : ''
+                - _size_name = stock.size_name.present? ? stock.size_name : '-'
+                - _color_name = stock.color_name.present? ? stock.color_name : '-'
+                = button_tag(:print, class: "waves-effect waves-light btn print-barcodde #{_color_class}", type: "button", data: { toggle: "true", target: "#print_modal", sku: stock.sku, name: stock.product.category.name, mrp:stock.stock_price.mrp, mc: "0", wt: "0", wastage: "0", site: @site_title, count: stock.stock_credit, 'model-number'=> _model_number, size: _size_name, 'color-name'=> _color_name, 'created-at'=>stock.created_at.strftime("%d-%m-%Y"),'mfg-date'=> _mfg_date, 'itemname'=>_barcode_product_name,"rpo"=>stock.id, "sale-price"=>stock.stock_price.sell_price_with_tax, "batch-no" => _batch_no, "currency"=>currency, 'exp-date'=> exp_date, 'quantity'=> _qty })  
+        / mrp:stock.stock_price.mrp
+
+
+        #print_modal.modal.fade{:role => "dialog", :tabindex => "-1"}
+          .modal-dialog{:role => "document"}
+            .modal-content
+              .modal-header
+                %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+                  %span{"aria-hidden" => "true"} ×
+                - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                  %h4.modal-title Print Qr Code
+                - else  
+                  %h4.modal-title Print Bar Code
+              .modal-body
+                #radio_by_catalog.float-l
+                .float-l.margin-l-15.margin-r-10.margin-t-5 Enter count of printing : 
+                .form-group.filter.input-append
+                  .input-group
+                    %input.form-control.allow-numeric-only#print_count{:placeholder => "Enter count of printing...", :type => "text", :style=>"width:200px;"}
+                .panel.panel-default
+                  .panel-body
+                    .col-md-6.center
+                      %h5
+                        /.bar-mrp
+                        = @site_title
+                      - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                        %img{:src => "/assets/qr_code.png", :width=>"100%"}
+                      - else 
+                        %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+                      %br
+                      .bar-sku
+                    .col-md-6.center
+                      %h5
+                        = @site_title
+                      /.bar-mrp
+                      - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                        %img{:src => "/assets/qr_code.png", :width=>"100%"}
+                      - else 
+                        %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+                      %br
+                      .bar-sku        
+              .modal-footer
+                %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+                %button.btn.btn-primary{:type => "button", :class => "print-barcode"} Print

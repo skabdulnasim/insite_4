@@ -1,0 +1,21 @@
+%h1 Listing percentages
+
+%table
+  %tr
+    %th Name
+    %th Value
+    %th
+    %th
+    %th
+
+  - @percentages.each do |percentage|
+    %tr
+      %td= percentage.name
+      %td= percentage.value
+      %td= link_to 'Show', percentage
+      %td= link_to 'Edit', edit_percentage_path(percentage)
+      %td= link_to 'Destroy', percentage, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Percentage', new_percentage_path

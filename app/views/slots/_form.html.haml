@@ -1,0 +1,85 @@
+:javascript
+  $(function() {
+    $('.datetimepick').datetimepicker({
+      format: 'DD-MM-YYYY hh:mm:ss A',
+    });          
+  });
+= Time.zone
+= form_for @slot,:html => { :class => 'form-horizontal'}  do |f|
+  - if @slot.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@slot.errors.count, "error")} prohibited this slot from being saved:"
+      %ul
+        - @slot.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-group
+    = f.label :title, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :title, :class => 'form-control'
+
+  .form-group
+    = f.label :slot_type, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :slot_type, options_for_select(Slot::SLOT_TYPE,@slot.slot_type), { include_blank: "Select slot type"}, {:class => "form-control"} 
+
+  .form-group
+    = f.label :start_time, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.time_select :start_time, :class => 'form-control'
+
+  .form-group
+    = f.label :end_time, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.time_select :end_time, :class => 'form-control'
+
+  .form-group
+    = f.label :start_date, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :start_date, :class => 'form-control datetimepick'
+
+  .form-group
+    = f.label :end_date, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :end_date, :class => 'form-control datetimepick'
+
+  .form-group
+    = f.label :duration, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.number_field :duration, :class => 'form-control'
+
+  .form-group
+    = f.label :max_booking, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.number_field :max_booking, :class => 'form-control'    
+
+  .form-group
+    = f.label :status, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :status, options_for_select({"Enabled" => "enabled","Disabled" => "disabled" },@slot.status), { include_blank: "Select slot status"}, {:class => "form-control", :required=> true}    
+
+  = f.hidden_field :unit_id, :class => 'form-control', :value => current_user.unit_id
+
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'   
+      %a{:href => slots_path, :class => 'btn btn-primary btn-lg'}
+        %i.icon-backward
+        Cancel
+
+
+
+  / .field
+  /   = f.label :title
+  /   = f.text_field :title
+  / .field
+  /   = f.label :start_time
+  /   = f.time_select :start_time
+  / .field
+  /   = f.label :end_time
+  /   = f.time_select :end_time
+  / .field
+  /   = f.label :duration
+  /   = f.number_field :duration
+  / .actions
+  /   = f.submit 'Save'

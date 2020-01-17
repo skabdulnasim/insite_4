@@ -1,0 +1,18 @@
+%ul{:style => "list-style:none"}
+  - subcategories.each do |sub|
+    %li.categories_action_list{:id => "#{sub.id}"}
+      //= sub.name
+      #accordion.panel-group
+        .panel.panel-default
+          .panel-heading
+            %h4.panel-title
+              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#category#{sub.id}"}
+                = sub.name
+          .panel-collapse.collapse{:id => "category#{sub.id}"}
+            .panel-body
+              - @raw_products.each do |rp|
+                - if rp[:category_id] == sub[:id]
+                
+                  = render partial: 'product_meta/raw_product_row', locals: {rp: rp}
+                  
+      = render partial: 'product_meta/subcategory_li', locals: {subcategories: sub.subcategories} if sub.subcategories.present?

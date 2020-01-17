@@ -1,0 +1,132 @@
+<style>
+.mytable{
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+</style>
+<div class="modal-dialog ">
+  <div class="modal-content m-modal-content">
+    <div class="modal-header m-modal-header">
+      <button class="close" data-dismiss="modal" type="button">
+        <span aria-hidden="true">×</span>
+        <span class="sr-only">Close</span>
+      </button>
+      <h4 class="modal-title" id="showTransferOptionModalLabel">PO vendor email content</h4>
+    </div>
+    <div class="modal-body" id="email_printarea">
+      <!-- EMAIL BODY START -->
+      <div style="margin-top:10px; margin-left:40px;">
+        <div class="row">
+          <% if(current_user.unit.unit_image) { %>
+            <img style="margin-left:40px; width:150px; height:60px;" src="<%=current_user.unit.unit_image%>" alt="<%=current_user.unit.unit_name%>" width='50'>
+          <% } %>
+          </div>
+        <div style="min-height: 180px; width:95%;">
+          
+          <div class="dont-break-out" style="float: left; width: 40%;  margin: 2px 10px; display: inline; ">
+            <p></p>
+            To,
+            <br/>
+            <span style="font-weight: 600;"><%= purchase_order.vendor.name%></span> 
+            <br/>
+            <span><%= purchase_order.vendor.address%></span>
+            <br/>
+            <span><%= purchase_order.vendor.phone%></span>
+            <br/>
+            <span> <%= purchase_order.vendor.gst %></span>
+          </div>
+          <div class="dont-break-out" style="float: right; width: 40%;  margin: 2px 10px; display: inline; ">
+            <p></p>
+            From,
+            <br/>
+            <span style="font-weight: 600;"><%=current_user.unit.unit_name%></span>
+            <br/>
+            <span><%=current_user.unit  .address%></span>
+            <br/>
+            <span><%=current_user.unit.phone%></span>
+          </div>
+        </div>
+        <div style=" background-color: #2189b9;border: 1px solid #e3e3e3;border-radius: 2px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset; margin-bottom: 20px; min-height: 20px; padding-top: 5px; padding-left: 19px; padding-right: 19px; width:95%;margin-top:35px; min-height:45px">
+          <div style="float:left; font-size:22px; color:">Purchase Order</div>
+          <div style="float:left; position: relative; margin-left:25%; color:">PO ID:<%=purchase_order.id%></div>
+          <div style="float:right; color:">Date:<%=purchase_order.created_at%></div>
+        </div>
+        <table border='1' class="mytable"  style="margin: 1em 0;width: 64%;overflow: hidden;background: #FFF;color: #024457;">
+          <tr >
+            <th style="background-color: #167F92;color: ;padding: 1em;">
+              Sl
+            </th>
+            <th style="background-color: #167F92;color: ;padding: 1em;">
+              Product Name
+            </th>
+            <th style="background-color: #167F92;color: ;padding: 1em;">
+              Product Colour
+            </th>
+            <th style="background-color: #167F92;color: ;padding: 1em;">
+              Product Size
+            </th>
+            <th style="background-color: #167F92;color: ;padding: 1em;">
+              Contract Price 
+              <br/>
+              in <%=currency%>
+            </th>
+            <th style="background-color: #167F92;color: ;padding: 1em;">
+              Quantity
+            </th>
+            <th style="background-color: #167F92;color: ;padding: 1em;">
+              Total Price
+              <br/>
+              in <%=currency%>
+            </th>
+          </tr>
+          <% var total_po_amount = 0 %>
+          <% for(var j=0; j< table_data.length; j++) { %>
+            <tr >
+              <td style="background-color: #ccc;color: #000;padding: 1em; text-align:center;">
+                <small><%=table_data[j].sl%> </small>
+              </td>
+              <td style="background-color: #ccc;color: #000;padding: 1em;text-align:center;">
+                <small> <%=table_data[j].product_name%> </small>
+              </td>
+              <td style="background-color: #ccc;color: #000;padding: 1em;text-align:center;">
+                <small> <%=table_data[j].color_name%> </small>
+              </td>
+              <td style="background-color: #ccc;color: #000;padding: 1em;text-align:center;">
+                <small> <%=table_data[j].size_name%> </small>
+              </td>
+              <td style="background-color: #ccc;color: #000;padding: 1em;text-align:center;">
+                <small> <%= table_data[j].price %> </small>
+              </td>
+              <td style="background-color: #ccc;color: #000;padding: 1em;text-align:center;">
+                <small> <%= table_data[j].quantity %> </small>
+              </td>
+              <td style="background-color: #ccc;color: #000;padding: 1em; text-align:center">
+                <small> 
+                  
+                  <% product_total = (parseFloat(table_data[j].price)* parseFloat(table_data[j].quantity)) %> 
+                  <%= product_total.toFixed(2) %>
+                </small>
+                <% total_po_amount += product_total %>
+              </td>
+            </tr>
+          <% } %>
+          <tr>
+            <td colspan=6 >
+              <span style="float:right; margin-right:30px;" ><strong>Total</strong></span>
+            </td>
+            <td>
+              <strong>
+              <%= total_po_amount.toFixed(0) %>
+              </strong>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <!-- EMAIL BODY END -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+      <button class="btn btn-primary print_email" type="button">Print</button>
+    </div>
+  </div>
+</div>

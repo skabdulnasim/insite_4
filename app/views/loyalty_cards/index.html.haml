@@ -1,0 +1,21 @@
+.col-sm-12.padding-5
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .col-sm-4
+              .data-table-header__label
+                .fs-title 
+                  Listing Loyalty Cards
+            .col-sm-4.col-sm-offset-4
+              = smart_listing_controls_for(:loyalty_cards, {class: "text-left"}) do
+                .form-group.filter.input-append
+                  .input-group
+                    %input.form-control.search{:placeholder => "Search by Card no...", :type => "text", :name=> "card_identity",autocomplete: :off}
+                      %span.input-group-btn
+                        %button.btn.btn-primary{:type => "submit" }
+                          %span.glyphicon.glyphicon-search
+                 
+          = smart_listing_render :loyalty_cards
+          /= link_to 'New Loyalty card', new_loyalty_card_path

@@ -1,0 +1,2 @@
+$("#user_edit_container").html('<%= j render("nested_form") %>')
+$("#user_action_container").html("<%=j link_to 'Destroy', @user,:method => :delete, :data => { :confirm => 'Are you sure?', :remote => 'true' }, :class => 'btn white grey-text width-100' %>")

@@ -1,0 +1,29 @@
+<% mp_sale_rules = response.mp_sale_rules; %>
+<table class="data-table z-depth-1 col-lg-12 margin-t-b-0">
+  <thead>
+    <tr style="background-color:#F5F5F5">
+      <th class="font-sz-12">#</th>
+      <th class="font-sz-12">Rule</th>
+      <th class="font-sz-12">Valid From</th>
+      <th class="font-sz-12">Valid To</th>
+      <th class="font-sz-12">Action</th>
+    </tr>
+  </thead>
+  <tbody id="tbody_<%=response.id%>">
+    <% for (var i = mp_sale_rules.length - 1; i >= 0; i--) { %>
+      <tr id="mp_sale_rule_tr_<%=mp_sale_rules[i].id%>">
+        <td class="font-sz-12"><%= mp_sale_rules[i].sale_rule_id %></td>
+        <td class="font-sz-12"><%= mp_sale_rules[i].sale_rule_name %></td>
+        <td class="font-sz-12"><%= mp_sale_rules[i].valid_from %></td>
+        <td class="font-sz-12"><%= mp_sale_rules[i].valid_till %></td>
+        <td class="font-sz-12">
+          <a class="m-btn red m-btn-low-padding mp_sale_rule_delete" data-menu-product-id="<%= mp_sale_rules[i].menu_product_id %>" data-sale-rule-id="<%= mp_sale_rules[i].sale_rule_id %>" data-id="<%= mp_sale_rules[i].id %>" >
+            <i class="mdi-action-highlight-remove"></i>
+          </a>
+        </td>
+      </tr>
+
+    <% } %>
+  </tbody>
+</table>
+<div class="clearfix"></div>

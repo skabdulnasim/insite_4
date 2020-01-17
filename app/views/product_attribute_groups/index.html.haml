@@ -1,0 +1,27 @@
+%h1 Listing product_attribute_groups
+
+%table
+  %tr
+    %th Name
+    %th Product attribute set
+    %th Position
+    %th Is system entity
+    %th Deleted at
+    %th
+    %th
+    %th
+
+  - @product_attribute_groups.each do |product_attribute_group|
+    %tr
+      %td= product_attribute_group.name
+      %td= product_attribute_group.product_attribute_set
+      %td= product_attribute_group.position
+      %td= product_attribute_group.is_system_entity
+      %td= product_attribute_group.deleted_at
+      %td= link_to 'Show', product_attribute_group
+      %td= link_to 'Edit', edit_product_attribute_group_path(product_attribute_group)
+      %td= link_to 'Destroy', product_attribute_group, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Product attribute group', new_product_attribute_group_path

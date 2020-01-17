@@ -1,0 +1,29 @@
+= form_for @product_metum do |f|
+  - if @product_metum.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@product_metum.errors.count, "error")} prohibited this product_metum from being saved:"
+      %ul
+        - @product_metum.errors.full_messages.each do |msg|
+          %li= msg
+
+    
+  - @categories.each do |category|
+    %ul{:style => "list-style:none"}
+      
+      - if category.parent.blank?
+        %li.categories_action_list{:id => "#{category.id}"}
+          
+          #accordion.panel-group
+            .panel.panel-default
+              .panel-heading
+                %h4.panel-title
+                  %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#category#{category.id}"}
+                    = category.name
+              .panel-collapse.collapse{:id => "category#{category.id}"}
+                .panel-body                  
+                  .group
+                    - @raw_products.each do |rp|
+                      - if rp[:category_id] == category[:id]                        
+                        = render partial: 'product_meta/raw_product_row', locals: {rp: rp}
+
+          = render partial: 'product_meta/subcategory_li', locals: {subcategories: category.subcategories, raw_products: @raw_products} if category.subcategories.present?

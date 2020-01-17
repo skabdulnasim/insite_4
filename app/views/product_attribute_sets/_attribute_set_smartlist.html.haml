@@ -1,0 +1,20 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Name
+        %th Is default
+        %th
+        %th
+        %th
+    %tbody
+      - smart_listing.collection.each do |object|
+        %td= object.name
+        %td= object.is_default
+        %td= link_to 'Show', object
+        %td= link_to 'Edit', edit_product_attribute_set_path(object)
+        %td= link_to 'Destroy', object, :method => :delete, :data => { :confirm => 'Are you sure?' }      
+           
+- else
+  .alert.alert-warning
+    No attributes found                

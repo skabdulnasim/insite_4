@@ -1,0 +1,46 @@
+= render "layouts/flash"
+.col-sm-3.padding-5
+  .card
+    .padding-10 
+      %b FILTER BY
+    %b.padding-10= link_to "Download a sample CSV file...", '/resources.csv', :action => 'download'
+    %b.padding-10= link_to "Download Resource CSV", '/resources/export_resource.csv', :action => 'download'
+    = smart_listing_controls_for(:resources, {class: "text-left"}) do
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-search.left
+        Search
+      .padding-10 
+        .form-group.filter.input-append
+          .input-group
+            %input.form-control.search{:placeholder => "Type to search ...", :type => "text", :name=> "name_filter"}
+              %span.input-group-btn
+                %button.btn.btn-primary.disabled{:type => "submit" }
+                  %span.glyphicon.glyphicon-search
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-label.left
+        Resource Type
+      .padding-l-r-5
+        - ResourceType.all.each do |ip_type|
+          .checkbox.margin-t-b-2
+            = check_box_tag 'resource_type[]', ip_type.id, false,{ :id => "status_#{ip_type.id}", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5{:for=>"status_#{ip_type.id}", :style=>"padding-left:30px;"}= ip_type.name.humanize
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-label.left
+        Section
+      .padding-l-r-5
+        - @sections.all.each do |section|
+          .checkbox.margin-t-b-2
+            = check_box_tag 'section_id[]', section.id, false,{ :id => "section#{section.id}", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5{:for=>"section#{section.id}", :style=>"padding-left:30px;"}= section.name.humanize      
+.col-sm-9.padding-5
+  %ul.tabs.z-depth-1.width-100
+    %li.tab
+      %a.active{:href => "#enabled_resources"} Active Resources
+    %li.tab
+      %a{:href => "#disabled_resources"} Inactive Resources
+  #enabled_resources
+    = smart_listing_render :resources
+  #disabled_resources
+    = smart_listing_render :disabled_resources
+
+= render "resource_bulk_upload_from"      

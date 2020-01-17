@@ -1,0 +1,30 @@
+%p#notice= notice
+
+%p
+  %b Product:
+  = @stock.product_id
+%p
+  %b Store:
+  = @stock.store_id
+%p
+  %b Quantity:
+  = @stock.quantity
+%p
+  %b Price:
+  = @stock.price
+%p
+  %b Available stock:
+  = @stock.available_stock
+%p
+  %b Consumption log:
+  = @stock.consumption_log
+%p
+  %b Stock status:
+  = @stock.stock_status
+%p
+  %b Stock transaction:
+  = @stock.stock_transaction_id
+
+= link_to 'Edit', edit_stock_path(@stock)
+\|
+= link_to 'Back', stocks_path

@@ -1,0 +1,31 @@
+= form_for @inspection do |f|
+  - if @inspection.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@inspection.errors.count, "error")} prohibited this inspection from being saved:"
+      %ul
+        - @inspection.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :resource_id
+    = f.number_field :resource_id
+  .field
+    = f.label :user_id
+    = f.number_field :user_id
+  .field
+    = f.label :discussion
+    = f.text_area :discussion
+  .field
+    = f.label :latitude
+    = f.text_field :latitude
+  .field
+    = f.label :longitude
+    = f.text_field :longitude
+  .field
+    = f.label :recorded_at
+    = f.datetime_select :recorded_at
+  .field
+    = f.label :day
+    = f.text_field :day
+  .actions
+    = f.submit 'Save'

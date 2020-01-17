@@ -1,0 +1,42 @@
+%p#notice= notice
+/= link_to 'Back', loyalty_cards_path
+.row
+  .col-sm-12.col-md-4.col-lg-4
+    %ul.collection.with-header.z-depth-1
+      %li.collection-header
+        %h2
+          = "#{@loyalty_card.card_serial.upcase}"
+          %small= "(#{@loyalty_card.card_class.humanize} Card)"
+        /= @loyalty_card.card_class
+      %li.collection-item
+        .row
+          .col-sm-6.grey-text.darken-1 Card serial
+          .col-sm-6.grey-text.text-darken-4.right-align= @loyalty_card.card_serial
+      %li.collection-item
+        .row
+          .col-sm-6.grey-text.darken-1 Name on card
+          .col-sm-6.grey-text.text-darken-4.right-align= @loyalty_card.name_on_card
+      %li.collection-item
+        .row
+          .col-sm-6.grey-text.darken-1 Avialable point
+          .col-sm-6.grey-text.text-darken-4.right-align= @loyalty_card.total_valid_point
+      %li.collection-item
+        .row
+          .col-sm-6.grey-text.darken-1 Availabe amount
+          .col-sm-6.grey-text.text-darken-4.right-align= @loyalty_card.total_valid_amount
+      %li.collection-item
+        .right-align
+          %a{:href => "#{edit_loyalty_card_path(@loyalty_card)}", :title=>""}
+            %i.fa.fa-pencil.fa-2x
+  
+  .col-sm-12.col-md-8.col-lg-8
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Transactions
+            = smart_listing_render :transactions
+          
+

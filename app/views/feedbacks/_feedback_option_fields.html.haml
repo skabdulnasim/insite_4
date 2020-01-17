@@ -1,0 +1,8 @@
+.form-group
+  = f.label :option_title, :class => 'col-sm-3 control-label'
+  .col-sm-7
+    = f.text_field :option_title, placeholder: "Field Name"
+  
+  .col-sm-2
+    %a.btn.btn-xs.btn-danger.remove_fields{:href => "#", :title => "Delete"}
+      %i.mdi-content-remove

@@ -1,0 +1,22 @@
+= form_for @check_information do |f|
+  - if @check_information.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@check_information.errors.count, "error")} prohibited this check_information from being saved:"
+      %ul
+        - @check_information.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :reservation_id
+    = f.number_field :reservation_id
+  .field
+    = f.label :check_in_datetime
+    = f.datetime_select :check_in_datetime
+  .field
+    = f.label :check_out_datetime
+    = f.datetime_select :check_out_datetime
+  .field
+    = f.label :status
+    = f.text_field :status
+  .actions
+    = f.submit 'Save'

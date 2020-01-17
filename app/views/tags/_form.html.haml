@@ -1,0 +1,47 @@
+= form_for @tag do |f|
+  - if @tag.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@tag.errors.count, "error")} prohibited this tag from being saved:"
+      %ul
+        - @tag.errors.full_messages.each do |msg|
+          %li= msg
+  .col-sm-4
+    .form-group
+      .col-sm-4
+        = f.label :name
+      .col-sm-4
+        = f.text_field :name
+    %br
+    .form-group  
+      .col-sm-4
+        = f.label :icon
+      .col-sm-4  
+        = f.file_field :icon
+    %br 
+    .form-group
+      .col-sm-4
+        = f.label :color
+      .col-sm-4
+        = f.text_field :color, :type=>"color"
+    %br
+    .form-group
+      .col-sm-4
+        = f.label :tag_group_id
+      .col-sm-4 
+        = f.select :tag_group_id, options_for_select(@tag_groups.present? ? @tag_groups.map{ |tg| [tg.name, tg.id] } : "",@tag.tag_group_id), { include_blank: "Select Tag Group"}, {:class => "form-control", :required=> false,:style=>"width:150px;"} 
+    %br
+    .form-group
+      .col-sm-4
+        = f.label :status
+      .col-sm-4 
+        = f.select :status, options_for_select({"Active" => "active","Inactive" => "inactive"},@tag.status), { include_blank: "Select Status"}, {:class => "form-control", :required=> true,:style=>"width:150px;"} 
+    %br
+    .form-froup
+      .col-sm-4
+        = f.label :tag_type
+      .col-sm-4  
+        = f.select :tag_type, options_for_select({"Product" => "Product","Customer" => "customer"},@tag.tag_type), { include_blank: "Select Tag type"}, {:class => "form-control", :required=> true,:style=>"width:150px;"} 
+    %br
+    %br
+    .actions
+      = f.submit 'Save' ,:class=>"btn btn-success"

@@ -1,0 +1,13 @@
+- @categories.each do |category|
+  %ul{:style => "list-style:none; padding:0px;"}
+    - if category.parent.blank?
+      %li
+        %label.checkbox.inline
+          = check_box_tag 'product_category[]', category.id
+          = category.name
+        
+      = render partial: 'listing_subcategory_li', locals: {subcategories: category.subcategories} if category.subcategories.present?
+        
+
+        
+ 

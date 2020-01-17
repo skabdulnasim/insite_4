@@ -1,0 +1,53 @@
+- puts is_assigned_to_zone_or_area(240)
+.col-sm-3.padding-5
+	.card
+		.tabbable.tabs-left
+			%ul.nav.nav-tabs.padding-none.width-100
+				%li.active
+					%a{"data-toggle" => "tab", :href => "#a"}
+						%span.float-r.badge
+							= @rsources.count
+						Manage Resources
+				%li
+					%a{"data-toggle" => "tab", :href => "#b"}
+						%span.float-r.badge
+							= @bits.count
+						Manage Bits
+				%li
+					%a{"data-toggle" => "tab", :href => "#c"}
+						%span.float-r.badge
+							= @zones.count
+						Manage Zones
+				%li
+					%a{"data-toggle" => "tab", :href => "#d"}
+						%span.float-r.badge
+							= @areas.count
+						Manage Areas 
+		.clearfix
+.col-sm-9.padding-5
+	.tab-content.padding-l-r-none
+		#a.tab-pane.active
+			.main-section__content
+				.example
+					.example__content.p0.min-height-405
+						.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+						= smart_listing_render :resources
+
+		#b.tab-pane
+			.main-section__content
+				.example
+					.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+					=smart_listing_render :bits
+
+
+		#c.tab-pane
+			.main-section__content
+				.example
+					.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+					= smart_listing_render :zones
+
+		#d.tab-pane
+			.main-section__content
+				.example
+					.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+					= smart_listing_render :areas

@@ -1,0 +1,23 @@
+= form_for @developer_app do |f|
+  - if @developer_app.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@developer_app.errors.count, "error")} prohibited this developer_app from being saved:"
+      %ul
+        - @developer_app.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-group
+    = f.label :name
+    = f.text_field :name, :class => "form-control"
+  .form-group
+    = f.label :description
+    = f.text_area :description, :class => "form-control", :rows=>"3"
+  .form-group
+    = f.label :website
+    = f.text_field :website, :class => "form-control"
+  .form-group
+    = f.check_box :is_active, :class => "form-control"    
+    = f.label :is_active
+  .actions
+    = f.submit 'Save', :class => "m-btn blue"
+    = link_to 'Back', developer_apps_path, :class => "m-btn white grey-text"

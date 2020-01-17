@@ -1,0 +1,2 @@
+module LoyaltyCardTransactionsHelper
+end

@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @third_party_payment_option.name
+%p
+  %b Status:
+  = @third_party_payment_option.status
+%p
+  %b Is trashed:
+  = @third_party_payment_option.is_trashed
+
+= link_to 'Edit', edit_third_party_payment_option_path(@third_party_payment_option)
+\|
+= link_to 'Back', third_party_payment_options_path

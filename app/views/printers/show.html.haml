@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @printer.name
+%p
+  %b Ip:
+  = @printer.ip
+%p
+  %b Unit:
+  = @printer.unit_id
+%p
+  %b Assignable:
+  = @printer.assignable_id
+%p
+  %b Assignable type:
+  = @printer.assignable_type
+
+= link_to 'Edit', edit_printer_path(@printer)
+\|
+= link_to 'Back', printers_path

@@ -1,0 +1,20 @@
+%p#notice= notice
+%p
+  %b Id:
+  =@delivery_address.id
+%p
+  %b Pincode:
+  =@delivery_address.pincode 
+%p
+  %b Address:
+  =@delivery_address.address
+%p 
+  %b Latitude:
+  =@delivery_address.latitude
+%p 
+  %b Longitude:
+  =@delivery_address.longitude
+
+= link_to 'Back', delivery_addresses_path
+
+

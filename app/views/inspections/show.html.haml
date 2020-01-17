@@ -1,0 +1,27 @@
+%p#notice= notice
+
+%p
+  %b Resource:
+  = @inspection.resource_id
+%p
+  %b User:
+  = @inspection.user_id
+%p
+  %b Discussion:
+  = @inspection.discussion
+%p
+  %b Latitude:
+  = @inspection.latitude
+%p
+  %b Longitude:
+  = @inspection.longitude
+%p
+  %b Recorded at:
+  = @inspection.recorded_at
+%p
+  %b Day:
+  = @inspection.day
+
+= link_to 'Edit', edit_inspection_path(@inspection)
+\|
+= link_to 'Back', inspections_path

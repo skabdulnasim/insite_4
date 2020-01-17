@@ -1,0 +1,62 @@
+:javascript
+  $(function() {
+    $('.datepicker').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+  });
+= form_for @loyalty_card_class do |f|
+  - if @loyalty_card_class.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@loyalty_card_class.errors.count, "error")} prohibited this loyalty_card_class from being saved:"
+      %ul
+        - @loyalty_card_class.errors.full_messages.each do |msg|
+          %li= msg
+  .col-sm-12
+    .card
+      .card-content
+        %span.card-title
+          .field
+            = f.label :name
+            = f.text_field :name
+        %table.data-table
+          %thead
+            %tr
+              %th Conversion
+              %th= currency
+              %th Point
+              %th Default Validity (Days)
+          %tbody
+            %tr
+              %td Enrollment
+              %td= text_field_tag   :"loyalty_card_class[enrollment_rule][amount]", @loyalty_card_class.enrollment_rule[:amount]
+              %td= text_field_tag   :"loyalty_card_class[enrollment_rule][point]", @loyalty_card_class.enrollment_rule[:point]
+              %td= number_field_tag :"loyalty_card_class[enrollment_rule][validity]", @loyalty_card_class.enrollment_rule[:validity] || 180
+              %td
+                = check_box_tag    :"loyalty_card_class[enrollment_rule][refundable]", true, @loyalty_card_class.enrollment_rule[:refundable]
+                %label{for: "loyalty_card_class_enrollment_rule_refundable"} Refundable
+            %tr
+              %td Recharge
+              %td= text_field_tag   :"loyalty_card_class[recharge_rule][amount]", @loyalty_card_class.recharge_rule[:amount] 
+              %td= text_field_tag   :"loyalty_card_class[recharge_rule][point]", @loyalty_card_class.recharge_rule[:point]  
+              %td= number_field_tag :"loyalty_card_class[recharge_rule][validity]", @loyalty_card_class.recharge_rule[:validity] || 180
+              %td
+                = check_box_tag    :"loyalty_card_class[recharge_rule][refundable]", true, @loyalty_card_class.recharge_rule[:refundable]
+                %label{for: "loyalty_card_class_recharge_rule_refundable"} Refundable
+            %tr
+              %td Reward
+              %td= text_field_tag :"loyalty_card_class[reward_rule][amount]", @loyalty_card_class.reward_rule[:amount]
+              %td= text_field_tag :"loyalty_card_class[reward_rule][point]", @loyalty_card_class.reward_rule[:point]
+              %td= number_field_tag :"loyalty_card_class[reward_rule][validity]", @loyalty_card_class.reward_rule[:validity] || 180
+              %td
+                = check_box_tag    :"loyalty_card_class[reward_rule][refundable]", true, @loyalty_card_class.reward_rule[:refundable]
+                %label{for: "loyalty_card_class_reward_rule_refundable"} Refundable
+            %tr
+              %td Debit
+              %td= text_field_tag :"loyalty_card_class[debit_rule][amount]", @loyalty_card_class.debit_rule[:amount]
+              %td= text_field_tag :"loyalty_card_class[debit_rule][point]", @loyalty_card_class.debit_rule[:point]
+      .card-action
+        .secondary-content
+          .actions
+            = f.submit 'Save', {class: "btn btn-primary"}
+          %br
+  

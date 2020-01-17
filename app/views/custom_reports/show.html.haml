@@ -1,0 +1,27 @@
+
+.page-header
+  - if notice.nil? == false
+    #notice.alert.alert-info
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-info.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"} ×
+      = notice
+  %h2
+    %i.fa.fa-tags
+    = @custom_report.report_folder.name
+    %small= @custom_report.name
+.page-container
+  /= debug @result
+  %table.table.table-stripped.table-hover
+    %thead
+      %tr
+        - @result.columns.each do |attr_name|
+          %th= attr_name.titleize
+    %tbody
+      - @result.rows.each do |row|
+        %tr
+          - row.each do |entry|
+            %td= entry
+
+

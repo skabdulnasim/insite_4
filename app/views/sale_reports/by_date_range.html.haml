@@ -1,0 +1,254 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });    
+  });
+
+- links_arr = [{:title=>"Sales Report",:url=>sale_reports_path,:active_class=>""},{:title=>"Daily Overall Sales summary",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+/= debug @dates
+
+- report_precision = AppConfiguration.get_config_value_of_report('report_precision').to_i
+
+%ul.collapsible{"data-collapsible" => "accordion"}
+  %li
+    .collapsible-header
+      %b Column preferences
+    .collapsible-body
+      %p.col-lg-12
+        = form_tag(save_report_preferences_sale_reports_path, method: "post", :class=>"padding-20") do
+          - get_by_date_range_sales_preferences(current_user.unit_id,'sales_report_by_date_range')
+          = hidden_field_tag :report_key, "sales_report_by_date_range"
+          = hidden_field_tag :unit_id, @unit_id          
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+            Save preferences
+      .clearfix
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="Sales between #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            / %a.m-btn.red.margin-l-5{:href=>"/sale_reports/by_date_range.pdf?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}", :target=>"_blank"}
+            /   %i.mdi-file-file-download.left
+            /   PDF  
+            %a.m-btn.indigo.margin-l-5{:href=>"/sale_reports/by_date_range.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+        %table.data-table
+          - @pref = @pref.present? ? @pref : ["date","total_billed_amount","total_discount","total_unpaid_amount","total_settled_amount","cash","card","loyalty_card","third_party","total_tax"]
+
+          %thead 
+            %tr.data-table__selectable-row
+              - if @pref.include?('date')
+                %th{:style=>"padding-left:5px; padding-right:5px;"} Date
+              - if @pref.include?('bill_no')
+                %th{:style=>"padding-left:5px; padding-right:5px;"} Bill No.
+              - if @pref.include?('bill_slno')
+                %th{:style=>"padding-left:5px; padding-right:5px;"} Bill Sl.
+              - if @pref.include?('total_billed_amount')
+                %th{:style=>"padding-left:5px; padding-right:5px;"} 
+                  Total 
+                  %br
+                  Billed 
+                  %br
+                  Amount
+              - if @pref.include?('total_discount')
+                %th{:style=>"padding-left:5px; padding-right:5px;"} 
+                  Total 
+                  %br
+                  Discount
+              - if @pref.include?('total_nc')
+                %th{:style=>"padding-left:5px; padding-right:5px;"} 
+                  Total 
+                  %br
+                  NC
+              - if @pref.include?('total_nc')
+                %th{:style=>"padding-left:5px; padding-right:5px;"} 
+                  Total 
+                  %br
+                  Void
+              - if @pref.include?('total_unpaid_amount')
+                %th{:style=>"padding-left:5px; padding-right:5px;"} 
+                  Total 
+                  %br
+                  Unpaid 
+                  %br
+                  Amount
+              - if @pref.include?('total_settled_amount')
+                %th{:style=>"padding-left:5px; padding-right:5px;"} 
+                  Total 
+                  %br 
+                  Settled 
+                  %br
+                  Amount
+              - @tax_persentage_group_head.each do |tg_id| 
+                - _tax_class_persentage = tg_id/2
+                %th{:style=>"text-align: center;padding-left:5px; padding-right:5px;"}
+                  #{tg_id} %
+                  %br
+                  Taxable 
+                  %br
+                  amount
+                - Bill.report_attributes.each do |key, attributes|
+                  - if key == "tax"
+                    - attributes.each do |attribute|
+                      - if @pref.include?(attribute.parameterize)
+                        - _tax_class=TaxClass.find_by_name(attribute)
+                        - if _tax_class.ammount == _tax_class_persentage && (_tax_class.tax_type=="variable" || _tax_class.tax_type=="simple")
+                          %th{:style=>"padding-left:5px; padding-right:5px;"}=attribute.humanize+"%" if @pref.include?('date')
+                %th{:style=>"text-align: center; padding-left:5px; padding-right:5px;"}
+                  Total 
+                  %br
+                  #{tg_id}% 
+                %th{:style=>"text-align: center; padding-left:5px; padding-right:5px;"}
+                  Total 
+                  %br
+                  With #{tg_id}%
+              %th{:style=>"text-align: center; padding-left:5px; padding-right:5px;"}
+                0 % 
+                %br
+                Taxable
+                %br
+                Amount
+              %th{:style=>"text-align: center; padding-left:5px; padding-right:5px;"}
+                Overall
+                %br
+                Taxable
+                %br
+                Amount
+              - if @pref.include?('cash')
+                %th{:style=>"padding-left:5px; padding-right:5px;"}="Cash" 
+              - if @pref.include?('card')
+                %th{:style=>"padding-left:5px; padding-right:5px;"}="Card"
+              - if @pref.include?('loyalty_card')
+                %th{:style=>"padding-left:5px; padding-right:5px;"}="Loyalty Card" 
+              - if @pref.include?('third_party')
+                %th{:style=>"padding-left:5px; padding-right:5px;"}="Third Party"         
+              - if @pref.include?('total_tax')
+                %th{:style=>"padding-left:5px; padding-right:5px;"}="Total Tax" 
+          %tbody
+            - total_value={}
+            - @dates.each do |date|
+              - if date.to_date < "2016-04-01".to_date
+                - date = "2016-04-01" 
+              - _from_datetime = date.to_date.beginning_of_day+@unit_detail_options[:day_closing_time].to_i.hours if @unit.unit_detail.present?
+              - _from_datetime ||= date.to_date.beginning_of_day
+              - _to_datetime = date.to_date.end_of_day+@unit_detail_options[:day_closing_time].to_i.hours if @unit.unit_detail.present?
+              - _to_datetime ||= date.to_date.end_of_day              
+              - settlement_data = get_settlement_data_by_date(@unit_id,_from_datetime,_to_datetime)
+              - nc_void = get_nc_void_data(@unit_id,_from_datetime,_to_datetime)
+              = #debug settlement_data
+              - _total_sale = Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:grand_total)
+              -_day_bill = Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill
+              %tr.data-table__selectable-row
+                - _overall_taxable_amt = 0
+                - _total_non_0per_taxwith_amt = 0
+                - if @pref.include?('date')
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=date
+                - if @pref.include?('bill_no')
+                  - _min_bill=_day_bill.map { |d| d[:id] }.min
+                  - _max_bill=_day_bill.map { |d| d[:id] }.max
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}= _min_bill.to_s+" - "+_max_bill.to_s
+                - if @pref.include?('bill_slno')
+                  - _min_bill=_day_bill.map { |d| d[:id] }.min
+                  - _max_bill=_day_bill.map { |d| d[:id] }.max
+                  - _min_bill_sl=_min_bill.present? ? Bill.find(_min_bill).serial_no : ""
+                  - _max_bill_sl=_max_bill.present? ? Bill.find(_max_bill).serial_no : ""
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}= _min_bill_sl.to_s+"  "+_max_bill_sl.to_s
+                - if @pref.include?('total_billed_amount')
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(_total_sale, unit: '', precision: report_precision)
+                  - total_value["billed_amount"]=total_value["billed_amount"].present? ? (total_value["billed_amount"] + _total_sale) : _total_sale
+                - if @pref.include?('total_discount')    
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:discount), unit: '', precision: report_precision)
+                  - total_value["discount"]=total_value["discount"].present? ? (total_value["discount"] + Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:discount)) : Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:discount)
+                - if @pref.include?('total_nc')
+                  - if !nc_void['no_charge'].present?
+                    - nc_void['no_charge'] = 0
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}= number_to_currency(nc_void['no_charge'] || 0, unit: '', precision: report_precision)
+                  - total_value["total_nc"]=total_value["total_nc"].present? ? (total_value["total_nc"] + nc_void['no_charge'] || 0) : nc_void['no_charge'] || 0
+                - if @pref.include?('total_void') 
+                  - if !nc_void['void'].present?
+                    - nc_void['void'] = 0
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}= number_to_currency(nc_void['void'] || 0, unit: '', precision: report_precision)
+                  - total_value["total_void"]=total_value["total_void"].present? ? (total_value["total_void"] + nc_void['void'] || 0) : nc_void['void'] || 0
+                - if @pref.include?('total_unpaid_amount')  
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency((_total_sale.to_f - settlement_data[:total_settlement].to_f), unit: '', precision: report_precision)
+                  - total_value["unpaid_amount"]=total_value["unpaid_amount"].present? ? (total_value["unpaid_amount"] + (_total_sale.to_f - settlement_data[:total_settlement].to_f)) : (_total_sale.to_f - settlement_data[:total_settlement].to_f)
+                - if @pref.include?('total_settled_amount')
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(settlement_data[:total_settlement], unit: '', precision: report_precision)
+                  - total_value["settled_amount"]=total_value["settled_amount"].present? ? (total_value["settled_amount"] + settlement_data[:total_settlement]) : settlement_data[:total_settlement]
+                - @tax_persentage_group_head.each do |tg_id|
+                  - _tax_class_persentage = tg_id/2
+                  - _tax_group_amt=0
+                  - _tax_able_amt=0
+                  - @tax_persentage_group_amount.each do |tg|
+                    -if tg_id==tg["tax_persentage_group"]
+                      - if tg["created_at"].to_date==date.to_date
+                        - _tax_group_amt=tg["tax_amount"]
+                        - _tax_able_amt=(_tax_group_amt*100)/tg_id
+                  - _overall_taxable_amt = _overall_taxable_amt + _tax_able_amt
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=_tax_able_amt.round(2)
+                  - total_value["taxable_amount_#{tg_id}%"]=total_value["taxable_amount_#{tg_id}%"].present? ? ((total_value["taxable_amount_#{tg_id}%"] || 0) + _tax_able_amt) : _tax_able_amt
+                  - Bill.report_attributes.each do |key, attributes|
+                    - if key == "tax"
+                      - attributes.each do |attribute|
+                        -if @pref.include?(attribute.parameterize)
+                          - _tax_class=TaxClass.find_by_name(attribute)
+                          - if _tax_class.ammount == _tax_class_persentage && (_tax_class.tax_type=="variable" || _tax_class.tax_type=="simple")             
+                            %td{:style=>"padding-left:5px; padding-right:5px;"}= number_to_currency(Bill.tax_summery(@unit_id,_from_datetime,_to_datetime,attribute)[date], unit: '', precision: report_precision) 
+                            - total_value["#{attribute.parameterize}%"]=total_value["#{attribute.parameterize}%"].present? ? ((total_value["#{attribute.parameterize}%"].to_f || 0 )+ (Bill.tax_summery(@unit_id,_from_datetime,_to_datetime,attribute)[date].to_f || 0)) : (Bill.tax_summery(@unit_id,_from_datetime,_to_datetime,attribute)[date].to_f || 0)
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=_tax_group_amt.round(2)
+                  - total_value["total_#{tg_id}%"] = total_value["total_#{tg_id}%"].present? ? (total_value["total_#{tg_id}%"] + _tax_group_amt) : _tax_group_amt
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=(_tax_group_amt+_tax_able_amt).round(2)
+                  - total_value["total_with_#{tg_id}%"] = total_value["total_with_#{tg_id}%"].present? ? ((total_value["total_with_#{tg_id}%"] || 0) + (_tax_group_amt+_tax_able_amt)) : (_tax_group_amt+_tax_able_amt)
+                  - _total_non_0per_taxwith_amt = _total_non_0per_taxwith_amt + (_tax_group_amt+_tax_able_amt)
+                %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency((_total_sale - _total_non_0per_taxwith_amt), unit: '', precision: report_precision)
+                - _overall_taxable_amt = _overall_taxable_amt + (_total_sale - _total_non_0per_taxwith_amt)
+                %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(_overall_taxable_amt, unit: '', precision: report_precision)
+                - if @pref.include?('cash') 
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(settlement_data[:cash_sale], unit: '', precision: report_precision)
+                  - total_value["cash"]=total_value["cash"].present? ? (total_value["cash"] + settlement_data[:cash_sale]) : settlement_data[:cash_sale]
+                - if @pref.include?('card')                
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(settlement_data[:card_sale], unit: '', precision: report_precision)
+                  - total_value["card"]=total_value["card"].present? ? (total_value["card"] + settlement_data[:card_sale]) : settlement_data[:card_sale]
+                - if @pref.include?('loyalty_card')                
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(settlement_data[:loyalty_card_sale], unit: '', precision: report_precision)
+                  - total_value["loyalty_card"]=total_value["loyalty_card"].present? ? (total_value["loyalty_card"] + settlement_data[:loyalty_card_sale]) : settlement_data[:loyalty_card_sale] 
+                - if @pref.include?('third_party')                
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(settlement_data[:third_party_sale], unit: '', precision: report_precision)   
+                  - total_value["third_party"]=total_value["third_party"].present? ? (total_value["third_party"] + settlement_data[:third_party_sale]) : settlement_data[:third_party_sale]  
+                - if @pref.include?('total_tax')
+                  %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:tax_amount), unit: '', precision: report_precision)
+                  - total_value["total_tax"]=total_value["total_tax"].present? ? (total_value["total_tax"] + Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:tax_amount)) : Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:tax_amount)
+  .example
+    .example__content.p0
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Summery Of Report
+          .data-table-header__actions    
+        %table.data-table
+          %thead
+            %tr
+              - total_value.each do |key,val|
+                - h_key=key.humanize.split(' ')
+                %th{:style=>"padding-left:5px; padding-right:5px;"}
+                  - h_key.each do |h_k|
+                    #{h_k.humanize}
+                    %br 
+          %tbody
+            %tr
+              - total_value.each do |key,val|
+                %td{:style=>"padding-left:5px; padding-right:5px;"}=number_to_currency(val, unit: '', precision: report_precision)
+    
+                

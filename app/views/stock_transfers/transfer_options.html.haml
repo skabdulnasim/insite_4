@@ -1,0 +1,167 @@
+:javascript
+  $(function () {
+      $('.datetimepicker1').datetimepicker({
+        pickTime: false,
+      });
+  });
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  });
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"New stock transfer",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+
+= form_tag(stock_transfers_path, method: "post",multipart: true) do
+  = render "layouts/flash"
+  .col-md-9.padding-l-none
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Transfer options
+
+            %table.table
+              %thead
+                %tr.data-table__selectable-row
+                  %th.col-lg-3 Product
+                  %th.col-lg-2 Transfer quantity 
+                  %th.col-lg-5 
+                    Transfer options 
+                    %br
+                    %small (From which stock, transfer quantity will be deducted)                  
+                  %th.col-lg-2="Transfer price (#{currency})"
+                    
+              %tbody
+                - _total_price_counter = 0
+                - @selected_products.each do |sp|
+                  %input{:type=>"hidden", :name=>"checked_products[]", :value=>"#{sp[1][:product_id]}"}
+                  - if params[:log_id].present?
+                    %input{:type=>"hidden", :name=>"requisition_id", :value=>"#{params[:log_id]}"}
+                  - else
+                    %input{:type=>"hidden", :name=>"requisition_id", :value=>""}
+                  %tr.data-table__selectable-row
+                    %td
+                      =sp[1][:product_name]
+                      %br
+                      ="(Current Stock : #{sp[1][:current_stock]} #{sp[1][:basic_unit]})"
+                    %td
+                      ="#{number_with_precision(sp[1][:transfer_qty], precision: 4)} #{sp[1][:basic_unit]}"
+                      %br
+                      ="(#{sp[1][:transfer_bulk_qty]} #{sp[1][:product_unit_name]})" if sp[1][:product_unit].to_i > 0
+                    %td
+                      -if sp[1][:transfer_options].present?
+                        - if (sp[1][:product_unit].to_i > 0) and (sp[1][:transfer_bulk_qty].to_f > sp[1][:secondary_current_stock].to_f )
+                          ="No transfer options available for this item"
+                        - else
+                          - product_counter = sp[1][:transfer_qty]
+                          - _price_counter = 0
+                          - _transfer_qty = 0
+                          -sp[1][:transfer_options].each do |at|
+                            - if product_counter.to_f >= at.available_stock.to_f
+                              .input-group.margin-b-2{"data-placement"=>"left","data-trigger"=>"hover","data-content" => "#{at.stock_credit} #{sp[1][:basic_unit]} added to stock on: #{at.created_at.strftime('%d %b %Y, %I:%M %p')}, by #{at.stock_transaction_type}. Total cost: #{number_to_currency(at.price, precision: 2, unit: currency, format: '%u %n')}", "data-toggle" => "popover", :title => "Stock details ##{at.id}"}
+                                %span.input-group-addon.font-sz-12
+                                  %small
+                                    %input.check{:class => "check filled-in", :name => "checked_transfer_#{sp[1][:product_id]}[]", :type => "checkbox", :value => "#{at.id}", :id => at.id, :checked=>true}
+                                    %label{:for=> at.id}  
+                                  ="Available: #{at.available_stock} #{sp[1][:basic_unit]}"
+                                %input.numeric-only{:class => "form-control",:id =>"transferid#{at.id}", :name => "quantity#{at.id}", :placeholder => "Enter stock", :type => "text", :value => at.available_stock}
+                              - _transfer_qty = _transfer_qty + at.available_stock                  
+                              - _stock_price = Stock.get_stock_price(at.id,at.available_stock) 
+                              - _price_counter = _price_counter + _stock_price 
+                              - product_counter = product_counter.to_f - (at.available_stock).to_f #Reduce counter    
+                            -else
+                              -if product_counter.to_f > 0
+                                .input-group.margin-b-2{"data-placement"=>"left","data-trigger"=>"hover","data-content" => "#{at.stock_credit} #{sp[1][:basic_unit]} added to stock on: #{at.created_at.strftime('%d %b %Y, %I:%M %p')}, by #{at.stock_transaction_type}. Total cost: #{number_to_currency(at.price, precision: 2, unit: currency, format: '%u %n')}", "data-toggle" => "popover", :title => "Stock details ##{at.id}"}
+                                  %span.input-group-addon.font-sz-12
+                                    %small
+                                      %input.check{:class => "check filled-in", :name => "checked_transfer_#{sp[1][:product_id]}[]", :type => "checkbox", :value => "#{at.id}", :id => at.id, :checked=>true}  
+                                      %label{:for=> at.id}  
+                                    ="Available: #{at.available_stock} #{sp[1][:basic_unit]}"
+                                  %input.numeric-only{:class => "form-control",:id =>"transferid#{at.id}", :name => "quantity#{at.id}", :placeholder => "Enter stock", :type => "text", :value => product_counter}  
+                                
+                                - _stock_price = Stock.get_stock_price(at.id,product_counter.to_f) 
+                                - _transfer_qty = _transfer_qty + product_counter.to_f
+                                - _price_counter = _price_counter + _stock_price 
+                                - product_counter = 0 #Reduce counter to zero
+                          %small
+                            Cost:
+                            =number_to_currency(_price_counter, :precision=>2, :unit=> currency, :format=>"%u %n") 
+                            | Possible transfer qty:
+                            ="#{number_with_precision(_transfer_qty, precision: 4)} #{sp[1][:basic_unit]}"
+                          - _total_price_counter = _total_price_counter + _price_counter 
+                          - if sp[1][:product_unit].to_i > 0
+                            %input{:name => "secondary_quantity_#{sp[1][:product_id]}", :type => "hidden", :value => sp[1][:transfer_bulk_qty]}
+                            %input{:name => "secondary_unit_#{sp[1][:product_id]}", :type => "hidden", :value => sp[1][:product_unit]}
+
+                      - else
+                        No transfer options available for this product
+                    %td
+                      %input.allow-numeric-only.form-control{:name => "product_price_#{sp[1][:product_id]}", :value => "#{_price_counter.round(2)}", :type => "text"}                    
+
+  .col-md-3.padding-l-r-none
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Transfer summary
+            .padding-10
+              %button.m-btn.green.width-100{:type =>"submit"}
+                Confirm and transfer               
+            .filter-title.margin-t-b-0
+              %i.mdi-action-label.left
+              Delivery information            
+            .padding-10    
+              %input{:type=>"hidden", :name=>"store_id", :value=>"#{@store.id}"}   
+                
+              - if params[:transfer_type] == "trans_to_oth"                
+                - if params[:secondary_store].present?
+                  -@secondary_stores = Store.where(:id => params[:secondary_store])
+                -elsif AppConfiguration.get_config_value('stock_transfer_to_secondary_store') == 'enabled'
+                  -@secondary_stores = Store.where("id != ?", params[:store_id].to_i).physical
+                -else
+                  -@secondary_stores = Store.where("id != ?", params[:store_id].to_i).primary.physical
+                %label.control-label Select destination store:
+                %select{:name=>"secondary_store",:class => 'form-control', :required=>true}
+                  -@secondary_stores.each do |ss|
+                    %option{:value=>"#{ss.id}"}= "#{ss.name} [#{ss.unit.unit_name} (#{ss.unit.address})] #{ss.store_priority.humanize.upcase}"                   
+                %input{:type=>"hidden", :name=>"transfer_type", :value=>"trans_to_oth"} 
+                - if AppConfiguration.get_config_value('shipping_module') == 'enabled'
+                  - @vehicles = Vehicle.unit_vehicles(@current_user.unit_id)
+                  %label.control-label Select delivery vehicle:
+                  %select{:name=>"vehicle_id",:class => 'form-control', :required=>true}
+                    -@vehicles.each do |vh|
+                      %option{:value=>"#{vh.id}"}= "#{vh.name} (##{vh.id})" 
+                  %label.control-label Expected delivery date:
+                  .input-group.datetimepicker1{"data-date-format" => "DD-MM-YYYY"}
+                    %input.form-control{:autocomplete => "off", :name => "expected_delivery_date", :type => "text", :required=>true}
+                      %span.input-group-addon
+                        %span.glyphicon-calendar.glyphicon 
+                - else
+                  %input{:type=>"hidden", :name=>"vehicle_id", :value=>""} 
+                  %input{:type=>"hidden", :name=>"expected_delivery_date", :value=>""} 
+
+              - elsif params[:transfer_type] == "transfer_to_kitchen"
+                - @menu_products.each do |mpi|
+                  = hidden_field_tag 'menu_products[]', mpi[1][:menu_product_id]
+                  = hidden_field_tag 'menu_pro_qty_'+mpi[1][:menu_product_id].to_s, mpi[1][:menu_product_qty]
+
+                - @kitchens = Store.kitchen.unit_stores(@current_user.unit_id)
+                %input{:type=>"hidden", :name=>"transfer_type", :value=>"transfer_to_kitchen"} 
+                %select{:name=>"secondary_store",:class => 'form-control', :required=>true}
+                  -@kitchens.each do |ss|
+                    %option{:value=>"#{ss.id}"}= "#{ss.name} (#{ss.address})" 
+
+              - elsif params[:transfer_type] == "trans_to_own"
+                - @seconds=Store.where("id != ?", params[:store_id].to_i).physical.unit_stores(@current_user.unit_id)
+                - #@seconds = Store.physical.secondary.unit_stores(@current_user.unit_id)
+                %input{:type=>"hidden", :name=>"transfer_type", :value=>"trans_to_own"} 
+                %select{:name=>"secondary_store",:class => 'form-control', :required=>true}
+                  -@seconds.each do |ss|
+                    %option{:value=>"#{ss.id}"}= "#{ss.name} (#{ss.address})" 
+
+              %br
+                   
+                         

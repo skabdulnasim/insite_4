@@ -1,0 +1,35 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr
+        %th Time
+        %th Reference
+        %th Debit
+        %th Credit
+        %th Available Point
+        %th Validity
+        
+    %tbody
+      - smart_listing.collection.each do |transaction|
+        %tr
+          %td= transaction.created_at.strftime("%d-%m-%Y, %I:%M %p") 
+          - if transaction.Debit?
+            %td= transaction.loyalty_transaction.loyalty_debit_type.underscore.titleize
+            %td= transaction.loyalty_transaction.loyalty_debit.points_used
+            %td
+            %td
+            %td
+          - if transaction.Credit?
+            %td= transaction.loyalty_transaction.loyalty_credit_type.underscore.titleize
+            %td
+            %td= transaction.loyalty_transaction.obtained_point
+            %td{:style=>("text-decoration:line-through" unless transaction.loyalty_transaction.point_alive?) }= transaction.loyalty_transaction.available_point
+            %td= transaction.loyalty_transaction.validity.strftime("%d-%m-%Y, %I:%M %p") 
+          
+
+  %br
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No transaction found

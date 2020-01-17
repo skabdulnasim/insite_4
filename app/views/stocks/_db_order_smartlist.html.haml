@@ -1,0 +1,33 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %th= smart_listing.sortable "#", "id"
+      %th SKU
+      %th Stock identity
+      %th Batch
+      %th Color
+      %th Size
+      %th= smart_listing.sortable "Transaction ID", "stock_transaction_id"
+      %th= smart_listing.sortable "Transaction Type", "stock_transaction_type"
+      %th= smart_listing.sortable "Stock debit", "stock_debit"
+      %th= smart_listing.sortable "Date", "created_at"
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr      
+          %td=object.id 
+          %td=object.sku.present? ? object.sku : '-'
+          %td=object.stock_identity.present? ? object.stock_identity : '-'
+          %td=object.batch_no.present? ? object.batch_no : '-'
+          %td=object.color_name.present? ? object.color_name : '-'
+          %td=object.size_name.present? ? object.size_name : '-'
+          %td=object.stock_transaction_id  
+          %td=object.stock_transaction_type  
+          %td="#{object.stock_debit} #{object.product.basic_unit}"
+          %td=object.created_at.strftime("%d %b %Y, %I:%M %p") 
+      
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  %p.warning No records!
+

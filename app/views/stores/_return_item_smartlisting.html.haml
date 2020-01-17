@@ -1,0 +1,105 @@
+- @site_title.slice! "Digital Bricks | "
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        /%th= smart_listing.sortable "ID", "id"
+        %th= smart_listing.sortable "Name", "name"
+        %th Sku
+        %th= smart_listing.sortable "Category", "category_id"
+        %th Return
+        %th Price (#{currency})
+        %th User
+        %th Device
+        %th= smart_listing.sortable "Returned at", "created_at"
+        %th Return To Stock
+        %th Print
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          /=debug object
+          %td
+            =object.product.name
+          %td= object.sku
+          %td=object.product.category.name
+          %td
+            = number_with_precision(object.quantity, :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            = object.product.basic_unit
+          %td
+            = number_to_currency(object.price.to_f, unit: '')
+          %td
+            = object.user.present? ? object.user.profile.full_name : "-" 
+          %td
+            = object.device_id.present? ? object.device_id : "-"   
+          %td
+            = object.created_at.strftime("%d-%m-%Y %I:%M %p")
+          %td
+            = object.added_to_stock  
+          %td
+            = button_tag(:print, class: "waves-effect waves-light btn print-barcodde", type: "button", data: { toggle: "true", target: "#print_modal", sku: object.sku, name: object.product.category.name, mrp:object.price, mc: "0", wt: "0", wastage: "0", site: @site_title, count: object.quantity, 'model-number'=> object.model_number, size: object.size, 'color-name'=> object.color_name })
+          
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found
+
+#print_modal.modal.fade{:role => "dialog", :tabindex => "-1"}
+  .modal-dialog{:role => "document"}
+    .modal-content
+      .modal-header
+        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+        - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+          %h4.modal-title Print Qr Code
+        - else  
+          %h4.modal-title Print Bar Code
+      .modal-body
+        #radio_by_catalog
+        .panel.panel-default
+          .panel-body
+            .col-md-6.center
+              %h5
+                /.bar-mrp
+                = @site_title
+              - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                %img{:src => "/assets/qr_code.png", :width=>"100%"}
+              - else 
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+              %br
+              .bar-sku
+            .col-md-6.center
+              %h5
+                = @site_title
+              /.bar-mrp
+              - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                %img{:src => "/assets/qr_code.png", :width=>"100%"}
+              - else 
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+              %br
+              .bar-sku    
+        #radio_by_mrp
+        .panel.panel-default
+          .panel-body
+            .col-md-6.center
+              %h2
+                .bar-mrp
+              - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                %img{:src => "/assets/qr_code.png", :width=>"100%"}
+              - else 
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+              %br
+              .bar-sku
+            .col-md-6.center
+              %h5
+                = @site_title
+              .bar-mrp
+              - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                %img{:src => "/assets/qr_code.png", :width=>"100%"}
+              - else 
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+              %br
+              .bar-sku          
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        %button.btn.btn-primary{:type => "button", :class => "print-barcode"} Print

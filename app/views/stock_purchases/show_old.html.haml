@@ -1,0 +1,435 @@
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+  });
+= render "layouts/flash"
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Stock Purchase (##{@stock_purchase.id}) items",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+- _po_produts = @stock_purchase.purchase_order.purchase_order_metum
+- total_po_amount = @stock_purchase.stocks.present? ? "#{@stock_purchase.stocks.sum(:price)}" : 0
+- business_type = @stock_purchase.purchase_order.purchase_order_metum.first.product.business_type
+- @site_title.slice! "Digital Bricks | "
+:css
+  #mySidenav a {
+    position: fixed;
+    right: -50px;
+    transition: 0.3s;
+    padding: 10px;
+    width: 100px;
+    text-decoration: none;
+    font-size: 14px;
+    color: white;
+    border-radius: 5px 0 0 5px;
+    z-index: 9999;
+  }
+
+  #mySidenav a:hover {
+    right: 0;
+  }
+  #bulk_upload {
+    top: 65%;
+    background-color: #3B0B0B;
+  }
+%input{:type=>"hidden", :id=> "po_id", :value=>"#{@stock_purchase.purchase_order_id}"}
+= form_tag(store_stock_purchase_path(@store,@stock_purchase), method: "put",multipart: true) do
+  .product-card.col-lg-4.col-xs-12.col-sm-12.padding-5
+    .card.waves-effect.waves-teal.margin-t-b-0
+      .card-content.height-150
+        %span.card-title
+          Purchase details
+        .grey-text.text-darken-1.margin-t-10
+          %strong Purchase ID:
+          = @stock_purchase.id
+          %br
+          %strong PO reference:
+          = link_to "#{@stock_purchase.purchase_order.name} (ID: #{@stock_purchase.purchase_order_id})", store_purchase_order_path(@store,@stock_purchase.purchase_order), :target=>"_blank"
+          %br
+          %strong PO sent to vendor at:
+          = "#{@stock_purchase.created_at.strftime('%d-%m-%Y, %I:%M %p')}"
+  .product-card.col-lg-4.col-xs-12.col-sm-12.padding-5
+    .card.waves-effect.waves-teal.margin-t-b-0
+      .card-content.height-150
+        %span.card-title
+          Vendor details
+        .grey-text.text-darken-1.margin-t-10
+          %strong Vendor:
+          = @stock_purchase.purchase_order.vendor.name
+          %br
+          %strong Address:
+          = @stock_purchase.purchase_order.vendor.address
+          %br
+          %strong Contact No:
+          = @stock_purchase.purchase_order.vendor.phone
+  .product-card.col-lg-4.col-xs-12.col-sm-12.padding-5
+    .card.waves-effect.waves-teal.margin-t-b-0
+      .card-content.height-150
+        %span.card-title
+          Other details
+        %span
+          = link_to "Download a sample CSV file...", '/sample_stock.csv', :action => 'download', :style => "float:right;"
+        .grey-text.text-darken-1.margin-t-10
+          %strong Status:
+          = po_status_tag(@stock_purchase.status)
+          %br
+          .col-lg-3.padding-l-r-none
+            %strong Invoice:
+          .col-lg-9.padding-l-r-none
+            - if @stock_purchase.attachment.present?
+              %a{:href=>"/uploads/attachments/#{@stock_purchase.attachment}", :target => '_blank'} Download Invoice
+            - elsif @stock_purchase.status == "2"
+              Not uploaded
+            - else
+              %input.form-control{:name => "invoice_image", :type => "file", :required => false}
+          %br
+          %strong Last updated at:
+          = "#{@stock_purchase.updated_at.strftime('%d-%m-%Y, %I:%M %p')}"
+
+  .clearfix
+  .col-lg-12.col-sm-12.padding-5
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title
+                  / Products in PO
+                  Products
+                  %small.blue-text
+                    ="Total Amount: #{currency}"
+                    - if @stock_purchase.status == "2"
+                      =total_po_amount.to_f.round
+                      - if @stock_purchase.invoice_no.present?
+                        %span.right.margin-l-15
+                          PO Invoice No: 
+                          =@stock_purchase.invoice_no
+                      - if @stock_purchase.invoice_date.present?
+                        %span.right.margin-l-15
+                          PO Invoice Date: 
+                          =@stock_purchase.invoice_date
+                      - if @stock_purchase.invoice_amount.present?
+                        %span.right.margin-l-15
+                          PO Invoice Amount: 
+                          =@stock_purchase.invoice_amount
+                      %span.right.margin-l-15
+                        PO Remarks : 
+                        =@stock_purchase.remarks
+                      - if @stock_purchase.travelling_cost.present?
+                        %span.right.margin-l-15
+                          Travelling Cost: 
+                          =@stock_purchase.travelling_cost
+                      - if @stock_purchase.discount_on_po.present?
+                        %span.right.margin-l-15
+                          Total Discount on PO: 
+                          =@stock_purchase.discount_on_po
+                    - else
+                      %span.po_total_amount=total_po_amount.to_f.round
+                      %input.po_total_input{:type=>"hidden", :value=>"#{total_po_amount}"}
+                      %span
+                        = select_tag :payment_mode, options_for_select({"Cash"=>"cash","Card"=>"card","Cheque"=>"cheque"}), :prompt => "Payment Mode", class: "payment-select width-130-px"
+                        =text_field_tag 'paid_amount', nil, placeholder: 'Enter paid amount...', class: "payment-input width-100-px"
+                        =text_field_tag 'details', nil, placeholder: 'Enter cheque no...', class: "payment-input payment-details width-100-px"
+                      %span  
+                        =text_field_tag 'remarks', nil, placeholder: 'Enter PO remarks...', class: "payment-input panel-red width-100-px"
+                      %span  
+                        =text_field_tag 'invoice_no', nil, placeholder: 'Enter Invoice no...', class: "payment-input width-100-px"
+                      %span 
+                        =text_field_tag 'invoice_date', nil, placeholder: 'Enter Invoice date...', class: "payment-input datepick width-100-px"
+                      %span 
+                        =text_field_tag 'invoice_amount', nil, placeholder: 'Enter Invoice amount...', class: "payment-input width-130-px allow-numeric-only"
+                      - if AppConfiguration.get_config_value('smart_receive') == 'enabled'
+                        %span 
+                          =text_field_tag 'travelling_cost', nil, placeholder: 'Travelling cost...', class: "payment-input width-100-px allow-numeric-only landing_price_calculation"
+                        %span 
+                          =text_field_tag 'discount_on_po', nil, placeholder: 'Total discount...', class: "payment-input width-100-px allow-numeric-only landing_price_calculation" 
+
+              - if @stock_purchase.status == "1" || @stock_purchase.status == "3"
+                .form-group.filter.input-append{:style=>"width: 20%;margin-top: 15px;margin-right:10px;"}
+                  .input-group
+                    %input.form-control#search_by_sku_po{:placeholder => "Search by sku...", :type => "text"}
+                      %span.input-group-btn
+                        %button.btn.btn-primary#search_by_sku_po_btn
+                          %span.glyphicon.glyphicon-search
+
+                  - if @stock_purchase.status == "2" && business_type != "by_catalog"
+                    -# %a.m-btn.blue.float-r.font-14.waves-effect.waves-light{:href=>"#"} Print Barcodes
+              .data-table-header__actions
+                - if @stock_purchase.status == "1" || @stock_purchase.status == "3"
+                  %button.m-btn.green.width-100.send_now_order#po_receive_add_to_stock{:type => "submit"}
+                    Add to stock
+                    %i.mdi-content-send.right
+            %table.data-table
+              - if business_type == "by_catalog"
+                = render "by_catalog", :stock_purchase => @stock_purchase, :business_type => business_type
+              - else
+                = render "by_mrp_and_weight", :stock_purchase => @stock_purchase, :business_type => business_type
+              - if @stock_purchase.status == "2" && business_type != "by_catalog"
+                %table.data-table
+                  %thead
+                    %tr.data-table__selectable-row
+                      %th Product
+                      %th Details
+                  %tbody
+                  - @stock_purchase.purchase_order.purchase_order_metum.each do |object|
+                    - _stock = @stock_purchase.stocks.get_product(object.product_id)
+                    - is_base_unit = object.product_unit.present? ? false : true
+                    - _unit_name = object.product_unit.present? ? object.product_unit.short_name : object.product.basic_unit
+                    - if _stock.present?
+                      %tr.data-table__selectable-row.data-table__selectable-row--is-selected
+                        %td
+                          %label.font-sz-8="#{object.product.name} (#{object.product.sell_type.humanize})"
+                        %td
+                          %table.table
+                            %thead
+                              %tr
+                                %th{:colspan=>3}
+                                  ="Item Quantity in PO : #{object.product_amount} #{object.product.basic_unit}"
+                                  =" | Received: #{_stock.count} #{object.product.basic_unit}"
+                            %tbody
+                              %tr
+                                %td Quantity
+                                %td SKU
+                                %td MRP (in #{currency})
+                                %td Weight
+                                %td Making Cost
+                                %td Wastage
+                                %td Print
+                              - _stock.each do |rpo|
+                                %tr
+                                  %td
+                                    = rpo.stock_credit
+                                    - if business_type == "by_bulk_weight"
+                                      = show_unit(rpo.stock_defination.received_product_unit)
+                                    - else
+                                      = object.product.basic_unit
+                                  %td= rpo.sku
+                                  %td
+                                    %b=object.product.business_type == "by_mrp" ? "#{rpo.stock_defination.sell_price}" : "-"
+                                  %td=rpo.stock_defination.weight.present? ? "#{rpo.stock_defination.weight} #{show_unit(rpo.stock_defination.received_product_unit)}" : "-"
+                                  %td=rpo.stock_defination.making_cost.present? ? rpo.stock_defination.making_cost : "-"
+                                  %td=rpo.stock_defination.wastage.present? ? rpo.stock_defination.wastage : "-"
+                                  - if business_type == "by_bulk_weight"
+                                    %td
+                                      = button_tag(:print, class: "waves-effect waves-light btn print-barcodde", type: "button", data: { toggle: "true", target: "#print_modal", sku: rpo.sku, name: object.product.category.name, mrp: rpo.stock_defination.sell_price, mc: rpo.stock_defination.weight, wt: rpo.stock_defination.making_cost, wastage: rpo.stock_defination.wastage, site: @site_title, count: 1.0, "itemname"=>rpo.product.name })
+                                  - else
+                                    %td
+                                      = button_tag(:print, class: "waves-effect waves-light btn print-barcodde", type: "button", data: { toggle: "true", target: "#print_modal", sku: rpo.sku, name: object.product.category.name, mrp: rpo.stock_defination.sell_price, mc: rpo.stock_defination.weight, wt: rpo.stock_defination.making_cost, wastage: rpo.stock_defination.wastage, site: @site_title, count: rpo.stock_credit, "itemname"=>rpo.product.name })
+              - if @stock_purchase.status == "1" && business_type == "by_catalog"
+                #mySidenav.sidenav
+                  %a#bulk_upload{"data-target" => "#showBulkStockPurchaseModal", "data-toggle" => "modal"} 
+                    Bulk Upload
+                    .clearfix                     
+              - elsif @stock_purchase.status != "2" && business_type != "by_catalog"
+                .col-md-2
+                .col-md-8
+                  %table.data-table
+                    %thead
+                      %br
+                      .form-group
+                        %label.control-label Bulk Upload
+                      .form-group
+                        %label.col-sm-4.control-label Choose file
+                        .col-sm-8
+                          %input{:name => "csv_file", :type => "file"}
+                          %input{:type=>"hidden", :name=> "id", :value=>"#{@stock_purchase.id}"}
+                          %input{:type=>"hidden", :name=> "stock_transaction_id", :value=>"#{@stock_purchase.id}"}
+                          %input{:type=>"hidden", :name=> "stock_transaction_type", :value=>"stock_purchase"}
+                          %input{:type=>"hidden", :name=> "store_id", :value=>"#{@stock_purchase.store_id}"}
+                          %input{:type=>"hidden", :name=> "po_all_pro_count", :value=>"#{_po_produts.count}"}
+                          %input{:type=>"hidden", :name=> "received_count", :value=>"#{@received_count}"}
+                      .clearfix
+                    %tbody
+                      .form-group
+                        %h5
+                          %b Sample image for BY_MRP products
+                        %img{:src => "/assets/by_mrp_new.png", :width=>"100%"}
+                      .form-group
+                        %h5
+                          %b Sample for BY_WEIGHT products
+                        %img{:src => "/assets/by_weight_new.png", :width=>"100%"}
+                      .form-group
+                        %h5
+                          %b Sample for BY_TRAY_WEIGHT products
+                        %img{:src => "/assets/by_tray.png", :width=>"100%"}
+                      %b In above sample images  possible values of product_unit_ids are given below
+                      %table.table.table-bordered.font-sz-11
+                        %thead
+                          %tr
+                            %th ID
+                            %th Name
+                            %th Multiplier
+                            %th Basic inventory unit
+                        %tbody
+                          - @product_units.each do |product_unit|
+                            %tr
+                              %td=product_unit.id
+                              %td= "1 #{product_unit.name}( #{product_unit.short_name}) ="
+                              %td= "#{product_unit.multiplier} X "
+                              %td= "1 #{product_unit.basic_inventory_unit}"
+                .col-md-2
+              / == "2" || "3"
+              - if @stock_purchase.status != "1" && business_type == "by_catalog" &&AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+                %table.data-table 
+                  %thead
+                    %tr.data-table__selectable-row
+                      %th Product
+                      %th Details
+                      %th
+                        %input.parent-checkbox-toggle.filled-in.padding-5{:type=>"checkbox",:id=>"parent_check_box"}
+                        %label{:for=>"parent_check_box"}
+                          Check here for printing all barcodes
+                        
+                        = button_tag("Bulk Print", class: "float-r m-btn green", id: "bulk_print_btn")
+                  %tbody
+                  - @stock_purchase.purchase_order.purchase_order_metum.each do |object|
+                    - _stock = @stock_purchase.stocks.get_product(object.product_id)
+                    - is_base_unit = object.product_unit.present? ? false : true
+                    - _unit_name = object.product_unit.present? ? object.product_unit.short_name : object.product.basic_unit
+                    / - sell_price = menu_price(current_user.unit_id,object.product_id)
+                    - if _stock.present?
+                      %tr.data-table__selectable-row.data-table__selectable-row--is-selected
+                        %td
+                          %label.font-sz-8="#{object.product.name} (#{object.product.sell_type.humanize})"
+                        %td{:colspan=>2}
+                          %table.table
+                            %thead
+                              %tr
+                                %th{:colspan=>3}
+                                  ="Item Quantity in PO : #{object.product_amount} #{object.product.basic_unit}"
+                                  / =" | Received: #{_stock.count} #{object.product.basic_unit}"
+                                  =" | Received: #{_stock.sum(:stock_credit)} #{object.product.basic_unit}"
+                            %tbody
+                              %tr
+                                %td
+                                %td Model No
+                                %td Batch No
+                                %td Size
+                                %td Color
+                                %td Quantity
+                                %td SKU
+                                %td 
+                                  Sale Price
+                                  ="(in #{currency})"
+                                  %br
+                                %td MRP (in #{currency})
+                                %td Print
+                              - _stock.each do |rpo|
+                                - _batch_no = rpo.batch_no.present? ? rpo.batch_no : '-'
+                                %tr
+                                  %td
+                                    = check_box_tag "selected_items[]", "#{rpo.id}", false, :class=>"child-checkbox filled-in bulk_print_checkbox",:id=>"bulk_print_checkbox_#{rpo.id}", "data-rpo" => rpo.id
+                                    %label.font-sz-11.padding-l-20{:for=>"bulk_print_checkbox_#{rpo.id}"}
+                                  %td
+                                    = rpo.model_number.present? ? rpo.model_number : '-'
+                                  %td
+                                    = rpo.batch_no.present? ? rpo.batch_no : '-'  
+                                  %td
+                                    = rpo.size_name.present? ? rpo.size_name : '-'
+                                  %td
+                                    = rpo.color_name.present? ? rpo.color_name : '-'
+                                  %td
+                                    = rpo.stock_credit
+                                    = object.product.basic_unit
+                                  %td= rpo.sku
+                                  %td
+                                    - _mfg_date = rpo.mfg_date.present? ? rpo.mfg_date.strftime("%d-%m-%Y") : '-'
+                                    %b= rpo.stock_price.sell_price_with_tax.present? ? rpo.stock_price.sell_price_with_tax : '-'
+                                    / %b= rpo.lot.sell_price_without_tax
+                                  %td
+                                    %b= rpo.stock_price.mrp
+                                  %td
+                                    - _color_class = rpo.is_barcode_printed == 1 ? 'green' : ''
+                                    = button_tag(:print, class: "waves-effect waves-light btn print-barcodde #{_color_class}", id: "print_btn_#{rpo.id}", type: "button", data: { toggle: "true", target: "#print_modal", sku: rpo.sku, name: object.product.category.name, mrp:rpo.stock_price.mrp, mc: "0", wt: "0", wastage: "0", site: @site_title, count: rpo.stock_credit, 'model-number'=> rpo.model_number, size: rpo.size_name, 'color-name'=> rpo.color_name, 'created-at'=>rpo.created_at.strftime("%d-%m-%Y"),'mfg-date'=>_mfg_date,"batch-no" => _batch_no, "itemname"=>rpo.product.name, "rpo"=>rpo.id })
+
+#print_modal.modal.fade{:role => "dialog", :tabindex => "-1"}
+  .modal-dialog{:role => "document"}
+    .modal-content
+      .modal-header
+        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+        - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+          %h4.modal-title Print Qr Code
+        - else  
+          %h4.modal-title Print Bar Code
+      .modal-body
+        - if business_type == "by_catalog"      
+          #radio_by_catalog.float-l
+          .float-l.margin-l-15.margin-r-10.margin-t-5 Enter count of printing : 
+          .form-group.filter.input-append
+            .input-group
+              %input.form-control.allow-numeric-only#print_count{:placeholder => "Enter count of printing...", :type => "text", :style=>"width:200px;"}
+          .panel.panel-default
+            .panel-body
+              .col-md-6.center
+                %h5
+                  /.bar-mrp
+                  = @site_title
+                - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                  %img{:src => "/assets/qr_code.png", :width=>"100%"}
+                - else 
+                  %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+                %br
+                .bar-sku
+              .col-md-6.center
+                %h5
+                  = @site_title
+                /.bar-mrp
+                - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                  %img{:src => "/assets/qr_code.png", :width=>"100%"}
+                - else 
+                  %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+                %br
+                .bar-sku    
+        - else
+          #radio_by_weight
+          .panel.panel-default
+            .panel-body
+              .col-md-6.center
+                %h3
+                  .bar-weight
+                .bar-making-cost
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+                %br
+                .bar-sku
+              .col-md-6.center
+                %h3
+                  = @site_title
+                .bar-title
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+                %br
+                .bar-sku
+          #radio_by_mrp
+          .panel.panel-default
+            .panel-body
+              .col-md-6.center
+                %h2
+                  .bar-mrp
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+                %br
+                .bar-sku
+              .col-md-6.center
+                %h5
+                  = @site_title
+                .bar-mrp
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+                %br
+                .bar-sku          
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        %button.btn.btn-primary{:type => "button", :class => "print-barcode"} Print
+
+= render "bulk_stock_purchase_form"        
+
+
+:javascript
+  $(function () {
+    $('.datetimepicker1').datetimepicker({
+      pickTime: false,
+    });
+  });
+  $(".tax-inputs").hide();

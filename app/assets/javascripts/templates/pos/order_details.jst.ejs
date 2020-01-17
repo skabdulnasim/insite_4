@@ -1,0 +1,72 @@
+<div style="border: 1px solid #E8E8E8; padding: 8px 10px;">
+  <div style="border-bottom: 1px solid #E5E5E5;  padding:8px 0px; color:#6B6B6B;">
+    <span>
+      ORDER ID. <b><%= bill_response.orders[0].id %></b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      BILL ID. <b><%= bill_response.id %></b>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+      <span class="label label-warning"><%= bill_response.status %></span>
+    </span>
+    <span class="float-r"><%= bill_response.orders[0].created_at %></span>
+  </div>
+  <table class="table">
+    <tbody>
+      <% for(var i=0; i < order_data.order_details.length; i++) { %>
+        <tr>
+          <td>
+            <h4 style="font-weight: 400;font-size: 17px;"><%= order_data.order_details[i].menu_product.product.name %></h4>
+            <small style="color:#6B6B6B;">QTY: <%= order_data.order_details[i].quantity %></small>
+          </td>
+          <% for(var j=0; j< cookie_data.length; j++) {%>
+            <% if(order_data.order_details[i].menu_product_id == cookie_data[j].menu_product_id) {%>
+              <td style="text-align:right; ">
+                <span class="float-r"><small><%= currency %></small> <%= cookie_data[j].unit_subtotal %></span> <br>
+                <span class="label label-success float-r"><%= order_data.order_details[i].status %></span>
+              </td>
+            <% } %>
+          <% } %>
+        </tr>
+      <% } %>     
+      <tr>
+         <td>Subtotal</td>
+         <td><span class="float-r"><small><%= currency %> </small><%= bill_response.bill_amount %></span></td>
+      </tr> 
+      <tr>
+         <td>Total tax</td>
+         <td><span class="float-r"><small><%= currency %> </small><%= bill_response.tax_amount %></span></td>
+      </tr>        
+      <tr>
+         <td><b>Order Total</b></td>
+         <td><span class="float-r"><small><%= currency %> </small><b><%= bill_response.grand_total %></b></span></td>
+      </tr>      
+      <tr>
+        <td colspan="2">
+          <h6 style="color:#6B6B6B;"><b>PAYMENT DETAILS</b></h6>
+          <% if (deliverable_type == "address" || deliverable_type == "customer" ) { %>
+            <p><%= currency %> <%= bill_response.grand_total %> to be collected at delivery.</p>
+          <% } else{ %>
+            <p>Pay through: Cash / Card</p>
+          <% } %>
+        </td>
+      </tr>   
+      <tr>
+        <td colspan="2">
+          <h6 style="color:#6B6B6B;"><b>DELIVERY DETAILS</b></h6>
+          <% if(order_data.deliverable_type == "address") { %>
+            <p>
+              <%= order_data.deliverable.receiver_first_name %>
+              <%= order_data.deliverable.receiver_last_name %>,
+              <%= order_data.deliverable.delivery_address %>,
+              <%= order_data.deliverable.landmark %>
+              <%= order_data.deliverable.locality %> <br>
+              <%= order_data.deliverable.city %> -
+              <%= order_data.deliverable.pincode %>,
+              <%= order_data.deliverable.state %> <br>
+              Contact: <%= order_data.deliverable.contact_no %>
+            </p>
+          <% } else{%>
+            Deliverable details
+          <% }%>
+        </td>
+      </tr>            
+    </tbody>
+  </table>
+</div>

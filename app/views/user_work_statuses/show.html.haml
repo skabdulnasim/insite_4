@@ -1,0 +1,24 @@
+%p#notice= notice
+
+%p
+  %b User:
+  = @user_work_status.user_id
+%p
+  %b Work status:
+  = @user_work_status.work_status
+%p
+  %b Remarks:
+  = @user_work_status.remarks
+%p
+  %b Latitude:
+  = @user_work_status.latitude
+%p
+  %b Longitude:
+  = @user_work_status.longitude
+%p
+  %b Recorded at:
+  = @user_work_status.recorded_at
+
+= link_to 'Edit', edit_user_work_status_path(@user_work_status)
+\|
+= link_to 'Back', user_work_statuses_path

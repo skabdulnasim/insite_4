@@ -1,0 +1,291 @@
+%script{:src => "//maps.google.com/maps/api/js?key=AIzaSyDz0LX0g0LOQAJDit-o4LPGmLLzYHJ07CE", :type => "text/javascript"}
+%script{:src => "//cdn.rawgit.com/mahnunchik/markerclustererplus/master/dist/markerclusterer.min.js", :type => "text/javascript"}   
+%script{:src => "//cdn.rawgit.com/printercu/google-maps-utility-library-v3-read-only/master/infobox/src/infobox_packed.js", :type => "text/javascript"}
+
+%script{:src => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.js"}
+%link{:href => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.css", :rel => "stylesheet"}/
+/ - manual_load_javascript "templates/sales_persons/quick_details"
+- manual_load_javascript "sale_person_monthly_allocation.js"
+
+:css 
+  .fc-more-popover{
+   overflow-y:scroll;
+   overflow-x:scroll;
+   max-height : 200px;
+  }
+  .fc-widget-header{
+    background-color:orange;
+  }
+  .fc-header{
+    background-color:orange;
+  }
+  .fc-day-grid-event{
+    margin-bottom:7px;
+    height:25px;
+  }
+  .ul_tags {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .map_res_save_btn{
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: normal;
+    text-align: center;
+    vertical-align: middle;
+    background-image: none;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.428571429;
+    border-radius: 4px;
+    -moz-user-select: none;
+  }
+
+  .ul_tags .li_tag {
+    border: 1px solid #ddd;
+    margin-top: 0px; /* Prevent double borders */
+    background-color: #f6f6f6;
+    padding: 10px 0px 10px 0px;
+    text-decoration: none;
+    font-size: 12px;
+    color: black;
+    display: block;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  .ul_tags .li_tag:hover {
+    background-color: #eee;
+  }
+
+  .close {
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    right: 0%;
+    padding: 12px 16px;
+    transform: translate(0%, -50%);
+  }
+
+  .close:hover {background: #bbb;}
+
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });           
+  });
+
+  function validation_map_allocation()
+  {
+    var items = document.getElementsByName('selected_respurces[]');
+    if(items.length==0 || items.length==undefined){
+      Materialize.toast("Please add at least one resource.", 5000, 'rounded red');
+      return false;     
+    }
+  }
+
+= render "layouts/flash"  
+.preloader
+%ul.tabs.z-depth-1.width-100
+  %li.tab
+    %a{:href => "#map_view"} Map View
+  %li.tab
+    %a.active{:href => "#index_view"} Index View
+#map_view{:style=> "width: 100%;"}
+  #map.col-sm-9{:style=>" height: 600px;"}
+  .col-sm-3.padding-10.white.border-radious-2{:style=>"margin-top:1px;"}
+    %img{:src=>"/assets/icons/ic_marker_DC_store.svg","width"=>"25px"}
+    DC Store
+    %br
+    %img.margin-t-5{:src=>"/assets/icons/ic_marker_subStore.svg","width"=>"25px"}
+    Sub Store
+    %br
+    %img.margin-t-5{:src=>"/assets/icons/ic_marker_manager.svg","width"=>"25px"}
+    Manager
+    %br
+    %img.margin-t-5{:src=>"/assets/icons/ic_marker_salesboy.svg","width"=>"25px"}
+    Sales Person
+    #map_allocation{:style=>"margin-top:10px; display:none;" }
+      = form_tag(allot_resource_map_sales_persons_path, method: "post", :onSubmit => "return validation_map_allocation()", :class => 'form-horizontal') do
+        .panel.panel-primary
+          .panel-heading
+            #allocat_to_name
+            = hidden_field_tag(:allocat_to,"", :id=>"allocat_to",required: "true")
+          .panel-body
+            .a_items
+              %ul.ul_tags{:id=>"allocate_items"}
+            .form-group{:style=>"padding: 0px 10px 0px 10px;"}
+              = text_field_tag(:allocation_date, "#{Date.today.to_s}", class: 'form-control datepick', required: 'true',placeholder: "Allocation Date")
+            .form-group{:style=>"padding: 0px 10px 0px 10px; float:right;"}        
+              %input.m-btn.red.large.close_btn{:name => "close_btn", :type => "button", :value => "Close", "data-hide" => "#map_allocation"}
+              %input.m-btn.blue.large.map_res_save_btn{:name => "save_btn", :type => "submit", :value => "Save"}
+              / = submit_tag('Save', :class => 'map_res_save_btn btn-success')
+      
+  / #marker_details.padding-10.white.border-radious-2{:style=>"position:absolute;top:168px;right:33px;z-index:1; width:250px;"}
+  /   %img{:src=>"/assets/icons/ic_marker_DC_store.svg","width"=>"25px"}
+  /   DC Store
+  /   %br
+  /   %img.margin-t-5{:src=>"/assets/icons/ic_marker_subStore.svg","width"=>"25px"}
+  /   Sub Store
+  /   %br
+  /   %img.margin-t-5{:src=>"/assets/icons/ic_marker_manager.svg","width"=>"25px"}
+  /   Manager
+  /   %br
+  /   %img.margin-t-5{:src=>"/assets/icons/ic_marker_salesboy.svg","width"=>"25px"}
+  /   Sales Person
+  /   #map_allocation{:style=>"margin-top:10px;"}
+  / #map{:style=>"width: 100%; height: 600px;"}
+#index_view
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container
+          .col-lg-9
+            .row{:style=>'position:absolute;background: #555;z-index:1;width: 133%; height:60px;'}
+              .col-lg-6
+                .margin-t-15
+                  %span.fs-title.text_white.margin-l-15 Sale Persons
+              .col-lg-6
+                = smart_listing_controls_for(:user_list, {class: "text-left"}) do
+                  .col-lg-3
+                    .form-group.filter.input-append
+                      .input-group
+                        %input.form-control.search{:placeholder => "Search Executive...", :type => "text", :name=> "sale_person_name", :style=>"width:250px; margin-top:15px;"}
+                          %span.input-group-btn
+                            %button.btn.btn-primary.disabled{:type => "submit", :style=>"margin-top:15px;" }
+                              %span.glyphicon.glyphicon-search 
+          = smart_listing_render :user_list
+
+
+#showCalendarModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "Bulkallocation", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog{:style => "width:1200px;"}
+    .modal-content
+      .modal-header.modal-header-calendar
+        %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+        %h3#myModalLabel{:style=>"color:#FACFC6;"} Resource Allocation
+        %span{:style=>"font-size:20px;color:white;"}
+          %i.fa.fa-user#user_name
+            Sale Person name goes here
+        %span{:style=>"float:right; color:black;"}
+          %button.btn.orange#clearAllocations{"data-toggle"=>"modal","data-target"=>"#removeAllByDate"}
+            %i.fa.fa-minus-circle
+              Clear Allocations
+      .modal-body
+        .row
+          .col-md-10
+            #calendar
+          .col-md-2
+            - if module_enabled? 'bit_wise_resource_allocation'
+              = smart_listing_render :bits_list
+            -else
+              = smart_listing_controls_for(:resource_list, {class: "text-left"}) do
+                .form-group.filter.input-append
+                  .input-group
+                    %input.form-control.search{:placeholder => "Search Resource...", :type => "text", :name=> "resource_name", :style=>"width:140px; margin-top:30px;"}
+                      %span.input-group-btn
+                        %button.btn.btn-primary.disabled{:type => "submit", :style=>"margin-top:30px;" }
+                          %span.glyphicon.glyphicon-search 
+              = smart_listing_render :resource_list
+
+      .modal-footer
+        %button.btn.red{"aria-hidden" => "true", "data-dismiss" => "modal"} Close
+
+#recursionModal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header.modal-header-info 
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+          %span.sr-only close
+        %h4#modalTitle.modal-title{:style=>"text-align:center;"} Recursive Allocation
+      #modalBody.modal-body
+        %p Please Select Recursion Rule
+        %select.form-control#recursionRule
+          %option{"data-id"=>"1"} Daily
+          %option{"data-id"=>"2"} Every Alternative Day
+          %option{"data-id"=>"3"} Weekly
+          %option{"data-id"=>"4"} Every Alternative week
+          %option{"data-id"=>"5"} Monthly
+          %option{"data-id"=>"6"} Yearly
+        %br
+        %p Enter Recursion Duration
+        %input.form-control.validate#duration{:type => "number"}/
+        %br
+        %button.m-btn.green.width-30.waves-effect.waves-light#applyRecursion{:type => "submit" ,:style=>"margin-left:200px;", "data-dismiss" => "modal"  }
+          Apply Recursion
+        %br
+        .com-lg-6#resourceId{:hidden => ""}
+        .col-lg-6#sale_person_Id{:hidden => ""}
+        .col-lg-6#date{:hidden => ""}
+
+#DateRangeRemoveModal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header.modal-header-info 
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+          %span.sr-only close
+        %h4#modalTitle.modal-title{:style=>"text-align:center;"} Delete Allocations(By Resource/Date)
+      #modalBody.modal-body
+        %span
+          %p From Date
+          %input.form-control.validate.datepick#from_date{:type => "text"}/  
+        %span
+
+          %p To Date
+          %input.form-control.validate.datepick#to_date{:type => "text"}/
+          %p{:style=>"font-size:12px;color:red;margin-bottom:10px;"}This field is not requred if you want to remove allocation for currently selected date only
+        %br
+        %button.m-btn.green.width-30.waves-effect.waves-light#applyRemove{:type => "submit" ,:style=>"margin-left:200px;", "data-dismiss" => "modal"  }
+          Ok
+        %br
+        .com-lg-6#allocationId{:hidden => ""}
+
+#removeAllByDate.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header.modal-header-info 
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+          %span.sr-only close
+        %h4#modalTitle.modal-title{:style=>"text-align:center;"} Delete Allocations By Date
+      #modalBody.modal-body
+        %span
+          %p From Date
+          %input.form-control.validate.datepick#start_date{:type => "text"}/  
+        %span
+          %p To Date
+          %input.form-control.validate.datepick#end_date{:type => "text"}/
+        %br
+        %button.m-btn.green.width-30.waves-effect.waves-light#RemoveByDate{:type => "submit" ,:style=>"margin-left:200px;", "data-dismiss" => "modal"  }
+          Ok
+        %br
+
+#showBulkSalesPersonModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "Bulkallocation", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Bulk Allocation
+      .modal-body
+        = form_tag(import_sales_persons_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          .form-group
+            %label.col-sm-4.control-label Choose file
+            .col-sm-8
+              %input{:name => "file", :type => "file", :required => 'required'}
+          .modal-footer
+            %a{:style=>"margin-right:30px",:href=>"/sales_persons/sample_csv.csv"} 
+              %i.fa.fa-download
+                Download sample CSV for Bulk Allocation  
+            %button.m-btn.red{"data-dismiss" => "modal", :type => "button"} Close          
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Upload file", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Your all previous category data will be deleted. Are you sure?')) }}
+
+.loader

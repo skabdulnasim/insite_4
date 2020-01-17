@@ -1,0 +1,45 @@
+= render "layouts/flash"
+.col-sm-3.padding-5
+  = render :partial => 'material_product_filter'
+.col-sm-6.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Available Products  
+            %button.m-btn.blue.float-r.select-unit-products.waves-effect.waves-light{:type => "button"}
+              %i.mdi-content-add.left
+              Select Products   
+          = smart_listing_render :products
+.col-sm-3.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Overview
+          .min-height-405
+            = form_tag(save_products_products_path, method: "post",multipart: true) do
+              .padding-10
+                %button.m-btn.green.float-r.waves-effect.waves-light.width-100{:type => "submit"}
+                  Save products
+              .clearfix    
+              %br
+              .filter-title.margin-t-b-0
+                %i.mdi-action-label.left
+                INPUT TAX GROUP
+              .padding-10
+                = select_tag :tax_group_id, options_for_select(@tax_groups.map{ |tg| ["#{tg.name} (#{tg.total_amnt}%)", tg.id] }), :class => 'form-control',:required => true
+                
+              .filter-title.margin-t-b-0
+                %i.mdi-action-label.left
+                SELECTED PRODUCTS                  
+              %table.table          
+                %tbody.unit-product-list.m-input
+                  %tr.data-table__selectable-row.no-item-selected
+                    %td.alert.alert-warning{:colspan=>2} No products selected yet      
+.clearfix          
+  

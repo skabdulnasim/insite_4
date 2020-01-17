@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @tax_class.name
+
+= link_to 'Edit', edit_tax_class_path(@tax_class)
+\|
+= link_to 'Back', tax_classes_path

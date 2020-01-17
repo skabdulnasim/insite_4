@@ -1,0 +1,124 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });    
+  });
+
+- links_arr = [{:title=>"Sales Report",:url=>sale_reports_path,:active_class=>""},{:title=>"Sales Report By Date Range",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+%ul.collapsible{"data-collapsible" => "accordion"}
+  %li
+    .collapsible-header
+      %b Column preferences
+    .collapsible-body
+      %p.col-lg-12
+        = form_tag(save_report_preferences_sale_reports_path, method: "post", :class=>"padding-20") do
+          - get_by_date_range_sales_preferences(current_user.unit_id,'nc_report_by_date_range')
+          = hidden_field_tag :report_key, "nc_report_by_date_range"
+          = hidden_field_tag :unit_id, @unit_id          
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+            Save preferences
+      .clearfix
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title=" Sales between #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            %a.m-btn.indigo.margin-l-5{:href=>"/sale_reports/by_date_range.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+        %table.data-table
+          - @pref = @pref.present? ? @pref : ["date","total_billed_amount","total_discount","total_unpaid_amount","total_settled_amount","cash","card","total_tax"]
+
+          %thead
+            %tr.data-table__selectable-row
+              - if @pref.include?('date')
+                %th Date
+              - if @pref.include?('total_billed_amount')
+                %th 
+                  Total 
+                  %br
+                  Billed Amount
+              - if @pref.include?('total_discount')
+                %th 
+                  Total 
+                  %br
+                  Discount
+              - if @pref.include?('total_nc')
+                %th 
+                  Total 
+                  %br
+                  NC
+              - if @pref.include?('total_nc')
+                %th 
+                  Total 
+                  %br
+                  Void
+              - if @pref.include?('total_unpaid_amount')
+                %th 
+                  Total 
+                  %br
+                  Unpaid Amount
+              - if @pref.include?('total_settled_amount')
+                %th 
+                  Total 
+                  %br 
+                  Settled Amount
+              - if @pref.include?('cash')
+                %th="Cash" 
+              - if @pref.include?('card')
+                %th="Card"
+              - Bill.report_attributes.each do |key, attributes|
+                - if key == "tax"
+                  - attributes.each do |attribute|
+                    - if @pref.include?(attribute.parameterize)
+                      %th= attribute.humanize if @pref.include?('date')              
+              - if @pref.include?('total_tax')
+                %th="Total Tax" 
+          %tbody
+            - @sales.each do |object|
+              - _from_datetime = object.date.to_date.beginning_of_day+@unit_detail_options[:day_closing_time].to_i.hours if @unit.unit_detail.present?
+              - _from_datetime ||= object.date.to_date.beginning_of_day
+              - _to_datetime = object.date.to_date.end_of_day+@unit_detail_options[:day_closing_time].to_i.hours if @unit.unit_detail.present?
+              - _to_datetime ||= object.date.to_date.end_of_day              
+              - settlement_data = get_settlement_data_by_date(@unit_id,_from_datetime,_to_datetime)
+              - nc_void = get_nc_void_data(@unit_id,_from_datetime,_to_datetime)
+              /= debug settlement_data
+              =# debug settlement_data
+              %tr.data-table__selectable-row
+                - if @pref.include?('date')
+                  %td=object.date 
+                - if @pref.include?('total_billed_amount')
+                  %td=object.total_sale 
+                - if @pref.include?('total_discount')    
+                  %td=object.total_discount 
+                - if @pref.include?('total_nc')    
+                  %td= nc_void['no_charge'] || 0
+                - if @pref.include?('total_void')    
+                  %td= nc_void['void'] || 0
+                - if @pref.include?('total_unpaid_amount')  
+                  %td=(object.total_sale.to_f - settlement_data[:total_settlement].to_f).round(1)
+                - if @pref.include?('total_settled_amount')
+                  %td=settlement_data[:total_settlement]
+                - if @pref.include?('cash') 
+                  %td=settlement_data[:cash_sale]
+                - if @pref.include?('card')                
+                  %td=settlement_data[:card_sale]
+                - Bill.report_attributes.each do |key, attributes|
+                  - if key == "tax"
+                    - attributes.each do |attribute|
+                      -if @pref.include?(attribute.parameterize)             
+                        %td= Bill.tax_summery(@unit_id,_from_datetime,_to_datetime,attribute)[object.date] 
+                - if @pref.include?('total_tax')
+                  %td=object.total_tax
+

@@ -1,0 +1,3 @@
+$('#vendor_edit_modal').closeModal()
+Materialize.toast("Vendor updated successfully.", 3000,'green')
+$("#vendortable").find(".vendor_of_<%= @vendor.id %>").html("<td><%=@vendor.name %></td><td><%=@vendor.phone %></td><td><%=@vendor.email %></td><td><%=@vendor.unit.unit_name %></td><td><%= escape_javascript link_to 'Edit', edit_vendor_path(@vendor.id),  :remote => true,:class=>'right modal-trigger edit_vendor_link' %></td>")

@@ -1,0 +1,5 @@
+<% for (var i = response.length - 1; i >= 0; i--) { %>
+  <li class="add-to-cart" data-catalog-id="<%=response[i].catalog_id%>" data-sku="<%=response[i].sku%>" data-catalog-product-id="<%=response[i].menu_product_id%>" data-product-name="<%=response[i].product_name%>" data-product-price="<%=response[i].properties.sell_price%>" data-currency=<%=currency%>>
+    <a href="#!"><%= response[i].product_name%></a>
+  </li>
+<% } %>

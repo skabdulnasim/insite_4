@@ -1,0 +1,55 @@
+/ %h1 Listing addons_groups
+
+/ %table
+/   %tr
+/     %th Title
+/     %th Unit
+/     %th
+/     %th
+/     %th
+
+/   - @addons_groups.each do |addons_group|
+/     %tr
+/       %td= addons_group.title
+/       %td= addons_group.unit_id
+/       %td= link_to 'Show', addons_group
+/       %td= link_to 'Edit', edit_addons_group_path(addons_group)
+/       %td= link_to 'Destroy', addons_group, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+/ %br
+
+/ = link_to 'New Addons group', new_addons_group_path
+
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Addons Groups
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_addons_group_path}"}
+              %i.mdi-content-add.left
+              New Addons Group
+        #accordion_addons_groups.panel-group.padding-20{:style => "clear:both;"}
+          - @addons_groups.each do |addons_group|
+            .panel.panel-default
+              .panel-heading
+                %h4.panel-title
+                  %a{"data-parent" => "#accordion_addons_groups", "data-toggle" => "collapse", :href => "#addonGroupCollapse#{addons_group.id}"}
+                    = addons_group.title
+                  .float-r
+                    %a{:href => "#{edit_addons_group_path(addons_group)}", :title => "Edit addons group"} 
+                      %i.mdi-editor-border-color
+              - _addons_group_products = addons_group.addons_group_products
+              - if _addons_group_products.present?
+                .panel-collapse.collapse{:id => "addonGroupCollapse#{addons_group.id}"}
+                  .panel-body
+                    - _addons_group_products.each do |ag_product|
+                      .panel.panel-default
+                        .panel-heading
+                          %h4.panel-title
+                            = ag_product.product.name
+                            = "- #{ag_product.ammount}#{ag_product.product_unit.short_name}"
+                            = "- #{ag_product.price} #{currency}"

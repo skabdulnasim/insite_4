@@ -1,0 +1,25 @@
+%h1 Listing store_racks
+
+%table
+  %tr
+    %th Name
+    %th Height
+    %th Width
+    %th Store
+    %th
+    %th
+    %th
+
+  - @store_racks.each do |store_rack|
+    %tr
+      %td= store_rack.name
+      %td= store_rack.height
+      %td= store_rack.width
+      %td= store_rack.store
+      %td= link_to 'Show', store_rack
+      %td= link_to 'Edit', edit_store_rack_path(store_rack)
+      %td= link_to 'Destroy', store_rack, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Store rack', new_store_rack_path

@@ -1,0 +1,27 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Stock Id", "id"
+        %th= smart_listing.sortable "SKU", "sku"
+        %th= smart_listing.sortable "Name", "name"
+        %th Enter counted stock
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.id
+          %td=object.sku
+          %td
+            =object.product.name
+            - if object.product.local_name.present?
+              %b
+                = " ( #{object.product.local_name} )"
+          %td
+            .input-group
+              %input.form-control.add-products-to-cart-onkey{"data-product-id"=>object.product.id,"data-sku"=>object.sku,"data-product-name"=>object.product.name,"data-product-unit"=>object.product.basic_unit,"data-stock-id"=>object.id, :type => "text", :class=>"quantity_#{object.sku}"}
+              .input-group-addon=object.product.basic_unit          
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

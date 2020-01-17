@@ -1,0 +1,29 @@
+<% 
+  var time = new Date().getTime(); 
+  var key = time+product_id
+%>
+<tr class='data-table__selectable-row' id='cart_item_<%=product_id%>'>
+	<td>
+		<input type="hidden" name="commission_rule[commission_rule_inputs_attributes][<%=key%>][product_id]" value="<%= product_id %>">
+		<a aria-controls="#item_collapse_<%=product_id%>" aria-expanded="false" data-parent="#accordion" data-toggle="collapse" href="#item_collapse_<%=product_id%>" role="button" class="item_collapse_<%=product_id%> font-13"><%=product_name%></a>
+	</td>
+  <td>
+    <% if(typeof(mp_commission_capping)=='undefined'){ %>
+      N/A
+    <% } else { %>
+      <%= mp_commission_capping %>
+    <% } %>
+  </td>
+  <td>
+    <input class='form-control commission-amounts owner-commission-amount-<%=product_id%>' name='commission_rule[commission_rule_inputs_attributes][<%=key%>][commission_rule_output_attributes][owner_commission_amount]' data-product-id= '<%= product_id %>' data-mp-commission-capping='<%= mp_commission_capping %>' placeholder='Enter owner amount' type='text' required>
+  </td>
+  <td>
+    <input class='form-control commission-amounts csm-commission-amount-<%=product_id%>' name='commission_rule[commission_rule_inputs_attributes][<%=key%>][commission_rule_output_attributes][csm_commission_amount]' data-product-id= '<%= product_id %>' data-mp-commission-capping='<%= mp_commission_capping %>' placeholder='Enter csm amount' type='text' required>
+    <input type="hidden" name="commission_rule[commission_rule_inputs_attributes][<%=key%>][commission_rule_output_attributes][amount_type]" class="output_amount_type" value="<%= output_amount_type %>">
+  </td>
+  <td>
+  	<a class="btn btn-xs btn-danger remove_cart_item float-r" href="#" title="Delete" data-product-id="<%= product_id %>">
+  		<i class="mdi-content-remove"></i>
+  	</a>
+  </td>
+</tr>

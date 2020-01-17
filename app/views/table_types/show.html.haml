@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Type:
+  = @table_type.type_name
+
+= link_to 'Edit', edit_table_type_path(@table_type)
+\|
+= link_to 'Back', table_types_path

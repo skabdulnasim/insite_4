@@ -1,0 +1,6 @@
+$('#vendor_edit_modal').closeModal();
+<% if @error.present? %>
+  Materialize.toast("<%= @error.message %>", 3000,'red');  
+<% else %>
+  $("#vendortable").find(".vendor_of_<%= @vendor.id %>").remove();
+<% end %>

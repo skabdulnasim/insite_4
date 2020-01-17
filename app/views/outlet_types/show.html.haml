@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @outlet_type.name
+
+= link_to 'Edit', edit_outlet_type_path(@outlet_type)
+\|
+= link_to 'Back', outlet_types_path

@@ -1,0 +1,48 @@
+<div class="main-section__content">
+  <div class="example">
+    <div class="example__content p0">
+      <div class="data-table-container">
+        <header class="data-table-header">
+          <div class="data-table-header__label">
+            <span class="fs-title">
+              Wallet Transaction 
+              <small>(Customer #<%= customer.id %>)</small>
+            </span>
+          </div>
+        </header>
+        <table class="data-table" id="accordion">
+          <thead>
+            <tr class="data-table__selectable-row">
+              <th>Amount</th>
+              <th>Purpose</th>
+              <th>Remarks </th>
+              <th>Date </th>
+            </tr>
+          </thead>
+          <tbody class="panel">
+            <% for (var i = transactions.length - 1; i >= 0; i--) { %>
+              <tr class="data-table__selectable-row">
+                <td>
+                  <% if(transactions[i].payment_type=='debit') { %>
+                    -<%= transactions[i].amount %>
+                  <% }else{ %>
+                    <%= transactions[i].amount %>
+                  <% } %>
+                </td>
+                <td>
+                  <%= transactions[i].purpose %>
+                </td>
+                <td>
+                  <%= transactions[i].remarks %>
+                </td>
+                <td>
+                  <%= formatDateTime(transactions[i].created_at) %>
+                </td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

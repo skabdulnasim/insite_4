@@ -1,0 +1,353 @@
+- manual_load_javascript "stores"
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"New stock transfer",:url=>"#!",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+= render "layouts/flash"
+:javascript
+  $(function () {
+      $('.datetimepicker1').datetimepicker({
+        format: 'YYYY-MM-DD'
+      });
+  });
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  });
+.col-lg-12.p0
+  = render 'wizard', current_step: "step_3", completed_steps: ["step_1", "step_2"]
+  - if @stock_transfer.stock_transfer_meta.first.stock_id.present?
+    .card.m0
+      .card-content.padding-10
+        = form_for @stock_transfer, url: wizard_path, :html => { :class => 'transfer_autosubmit_form', :remote => true } do |f|
+          = hidden_field_tag :store_id, @store.id
+          .col-lg-3.p0
+            %h4.strong.grey-text.text-darken-3 Transfer Details
+            %p.grey-text Set expected delivery date here (if applicable).
+            #form-autosave-message
+          .col-lg-9
+            - if @stock_transfer.errors.any?
+              #error_explanation
+                %h2= "#{pluralize(@stock_transfer.errors.count, "error")} prohibited this transfer from being saved:"
+                %ul
+                  - @stock_transfer.errors.full_messages.each do |msg|
+                    %li= msg
+            .form-group.col-lg-6
+              = f.label :from_store
+              %input.form-control{:type => "text", :value => "#{@stock_transfer.from_store.name} (#{@stock_transfer.from_store.address})", :readonly => true}
+            .form-group.col-lg-6
+              = f.label :to_store
+              %input.form-control{:type => "text", :value => "#{@stock_transfer.to_store.name} (#{@stock_transfer.to_store.address})", :readonly => true}
+            - if @stock_transfer.vehicle_id.present?
+              .form-group.col-lg-6
+                %label Delivery Vehicle
+                %input.form-control{:type => "text", :value => "#{@stock_transfer.vehicle.name} (Contact: #{@stock_transfer.vehicle.contact_no})", :readonly => true}
+            .form-group.col-lg-6
+              %label Expected Delivery Date
+              = f.text_field :expected_delivery_date, :required=> true, :class=> 'datetimepicker1 form-control autosubmit-input'
+        .clearfix
+        %hr
+        = form_for @stock_transfer do |f|
+          = f.hidden_field :status, :value => @stock_transfer.get_status_to_initiate_transfer
+          = hidden_field_tag :store_id, @store.id
+          .col-lg-12
+            - if @stock_transfer.errors.any?
+              #error_explanation
+                %h2= "#{pluralize(@stock_transfer.errors.count, "error")} prohibited this transfer from being saved:"
+                %ul
+                  - @stock_transfer.errors.full_messages.each do |msg|
+                    %li= msg
+            %table.data-table
+              %thead
+                %tr
+                  %th.col-sm-3 Item
+                  / %th Color
+                  / %th Size
+                  / %th Batch No
+                  %th.col-sm-4 Stock Identity
+                  %th 
+                    Transfer
+                    %br
+                    %small Quantity
+                  %th.col-sm-2
+                    Transfer options 
+                    %br
+                    %small (From which stock, transfer quantity will be deducted) 
+                  %th.col-sm-1 Total Cost   
+                  %th.col-sm-1
+                    Transfer Price
+                    %br
+                    %small (without tax)
+                  %th.col-sm-1 Tax group
+                  %th
+              %tbody
+                - i = 0
+                = f.fields_for :stock_transfer_meta do |builder|
+                  - current_stock = Stock.find(builder.object.stock_id).available_stock
+                  - _product = Product.find(builder.object.product_id)
+                  - _product_name = _product.package_component.present? ?  _product.product_name(_product) : _product.name
+                  - transfer_options = Stock.where(:id => builder.object.stock_id)
+                  - product_counter = builder.object.quantity_transfered
+                  /= debug transfer_options
+                  %tr
+                    %td
+                      / =builder.object.sku.present? ? "#{builder.object.product_name} - (#{builder.object.sku})" : "#{builder.object.product_name}"
+                      
+                      = "#{_product_name}"
+                      - if builder.object.product.local_name.present?
+                        = "( #{builder.object.product.local_name} ) "
+                      = "- (#{builder.object.sku})"  
+                      %br
+                      - if builder.object.should_transfer_ingredients?
+                        %small (Ingredients will be transfered)
+                    / %td= builder.object.color_name.present? ? builder.object.color_name : "-"
+                    / %td= builder.object.size_name.present? ? builder.object.size_name : "-"
+                    / %td= builder.object.batch_no.present? ? builder.object.batch_no : "-"
+                    %td= builder.object.stock_identity.present? ? builder.object.stock_identity : "-"
+                    %td
+                      = product_counter
+                      = builder.object.product_transaction_unit_id.present? ? stock_transfer_unit_name(builder.object.product_transaction_unit_id) : builder.object.product_basic_unit
+                    %td
+                      /= builder.text_field :quantity_transfered, :class=> "form-control quantity_transfered",:readonly => true
+                      /%span.input-group-addon= builder.object.product_basic_unit
+                      - _price_counter = 0
+                      - _transfer_qty = 0
+                      -if transfer_options.present?
+                        -transfer_options.each do |at|
+                          - _stock_identity = at.stock_identity.present? ? "Stock Identity ##{at.stock_identity}" : ""
+                          - if product_counter.to_f >= at.available_stock.to_f
+                            .input-group.margin-b-2{"data-placement"=>"left","data-trigger"=>"hover","data-content" => "#{at.stock_credit} added to stock on: #{at.created_at.strftime('%d %b %Y, %I:%M %p')}, by #{at.stock_transaction_type}. Total cost: #{number_to_currency(at.price, precision: 2, unit: currency, format: '%u %n')}", "data-toggle" => "popover", "data-html"=>"true", :title => "Stock details ##{at.id} <br /> #{_stock_identity}"}
+                              %span.input-group-addon.font-sz-12
+                                %small
+                                  /%input.check{:class => "check filled-in", :name => "checked_transfer#{builder.object.product_id}[]", :type => "checkbox", :value => "#{at.id}", :id => at.id, :checked=>true, :disabled=>"disabled"}
+                                  /%label{:for=> at.id}  
+                                ="Available: #{at.available_stock}"
+                              %input.numeric-only{:class => "form-control width-50",:id =>"transferid#{at.id}", :name => "quantity#{at.id}", :placeholder => "Enter stock", :type => "text", :value => at.available_stock,:readonly => true}
+                              - _transfer_qty = _transfer_qty + at.available_stock                  
+                              - _stock_price = Stock.get_stock_price(at.id,at.available_stock) 
+
+                              - if @stock_transfer.to_store.store_type != "waste_bin"
+                                - _price_counter = steps/manage_products + _stock_price
+                              - else
+                                - _price_counter = _price_counter + _stock_price
+                              - product_counter = product_counter.to_f - (at.available_stock).to_f #Reduce counter
+                          - else
+                            - if product_counter.to_f > 0
+                              .input-group.margin-b-2{"data-placement"=>"left","data-trigger"=>"hover","data-content" => "#{at.stock_credit} added to stock on: #{at.created_at.strftime('%d %b %Y, %I:%M %p')}, by #{at.stock_transaction_type}. Total cost: #{number_to_currency(at.price, precision: 2, unit: currency, format: '%u %n')}", "data-toggle" => "popover", "data-html"=>"true", :title => "Stock details ##{at.id} <br /> #{_stock_identity}"}
+                                %span.input-group-addon.font-sz-12
+                                  %small
+                                    /%input.check{:class => "check filled-in", :name => "checked_transfer#{builder.object.product_id}[]", :type => "checkbox", :value => "#{at.id}", :id => at.id, :checked=>true, :disabled=>"disabled"}  
+                                    /%label{:for=> at.id}  
+                                  ="Available: #{at.available_stock}"
+                                %input.numeric-only{:class => "form-control width-50",:id =>"transferid#{at.id}", :name => "quantity#{at.id}", :placeholder => "Enter stock", :type => "text", :value => product_counter,:readonly => true} 
+                                -if builder.object.product_transaction_unit_id.present?
+
+                                  - multiplier = get_product_multiplier( builder.object.product_transaction_unit_id)
+                                -else
+                                  - multiplier = 1
+                                - _stock_price = Stock.get_stock_price(at.id,product_counter.to_f*multiplier) 
+
+                                - _transfer_qty = _transfer_qty + product_counter.to_f
+                                - _price_counter = _price_counter + _stock_price 
+                                - product_counter = 0  
+                      - else
+                        No transfer options available for this product               
+                    %td 
+                      %input{:class => "form-control",:type => "text", :value => "#{_price_counter.round(2)}", :readonly => true}  
+                    %td
+                      - if builder.object.transferable?
+                        /= builder.text_field :price_without_tax, :value =>get_estimated_price(builder.object.product_id, @store.id, builder.object.quantity_transfered), :class => 'form-control allow-numeric-only quantity_price',:required=> true
+                        = builder.text_field :price_without_tax, :value =>_price_counter.round(2), :class => 'form-control allow-numeric-only quantity_price',:required=> true 
+                    %td
+                      - if builder.object.transferable?
+                        = builder.select :tax_group_id, options_for_select(@tax_groups.map { |e| ["#{e.name} (#{e.total_amnt}%)", "#{e.id}"] }), { prompt: "Select a tax class"}, {:class=>"form-control tax_class_list auto_populate_entity tax_serial_#{i}", "data-meta-id"=>builder.object.id, "data-counter"=>i, "data-total-count"=> @stock_transfer.stock_transfer_meta.count, "data-entity-type"=>"tax" }
+                        =# select_tag "attribute_id", options_for_select(@tax_groups.map{ |e| ["#{e.name} (#{e.total_amnt}%)", "#{e.id}"] }), prompt: "Select Tax Group", class: "form-control tax_serial_#{index} auto_populate_entity", :name => "product_tax_group_#{sp[1][:product_id]}", "data-counter"=>index, "data-total-count"=> @selected_products.count, "data-entity-type"=>"tax"
+                    %td
+                      = builder.hidden_field :_destroy ,:class=>'destroy_item'
+                      %a.remove_fields.right.grey-text{:href => "#!"}
+                        %i.material-icons.mdi-action-delete.small
+                    - i += 1
+
+          .clearfix
+          %hr
+          .wizard.vertical
+            .actions.clearfix.clearfixboth
+              %ul{"aria-label" => "Pagination", :role => "menu"}
+                %li.button_previous{"aria-disabled" => "false"}
+                  = link_to "Previous", "#{store_stock_transfer_steps_path(@store,@stock_transfer)}/manage_products"
+                %li.button_finish{"aria-hidden" => "false", :style => "display: block;"}
+                  = f.submit "Confirm & Transfer", :class=> "m-btn grey lighten-2 black-text bold-text confirm-transfer"
+                - if @stock_transfer.activity_id == 3
+                  %li.button_finish{"aria-hidden" => "false", :style => "display: block;"}
+                    %button.m-btn.blue.white-text.waves-effect.waves-light{:type=>'submit', :name=>'stock_transfer[status]', :value=>"2"}
+                      %i.material-icons.mdi-image-flash-on.left
+                      Instant Transfer
+              .clearfixboth
+  - else
+    .card.m0
+      .card-content.padding-10
+        = form_for @stock_transfer, url: wizard_path, :html => { :class => 'transfer_autosubmit_form', :remote => true } do |f|
+          = hidden_field_tag :store_id, @store.id
+          .col-lg-3.p0
+            %h4.strong.grey-text.text-darken-3 Transfer Details
+            %p.grey-text Set expected delivery date here (if applicable).
+            #form-autosave-message
+          .col-lg-9
+            - if @stock_transfer.errors.any?
+              #error_explanation
+                %h2= "#{pluralize(@stock_transfer.errors.count, "error")} prohibited this transfer from being saved:"
+                %ul
+                  - @stock_transfer.errors.full_messages.each do |msg|
+                    %li= msg
+            .form-group.col-lg-6
+              = f.label :from_store
+              %input.form-control{:type => "text", :value => "#{@stock_transfer.from_store.name} (#{@stock_transfer.from_store.address})", :readonly => true}
+            .form-group.col-lg-6
+              = f.label :to_store
+              %input.form-control{:type => "text", :value => "#{@stock_transfer.to_store.name} (#{@stock_transfer.to_store.address})", :readonly => true}
+            - if @stock_transfer.vehicle_id.present?
+              .form-group.col-lg-6
+                %label Delivery Vehicle
+                %input.form-control{:type => "text", :value => "#{@stock_transfer.vehicle.name} (Contact: #{@stock_transfer.vehicle.contact_no})", :readonly => true}
+            .form-group.col-lg-6
+              %label Expected Delivery Date
+              = f.text_field :expected_delivery_date, :required=> true, :class=> 'datetimepicker1 form-control autosubmit-input'
+        .clearfix
+        %hr
+        = form_for @stock_transfer do |f|
+          = f.hidden_field :status, :value => @stock_transfer.get_status_to_initiate_transfer
+          = hidden_field_tag :store_id, @store.id
+          .col-lg-12
+            - if @stock_transfer.errors.any?
+              #error_explanation
+                %h2= "#{pluralize(@stock_transfer.errors.count, "error")} prohibited this transfer from being saved:"
+                %ul
+                  - @stock_transfer.errors.full_messages.each do |msg|
+                    %li= msg
+            %table.data-table
+              %thead
+                %tr
+                  %th.col-sm-3 Item
+                  %th Color
+                  %th Size
+                  %th Batch No
+                  %th Transfer Quantity
+                  %th.col-sm-2
+                    Transfer options 
+                    %br
+                    %small (From which stock, transfer quantity will be deducted) 
+                  %th.col-sm-2 Total Cost   
+                  %th.col-sm-1
+                    Transfer Price
+                    %br
+                    %small (without tax)
+                  %th.col-sm-3 Tax group
+                  %th
+              %tbody
+                - i = 0
+                = f.fields_for :stock_transfer_meta do |builder|
+                  - current_stock = get_product_current_stock(@store.id, builder.object.product_id)
+                  - _product = Product.find(builder.object.product_id)
+                  - _product_name = _product.package_component.present? ?  _product.product_name(_product) : _product.name
+
+                  - if builder.object.sku.present?
+                    - transfer_options = Stock.product_debit_options(@store.id, builder.object.product_id,builder.object.sku)
+                  - else
+                    - transfer_options = Stock.product_debit_options(@store.id, builder.object.product_id,'',builder.object.size_id,builder.object.color_id)
+                  - product_counter = builder.object.quantity_transfered
+                  /= debug transfer_options
+                  %tr
+                    %td
+                      / =builder.object.sku.present? ? "#{builder.object.product_name} - (#{builder.object.sku})" : "#{builder.object.product_name}"
+                      - if builder.object.sku.present?
+                        - if builder.object.product.local_name.present?
+                          = "#{_product_name}"
+                          %b
+                            = " (#{builder.object.product.local_name}) "
+                          = "- (#{builder.object.sku})"
+                        - else
+                          = "#{_product_name} - (#{builder.object.sku})"
+                      - else
+                        = "#{_product_name}"
+                        - if builder.object.product.local_name.present?
+                          %b
+                            = "( #{builder.object.product.local_name} ) "
+                      %br
+                      - if builder.object.should_transfer_ingredients?
+                        %small (Ingredients will be transfered)
+                    %td= builder.object.color_name.present? ? builder.object.color_name : "-"
+                    %td= builder.object.size_name.present? ? builder.object.size_name : "-"
+                    %td= builder.object.batch_no.present? ? builder.object.batch_no : "-"
+                    %td
+                      = product_counter
+                      = builder.object.product_transaction_unit_id.present? ? stock_transfer_unit_name(builder.object.product_transaction_unit_id) : builder.object.product_basic_unit
+                    %td
+                      /= builder.text_field :quantity_transfered, :class=> "form-control quantity_transfered",:readonly => true
+                      /%span.input-group-addon= builder.object.product_basic_unit
+                      - _price_counter = 0
+                      - _transfer_qty = 0
+                      -if transfer_options.present?
+                        -transfer_options.each do |at|
+                          - _stock_identity = at.stock_identity.present? ? "Stock Identity ##{at.stock_identity}" : ""
+                          - if product_counter.to_f >= at.available_stock.to_f
+                            .input-group.margin-b-2{"data-placement"=>"left","data-trigger"=>"hover","data-content" => "#{at.stock_credit} added to stock on: #{at.created_at.strftime('%d %b %Y, %I:%M %p')}, by #{at.stock_transaction_type}. Total cost: #{number_to_currency(at.price, precision: 2, unit: currency, format: '%u %n')}", "data-toggle" => "popover", "data-html"=>"true", :title => "Stock details ##{at.id} <br /> #{_stock_identity}"}
+                              %span.input-group-addon.font-sz-12
+                                %small
+                                  /%input.check{:class => "check filled-in", :name => "checked_transfer#{builder.object.product_id}[]", :type => "checkbox", :value => "#{at.id}", :id => at.id, :checked=>true, :disabled=>"disabled"}
+                                  /%label{:for=> at.id}  
+                                ="Available: #{at.available_stock}"
+                              %input.numeric-only{:class => "form-control width-50",:id =>"transferid#{at.id}", :name => "quantity#{at.id}", :placeholder => "Enter stock", :type => "text", :value => at.available_stock,:readonly => true}
+                              - _transfer_qty = _transfer_qty + at.available_stock                  
+                              - _stock_price = Stock.get_stock_price(at.id,at.available_stock) 
+
+                              - _price_counter = _price_counter + _stock_price 
+                              - product_counter = product_counter.to_f - (at.available_stock).to_f #Reduce counter
+                          - else
+                            - if product_counter.to_f > 0
+                              .input-group.margin-b-2{"data-placement"=>"left","data-trigger"=>"hover","data-content" => "#{at.stock_credit} added to stock on: #{at.created_at.strftime('%d %b %Y, %I:%M %p')}, by #{at.stock_transaction_type}. Total cost: #{number_to_currency(at.price, precision: 2, unit: currency, format: '%u %n')}", "data-toggle" => "popover", "data-html"=>"true", :title => "Stock details ##{at.id} <br /> #{_stock_identity}"}
+                                %span.input-group-addon.font-sz-12
+                                  %small
+                                    /%input.check{:class => "check filled-in", :name => "checked_transfer#{builder.object.product_id}[]", :type => "checkbox", :value => "#{at.id}", :id => at.id, :checked=>true, :disabled=>"disabled"}  
+                                    /%label{:for=> at.id}  
+                                  ="Available: #{at.available_stock}"
+                                %input.numeric-only{:class => "form-control width-50",:id =>"transferid#{at.id}", :name => "quantity#{at.id}", :placeholder => "Enter stock", :type => "text", :value => product_counter,:readonly => true} 
+                                -if builder.object.product_transaction_unit_id.present?
+
+                                  - multiplier = get_product_multiplier( builder.object.product_transaction_unit_id)
+                                -else
+                                  - multiplier = 1
+                                - _stock_price = Stock.get_stock_price(at.id,product_counter.to_f*multiplier) 
+
+                                - _transfer_qty = _transfer_qty + product_counter.to_f
+                                - _price_counter = _price_counter + _stock_price 
+                                - product_counter = 0  
+                      - else
+                        No transfer options available for this product               
+                    %td 
+                      %input{:class => "form-control",:type => "text", :value => "#{_price_counter.round(2)}", :readonly => true}  
+                    %td
+                      - if builder.object.transferable?
+                        /= builder.text_field :price_without_tax, :value =>get_estimated_price(builder.object.product_id, @store.id, builder.object.quantity_transfered), :class => 'form-control allow-numeric-only quantity_price',:required=> true
+                        = builder.text_field :price_without_tax, :value =>_price_counter.round(2), :class => 'form-control allow-numeric-only quantity_price',:required=> true 
+                    %td
+                      - if builder.object.transferable?
+                        = builder.select :tax_group_id, options_for_select(@tax_groups.map { |e| ["#{e.name} (#{e.total_amnt}%)", "#{e.id}"] }), { prompt: "Select a tax class"}, {:class=>"form-control tax_class_list auto_populate_entity tax_serial_#{i}", "data-meta-id"=>builder.object.id, "data-counter"=>i, "data-total-count"=> @stock_transfer.stock_transfer_meta.count, "data-entity-type"=>"tax" }
+                        =# select_tag "attribute_id", options_for_select(@tax_groups.map{ |e| ["#{e.name} (#{e.total_amnt}%)", "#{e.id}"] }), prompt: "Select Tax Group", class: "form-control tax_serial_#{index} auto_populate_entity", :name => "product_tax_group_#{sp[1][:product_id]}", "data-counter"=>index, "data-total-count"=> @selected_products.count, "data-entity-type"=>"tax"
+                    %td
+                      = builder.hidden_field :_destroy ,:class=>'destroy_item'
+                      %a.remove_fields.right.grey-text{:href => "#!"}
+                        %i.material-icons.mdi-action-delete.small
+                    - i += 1
+
+          .clearfix
+          %hr
+          .wizard.vertical
+            .actions.clearfix.clearfixboth
+              %ul{"aria-label" => "Pagination", :role => "menu"}
+                %li.button_previous{"aria-disabled" => "false"}
+                  = link_to "Previous", "#{store_stock_transfer_steps_path(@store,@stock_transfer)}/manage_products"
+                %li.button_finish{"aria-hidden" => "false", :style => "display: block;"}
+                  = f.submit "Confirm & Transfer", :class=> "m-btn grey lighten-2 black-text bold-text confirm-transfer"
+                - if @stock_transfer.activity_id == 3
+                  %li.button_finish{"aria-hidden" => "false", :style => "display: block;"}
+                    %button.m-btn.blue.white-text.waves-effect.waves-light{:type=>'submit', :name=>'stock_transfer[status]', :value=>"2"}
+                      %i.material-icons.mdi-image-flash-on.left
+                      Instant Transfer
+              .clearfixboth

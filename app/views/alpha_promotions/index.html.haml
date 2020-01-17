@@ -1,0 +1,46 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Promotions
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_alpha_promotion_path}"}
+              %i.mdi-content-add.left
+              New Alpha promotion             
+        %table.data-table    
+          %tr
+            %th Promo code
+            %th Promo type
+            %th Promo scope
+            /%th Description
+            %th Promo user
+            %th Count
+            %th Promo value
+            %th Status
+            %th Valid from
+            %th Valid till
+
+            %th Actions
+          - @unit_promotions.each do |alpha_promotion|
+            %tr
+              %td= alpha_promotion.promo_code
+              %td= alpha_promotion.promo_type
+              %td= alpha_promotion.scope
+              /%td= alpha_promotion.description
+              %td= alpha_promotion.promo_user
+              %td= alpha_promotion.count
+              %td= alpha_promotion.promo_value
+              %td= alpha_promotion.status
+              %td= alpha_promotion.valid_from
+              %td= alpha_promotion.valid_till
+              
+              %td
+                %a.m-btn.green.m-btn-low-padding{:href => "#{alpha_promotion_path(alpha_promotion)}", :title => "View alpha promotion"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_alpha_promotion_path(alpha_promotion)}", :title => "Edit alpha promotion"} 
+                  %i.mdi-editor-border-color
+                / %a.m-btn.red.m-btn-low-padding{:href => "#{alpha_promotion_path(alpha_promotion)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete alpha promotion"}
+                /   %i.mdi-action-delete  

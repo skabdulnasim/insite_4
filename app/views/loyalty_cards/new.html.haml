@@ -1,0 +1,35 @@
+- links_arr = [{:title=>"Loyalty Cards",:url=>loyalty_cards_path,:active_class=>""},{:title=>"Add new card",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+.col-lg-4.padding-5
+  .main-section__content.padding-r-none
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Customer
+          .min-height-405  
+            
+            .form-group.margin-t-15
+              =label_tag "cl","Search Customer", :class => 'col-sm-12 float-l'
+              .padding-10
+                .input-group.customer-mobile
+                  %input.form-control#contact-number.allow-numeric-only{:placeholder => "Enter customer mobile number", :type => "text", :required=> true, :autofocus=>true}
+                    %span.input-group-btn
+                      %button.btn.btn-default.mobile-search{:type => "button" }
+                        %i.mdi-action-search
+            .ajax-loader
+            .form-horizontal.bordered-row#customer-container.m-input
+              .form-group
+                =label_tag "cl","First Name", :class => 'col-sm-12 float-l'
+                .col-sm-12.input-field
+                  = text_field_tag :customer_first_name, nil, :placeholder=>"Enter first name of customer", :class => 'form-control validate'
+              .form-group
+                =label_tag "cl","Last Name", :class => 'col-sm-12 float-l'
+                .col-sm-12.input-field
+                  = text_field_tag :customer_last_name, nil, :placeholder=>"Enter last name of customer", :class => 'form-control validate'    
+              .form-group.padding-10
+                %a.m-btn.width-100.teal.margin-t-15.register-customer
+                  register customer
+.col-lg-8.padding-5.m-input.form-horizontal.bordered-row
+  = render 'form'

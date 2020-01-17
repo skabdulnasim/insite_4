@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Title:
+  = @slot.title
+%p
+  %b Start time:
+  = @slot.start_time
+%p
+  %b End time:
+  = @slot.end_time
+%p
+  %b Duration:
+  = @slot.duration
+
+= link_to 'Edit', edit_slot_path(@slot)
+\|
+= link_to 'Back', slots_path

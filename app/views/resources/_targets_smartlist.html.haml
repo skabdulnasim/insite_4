@@ -1,0 +1,24 @@
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+        - unless smart_listing.empty?
+          %table.data-table
+            %tr
+              %th= "Product Id"
+              %th= "Product Name"
+              %th= "Tagret Qty"
+              %th= "Achieved Qty"
+              %th= "Target By"
+            - smart_listing.collection.each do |object|
+              %tr
+                %td=object.product.id
+                %td=object.product.name
+                %td="#{object.target_quantity} #{object.product.basic_unit}"
+                %td="#{get_actived_qty(object.product.id,params[:id],@month,@year)} #{object.product.basic_unit}"
+                %td=object.resource_target.user.profile.full_name
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links  
+        - else
+          .alert.alert-warning
+            No Target found          

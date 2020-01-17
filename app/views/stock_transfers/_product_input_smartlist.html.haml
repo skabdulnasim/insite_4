@@ -1,0 +1,35 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Name", "name"
+        %th Current Stock
+        %th 
+          Secondary 
+          %br
+          Stock
+        %th.col-lg-4 Quantity
+    %tbody
+      - smart_listing.collection.each do |object| 
+        %tr.data-table__selectable-row
+          %td=object.name
+          %td
+            =number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit
+            %br
+          %td=get_product_secondary_stock(@store.id, object.id)
+          %td.m-input
+            .col-lg-6.padding-l-r-none
+              %input.allow-numeric-only.margin-b-2.transfer-input{:type => "text", :class=>"transfer-quantity-#{object.id}", "data-product-id"=>object.id,"data-vendor-id"=>"#{@vendor.id if @vendor.present?}","data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit}
+            .col-lg-6.padding-l-r-none
+              = select_tag :unit_id, options_for_select(object.input_units.map{ |ut| [ut.product_unit_name, "#{ut.product_unit_id}__#{ut.product_unit_name}__#{ut.basic_unit_multiplier}"]}), { prompt: object.basic_unit, :class=>"form-control transfer-input unit-input-#{object.id}","data-vendor-id"=>"#{@vendor.id if @vendor.present?}", "data-product-id"=>object.id,"data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit}
+            / .input-group
+            /   %input.form-control.allow-numeric-only.search{:name => "filter", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id, :class=>"input_quantity quantity_#{object.id}"}
+            /     %span.input-group-btn
+            /       %button.btn.btn-primary.add-products-to-temp-cart{:type => "submit","data-product-id"=>object.id,"data-vendor-id"=>"#{@vendor.id if @vendor.present?}","data-product-name"=>object.name,"data-product-unit"=>object.basic_unit}
+            /         %i.fa.fa-plus 
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

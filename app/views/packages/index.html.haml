@@ -1,0 +1,38 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Packages 
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_package_path}"}
+              %i.mdi-content-add.left
+              Add new package              
+        %table.data-table    
+          %tr
+            %th Name
+            %th Customer
+            %th Status
+            %th Created At
+            %th Actions
+
+          - @packges.each do |object|
+            %tr
+              %td= object.name
+              - if object.customer.customer_profile.customer_name.present?    
+                %td
+                  = object.customer.customer_profile.customer_name
+              - else
+                %td
+                  = "#{object.customer.try(:customer_profile).try(:firstname)} #{object.customer.try(:customer_profile).try(:lastname)}"
+              %td= get_package_status(object.production_status)
+              %td= object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+              %td
+                %a.m-btn.green.m-btn-low-padding{:href => "#{package_path(object)}", :title => "View package"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_package_path(object)}", :title => "Edit package"} 
+                  %i.mdi-editor-border-color
+
+

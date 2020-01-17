@@ -1,0 +1,32 @@
+- unless smart_listing.empty?
+  %table.table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-md-1= smart_listing.sortable "ID", "id"
+        %th.col-md-2 Input Product
+        %th.col-md-1 Quantity
+        %th.col-md-2= smart_listing.sortable "Date", "created_at"
+        %th.col-md-4
+        %th.col-md-1
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td
+            %h5
+              =object.id  
+          %td.font-sz-12=object.simo_input_product.product.name 
+          %td.font-sz-12="#{object.simo_input_product.quantity}" " (#{object.simo_input_product.product.conjugated_unit})"
+          %td.font-sz-12=object.created_at.strftime("%d %b %Y, %I:%M %p")  
+          %td
+            %a.m-btn.green{:href=>"#{store_simo_path(@store,object)}"} 
+              %i.mdi-action-subject.left
+              Process SIMO 
+          %td
+            %a.m-btn.orange.m-btn-low-padding{:href => "#{toggle_trash_store_simo_path(@store,object)}",:method => :post, :data => { :confirm => 'Are you sure about moving this SIMO to trash?' }, :title => "Trashed SIMO"}
+              %i.mdi-action-delete
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No SIMO is in initial state

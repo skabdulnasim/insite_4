@@ -1,0 +1,16 @@
+= form_for @percentage do |f|
+  - if @percentage.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@percentage.errors.count, "error")} prohibited this percentage from being saved:"
+      %ul
+        - @percentage.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .field
+    = f.label :value
+    = f.text_field :value
+  .actions
+    = f.submit 'Save'

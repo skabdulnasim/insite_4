@@ -1,0 +1,20 @@
+.row.mt50
+	#login-page
+		.blue.col.l10.devise-shared-links
+			.text-center
+				= link_to I18n.t(:label_login), new_session_path('user'), :class => "blue-text text-lighten-5"
+		.card-panel.z-depth-4.login-panel
+			.row.mt50
+				.center
+					= image_tag "logo_insite2.png", :height => "40px"
+			.row.mt50
+				= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f|
+					.input-field
+						%i.material-icons.prefix email
+						= f.email_field :email, :id => 'icon_email', :required=>true, autofocus: true, class: "validate"
+						%label{:for => "icon_email"}=I18n.t(:label_email)
+					.input-field
+						.grey-text.font-08=I18n.t(:text_reset_password)
+						%br
+					.input-field			
+						= f.submit I18n.t(:label_reset_instruction),  class: "btn waves-effect waves-light blue right"

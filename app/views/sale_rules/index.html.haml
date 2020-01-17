@@ -1,0 +1,34 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Rule
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_sale_rule_path}"}
+              %i.mdi-content-add.left
+              New Sale Rule             
+        %table.data-table    
+          %tr
+            %th Name
+            %th Status
+            %th Type
+            %th Valid from
+            %th Valid till
+            %th Action
+          - @sale_rules.each do |sale_rule|
+            %tr
+              %td= sale_rule.name
+              %td= sale_rule.status
+              %td= sale_rule.sale_rule_type
+              %td= sale_rule.valid_from
+              %td= sale_rule.valid_till
+              %td
+                %a.m-btn.green.m-btn-low-padding{:href => "#{sale_rule_path(sale_rule)}", :title => "View alpha promotion"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_sale_rule_path(sale_rule)}", :title => "Edit alpha promotion"} 
+                  %i.mdi-editor-border-color
+                / %a.m-btn.red.m-btn-low-padding{:href => "#{alpha_promotion_path(alpha_promotion)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete alpha promotion"}
+                /   %i.mdi-action-delete  

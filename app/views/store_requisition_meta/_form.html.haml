@@ -1,0 +1,37 @@
+=form_for @store_requisition_metum, :html => { :class => 'form-horizontal' } do |f|
+  
+  //= f.hidden_field :store_id, :class => 'form-control', :value=> @store_id
+  - @categories.each do |category|
+    %ul{:style => "list-style:none"}
+      
+      - if category.parent.blank?
+        %li.categories_action_list{:id => "#{category.id}"}
+          
+          #accordion.panel-group
+            .panel.panel-default
+              .panel-heading
+                %h4.panel-title
+                  %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#category#{category.id}"}
+                    = category.name
+              .panel-collapse.collapse{:id => "category#{category.id}"}
+                .panel-body
+                  - if ProductManagement::get_products_by_cat_id(category.id).any?
+                    - ProductManagement::get_products_by_cat_id(category.id).each do |pro|
+                      - _product_details = ProductManagement::get_product_details_by_id(pro.id)
+                      .row
+                        .input-group
+                          %span.input-group-addon
+                            %input{:type => "checkbox", :name => "checked_raw[]", :class => "check", :id => pro.id, :value => pro.id}
+                          %span.input-group-addon
+                            = pro.name
+                          %span.input-group-addon
+                            Current Stock :
+                            =number_with_precision(get_product_current_stock(@store.id, pro.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                            = _product_details.basic_unit
+                          = text_field_tag "quantity#{pro.id}", nil, placeholder:"quantity", class: 'form-control numeric-only'
+                          .input-group-addon    
+                            =_product_details.basic_unit 
+                      %br  
+                
+                
+          = render partial: 'store_requisition_meta/subcategory_li', locals: {subcategories: category.subcategories} if category.subcategories.present?

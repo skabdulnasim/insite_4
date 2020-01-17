@@ -1,0 +1,124 @@
+%h3
+  Outlet Menu Association
+.page-container
+  %ul.nav.nav-tabs
+    %li.active
+      %a{"data-toggle" => "tab", :href => "#activated"} 
+        %i.fa.fa-play
+          Activated
+    %li
+      %a{"data-toggle" => "tab", :href => "#yet_to_be_active"} 
+        %i.fa.fa-stop
+          Yet to active
+    %li
+      %a{"data-toggle" => "tab", :href => "#inactive"}
+        %i.fa.fa-pause
+          Inactive
+    %li
+      %a{"data-toggle" => "tab", :href => "#trashed"}
+        %i.fa.fa-trash
+          Trashed
+      
+  .tab-content
+    #activated.tab-pane.active.fade.in
+      - @menu_cards.each do |menu_card|
+        - if menu_card[:mode] == 1
+          .col-sm-6
+            #callout-stacked-modals.bs-callout.bs-callout-success
+              %h4
+                %i.fa.fa-book
+                = menu_card[:name]
+                = "[ #{menu_card.unit.unittype.unit_type_name }] "
+                %a.btn.btn-sm.btn-success{:href => "#{menu_card_path(menu_card)}", :title => "View this menu"}
+                  %i.fa.fa-search-plus.fa-lg
+                %a.btn.btn-sm.btn-success{:href => "#{menu_cards_master_mode_toggle_path}?id=#{menu_card[:id]}", :title => "Click to Deactivate this menu"}
+                  %i.fa.fa-pause.fa-lg
+                
+
+              - all_units = MenuCard.get_all_units_by_menu_card_id(menu_card[:id])
+              - if all_units.present?
+                %ul.list-group
+                  - all_units.each do |all_unit|
+                    %li.list-group-item
+                      = "#{all_unit.unit.locality} [ #{all_unit.unit.unittype.unit_type_name }] [ #{all_unit.section.name }]"
+                      %a.btn.btn-sm.btn-success{:href => "#{menu_card_path(menu_card)}", :title => "View this menu"}
+                        %i.fa.fa-search-plus.fa-lg
+              - else
+                .alert.alert-danger{:role => "alert"} No branch used it
+    
+
+    #yet_to_be_active.tab-pane.fade
+      - @menu_cards.each do |menu_card|
+        - if menu_card[:mode].nil? && menu_card[:trash] != 1
+          .col-sm-6
+            #callout-stacked-modals.bs-callout.bs-callout-warning
+              %h4
+                %i.fa.fa-book
+                = menu_card[:name]
+                = "[ #{menu_card.unit.unittype.unit_type_name }] "
+                %a.btn.btn-sm.btn-warning{:href => "#{menu_card_path(menu_card)}", :title => "View this menu"}
+                  %i.fa.fa-search-plus.fa-lg
+                %a.btn.btn-sm.btn-warning{:href => "#{menu_cards_master_mode_toggle_path}?id=#{menu_card[:id]}", :title => "Click to activate this menu"}
+                  %i.fa.fa-play.fa-lg
+              - all_units = MenuCard.get_all_units_by_menu_card_id(menu_card[:id])
+              - if all_units.present?
+                %ul.list-group
+                  - all_units.each do |all_unit|
+                    %li.list-group-item
+                      = "#{all_unit.unit.locality} [ #{all_unit.unit.unittype.unit_type_name }] [ #{all_unit.section.name }]"
+                      %a.btn.btn-sm.btn-warning{:href => "#{menu_card_path(menu_card)}", :title => "View this menu"}
+                        %i.fa.fa-search-plus.fa-lg
+              - else
+                .alert.alert-danger{:role => "alert"} No branch used it
+
+
+    #inactive.tab-pane.fade
+      - @menu_cards.each do |menu_card|
+        - if menu_card[:mode] == 0
+          .col-sm-6
+            #callout-stacked-modals.bs-callout.bs-callout-danger
+              %h4
+                %i.fa.fa-book
+                = menu_card[:name]
+                = "[ #{menu_card.unit.unittype.unit_type_name }] "
+                %a.btn.btn-sm.btn-danger{:href => "#{menu_card_path(menu_card)}", :title => "View this menu"}
+                  %i.fa.fa-search-plus.fa-lg
+                %a.btn.btn-sm.btn-danger{:href => "#{menu_cards_master_mode_toggle_path}?id=#{menu_card[:id]}", :title => "Click to activate this menu"}
+                  %i.fa.fa-play.fa-lg
+              - all_units = MenuCard.get_all_units_by_menu_card_id(menu_card[:id])
+              - if all_units.present?
+                %ul.list-group
+                  - all_units.each do |all_unit|
+                    %li.list-group-item
+                      = "#{all_unit.unit.locality} [ #{all_unit.unit.unittype.unit_type_name }] [ #{all_unit.section.name }]"
+                      %a.btn.btn-sm.btn-danger{:href => "#{menu_card_path(menu_card)}", :title => "View this menu"}
+                        %i.fa.fa-search-plus.fa-lg
+              - else
+                .alert.alert-danger{:role => "alert"} No branch used it
+
+    
+    #trashed.tab-pane.fade
+      - @menu_cards.each do |menu_card|
+        - if menu_card[:trash] == 1
+          .col-sm-6
+            #callout-stacked-modals.bs-callout.bs-callout-danger
+              %h4
+                %i.fa.fa-book
+                = menu_card[:name]
+                = "[ #{menu_card.unit.unittype.unit_type_name }] "
+                %a.btn.btn-sm.btn-danger{:href => "#{menu_card_path(menu_card)}", :title => "View this menu"}
+                  %i.fa.fa-search-plus.fa-lg
+              - all_units = MenuCard.get_all_units_by_menu_card_id(menu_card[:id])
+              - if all_units.present?
+                %ul.list-group
+                  - all_units.each do |all_unit|
+                    %li.list-group-item
+                      = "#{all_unit.unit.locality} [ #{all_unit.unit.unittype.unit_type_name }] [ #{all_unit.section.name }]"
+                      %a.btn.btn-sm.btn-danger{:href => "#{menu_card_path(menu_card)}", :title => "View this menu"}
+                        %i.fa.fa-search-plus.fa-lg
+              - else
+                .alert.alert-danger{:role => "alert"} No branch used it                
+
+  
+        
+        

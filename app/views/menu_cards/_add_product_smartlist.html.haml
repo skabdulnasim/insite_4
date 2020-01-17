@@ -1,0 +1,15 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.name
+          %td
+            %a.m-btn.green.float-r.m-btn-small.add-product-to-menu.waves-effect.waves-light{"data-product-id"=>object.id,"data-product-name"=>object.name,"data-product-unit"=>object.basic_unit, "data-product-btype"=>object.business_type, "data-menu-id"=>@menu_card.id, "data-unit-id"=>current_user.unit_id, "data-inventory-status"=>@inventory_status}
+              =t(:label_add)
+  .padding-5
+    = smart_listing.paginate
+    = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

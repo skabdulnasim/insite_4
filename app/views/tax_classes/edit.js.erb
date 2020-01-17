@@ -1,0 +1,2 @@
+$("#tax_class_edit_container").html('<%= j render("form") %>')
+$("#tax_class_action_container").html("<%=j link_to 'Destroy', @tax_class,:method => :delete, :data => { :confirm => 'Are you sure?', :remote => 'true' }, :class => 'btn white grey-text width-100' %>")

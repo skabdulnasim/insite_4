@@ -1,0 +1,45 @@
+= form_for [:resource, @beneficiaries] do |f|
+  .form-horizontal.bordered-row.m-input
+    .form-group
+      = f.label 'name', :class => 'col-sm-4 control-label'
+      .col-sm-4
+        = f.text_field :name, :required => true, :autofocus => true, :placeholder => "Enter Name", :class => 'form-control', autocomplete: 'off'
+    .form-group
+      = f.label "beneficiary type", :class=> 'col-sm-4 control-label'
+      .col-sm-4
+        = f.select :beneficiary_type, options_for_select({"owner"=>"owner", "csm"=> "csm"},@beneficiaries.beneficiary_type),{:include_blank=> "select beneficiary type"},{:class => "form-control",:required => true,:style=>"width:300px;"}
+    .form-group
+      = f.label 'bank_name', :class => 'col-sm-4 control-label'
+      .col-sm-4
+        = f.text_field :bank_name, :required => true, :autofocus => true, :placeholder => "Enter Bank Name", :class => 'form-control', autocomplete: 'off'
+    .form-group
+      = f.label 'branch', :class => 'col-sm-4 control-label'
+      .col-sm-4
+        = f.text_field :branch, :required => true, :autofocus => true, :placeholder => "Enter Branch Name", :class => 'form-control', autocomplete: 'off'
+    .form-group
+      = f.label 'account_number', :class => 'col-sm-4 control-label'
+      .col-sm-4
+        = f.text_field :account_number, :required => true, :autofocus => true, :placeholder => "Enter account number", :class => 'form-control', autocomplete: 'off'
+    .form-group
+      = f.label 'ifsc', :class => 'col-sm-4 control-label'
+      .col-sm-4
+        = f.text_field :ifsc, :required => true, :autofocus => true, :placeholder => "Enter IFSC code", :class => 'form-control', autocomplete: 'off'
+    .form-group
+      = f.label 'pan_no', :class => 'col-sm-4 control-label'
+      .col-sm-4
+        = f.text_field :pan_no, :required => true, :autofocus => true, :placeholder => "Enter PAN number", :class => 'form-control', autocomplete: 'off'
+    .form-group
+      = f.label 'payment_mode', :class => 'col-sm-4 control-label'
+      .col-sm-4
+        = f.select :payment_mode, options_for_select({"neft"=>"neft", "cheque"=>"cheque", "rtgs"=>"rtgs"},@beneficiaries.payment_mode), {:include_blank=>"select payment mode"}, {:required => true, :class => 'form-control',:style=>"width:300px;"}
+    .form-group
+      = f.label 'beneficiary_percentage', :class => 'col-sm-4 control-label'
+      .col-sm-4
+        = f.text_field :beneficiary_percentage, :required => true, :autofocus => true, :placeholder => "Enter beneficiary percentage", :class => 'form-control percentage' , :id=>"beneficiary_percentage", autocomplete: 'off'
+    .form-group
+      .col-sm-4
+      .col-sm-4
+        = f.submit :save, :class => 'm-btn btn-success'
+        %a.btn.btn-primary{:href => "#{resource_path(@resource)}"}
+          Cancel
+

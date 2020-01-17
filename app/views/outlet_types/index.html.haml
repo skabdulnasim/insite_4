@@ -1,0 +1,19 @@
+%h1 Listing outlet_types
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @outlet_types.each do |outlet_type|
+    %tr
+      %td= outlet_type.name
+      %td= link_to 'Show', outlet_type
+      %td= link_to 'Edit', edit_outlet_type_path(outlet_type)
+      %td= link_to 'Destroy', outlet_type, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Outlet type', new_outlet_type_path

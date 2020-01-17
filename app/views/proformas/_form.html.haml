@@ -1,0 +1,49 @@
+= form_for @proforma do |f|
+  - if @proforma.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@proforma.errors.count, "error")} prohibited this proforma from being saved:"
+      %ul
+        - @proforma.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :discount
+    = f.text_field :discount
+  .field
+    = f.label :grand_total
+    = f.text_field :grand_total
+  .field
+    = f.label :proforma_amount
+    = f.text_field :proforma_amount
+  .field
+    = f.label :recorded_at
+    = f.date_select :recorded_at
+  .field
+    = f.label :remarks
+    = f.text_field :remarks
+  .field
+    = f.label :tax_amount
+    = f.text_field :tax_amount
+  .field
+    = f.label :roundoff
+    = f.text_field :roundoff
+  .field
+    = f.label :serial_no
+    = f.text_field :serial_no
+  .field
+    = f.label :status
+    = f.text_field :status
+  .field
+    = f.label :unit_id
+    = f.number_field :unit_id
+  .field
+    = f.label :device_id
+    = f.text_field :device_id
+  .field
+    = f.label :customer_id
+    = f.number_field :customer_id
+  .field
+    = f.label :user_id
+    = f.number_field :user_id
+  .actions
+    = f.submit 'Save'

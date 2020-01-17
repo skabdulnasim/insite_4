@@ -1,0 +1,77 @@
+- manual_load_javascript "templates/users/get_users_by_role"
+= form_for @store, :html => { :class => 'form-horizontal'} do |f|
+  - if @store.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@store.errors.count, "error")} prohibited this store from being saved:"
+      %ul
+        - @store.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-group
+    = f.label :name, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :name, :class => 'form-control'
+  .form-group
+    = f.label :store_type, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :store_type, options_for_select({"Physical Store" => "physical_store","Virtual Store" => "virtual_store","Production center" => "kitchen_store","Return Store" => "return_store", "Waste Bin" => "waste_bin" },@store.store_type), { include_blank: "Select store type"}, {:class => "form-control"}
+  .form-group
+    = f.label :store_priority, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :store_priority, options_for_select({"Primary Store" => "primary_store","Secondary Store" => "secondary_store"},@store.store_priority), { include_blank: "Select store priority"}, {:class => "form-control"}      
+  .form-group
+    = f.label :address, :class => 'col-sm-2 control-label'
+    .col-sm-4  
+      = f.text_area :address, :class => 'form-control', :rows => "4"
+  .form-group
+    = f.label :pincode, :class => 'col-sm-2 control-label'
+    .col-sm-4  
+      = f.text_field :pincode, :class => 'form-control'
+  .form-group
+    = f.label :contact_number, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :contact_number, :class => 'form-control'
+  .form-group
+    = f.label :tin_no, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :tin_no, :class => 'form-control' 
+  .form-group
+    = f.label :tan_no, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :tan_no, :class => 'form-control'       
+  .form-group
+    = f.label :store_image, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.file_field :store_image, :class => 'form-control'
+  .form-group
+    = f.label :latitude, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :latitude, :class => 'form-control'
+  .form-group
+    = f.label :longitude, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :longitude, :class => 'form-control'
+  .form-group
+    = f.label :gstn_no, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :gstn_no, :class => 'form-control'
+  .form-group
+    = f.label :pan_no, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :pan_no, :class => 'form-control'
+  .form-group
+    = f.label :contact_person, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :contact_person, :class => 'form-control'
+  .form-group
+    = f.label "select role", :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = select_tag "store_user_role", options_for_select(@child_roles.map{ |role| [role.name.humanize, role.id] }), { prompt: "Select role", class: "form-control"}
+  .form-group
+    = f.label "select user", :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :user_id, options_for_select(@users.map{ |user| [user.profile.full_name, user.id] }, @store.user_id), { include_blank: "Select user"}, {:class => "form-control"}
+  .form-group    
+    .col-sm-offset-2.col-sm-10
+      = f.submit "#{t :btn_next_step}", :class => 'm-btn blue'
+

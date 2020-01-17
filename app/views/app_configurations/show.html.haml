@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Config key:
+  = @app_configuration.config_key
+%p
+  %b Config value:
+  = @app_configuration.config_value
+
+= link_to 'Edit', edit_app_configuration_path(@app_configuration)
+\|
+= link_to 'Back', app_configurations_path

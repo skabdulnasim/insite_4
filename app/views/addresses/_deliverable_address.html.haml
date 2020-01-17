@@ -1,0 +1,13 @@
+.row.m0.custom-list-item
+  .col.s1.p0
+    %i.material-icons.theme-green-text.font-25 person_pin_circle
+  .col.s11.p0-20
+    %h6.m0
+      %strong=address.receiver_name
+      %small.theme-green-text.right Home Delivery
+    %p.font-07.grey-text
+      ="Address: #{address.delivery_address}, #{address.landmark}, #{address.city}, #{address.city} - #{address.pincode}, #{address.state} | Contact: #{address.contact_no}"
+      = hidden_field_tag 'order_deliverable_type', 'Address'
+      = hidden_field_tag 'order_deliverable_id', address.id
+      = hidden_field_tag 'customer_id', address.customer.id
+  .clearfix

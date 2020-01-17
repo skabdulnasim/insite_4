@@ -1,0 +1,10 @@
+= content_tag_for :div, unit, class: "m0" do
+  .card
+    .card-content
+      %div{:class=>"unit_name_of_#{unit.id}"}
+        %h6.m0
+          %span.label.teal=unit.unittype.unit_type_name.humanize
+          %span=unit.unit_name
+          =# link_to "Edit", edit_unit_path(unit), :class=>"right modal-trigger edit_branch_link", remote: true
+        %p.grey-text.ml5
+          %span.font-08="Address: #{unit.address}"          

@@ -1,0 +1,59 @@
+- unless smart_listing.empty?
+  %table.table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-1= smart_listing.sortable "ID", "id"
+        %th.col-lg-3= smart_listing.sortable "Name", "name"
+        %th.col-lg-2= smart_listing.sortable "Category", "category_id"
+        %th.col-lg-1 Unit
+        %th.col-lg-2= smart_listing.sortable "Type", "product_type" 
+        %th.col-lg-3
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td
+            = get_product_logo(object.product_images)
+          %td
+            / = link_to object.name, object
+            - product_name = object.package_component.present? ?  object.product_name(object) : object.name
+            = link_to product_name, object
+            %br
+            %small
+              ="ID: #{object.id}"
+              %br
+              = object.updated_at.strftime("%d %b %Y, %I:%M %p")
+          %td
+            - if object.category_id
+              = link_to object.category.name, object
+              - if object.category.parent?
+                = render "show_all_cat", {cats: object.category} if object.category.parent.present?
+            - else
+              %b= "no category"
+          %td
+            ="#{object.basic_unit}"
+          %td  
+            - if object.product_type == "simple"
+              %span.label.label-warning Simple
+            - elsif object.product_type == "variable"
+              %span.label.label-info Variable
+            - else
+              %span.label.label-danger=object.product_type
+          %td{:style=>"text-align:right"}
+            - if can? :edit, Product  
+              %a.m-btn.blue.m-btn-low-padding{:href => "#{edit_product_path(object)}", :title => "Edit product"} 
+                %i.mdi-editor-border-color
+            - if can? :toggle_trash, Product  
+              %a.m-btn.orange.m-btn-low-padding{:href => "#{toggle_trash_product_path(object)}",:method => :post, :data => { :confirm => 'Are you sure about moving this product to trash?' }, :title => "Trash product"}
+                %i.mdi-action-delete        
+            - if can? :destroy, Product      
+              %a.m-btn.red.m-btn-low-padding{:href => "#{product_path(object)}",:method => :delete, :data => { :confirm => 'Are you sure about deleting this product?' }, :title => "Delete product"}
+                %i.mdi-action-highlight-remove
+            %a.m-btn.green.m-btn-low-padding{:href => "#{process_dependency_product_path(object)}", :title => "Show processes"}
+              %i.fa.fa-pinterest-p
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

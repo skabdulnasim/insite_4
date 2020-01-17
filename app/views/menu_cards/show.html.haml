@@ -1,0 +1,386 @@
+:javascript
+  $(document).ready(function(){
+    $("#thirdparty_name").change(function(){
+      if( $(this).val() == 'urbanpiper'){
+        $("#urbanpiper_channels").show();
+      }
+      else{
+        $("#urbanpiper_channels").hide();
+      }
+    });
+  });
+:css
+  .container_chkbox { border:2px solid #ccc; background:#FFFFFF; width:100%; height: 100px; overflow-y: scroll; }
+- manual_load_javascript "menu_products", "templates/lots/quick_details", "templates/menu_cards/mp_sale_rules_quick_details", "templates/sale_rules/all_sale_rules_details"
+= render "layouts/flash"
+- links_arr = [{:title=>I18n.t(:manage_calatog), :url=>menu_cards_path,:active_class=>""},{:title=>"#{I18n.t(:calatog_text)}: #{@menu_card.name}",:url=>menu_card_path(@menu_card),:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+.row
+  .divider
+  .white.padding-10
+    .col-lg-5
+      / %span.font-sz-18
+      /   =@menu_card.name
+      %span.font-sz-18
+        = smart_listing_controls_for(:menu_card_products, {class: "text-left"}) do
+          .form-group.filter.input-append.col-lg-4
+            .input-group.float-r{style: "width: 125%;"}
+              %input.form-control.search{:placeholder => "products...", :type => "text", :name=> "filter"}
+                %span.input-group-btn
+                  %button.btn.btn-primary.disabled{:type => "submit"}
+                    %span.glyphicon.glyphicon-search
+          .form-group.filter.input-append.col-lg-4
+            %span.fs-title.left
+            = select_tag :menu_category, options_for_select(build_menu_categories(@menu_card.id).map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control", :prompt => "Menu Category", style: "width: 129%"
+            / = select_tag "menu_category", options_from_collection_for_select(@menu_categories,"id", "name"),class: "form-control", prompt: 'Menu Category'
+          .form-group.filter.input-append.col-lg-4
+            %input.form-control.search{:placeholder => "SKU Search...", :type => "text", :name=> "sku_filter", style: "width: 115%;"}
+    .float-r
+      -if @menu_card.unit.unittype.id == 3
+        - child_section = @menu_card.section
+        - if child_section.master_section_id.present?
+          - parent_section = Section.find(child_section.master_section_id)
+          - if parent_section.present?
+            - _thirdparty_configurations = parent_section.thirdparty_configurations
+            - if _thirdparty_configurations.present?
+              %span{:class=> "plus thirdparty_product_toggle", "data-target" => "#thirdparty_item_toggle_outlet", "data-toggle" => "modal"}
+                %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text
+                  Item Toggle
+      - elsif @menu_card.unit.unittype.id == 1
+        - _section = @menu_card.section
+        - _thirdparty_configurations = _section.thirdparty_configurations
+        - if _thirdparty_configurations.present?
+          %span{:class=> "plus urbanpiper_product_up", "data-target" => "#thirdparty_menu_upload", "data-toggle" => "modal"}
+            %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text
+              Thirdparty Up
+        - if _thirdparty_configurations.present?
+          %span{:class=> "plus thirdparty_product_toggle", "data-target" => "#thirdparty_item_toggle", "data-toggle" => "modal"}
+            %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text
+              Item Toggle
+        - if _thirdparty_configurations.present? 
+          %span{:class=> "plus thirdparty_menu_toggle", "data-target" => "#thirdparty_menu_toggle", "data-toggle" => "modal"}
+            %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text
+              Menu OFF/ON
+      %span{:class=> "plus", "data-target" => "#category_bulk_upload", "data-toggle" => "modal"}
+        %i.icon-plus
+        %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text
+          Bulk Upload
+
+      - if can? :show, MenuCard
+        %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text{"data-target" =>"#editPriceOptionModal", "data-toggle" => "modal"}
+          %i.mdi-editor-border-color.left
+          Edit Price
+        %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text{:href => edit_menu_card_path(@menu_card), :title => "Edit this menu card"}
+          %i.mdi-editor-border-color.left
+          =I18n.t(:label_edit)
+      - if can? :trash, MenuCard
+        %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text{:href => menu_card_trash_path(@menu_card),:method => :post, :title => "Move to trash", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Do you want to move this menu card to trash?')) }}
+          %i.mdi-action-delete.left
+          Trash
+      
+      - if can? :master_mode_toggle, MenuCard  
+        %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text{:href => copy_menu_card_path(@menu_card)}
+          %i.mdi-content-content-copy.left
+          =I18n.t(:label_copy)
+      - if can? :add_products, MenuCard  
+        %a.dropdown-button.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text{:href=>"#!", "data-activates"=>"add_product_dropdown", :style=>"padding: 0 0.5rem !important;"} 
+          %i.mdi-content-add.left
+          =I18n.t(:label_add_products)
+        %ul#add_product_dropdown.dropdown-content.p0
+          %li.width-100
+            %a{:href => add_products_menu_card_path(@menu_card)}=I18n.t(:label_simple_product)
+          %li.width-100
+            %a{:href => new_menu_product_path+"?menu_card_id=#{@menu_card.id}"}=I18n.t(:label_variable_product)
+          %li.width-100
+            %a{:href => add_products_menu_card_path+"?menu_card_id=#{@menu_card.id}&mproduct_type=combo_product"}=I18n.t(:label_combo_product)
+    .clearfix
+  .divider
+  %br
+- if @menu_card.menu_categories.get_root_categories.present?
+  - @currency = currency
+  .row.white
+    / previous menu card products all
+    / = render :partial => 'menu', :collection => @menu_card.menu_categories.get_root_categories
+    / smart listing of menu card products new added
+    = smart_listing_render :menu_card_products
+    .clearfix
+- else
+  Copy catalog from
+  = select_tag "sel_menu", options_for_select(@menu_cards.map{ |mc| [mc.name, mc.id] }), :class=>""
+  %span{:class => 'btn btn-primary btn-mini active icon_copy', :id => "#{@menu_card.id}"}
+    %i.fa.fa-files-o
+    Copy
+
+/ Transfer Option Modal
+#editPriceOptionModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "editPriceOptionModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#editPriceOptionModalLabel.modal-title Edit price option
+      .modal-body
+        .col-md-12
+          .col-md-2
+            = ''
+          .col-md-8
+            .btn-group{:style=> "width:100%"}
+              %a.btn.btn-default.dropdown-toggle.text-left.btn-social.btn-primary{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button",:style=> "width:100%"}
+                %i.fa.fa-exchange
+                Select option
+                %span.caret
+              %ul.dropdown-menu.dropdown-menu-right{:role => "menu",:style=> "width:100%"}
+                %li
+                  %a{:href => "#{get_categories_menu_card_path(@menu_card)}?category_type=#{'all_category'}"}= "ALl categories"
+                  %a{:href => "#{get_categories_menu_card_path(@menu_card)}?category_type=#{'root_category'}"}= "Root categories"
+                  / %a{:href => "#{get_categories_menu_card_path(@menu_card)}?category_type=#{'sub_category'}"}= "Subcategories"
+                  %a{:href => "#{get_categories_menu_card_path(@menu_card)}?category_type=#{'brand_name'}"}= "Brand name"
+                  %a{:href => "#{get_categories_menu_card_path(@menu_card)}?category_type=#{'brand_name_and_category'}"}= "Brand name and category"
+          .col-md-2
+        .clearfix
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+
+#category_bulk_upload.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "categoryBulkUpload", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Bulk menu product upload
+      .modal-body
+        = form_tag(import_menu_products_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          %input{:name => "menu_card_id", :type => "hidden", :value => "#{@menu_card.id}"}
+          %input{:name => "unit_id", :type => "hidden", :value => "#{@menu_card.unit_id}"}
+          %input{:name => "section_id", :type => "hidden", :value => "#{@menu_card.section_id}"}
+          .form-group
+            %label.col-sm-4.control-label Choose file
+            .col-sm-8
+              %input{:name => "file", :type => "file", :required => 'required'}
+          .modal-footer         
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Upload", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}
+          %b.padding-10= link_to "Download a sample CSV file...", '/menu-product.xlsx', :action => 'download'    
+#thirdparty_menu_upload.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "thirdpartyMenuUpload", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Thirdparty Menu Upload
+      .modal-body
+        = form_tag(thirdparty_upload_menu_products_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          %input{:name => "up_item_id",:id => "up_item_id", :type => "hidden", :value => ""}
+          %input{:name => "menu_card_id", :type => "hidden", :value => "#{@menu_card.id}"}
+          %input{:name => "section_id", :type => "hidden", :value => "#{@menu_card.section_id}"}
+          .form-group
+            %label.col-sm-4.control-label Thirdparty
+            .col-sm-8
+              - _section = @menu_card.section
+              - _thirdparty_configurations = _section.thirdparty_configurations
+              = select_tag "thirdparty_configuration_id", options_from_collection_for_select(_thirdparty_configurations, "id", "thirdparty"),class: "form-control", prompt:"Select Thirdparty", "required" => true
+          .form-group
+            %label.col-sm-4.control-label Select Outlet
+            .col-sm-8
+              - _units = Unit.by_unittype(3)
+              .container_chkbox
+                - _units.each do |_unit|
+                  = check_box_tag "unit_id[]", _unit.id, false, { :id => "upload_unit_id_#{_unit.id}"}
+                  %label{:for=>"upload_unit_id_#{_unit.id}"}= _unit.unit_name.humanize
+                  %br
+              / = select_tag "unit_id", options_from_collection_for_select(_units, "id", "unit_name"),class: "form-control", prompt:"Select Outlet", "required" => false
+          / .form-group
+          /   %label.col-sm-4.control-label Operation
+          /   .col-sm-8
+          /     %select{ :name => "thirdparty_operation",:id => "thirdparty_operation" , :required => 'required',:class => "form-control" }
+          /       %option{:value => ""}= "- Select -"
+          /       %option{:value => "upload"}= "Upload"
+          /       %option{:value => "update"}= "Update"
+          
+          .modal-footer        
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Submit", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}
+#thirdparty_outlet_menu_upload.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "ThirdpartyOutletMenuUpload", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4.modal-title Thirdparty Menu Upload
+      .modal-body
+        = form_tag(thirdparty_outlet_upload_menu_cards_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          %input{:name => "menu_card_id", :type => "hidden", :value => "#{@menu_card.id}"}
+          %input{:name => "menu_product_ids",:id => "thirdparty_outlet_upload_menu_product_ids", :type => "hidden", :value => ""}
+          .form-group
+            %label.col-sm-3.control-label Thirdparty
+            .col-sm-9
+              - child_section = @menu_card.section
+              - if child_section.master_section_id.present?
+                - parent_section = Section.find(child_section.master_section_id)
+                - if parent_section.present?
+                  - _thirdparty_configurations = parent_section.thirdparty_configurations
+                  = select_tag "thirdparty_configuration_id", options_from_collection_for_select(_thirdparty_configurations, "id", "thirdparty"),class: "form-control", prompt:"Select Thirdparty", "required" => true
+          %input{:name => "unit_id", :type => "hidden", :value => "#{@menu_card.unit.id}"}         
+          .modal-footer        
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Submit", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}
+          .modal-footer        
+            Note* : More than 1000 items are not allow to upload at once.
+
+#thirdparty_item_toggle.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "ThirdpartyItemToggle", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Thirdparty Action
+      .modal-body
+        = form_tag(urbanpiper_item_toggle_menu_products_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          %input{:name => "toggle_item_id",:id => "toggle_item_id", :type => "hidden", :value => ""}
+          / %input{:name => "unit_id", :type => "hidden", :value => "#{@menu_card.unit_id}"}
+          %input{:name => "section_id", :type => "hidden", :value => "#{@menu_card.section_id}"}
+          .form-group
+            %label.col-sm-4.control-label Thirdparty
+            .col-sm-8
+              - _section = @menu_card.section
+              - _thirdparty_configurations = _section.thirdparty_configurations
+              = select_tag "thirdparty_configuration_id", options_from_collection_for_select(_thirdparty_configurations, "id", "thirdparty"),class: "form-control", prompt:"Select Thirdparty", "required" => true
+          .form-group
+            %label.col-sm-4.control-label Select Outlet
+            .col-sm-8
+              - _units = Unit.by_unittype(3)
+              .container_chkbox
+                - _units.each do |_unit|
+                  = check_box_tag "unit_id[]", _unit.id, false, { :id => "item_toggle_unit_id_#{_unit.id}"}
+                  %label{:for=>"item_toggle_unit_id_#{_unit.id}"}= _unit.unit_name.humanize
+                  %br
+              / = select_tag "unit_id", options_from_collection_for_select(_units, "id", "unit_name"),class: "form-control", prompt:"Select Outlet", "required" => true
+          / .form-group
+          /   %label.col-sm-4.control-label{:style=>"color:red; text-align:right;"} Stock DISABLE
+          /   .col-sm-2{:style=>"text-align:center;"}
+          /     .switch.padding-5
+          /       %label
+          /         = check_box_tag :toggle_thirdparty_item_action, 'enabled', false, {"data-conf-key"=>"urbanpiper_scootsy","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", :name => "toggle_thirdparty_item_action"}
+          /         %span.lever
+          /   %label.col-sm-4.control-label{:style=>"color:green; text-align:left;"} Stock ENABLE
+
+          .modal-footer         
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Confirm", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}
+#thirdparty_item_toggle_outlet.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "ThirdpartyItemToggleOutlet", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Thirdparty Action
+      .modal-body
+        = form_tag(urbanpiper_item_toggle_outlet_menu_products_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          %input{:name => "toggle_item_id",:id => "toggle_outlet_item_id", :type => "hidden", :value => ""}
+          %input{:name => "unit_id", :type => "hidden", :value => "#{@menu_card.unit_id}"}
+          %input{:name => "section_id", :type => "hidden", :value => "#{@menu_card.section_id}"}
+          .form-group
+            %label.col-sm-4.control-label Thirdparty
+            .col-sm-8
+              -if @menu_card.unit.unittype.id == 3
+                - child_section = @menu_card.section
+                - if child_section.master_section_id.present?
+                  - parent_section = Section.find(child_section.master_section_id)
+                  - if parent_section.present?
+                    - _thirdparty_configurations = parent_section.thirdparty_configurations
+                    - if _thirdparty_configurations.present?
+                      = select_tag "thirdparty_configuration_id", options_from_collection_for_select(_thirdparty_configurations, "id", "thirdparty"),class: "form-control", prompt:"Select Thirdparty", "required" => true
+          .modal-footer         
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Confirm", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}
+#thirdparty_menu_toggle.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "ThirdpartyMenuToggle", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Thirdparty Menu OFF/ON 
+      .modal-body
+        = form_tag(thirdparty_menu_toggle_menu_products_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          %input{:name => "toggle_menu_card_id",:id => "toggle_menu_card_id", :type => "hidden", :value => "#{@menu_card.id}"}
+          / %input{:name => "unit_id", :type => "hidden", :value => "#{@menu_card.unit_id}"}
+          %input{:name => "section_id", :type => "hidden", :value => "#{@menu_card.section_id}"}
+          .form-group
+            %label.col-sm-4.control-label Thirdparty
+            .col-sm-8
+              - _section = @menu_card.section
+              - _thirdparty_configurations = _section.thirdparty_configurations
+              = select_tag "thirdparty_configuration_id", options_from_collection_for_select(_thirdparty_configurations, "id", "thirdparty"),class: "form-control", prompt:"Select Thirdparty", "required" => true
+          .form-group
+            %label.col-sm-4.control-label Select Outlet
+            .col-sm-8
+              - _units = Unit.by_unittype(3)
+              .container_chkbox
+                - _units.each do |_unit|
+                  = check_box_tag "unit_id[]", _unit.id, false, { :id => "menu_toggle_unit_id_#{_unit.id}"}
+                  %label{:for=>"menu_toggle_unit_id_#{_unit.id}"}= _unit.unit_name.humanize
+                  %br
+              / = select_tag "unit_id", options_from_collection_for_select(_units, "id", "unit_name"),class: "form-control", prompt:"Select Outlet", "required" => true
+          .form-group
+            %label.col-sm-4.control-label{:style=>"color:red; text-align:right;"} Menu OFF
+            .col-sm-2{:style=>" text-align:center;"}
+              .switch.padding-5
+                %label
+                  = check_box_tag :thirdparty_action, 'enabled', false, {"data-conf-key"=>"urbanpiper_menu_scootsy","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", :name => "thirdparty_action"}
+                  %span.lever
+            %label.col-sm-4.control-label{:style=>"color:green; text-align:left;"} Menu ON
+
+          .modal-footer         
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Confirm", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}
+
+          / .form-group
+          /   #urbanpiper_channels
+          /     %header.data-table-header
+          /       .data-table-header__label
+          /         %span.fs-title Urbanpiper Platform
+          /     .form-horizontal.bordered-row
+          /       .form-group
+          /         %label.col-sm-4.control-label Zomato
+          /         .col-sm-7
+          /           .switch.padding-5
+          /             %label
+          /               = check_box_tag :urbanpiper_menu_zomato, 'enabled', false, {"data-conf-key"=>"urbanpiper_menu_zomato","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", :name => "urbanpiper_menu_ch[]", :value => "zomato"}
+          /               %span.lever
+          /       .form-group
+          /         %label.col-sm-4.control-label Swiggy
+          /         .col-sm-7
+          /           .switch.padding-5
+          /             %label
+          /               = check_box_tag :urbanpiper_menu_swiggy, 'enabled', false, {"data-conf-key"=>"urbanpiper_menu_swiggy","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", :name => "urbanpiper_menu_ch[]", :value => "swiggy"}
+          /               %span.lever
+          /       .form-group
+          /         %label.col-sm-4.control-label Ubereats
+          /         .col-sm-7
+          /           .switch.padding-5
+          /             %label
+          /               = check_box_tag :urbanpiper_menu_ubereats, 'enabled', false, {"data-conf-key"=>"urbanpiper_menu_ubereats","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", :name => "urbanpiper_menu_ch[]", :value => "ubereats"}
+          /               %span.lever
+          /       .form-group
+          /         %label.col-sm-4.control-label Foodpanda
+          /         .col-sm-7
+          /           .switch.padding-5
+          /             %label
+          /               = check_box_tag :urbanpiper_menu_foodpanda, 'enabled', false, {"data-conf-key"=>"urbanpiper_menu_foodpanda","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", :name => "urbanpiper_menu_ch[]", :value => "foodpanda"}
+          /               %span.lever
+          /       .form-group
+          /         %label.col-sm-4.control-label Scootsy
+          /         .col-sm-7
+          /           .switch.padding-5
+          /             %label
+          /               = check_box_tag :urbanpiper_menu_scootsy, 'enabled', false, {"data-conf-key"=>"urbanpiper_menu_scootsy","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", :name => "urbanpiper_menu_ch[]", :value => "scootsy"}
+          /               %span.lever
+          /       .form-group
+          /         %label.col-sm-4.control-label Urbanpiper 
+          /         .col-sm-7
+          /           .switch.padding-5
+          /             %label
+          /               = check_box_tag :urbanpiper_menu_urbanpiper, 'enabled', false, {"data-conf-key"=>"urbanpiper_menu_urbanpiper","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config", :name => "urbanpiper_menu_ch[]", :value => "urbanpiper"}
+          /               %span.lever
+          /             %span{:style=>"color:red; padding-left:20px;"} *FOR TEST ONLY.

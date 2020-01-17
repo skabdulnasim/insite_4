@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @form_of_payment.name
+
+= link_to 'Edit', edit_form_of_payment_path(@form_of_payment)
+\|
+= link_to 'Back', form_of_payments_path

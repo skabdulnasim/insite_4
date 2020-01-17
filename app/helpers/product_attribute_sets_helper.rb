@@ -1,0 +1,2 @@
+module ProductAttributeSetsHelper
+end

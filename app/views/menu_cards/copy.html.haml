@@ -1,0 +1,88 @@
+- manual_load_javascript "templates/menu_cards/clone_menu"
+= render "layouts/flash"
+- links_arr = [{:title=>I18n.t(:manage_calatog), :url=>menu_cards_path,:active_class=>""},{:title=>"#{@menu_card.name}",:url=>menu_card_path(@menu_card),:active_class=>""},{:title=>"#{I18n.t(:copy_calatog)}",:url=>"#",:active_class=>""}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+:javascript
+  $(function ()
+  {
+    $("#wizard").steps({
+      headerTag: "h3",
+      bodyTag: "section",
+      transitionEffect: "slideLeft",
+      onFinished: function (event, currentIndex)
+      {
+          var form = $("#clone_calalog_form");
+          form.submit();
+      }      
+    });
+    $('.datepicker').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });    
+  });
+#wizard
+  %h3="#{I18n.t(:label_select)} #{I18n.t(:title_section)}"
+  %section.card
+    %ul#task-card.collection.with-header.padding-top-20
+      - clone_config = AppConfiguration.get_config_value('clone_catalog_within_branch_hierarchy')
+      - unit_id = (clone_config == '1') ? current_user.unit_id : 1
+      - if current_user.users_role.role.name == "dc_manager"
+        - load_section_selector(current_user.unit_id) #HomeHelper
+      - elsif current_user.users_role.role.name == "owner"
+        - load_section_selector(unit_id) #HomeHelper
+      - else
+        - load_section_selector(@menu_card.unit_id)
+  %h3="#{t(:text_set_attributes)}"
+  %section.card
+    =form_for @clone_menu, :url => clone_menu_card_path(@menu_card), :html => { :class => 'form-horizontal', :id=>"clone_calalog_form"} do |f|
+      .main-section__content.clone-container
+        .example
+          .example__content.p0
+            .data-table-container.m-input{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title="#{I18n.t(:calatog_text)} #{I18n.t(:label_details)}"
+              %br
+              .input-field.col-sm-4
+                =f.label :name, :class => "font-sz-12"
+                =f.text_field :name, :value => @menu_card.name
+                =f.hidden_field :unit_id, :class=>"target_unit_id"
+                =f.hidden_field :section_id, :class=>"target_section_id"
+                =f.hidden_field :master_menu_id, :value=>@menu_card.id, :class=>"menu_card_id"
+              .input-field.col-sm-2
+                =f.label :valid_from, :class => "font-sz-12"
+                =f.text_field :valid_from, :value => @menu_card.valid_from, :class => "datepicker", "format" => "dd-mm-yyyy hh:mm:ss"
+              .input-field.col-sm-2
+                =f.label :valid_till, :class => "font-sz-12"
+                =f.text_field :valid_till, :value => @menu_card.valid_till, :class => "datepicker", "format" => "dd-mm-yyyy hh:mm:ss"
+              .input-field.col-sm-2
+                / # %b.grey-text=I18n.t(:label_mode)
+                =f.select :mode, options_for_select([["Active", "1"], ["Inactive", "0"]],0), {prompt: 'Select Mode'}, :class=>"form-control"
+              .input-field.col-sm-2
+                / # %b.grey-text=I18n.t(:label_scope)
+                =f.select :scope, options_for_select([["inhouse", "inhouse"], ["hungryleopard", "hungryleopard"]],@menu_card.scope), {prompt: 'Select scope'}, :class=>"form-control"
+      %br
+      =f.fields_for :menu_products_attributes do |builder|
+        .menu_copy_container  
+
+.clearfix                  
+/ New SORT Modal
+#newSortModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "newSortLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#newSortModalLabel.modal-title Add new SORT
+      .modal-body
+
+/ New Store Modal
+#newStoreModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "newStoreLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#newStoreModalLabel.modal-title Add new Store
+      .modal-body      

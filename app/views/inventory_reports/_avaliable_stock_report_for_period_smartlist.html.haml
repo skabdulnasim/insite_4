@@ -1,0 +1,26 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Category
+        %th Products
+        %th SKU
+        %th Available Stock
+    %tbody
+      - smart_listing.collection.each do |object|
+        - product = Product.find(object.product_id)
+        - total_debit = Stock.select("COALESCE(sum(stock_debit),0) total_debit").by_product_sku(object.sku).by_product(object.product_id).set_store(@store.id).type_debit.check_date(@to_datetime)
+        - total_credit = object.total_credit.to_i
+        - total_debit = total_debit[0]["total_debit"].to_i
+        - available_stock = total_credit - total_debit
+
+        %tr
+          %td=product.category.name
+          %td=product.name
+          %td=object.sku
+          %td="#{available_stock}" "#{product.basic_unit}"
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  .alert.alert-warning
+    No record found

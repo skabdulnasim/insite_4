@@ -1,0 +1,21 @@
+- if current_user.users_role.role.name == "owner"
+	%table.data-table
+		%thead
+			%tr.data-table__selectable-row.troggler
+				%th{:style => "padding-left: 24px; padding-right: 24px; font-weight: bold;"}= "Role" 
+				- AccessManager.where(:controller_status => 1).each do |cls|
+					- actions = JSON.parse(cls.controller_actions)
+					- actions.each do |act|
+						%th{:style => "padding-left: 24px; padding-right: 24px; font-weight: bold;"}=cls.controller_desc+" "+act[1]['action_desc']
+		%tbody
+			- unless smart_listing.empty?
+				- smart_listing.collection.each do |object|
+					%tr
+						%td=object.name
+						- role_capabilities = object.capabilities.present? ? object.capabilities : Array.new
+							- AccessManager.where(:controller_status => 1).each do |cls|			
+							- actions = JSON.parse(cls.controller_actions)	
+							- actions.each do |act|
+								- strng = "cannot :"+act[0]+", "+(cls.controller_alias)
+								- check_stat = (role_capabilities.include? strng) ? "Not Allowed" : "Allow"
+								%td{:style=>"text-align: center;"}=check_stat	

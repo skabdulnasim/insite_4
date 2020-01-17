@@ -1,0 +1,28 @@
+-links_arr = [{:title => "Delivery Address", :ur=>delivery_addresses_path, :url=>"#", :active_class=>"col-breadcrumb-selected"},]
+= render "layouts/flash"
+.col-sm-3.padding-5
+  = render :partial => 'address_filter'
+.col-sm-9.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Delivery Address Details
+            .data-table-header_actions
+              - if can? :new, DeliveryAddress
+                %a.m-btn.teal.margin-l-5{:href => new_delivery_address_path}
+                  %i.mdi-content-add.left
+                  %span.hidden-sm.hidden-xs Add Delivery Address 
+
+        = smart_listing_render :delivery_address
+.clearfix          
+
+
+
+
+
+
+
+                                                              

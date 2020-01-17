@@ -1,0 +1,9 @@
+- unless smart_listing.empty?
+	.product-wrapper
+		- smart_listing.collection.each do |product|
+			.product-box{:draggable=>"true"}
+				= product.product.name
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+-else
+	%p.warning No record found

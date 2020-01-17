@@ -1,0 +1,39 @@
+%p#notice= notice
+
+%p
+  %b Attribute code:
+  = @product_attribute_key.attribute_code
+%p
+  %b Label:
+  = @product_attribute_key.label
+%p
+  %b Input type:
+  = @product_attribute_key.input_type
+%p
+  %b Default value:
+  = @product_attribute_key.default_value
+%p
+  %b Is unique:
+  = @product_attribute_key.is_unique
+%p
+  %b Is required:
+  = @product_attribute_key.is_required
+%p
+  %b Is comparable:
+  = @product_attribute_key.is_comparable
+%p
+  %b Is sortable:
+  = @product_attribute_key.is_sortable
+%p
+  %b Is system entity:
+  = @product_attribute_key.is_system_entity
+%p
+  %b Position:
+  = @product_attribute_key.position
+%p
+  %b Deleted at:
+  = @product_attribute_key.deleted_at
+
+= link_to 'Edit', edit_product_attribute_key_path(@product_attribute_key)
+\|
+= link_to 'Back', product_attribute_keys_path

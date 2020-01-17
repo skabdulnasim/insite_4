@@ -1,0 +1,75 @@
+.col-lg-4
+  .panel{:class => "#{panel_class(menu_card.mode)}"}
+    .panel-heading
+      .panel-title
+        %a{:href => menu_card_path(menu_card)}
+          %b= "# #{menu_card.id} #{menu_card.name.humanize}"
+        .pull-right
+          - if can? :edit, MenuCard
+            %a{:href => edit_menu_card_path(menu_card), :title => "Click to edit this menu", :style => "color:#000;"}
+              %i.fa.fa-edit.fa-lg{:class=> "icon_edit"}
+          - if can? :trash, MenuCard and !menu_card.mode.present?
+            &nbsp;
+            %a{:href => menu_card_trash_path(menu_card),:method => :post, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Do you want to trash this menu card?')) }, :title => "Trash this menu card", :style => "color:#000;"}
+              %i.fa.fa-trash-o.fa-lg
+    .panel-body
+      %span.label.label-default= menu_card.scope
+      %span.label.label-info= menu_card.section.name
+      / %span.label.label-primary= menu_card.menu_products.count
+      .clearfix
+        %i.fa.fa-clock-o
+        = ": #{menu_card.created_at.strftime("%d %b %A %Y, %I:%M %p")}"
+      .clearfix
+        %b Valid From :
+        = "#{menu_card.valid_from.strftime("%d %b %A %Y, %I:%M %p")}"
+      .clearfix
+        %b Valid To :
+        = "#{menu_card.valid_till.strftime("%d %b %A %Y, %I:%M %p")}"
+      .clearfix
+        %b Total No of Products: 
+        %span.badge= menu_card.menu_products.count
+      .clearfix
+      %hr
+      - if can? :mode_toggle, MenuCard
+        - if menu_card.mode == 0
+          %a.btn.btn-xs.btn-success{:href => "#", :title => "Click to activate this menu"}
+            %i.fa.fa-play{:class=> "icon_deactive", "data-toggle" => "tooltip", :id => menu_card.id}
+        - if menu_card.mode == 1
+          %a.btn.btn-xs.btn-danger{:href => "#", :title => "Click to Deactivate this menu"}
+            %i.fa.fa-pause{:class=> "icon_activate", "data-toggle" => "tooltip", :id => menu_card.id}
+        - if !menu_card.mode.present?
+          %a.btn.btn-xs.btn-primary{:href => "#", :title => "Click to activate this menu"}
+            %i.fa.fa-play{:class=> "icon_deactive", "data-toggle" => "tooltip", :id => menu_card.id}
+      .pull-right
+        - if can? :master_mode_toggle, MenuCard  
+          %button.btn.btn-xs.btn-success.assign_to_unit{:title => "View this menu", "data-toggle" => "modal", "data-target" => "#assignUnits", "from_menu_id" => menu_card.id}
+            Assign to unit
+        / - if !menu_card.mode.present?
+        - if AppConfiguration.get_config_value('always_edit_menu_item') == 'enabled' or !menu_card.mode.present?
+          %a.btn.btn-xs.btn-info{:href => new_menu_product_path+"?menu_card_id=#{menu_card.id}", :title => "Add product to this menu"}
+            %i.fa.fa-plus{:class=> "icon_add_item", "data-toggle" => "tooltip"}
+/           - if can? :destroy, MenuCard    
+/             %a.btn.btn-sm.btn-danger{:href => "#{menu_card_path(menu_card)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Do you want to parmanently Delete this menu card?')) }, :title => "Parmanently Delete this menu"}
+/               %i.fa.fa-times.fa-lg
+
+          
+
+
+#assignUnits.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "assignUnitsLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#assignUnitsLabel.modal-title Assign to unit's section
+      .modal-body
+        %ol
+          %li= "The source menu section name should be same as the destination section name. "
+          %li= "The source menu tax group name name should be same as the destination tax group name. "
+          %li= "The source menu Store name should be same as the destination Store name. "
+        = render 'unit_section_list'
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        %button.btn.btn-primary{:type => "button", :class => "save_unit"} Save changes
+                

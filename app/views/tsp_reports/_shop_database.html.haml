@@ -1,0 +1,64 @@
+- unless smart_listing.empty?     
+  %table.data-table
+    %thead
+      %tr
+        %th.col-sm-2 Shop Name
+        %th District
+        %th Owner Name
+        %th Contact No
+        %th.col-sm-1 Email
+        %th.col-sm-2 Address
+        %th.col-sm-1 pin code
+        %th Pan no
+        %th Gstn
+        %th.col-sm-2 Allocated TsE
+        %th{:style => "padding-right: 0px !important;"} Created Date
+    
+    %tbody
+      - smart_listing.collection.each do |resource|
+        - allcated_tse = allocated_tses(resource)
+        /= debug allcated_tse
+        %tr
+          %td= "#{resource.name} (#{resource.unique_identity_no})"
+          %td= get_district_name_by_resource(resource)
+          - if resource.customer.present? 
+            - if resource.customer.customer_profile.customer_name.present?
+              %td= "#{resource.customer.customer_profile.customer_name}" 
+            - else  
+              %td= "#{resource.customer.customer_profile.firstname}" " #{resource.customer.customer_profile.lastname}"
+            %td= "#{resource.customer.mobile_no}" 
+            %td= resource.customer.email != '' ? resource.customer.email : '-'
+            - if resource.customer.addresses.present?
+              %td= "#{resource.customer.addresses.last.delivery_address}" 
+              %td= "#{resource.customer.addresses.last.pincode}"
+            - else
+              %td -
+              %td -
+            %td= "#{resource.customer.customer_profile.pan_no}"
+            %td= "#{resource.customer.gstin}"
+            %td= "#{allcated_tse}"
+          - else
+            %td
+              %label.label.label-danger Has no Owner 
+            %td  
+              %label.label.label-danger Has no Owner 
+            %td  
+              %label.label.label-danger Has no Owner  
+            %td  
+              %label.label.label-danger Has no Owner 
+            %td  
+              %label.label.label-danger Has no Owner  
+            %td  
+              %label.label.label-danger Has no Owner    
+            %td  
+              %label.label.label-danger Has no Owner  
+            %td  
+              %label.label.label-danger Has no Owner
+          %td= resource.created_at.strftime("%d-%m-%Y, %I:%M %p")              
+            
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  %br                 
+- else
+  .alert.alert-warning
+    No record found

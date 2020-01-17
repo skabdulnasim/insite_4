@@ -1,0 +1,92 @@
+- if @role.id.present?
+  :javascript
+    $( document ).ready(function() {
+      $(".check-action-parent").click(function(){ 
+        id = $(this).attr('data-controller'); 
+        if (this.checked)
+          $(".check-action-child-"+id).prop('checked', true);    
+        else
+          $(".check-action-child-"+id).prop('checked', false);
+      });
+    });
+  = form_for @role, remote: true do |f|
+    - role_capabilities = @role.capabilities.present? ? @role.capabilities : Array.new
+    - if @role.errors.any?
+      #edit_error_explanation.alert.alert-danger2.alert-dismissible
+        %button.close{"data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+        = "#{pluralize(@role.errors.count, "error")} prohibited this product from being saved."
+    .input-field.col.s12
+      = f.label :name
+      = f.text_field :name, :class=>"validate m0", :placeholder=> "Enter role name", :autofocus=>true, :required => true, :readonly => true
+      %strong
+        = "Set Permissions"
+      %ul.collapsible.popout{"data-collapsible" => "accordion"} 
+        - AccessManager.where(:controller_status => 1).each do |cls|
+          - actions = JSON.parse(cls.controller_actions)         
+          %li
+            .collapsible-header
+              %input.check-action-parent{:type => "checkbox", "data-controller" => "edit_#{cls.controller_name}", :id=>"edit_controller_#{cls.controller_alias}"} 
+              %label{:for=>"edit_controller_#{cls.controller_alias}"}
+              = cls.controller_desc
+            
+            .collapsible-body
+              %p
+                - actions.each do |act|
+                  - strng = "cannot :"+act[0]+", "+(cls.controller_alias)
+                  - check_stat = (role_capabilities.include? strng) ? true : false
+                  %input.check{:id=>"edit_#{cls.controller_alias}_action_#{act[0]}",:name => "checked_action[]", :type => "checkbox", :value => "#{act[0]}~~#{cls.controller_alias}~~#{cls.controller_name}", :checked=>check_stat, :class=>"check-action-child-edit_#{cls.controller_name} filled-in"}
+                  %label.margin-r-10{:for=>"edit_#{cls.controller_alias}_action_#{act[0]}"}=act[1]['action_desc']  
+                  %br          
+   
+    .input-field.col.s12
+      %button.btn.green.green-text.text-lighten-5.waves-effect.waves-light{:type=>"submit"}
+        Save
+- else
+  :javascript
+    $( document ).ready(function() {
+      $(".check-action-parent").click(function(){ 
+        id = $(this).attr('data-controller'); 
+        if (this.checked)
+          $(".check-action-child-"+id).prop('checked', true);    
+        else
+          $(".check-action-child-"+id).prop('checked', false);
+      });
+    });
+  = form_for @role, remote: true do |f|
+    - role_capabilities = @role.capabilities.present? ? @role.capabilities : Array.new
+    - if @role.errors.any?
+      #error_explanation.alert.alert-danger2.alert-dismissible
+        %button.close{"data-dismiss" => "alert", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+        = "#{pluralize(@role.errors.count, "error")} prohibited this product from being saved."
+    .input-field.col.s12
+      = f.label :name
+      = f.text_field :name, :class=>"validate m0", :placeholder=> "Enter role name", :autofocus=>true, :required => true
+      %strong
+        = "Set Permissions"
+      %ul.collapsible.popout{"data-collapsible" => "accordion"} 
+        - AccessManager.where(:controller_status => 1).each do |cls|
+          - actions = JSON.parse(cls.controller_actions)         
+          %li
+            .collapsible-header
+              %input.check-action-parent{:type => "checkbox", "data-controller" => "#{cls.controller_name}", :id=>"controller_#{cls.controller_alias}"} 
+              %label{:for=>"controller_#{cls.controller_alias}"}
+              = cls.controller_desc
+            .form-check
+              %input#exampleCheck1.form-check-input{:type => "checkbox"}
+            
+            .collapsible-body
+              %p
+                - actions.each do |act|
+                  - strng = "cannot :"+act[0]+", "+(cls.controller_alias)
+                  - check_stat = (role_capabilities.include? strng) ? true : false
+                  %input.check{:id=>"#{cls.controller_alias}_action_#{act[0]}",:name => "checked_action[]", :type => "checkbox", :value => "#{act[0]}~~#{cls.controller_alias}~~#{cls.controller_name}", :checked=>check_stat, :class=>"check-action-child-#{cls.controller_name} filled-in"}
+                  %label.margin-r-10{:for=>"#{cls.controller_alias}_action_#{act[0]}"}=act[1]['action_desc']
+                  %br            
+   
+    .input-field.col.s12
+      %button.btn.green.green-text.text-lighten-5.waves-effect.waves-light{:type=>"submit"}
+        Save
+      %a.btn.white.grey-text.close-role-form
+        Cancel

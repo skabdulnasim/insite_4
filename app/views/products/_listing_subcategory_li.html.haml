@@ -1,0 +1,8 @@
+%ul{:style => "list-style:none; padding-left:20px;"}
+  - subcategories.each do |sub|
+    %li
+      .checkbox.margin-t-b-2
+        = check_box_tag 'product_category[]', sub.id, false,{ :id => "cat_#{sub.id}", :class=>"filled-in"}
+        %label.checkbox.inline.margin-l-5.margin-t-2{:for=>"cat_#{sub.id}", :style=>"padding-left:30px;"}=sub.name        
+        
+      = render partial: 'products/listing_subcategory_li', locals: {subcategories: sub.subcategories} if sub.subcategories.present?

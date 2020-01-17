@@ -1,0 +1,144 @@
+= form_tag(store_stock_production_path(@store,@stock_production), method: "put",multipart: true) do
+  %input{:type=>"hidden", :name=> "stock_production[status]", :value=>"2"}
+  %input{:type=>"hidden", :name=> "stock_production[store_id]", :value=>"#{@store.id}"}
+  %input{:type=>"hidden", :name=> "stock_production[isStockAdded]", :value=>"0"}
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Production details
+            .data-table-header__actions
+              = get_production_button_tag(@stock_production.status)
+              / = get_production_button(@stock_production.isStockAdded)
+          %h4.padding-10 Overview
+          .divider
+          .padding-10
+            Production ID:
+            =@stock_production.id
+            %br 
+            .row
+              %div{:style=>"float:left;margin-left:15px" }
+                Current Status :
+              .col-sm-2#mystatus
+                =production_status_tag(@stock_production.status)          
+          %h4.padding-10 Items in production
+          .divider
+          %table.data-table
+            %tbody
+              - @stock_production.stock_production_metas.each do |object|
+                - _product = Product.find(object.product_id)
+                - _product_name = _product.package_component.present? ?  _product.product_name(_product) : _product.name            
+                %tr{:style=>"font-weight:bold;"}
+                  %td.col-lg-2.m-btn.blue{:colspan => 2}="##{object.product_id} #{_product_name}"
+                  %td.col-lg-1.m-btn.blue="#{object.production_quantity} #{object.product.basic_unit}"
+                  %td.col-lg-3
+                  %td.col-lg-1
+                  %td.col-lg-1
+                  %td.col-lg-1
+                  %td.col-lg-2
+                %tr
+                  %td.col-lg-2.btn.bg-info.font-bold= "Products"
+                  %td.col-lg-1.btn.bg-info.font-bold= "Quantity"
+                  %td.col-lg-1.btn.bg-info.font-bold= "Product Cost (#{currency})"
+                  %td.col-lg-3.btn.bg-info.font-bold= "Process"
+                  %td.col-lg-1.btn.bg-info.font-bold
+                    = "Duration (min.)"                  
+                  %td.col-lg-1.btn.bg-info.font-bold= "Delay"
+                  %td.col-lg-1.btn.bg-info.font-bold= "Process Cost (#{currency})"
+                  %td.col-lg-2.btn.bg-info.font-bold= "Status"
+                - _raw_products = object.stock_production_raws
+                - puts _raw_products
+                / - _meta_processes = ProcessComposition.by_product_id(object.product_id)
+                - _meta_processes = object.stock_production_meta_processes
+                
+                - _raw_product_count = _raw_products.count
+                - _meta_processes_count = _meta_processes.count
+
+                - _production_details = Array.new
+                - if _raw_product_count > _meta_processes_count
+                  - _production_details = _raw_products
+                - elsif _meta_processes_count > _raw_product_count
+                  - _production_details = _meta_processes
+                - elsif _raw_product_count==_meta_processes_count
+                  - _production_details = _meta_processes
+                - puts _production_details
+                - _production_details.each_with_index do |sp_raw_process,index|
+                  - puts index
+                  - if index <= _raw_product_count-1
+                    - _product = Product.find(_raw_products[index].product_id)
+                  - _row_product_name = _product.package_component.present? ?  _product.product_name(_product) : _product.name  
+                  %tr
+                    %td.col-lg-2.btn.btn-secondary= _raw_products[index].present? ? _row_product_name : '-'
+                    %td.col-lg-1.btn.btn-secondary= _raw_products[index].present? ? _raw_products[index].quantity.to_s + ' ' + _raw_products[index].product.basic_unit : '-'
+                    %td.col-lg-1.btn.btn-secondary
+                      = _raw_products[index].present? ? _raw_products[index].product_cost : '-'
+
+                    - if _meta_processes[index].present?
+                      %td.col-lg-3.btn.btn-secondary.padding-l-r-none
+                        .progressbar_inner{:id => "progressbar_inner_id_#{object.product_id}_#{_meta_processes[index].production_process_id}", :style=>"width:#{_meta_processes[index].process_width}; background-color:#54fa75;"}
+                          .process_name
+                            = _meta_processes[index].production_process.name
+                            %span{:id=>"process_complete_percentage_id_#{object.product_id}_#{_meta_processes[index].production_process_id}"}
+
+                          %input{:type=>"hidden", :name=> "setIntervalId", "id"=>"setIntervalId_#{object.product_id}_#{_meta_processes[index].production_process_id}"}    
+                    - else
+                      %td.col-lg-3.btn.btn-secondary= "-"
+                      
+                    %td.col-lg-1.btn.btn-secondary= _meta_processes[index].present? ? _meta_processes[index].production_process_duration.to_i : '-'
+                    
+                    - if _meta_processes[index].present?
+                      - if !_meta_processes[index].actual_start_time.nil? && !_meta_processes[index].actual_end_time.nil? 
+                        - _process_start_time = _meta_processes[index].actual_start_time.to_time.to_i
+                        - _process_end_time = _meta_processes[index].actual_end_time.to_time.to_i
+                        - _total_process_time = _process_end_time - _process_start_time
+                        - _process_default_duration = _meta_processes[index].production_process_duration.to_i * 60
+
+                        - _process_delay = _total_process_time>_process_default_duration ? _total_process_time - _process_default_duration : _process_default_duration - _total_process_time
+
+                        - _process_delay_in_minute = _process_delay/60
+                        - _process_delay_in_second = _process_delay%60
+
+                        - _process_delay_to_show = _process_delay_in_minute.to_s + 'm ' + _process_delay_in_second.to_s + 's'
+                        - if _total_process_time > _process_default_duration
+                          %td.col-lg-1.btn.font-bold{:style=>"background:#ff6527;"}= "+ " + _process_delay_to_show
+                        - elsif _process_default_duration > _total_process_time
+                          %td.col-lg-1.btn.font-bold{:style=>"background:#F4F776"}= "- " + _process_delay_to_show
+                      - else
+                        %td.col-lg-1.btn= '-'
+                    - else
+                      %td.col-lg-1.btn= '-'
+
+                    %td.col-lg-1.btn.btn-secondary= _meta_processes[index].present? ? _meta_processes[index].process_cost : '-'
+
+                    - if @stock_production.status == '2'
+                      - if _meta_processes[index].present?
+                        %td.col-lg-2{:class=>"glyphicon glyphicon-ok m-btn green"}
+                      - else
+                        %td.col-lg-2.btn.btn-secondary= '-'
+                    - else
+                      - if _meta_processes[index].present?
+                        - if _meta_processes[index].status == 'done'
+                          %td.col-lg-2{:id => "process_status_#{object.product_id}_#{_meta_processes[index].production_process_id}", :class=>"glyphicon glyphicon-ok m-btn green"}
+                        -else
+                          - _process_composition = ProcessComposition.find_by_product_id_and_production_process_id(object.product_id,_meta_processes[index].production_process_id)
+                          %td.col-lg-2{:id => "process_status_#{object.product_id}_#{_meta_processes[index].production_process_id}"}
+                            .switch.col-lg-6.float-l{:style=>"margin-left:-15%;"}
+                              %label{:style=>"margin-top:15%;"}
+                                = check_box_tag :process_start_stop, 'enabled', _meta_processes[index].status == 'start' ? true : false, {"data-cof-key"=>"process_start_stop","data-value-active"=>"start","data-value-inactive"=>"stop", "class"=> "process_start_stop", "id"=>"process_start_stop_btn_id_#{object.product_id}_#{_meta_processes[index].production_process_id}","data-process-duration"=>_meta_processes[index].production_process_duration.to_i, "data-menu-product-id"=>object.product_id, "data-process-id"=>_meta_processes[index].production_process_id, "data-process-name"=>_meta_processes[index].production_process.name, "data-stock-production-meta-id"=>"#{object.id}","data-process-composition-id"=>_process_composition.id , "store_id"=> @stock_production.store_id, "production_id"=>@stock_production.id}
+                                %span.lever.float-l
+                            %b.float-r.col-lg-6{:style=>"margin-top:-2%;margin-right:-15%;"}
+                              / = link_to "Finish", "#"
+                              .button_finish{"aria-hidden" => "false", :style => "float:right;color:white;height:33px;", :class=>"btn blue process_done_btn", _meta_processes[index].status != 'initialize' ? '' : "disabled"=>"disabled", :id=>"process_complete_btn_id_#{object.product_id}_#{_meta_processes[index].production_process_id}", "data-menu-product-id"=>object.product_id, "data-process-id"=>_meta_processes[index].production_process_id, "data-process-status"=> "done", "data-stock-production-meta-id"=>"#{object.id}", "data-process-id"=>_meta_processes[index].production_process_id, "data-process-done" => "0" }= "Done"
+                              .process_complete_toast{:id=>"process_complete_toast_#{object.product_id}_#{_meta_processes[index].production_process_id}"}
+                        
+                        / .m-btn.red.glyphicon.glyphicon-remove
+                      -else
+                        %td.col-lg-2.btn.btn-secondary= '-'
+                %tr
+                  %td{:colspan=>7}
+                  %td.col-lg-2{:style=>"font-weight:bold;font-size:14px;"}= "Total cost (#{currency}): #{object.price}"
+        .divider
+        .grey-text.padding-10
+          ="Note: By default stocks are be added to production center store after production, once added to stock you can always transfer them to other stores."

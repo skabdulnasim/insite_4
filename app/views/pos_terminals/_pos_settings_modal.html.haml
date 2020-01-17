@@ -1,0 +1,16 @@
+/ POS Modal
+#posTerminalSettingsModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "posTerminalSettingsLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-sm
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showPOModalLabel.modal-title POS Settings
+      .modal-body
+        #posTerminalSettingsDetails
+          .center
+            %h4 Select Catalog
+            = select_tag "menu_card_id", options_from_collection_for_select(@menu_cards.map { |e| [e.id, e.name] }), {:class=>"form-control"}
+      .action
+        = link_to 'Go to POS', "#!", :class=>"m-btn m-btn-small white grey-text text-darken-2 waves-effect"

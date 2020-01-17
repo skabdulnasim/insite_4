@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @percentage.name
+%p
+  %b Value:
+  = @percentage.value
+
+= link_to 'Edit', edit_percentage_path(@percentage)
+\|
+= link_to 'Back', percentages_path

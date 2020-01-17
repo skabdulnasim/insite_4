@@ -1,0 +1,19 @@
+%h1 Listing table_types
+
+%table
+  %tr
+    %th Type
+    %th
+    %th
+    %th
+
+  - @table_types.each do |table_type|
+    %tr
+      %td= table_type.type_name
+      %td= link_to 'Show', table_type
+      %td= link_to 'Edit', edit_table_type_path(table_type)
+      %td= link_to 'Destroy', table_type, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Table type', new_table_type_path

@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @customer_queue_state.name
+%p
+  %b Color code:
+  = @customer_queue_state.color_code
+
+= link_to 'Edit', edit_customer_queue_state_path(@customer_queue_state)
+\|
+= link_to 'Back', customer_queue_states_path

@@ -1,0 +1,84 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+
+  $('.show_pop').popover('hide');
+  });
+- unless smart_listing.empty?
+  
+  %table.data-table#accordion
+    %thead
+      %tr.data-table__selectable-row    
+        %th
+          %input.checkbox-parent-toggle.filled-in{:type=>"checkbox",:id=>"parent_check"}
+          %label{:for=>"parent_check"}             
+        %th
+          = smart_listing.sortable "ID", "id"
+        %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Deliver To", "deliverable_id"
+        %th.col-lg-3 Slot
+        %th.col-lg-3 Store
+        %th= smart_listing.sortable "Status", "order_status_id"
+        %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Source", "source"
+        %th= smart_listing.sortable "Recorded Date", "recorded_at"
+        %th= smart_listing.sortable "Synced Date", "created_at"
+    %tbody.panel
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td
+            - if object.is_stock_debited == false && object.trash != 1
+              %input.checkbox-child.filled-in.select-order{:value=> "#{object.id }",:name=>"select_orders[]",:type=>"checkbox",:id=>"order_#{object.id}", 'data-order-id'=>"#{object.id}", :class => "remove_checkbox_#{object.id}"}
+              %label{:for=>"order_#{object.id}"} 
+            - elsif object.is_stock_debited == true 
+              %input.filled-in{:value=> "#{object.id }",:name=>"select_orders[]",:type=>"checkbox",:id=>"order_#{object.id}", 'data-order-id'=>"#{object.id}", :class => "remove_checkbox_#{object.id}", :disabled => 'disabled', :checked => 'checked'}
+              %label{:for=>"order_#{object.id}"}   
+          %td.hidden-sm.hidden-md.hidden-xs.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+            = object.id
+            = billed_order(object)
+            = order_stock_issue_status(object)
+          %td.hidden-sm.hidden-md.hidden-xs.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+            - if object.reservation.present?
+              - if object.reservation.reservation_details.present?
+                -reservation_details =  object.reservation.reservation_details
+                -reservation_details.each do |reservation_detail|
+                  - if reservation_detail.is_parent == "yes"
+                    %span.badge.orange
+                      =reservation_detail.resource.name
+                  -else
+                    %span.blue.badge
+                      =reservation_detail.resource.name
+            - else
+              = show_delivery_name(object)
+          - _order_slot = object.order_slots.first.slot if object.order_slots.present?
+          %td.col-lg-3.hidden-sm.hidden-md.hidden-xs.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+            = object.order_slots.present? ? "#{_order_slot.title} <br> (#{_order_slot.start_time.strftime("%I:%M%p")} - #{_order_slot.end_time.strftime("%I:%M%p")})".html_safe : '-'
+
+          %td.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+            = object.store_id.present? ? "#{Store.find(object.store_id).name}" : "-"
+          %td.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+            = show_order_status(object)
+          %td.hidden-sm.hidden-md.hidden-xs.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+            = object.source.humanize
+            - _ext_order = ExternalOrder.find_by_order_id(object.id)
+            -if _ext_order.present?
+              %span.badge.blue.padding-5.margin-t-2
+                = "ID: #{JSON.parse(_ext_order.order)["details"]["merchant_ref_id"]}"
+          %td.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+            = object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+          %td.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+            = object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+          %td.order-quickview{"aria-controls" => "order_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#order_collapse_#{object.id}", :role => "button", "data-order-id"=>object.id,"data-currency"=>currency, :class=>"order_collapse_#{object.id}"}
+        %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{object.id}", :role => "tabpanel", :id => "order_collapse_#{object.id}"}
+          %td.p0{:colspan=>9,:id=>"order_quickinfo_#{object.id}"}
+            Loading please wait...
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  %br
+- else
+  .alert.alert-warning
+    No orders found

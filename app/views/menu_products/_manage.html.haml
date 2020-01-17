@@ -1,0 +1,101 @@
+:javascript
+  $(function(){
+      $(".th_picture").tooltip({
+          placement: "top",
+          title: "Product Image"
+      });
+      $(".th_sku").tooltip({
+          placement: "top",
+          title: "Unique identifier of each product"
+      });
+      $(".th_business_type").tooltip({
+          placement: "top",
+          title: "Business Type"
+      });
+      $(".th_product_type").tooltip({
+          placement: "top",
+          title: "Product Type"
+      });
+      $(".th_date").tooltip({
+          placement: "top",
+          title: "Last updated time"
+      });
+      $(".icon_simple").tooltip({
+          placement: "top",
+          title: "Simple product"
+      });
+      $(".icon_raw").tooltip({
+          placement: "top",
+          title: "Raw product"
+      });
+      $(".icon_grouped").tooltip({
+          placement: "top",
+          title: "Grouped product, Click to see product under this group."
+      });
+      $(".icon_check").tooltip({
+          placement: "top",
+          title: "Sellable"
+      });
+      $(".icon_transfarable").tooltip({
+          placement: "top",
+          title: "Transfarable"
+      });
+      $(".icon_uncheck").tooltip({
+          placement: "top",
+          title: "Not sellable"
+      });
+      $(".icon_price").tooltip({
+          placement: "top",
+          title: "Price"
+      });
+  });
+%table.table.table-hover.mp_table
+  %tr.table-header.well
+    %th
+      %i.icon-picture{:href => "", :class=> "fa fa-picture-o", "data-toggle" => "tooltip"}
+    %th.col-sm-2 
+      Name
+    %th
+      %i.fa.fa-money.icon_price
+    %th Stock
+    %th Menu category
+    %th
+      %i.fa.fa-puzzle-piece{:class=> "th_product_type", "data-toggle" => "tooltip"}
+    %th Show in menu
+  - @have_products.each do |have_product|
+    %tr{:id => have_product.id, :class => "menu_products_action_list"}
+      %td
+        - if have_product.product.product_image
+          %img{:src => "/uploads/#{have_product.product.product_image}", :class => "img-thumbnail thumb", :width => "60"} 
+        - else
+          %img{:src => "/uploads/product.png", :class => "img-polaroid thumb", :width => "60"}
+      %td
+        = have_product.product.name
+        %p.menu_products_action_box{:id => "menu_products_action_box#{have_product.id}"}
+          %a.btn.btn-sm.btn-success{:href => "#{menu_product_path(have_product)}", :title => "View product"}
+            %i.fa.fa-search-plus.fa-lg
+          %a.btn.btn-sm.btn-info{:href => "#{edit_menu_product_path(have_product)}", :title => "Edit product"} 
+            %i.fa.fa-edit.fa-lg
+          %a.btn.btn-sm.btn-danger{:href => "#{menu_product_path(have_product)}?menu_card_id=#{params[:menu_card_id]}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete product"}
+            %i.fa.fa-trash-o.fa-lg
+      %td= have_product.sell_price
+      %td
+        - if have_product.stock_status == 0
+          %span{:style => "color:red;"}
+            Out of stock
+        - else
+          %span{:style => "color:green;"}
+            In stock
+      %td= have_product.menu_category.name
+      %td
+        - if have_product.product.product_type == "simple"
+          %i.fa.fa-square{:class=> "icon_simple", "data-toggle" => "tooltip"}
+        - if have_product.product.product_type == "variable"
+          %i.fa.fa-sitemap{:class=> "icon_grouped", "data-toggle" => "tooltip", "id" => have_product.product.id} 
+      %td
+        - if have_product.mode == 0
+          %span{:style => "color:red;"}
+            No
+        - else
+          %span{:style => "color:green;"}
+            Yes

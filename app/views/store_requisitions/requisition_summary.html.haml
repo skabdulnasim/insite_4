@@ -1,0 +1,362 @@
+- manual_load_javascript "templates/stores/summary_details"   
+:javascript
+  $(function() {
+    $('#req_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+  });
+:javascript
+  $(function() {
+    $('#valid_from_req').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+    $('#valid_till_req').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+  });
+:javascript
+  $(function() {
+    $('#valid_from_req_raw').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+    $('#valid_till_req_raw').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+    $('#production_date').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+    $('#expected_received_date').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+    $('#expected_received_date_raw').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+  });
+
+= render "layouts/flash"  
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Summary Requistions",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+
+= hidden_field_tag "store_type" , '', :value=>@store.store_type
+
+%ul.tabs.z-depth-1.width-100
+  %li.tab
+    %a.active{:href => "#summary_products_container"} Summary requisitions
+  %li.tab
+    %a{:href => "#raw_products_container"} Ingredients
+
+.col-lg-12.col-sm-12#summary_products_container
+  .col-lg-12.col-sm-12.padding-r-5#summary-container
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+            .filter-title.margin-t-b-0.col-lg-12
+              .col-lg-2.padding-10
+                Summary requisitions
+              .col-lg-3
+                = form_tag(requisition_summary_store_store_requisitions_path(@store), method: "get",multipart: true, :id=>"summary_req") do
+                  = hidden_field_tag :store_id,'', :value => @store.id   
+                  .padding-10  
+                    #req_date.input-group.date
+                      = text_field_tag :requisitions_date, '', :class => "form-control", :placeholder => "Select date", :value => @rq_date
+                      %span.input-group-addon
+                        %span.glyphicon.glyphicon-calendar  
+                    .clearfix  
+              .col-lg-2{:style=>"margin-top:10px;"}
+                %a.export-by-date-sales-report.m-btn.indigo{:href=>"/stores/#{params[:store_id]}/store_requisitions/requisition_summary.pdf?requisitions_date=#{params[:requisitions_date]}&store_id=#{params[:store_id]}", :target=>"_blank"}
+                  %i.mdi-file-file-download.left
+                  PDF          
+                / %a.export-by-date-sales-report.m-btn.indigo{:href=>"/store_requisitions/requisition_summary.csv?from_date=#{params[:requisitions_date]}&store_id=#{params[:store_id]}"}
+                /   %i.mdi-file-file-download.left
+                /   CSV 
+              .col-lg-5
+                .card
+                  .checkbox.float-l.margin-l-15{:style=>"margin-top:-4px;"}
+                    = radio_button_tag 'select_po', 'po_selected', false,{ :id => "select_po", :class=>"filled-in", :name=>"select_po_or_requisition_or_production"}
+                    %label.checkbox.inline.font-sz-12{:for=>"select_po", :style=>"padding-left:30px;"}= "Purchase Order"
+                  .checkbox.float-l.margin-l-15
+                    - if @store.store_type != 'kitchen_store'
+                      = radio_button_tag 'select_requisition', 'requisition_selected', false,{ :id => "select_requisition", :class=>"filled-in", :name=>"select_po_or_requisition_or_production"}
+                      %label.checkbox.inline.font-sz-12{:for=>"select_requisition", :style=>"padding-left:30px;"}= "Requisition For Production"
+                    - else
+                      = radio_button_tag 'select_production', 'production_selected', false,{ :id => "select_production", :class=>"filled-in", :name=>"select_po_or_requisition_or_production"}
+                      %label.checkbox.inline.font-sz-12{:for=>"select_production", :style=>"padding-left:30px;"}= "Production"
+
+          - if @summary_requisitions.present? 
+            %table.data-table#accordion-req
+              %thead
+                %tr.data-table__selectable-row
+                  %th
+                  %th Product  
+                  %th Requisitions Amount             
+                  %th Current Stock
+              %tbody.panel
+                - @summary_requisitions.each  do |product_id,data|
+                  - rq_date = params[:requisitions_date]
+                  - basic_unit = Product.find(product_id).basic_unit 
+                  - product_name = Product.find(product_id).name 
+                  %tr.data-table__selectable-row
+                    %td
+                      %input.checkbox-child.filled-in.summary-products{:value=> "#{product_id}",:name=>"selected_products[]",:type=>"checkbox", "data-product-id" => "#{product_id}",:id=>"product_summary_#{product_id}","data-product-name" => "#{product_name}","data-basic-unit"=>"#{basic_unit}","data-product-quantity"=>"#{data['total_amount']}","data-rq-date"=>@rq_date}
+                      %label{:for=>"product_summary_#{product_id}"}
+                    %td.product-details{"aria-controls" => "collapse_#{product_id}", "aria-expanded" => "false", "data-parent" => "#accordion-req", "data-toggle" => "collapse", :href => "#collapse_#{product_id}", :role => "button", :class=>"requ_collapse_#{product_id}","data-action"=>"view_deatils","data-store-id"=>"#{@store.id}","data-basic-unit"=>"#{basic_unit}","data-product-id"=>"#{product_id}","data-rq-date"=>"#{@rq_date}"}
+                      = product_name
+                    %td.product-details{"aria-controls" => "collapse_#{product_id}", "aria-expanded" => "false", "data-parent" => "#accordion-req", "data-toggle" => "collapse", :href => "#collapse_#{product_id}", :role => "button", :class=>"requ_collapse_#{product_id}","data-action"=>"view_deatils","data-store-id"=>"#{@store.id}","data-basic-unit"=>"#{basic_unit}","data-product-id"=>"#{product_id}","data-rq-date"=>"#{@rq_date}"} 
+                      = data['total_amount']  
+                      =basic_unit 
+                    %td.product-details{"aria-controls" => "collapse_#{product_id}", "aria-expanded" => "false", "data-parent" => "#accordion-req", "data-toggle" => "collapse", :href => "#collapse_#{product_id}", :role => "button", :class=>"requ_collapse_#{product_id}","data-action"=>"view_deatils","data-store-id"=>"#{@store.id}","data-basic-unit"=>"#{basic_unit}","data-product-id"=>"#{product_id}","data-rq-date"=>"#{@rq_date}"}
+                      %span.label.label-default
+                        =number_with_precision(get_product_current_stock(@store.id, product_id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                        =basic_unit   
+                  %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{product_id}", :role => "tabpanel", :id => "collapse_#{product_id}"}
+                    %td.p0{:colspan=>9,:id=>"requ_quickinfo_#{product_id}"}
+                      Loading please wait...
+                 
+          - else
+            .alert.alert-warning
+              No record found.
+
+  .col-lg-4.col-sm-4.padding-r-5.hidden#product-container  
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Selected Products
+            = form_tag(product_vendors_store_purchase_orders_path(@store), method: "get",multipart: true) do 
+              .padding-10
+                %button.m-btn.green.float-r.waves-effect.waves-light.width-100{:type => "submit"}
+                  Create Purchase Order
+                .clearfix    
+              / .padding-10
+              /   = select_tag :summary_filter, options_for_select({"Purchase Order"=>"pruchase_order","Kitchen Production"=>"kitchen_production"}), class: "search form-control", :prompt => "Select Action"
+              .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                %ul.collection.po-product-list
+                  %li.collection-item.no-item-selected
+                    %div
+                      No products selected 
+
+  .col-lg-4.col-sm-4.padding-r-5.hidden#product-container-for-requisition  
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Requisition Details
+            = form_for @store_requisition, :html => { :class => ''} do |sr|
+              = hidden_field_tag :send_requisition, '', :value => 'yes'
+              = hidden_field_tag :future_orders, params[:future_orders_array]
+              = sr.hidden_field :unit_id, :class => 'form-control', :value => current_user.unit_id
+              = sr.hidden_field :store_id, :class => 'form-control', :value => @store.id
+              = sr.hidden_field :business_type, :class => 'form-control', :value => 'by_catalog'
+              .padding-10
+                = sr.submit 'Save and send requisition', :class => 'm-btn green width-100'
+              .filter-title.margin-t-b-0 
+                %i.mdi-action-label.left
+                Enter Details Below
+              .padding-10 
+                .form-group
+                  = sr.text_field :name, :class => 'form-control', :placeholder => "New requisition title", :required=>true
+                .form-group
+                  = sr.select :to_store, options_for_select(@destination_stores.map{ |ut| ["#{ut.name} (#{ut.unit.unit_name}) - #{ut.store_priority.humanize.upcase}", ut.id] }, 2), { include_blank: "Select store where requisition will be sent"}, :class => 'form-control',:required => true
+                .form-group
+                  #valid_from_req.input-group.date
+                    = sr.text_field :valid_from, :class => "form-control", "format" => "dd-mm-yyyy hh:mm:ss", :placeholder => "valid From", :required => true
+                    %span.input-group-addon
+                      %span.glyphicon.glyphicon-calendar      
+                .form-group
+                  #valid_till_req.input-group.date
+                    = sr.text_field :valid_till, :class => "form-control", "data-format" => "dd-MM-yyyy hh:mm:ss", :placeholder => "valid Till", :required => true
+                    %span.input-group-addon
+                      %span.glyphicon.glyphicon-calendar
+                .form-group
+                  #expected_received_date.input-group.date
+                    = text_field_tag :expected_received_date, '', :class => "form-control", "data-format" => "dd-MM-yyyy hh:mm:ss", :placeholder => "expected received date"
+                    %span.input-group-addon
+                      %span.glyphicon.glyphicon-calendar
+              .filter-title.margin-t-b-0 
+                %i.mdi-action-label.left
+                Selected Products
+              .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                %ul.collection.requisition-product-list
+                  %li.collection-item.no-requisition-item-selected
+                    %div
+                      No products selected  
+
+  .col-lg-4.col-sm-4.padding-r-5.hidden#product-container-for-production  
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Selected Products
+            = form_tag(store_stock_productions_path(@store), method: "post",multipart: true) do
+              / = hidden_field_tag :store_id,'', :value => @store.id
+              = hidden_field_tag "stock_production[kitchen_store_id]", nil, value: "#{@store.id}" 
+              = hidden_field_tag "stock_production[status]", nil, value: "1"
+              .padding-10
+                %button.m-btn.green.float-r.waves-effect.waves-light.width-100{:type => "submit"}
+                  Send For Production
+                .clearfix    
+              / .padding-10
+              /   = select_tag :summary_filter, options_for_select({"Purchase Order"=>"pruchase_order","Kitchen Production"=>"kitchen_production"}), class: "search form-control", :prompt => "Select Action"
+              .padding-10
+                .form-group
+                  #production_date.input-group.date
+                    = text_field_tag "stock_production[production_date]", '', :class => "form-control", "data-format" => "dd-MM-yyyy hh:mm:ss", :placeholder => "production date"
+                    %span.input-group-addon
+                      %span.glyphicon.glyphicon-calendar
+              .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                %ul.collection.production-product-list
+                  %li.collection-item.no-production-item-selected
+                    %div
+                      No products selected
+
+.col-lg-12.col-sm-12#raw_products_container
+  .col-lg-12.col-sm-12.padding-r-5#ingredients-container
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container
+            .filter-title.margin-t-b-0.col-lg-12.padding-t-b-14
+              .col-lg-4.padding-10
+                Ingredients
+            - if @summary_requisitions_bom.present?
+              - kitchen_stores =  Store.unit_stores(current_user.unit_id).kitchen 
+              %table.data-table.col-lg-12
+                %thead
+                  %tr
+                    %th Raw Product  
+                    %th Total Amount            
+                    %th 
+                      Current Stock
+                      %br
+                        of own store
+                    - if @store.store_type != 'kitchen_store'
+                      - if kitchen_stores.present?
+                        - kitchen_stores.each do |kitchen_store|
+                          %th 
+                            Current Stock
+                            %br
+                              = "of #{kitchen_store.name}"
+                %tbody.panel
+                  - @summary_requisitions_bom.each do |raw_product_id,data|
+                    - basic_unit = Product.find(raw_product_id).basic_unit 
+                    - product_name = Product.find(raw_product_id).name 
+                    %tr
+                      %td
+                        %input.checkbox-child.filled-in.summary-raw-products{:value=> "#{raw_product_id}",:name=>"selected_products[]",:type=>"checkbox", "data-product-id" => "#{raw_product_id}",:id=>"ingredient_summary_#{raw_product_id}","data-product-name" => "#{product_name}","data-basic-unit"=>"#{basic_unit}","data-product-quantity"=>"#{data['raw_product_total_qty']}","data-rq-date"=>@rq_date}
+                        %label{:for=>"ingredient_summary_#{raw_product_id}"}
+                        = product_name
+                      %td
+                        = data['raw_product_total_qty']
+                        = basic_unit
+                      %td
+                        %span.label.label-default
+                          =number_with_precision(get_product_current_stock(@store.id, raw_product_id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                          =basic_unit
+                      - if @store.store_type != 'kitchen_store'
+                        - if kitchen_stores.present?
+                          - kitchen_stores.each do |kitchen_store|
+                            %td
+                              %span.label.label-default
+                                =number_with_precision(get_product_current_stock(kitchen_store.id, raw_product_id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                                =basic_unit 
+            - else
+              .alert.alert-warning
+                No record found.  
+     
+  .col-lg-4.col-sm-4.padding-r-5.hidden#raw-product-container  
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Selected Products
+            = form_tag(product_vendors_store_purchase_orders_path(@store), method: "get",multipart: true) do 
+              .padding-10
+                %button.m-btn.green.float-r.waves-effect.waves-light.width-100{:type => "submit"}
+                  Create Purchase Order
+                .clearfix    
+              / .padding-10
+              /   = select_tag :summary_filter, options_for_select({"Purchase Order"=>"pruchase_order","Kitchen Production"=>"kitchen_production"}), class: "search form-control", :prompt => "Select Action"
+              .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                %ul.collection.po-raw-product-list
+                  %li.collection-item.no-raw-item-selected
+                    %div
+                      No products selected
+
+  .col-lg-4.col-sm-4.padding-r-5.hidden#raw-product-container-for-requisition  
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Requisition Details
+            = form_for @store_requisition, :html => { :class => ''} do |sr|
+              = hidden_field_tag :send_requisition, '', :value => 'yes'
+              = hidden_field_tag :future_orders, params[:future_orders_array]
+              = sr.hidden_field :unit_id, :class => 'form-control', :value => current_user.unit_id
+              = sr.hidden_field :store_id, :class => 'form-control', :value => @store.id
+              = sr.hidden_field :business_type, :class => 'form-control', :value => 'by_catalog'
+              .padding-10
+                = sr.submit 'Save and send requisition', :class => 'm-btn green width-100'
+              .filter-title.margin-t-b-0 
+                %i.mdi-action-label.left
+                Enter Details Below
+              .padding-10 
+                .form-group
+                  = sr.text_field :name, :class => 'form-control', :placeholder => "New requisition title", :required=>true
+                .form-group
+                  = sr.select :to_store, options_for_select(@destination_stores.map{ |ut| ["#{ut.name} (#{ut.unit.unit_name}) - #{ut.store_priority.humanize.upcase}", ut.id] }, 2), { include_blank: "Select store where requisition will be sent"}, :class => 'form-control',:required => true
+                .form-group
+                  #valid_from_req_raw.input-group.date
+                    = sr.text_field :valid_from, :class => "form-control", "format" => "dd-mm-yyyy hh:mm:ss", :placeholder => "valid From", :required => true
+                    %span.input-group-addon
+                      %span.glyphicon.glyphicon-calendar      
+                .form-group
+                  #valid_till_req_raw.input-group.date
+                    = sr.text_field :valid_till, :class => "form-control", "data-format" => "dd-MM-yyyy hh:mm:ss", :placeholder => "valid Till", :required => true
+                    %span.input-group-addon
+                      %span.glyphicon.glyphicon-calendar
+                .form-group
+                  #expected_received_date_raw.input-group.date
+                    = text_field_tag :expected_received_date, '', :class => "form-control", "data-format" => "dd-MM-yyyy hh:mm:ss", :placeholder => "expected received date"
+                    %span.input-group-addon
+                      %span.glyphicon.glyphicon-calendar
+              .filter-title.margin-t-b-0 
+                %i.mdi-action-label.left
+                Selected Products
+              .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                %ul.collection.requisition-raw-product-list
+                  %li.collection-item.no-requisition-raw-item-selected
+                    %div
+                      No products selected
+
+= hidden_field_tag "open_modal" , '', :value=>"yes"
+= hidden_field_tag "open_cart_type", "", :value => ""
+
+/ #PoProductionSelectModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "PoProductionSelectModalLabel", :role => "dialog", :tabindex => "-1"}
+/   .modal-dialog{:style=>"width:320px;"}
+/     .modal-content.m-modal-content
+/       .modal-header.m-modal-header
+/         %button.close{"data-dismiss" => "modal", :type => "button"}
+/           %span{"aria-hidden" => "true"} &times;
+/           %span.sr-only Close
+/         %h4#PoProductionSelectModalLabel.modal-title Select PO or Production
+/       .modal-body
+/         Do you want to PO or Purchase?
+/         .clearfix
+/       .modal-footer
+/         .checkbox.float-l{:style=>"margin-top:-4px;"}
+/           = radio_button_tag 'select_po', 'po_selected', false,{ :id => "select_po", :class=>"filled-in", "data-dismiss" => "modal", :name=>"select_po_or_production"}
+/           %label.checkbox.inline.margin-l-5.font-sz-15{:for=>"select_po", :style=>"padding-left:30px;"}= "Purchase Order"
+/         .checkbox.float-l.margin-l-15
+/           = radio_button_tag 'select_production', 'production_selected', false,{ :id => "select_production", :class=>"filled-in", "data-dismiss" => "modal", :name=>"select_po_or_production"}
+/           %label.checkbox.inline.margin-l-5.font-sz-15{:for=>"select_production", :style=>"padding-left:30px;"}= "Production"

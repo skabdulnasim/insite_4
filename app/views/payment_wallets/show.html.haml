@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @payment_wallet.name
+
+= link_to 'Edit', edit_payment_wallet_path(@payment_wallet)
+\|
+= link_to 'Back', payment_wallets_path

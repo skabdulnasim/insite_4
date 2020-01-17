@@ -1,0 +1,72 @@
+= render "layouts/flash"
+.col-sm-12.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Resource Types
+            .data-table-header__actions  
+              %a.m-btn.m-btn-teal{:href => "#{new_resource_type_path}"}
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs Add Resource Type
+          
+          %table.data-table
+            %thead
+              %tr.data-table__selectable-row
+                %th.col-sm-1
+                  Name
+                %th.col-sm-2
+                  Required Fields
+                %th.col-sm-2
+                  Sortable Field
+                %th.col-sm-2
+                  Unique Field
+                %th.col-sm-2
+                  Compareable Field
+                %th.col-sm-2
+                  Others Field
+                %th.col-sm-2 
+                  
+            %tbody.panel
+              - @resource_types.each do |resource_type|
+                %tr
+                  %td
+                    %h3= resource_type.name
+                  %td
+                    - resource_type.fields.required.each do |data|
+                      %h5
+                        = "#{data.name}"
+                        %small
+                          = "#{data.field_type.humanize}"
+                  %td
+                    - resource_type.fields.sortable.each do |data|
+                      %h5
+                        = "#{data.name}"
+                        %small
+                          = "#{data.field_type.humanize}"
+                  %td
+                    - resource_type.fields.unique.each do |data|
+                      %h5
+                        = "#{data.name}"
+                        %small
+                          = "#{data.field_type.humanize}"
+                  %td
+                    - resource_type.fields.compareable.each do |data|
+                      %h5
+                        = "#{data.name}"
+                        %small
+                          = "#{data.field_type.humanize}"
+                  %td
+                    - resource_type.fields.others.each do |data|
+                      %h5
+                        = "#{data.name}"
+                        %small
+                          = "#{data.field_type.humanize}"
+                  %td
+                    %a.btn.btn-xs.btn-default{:href => "#{edit_resource_type_path(resource_type)}", :title => "Edit"}
+                      %i.mdi-editor-mode-edit
+                    %a.btn.btn-xs.btn-danger{:href => "#{resource_type_path(resource_type)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete"}
+                      %i.mdi-action-delete
+

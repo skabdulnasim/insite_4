@@ -1,0 +1,37 @@
+- unless smart_listing.empty?
+  %table.table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-md-7= smart_listing.sortable "Transfer details", "id" 
+        %th.col-md-2= smart_listing.sortable "Date", "created_at"
+        %th.col-md-3
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td
+            %h5
+              ="Transaction ID: #{object.id} "                 
+              = transfer_status_tag(object.activity_id,object.status)
+            %p.module_description.font-sz-12
+              %b Summary:
+              = transfer_type(object.activity_id)
+              = "| #{pluralize(object.stocks.set_store(object.primary_store_id).count, 'product')} | Total cost: #{number_to_currency(object.stocks.set_store(object.primary_store_id).sum(:price), unit: "#{currency}", format: "%u %n")}"
+              %br
+              %b From store:
+              = "#{object.from_store.name} | Address: #{object.from_store.address} | Contact: #{object.from_store.contact_number}"
+              %br
+              - if object.vehicle
+                %b Delivery Vehicle:
+                = "#{object.vehicle.name} | Contact: #{object.vehicle.contact_no}"
+          %td.font-sz-12=object.created_at.strftime("%d %b %Y, %I:%M %p")
+          %td.col-lg-2.col-xs-3.padding-top-20
+            %a.m-btn.blue.float-r{:href=>"#{store_stock_transfer_path(@store,object)}"} 
+              =get_transfer_action_button_text(object.activity_id,@store.id,object.primary_store_id,object.secondary_store_id,object.status)              
+      
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No records found!.
+

@@ -1,0 +1,13 @@
+<select id="question_option_type_id" class="select optional form-control" name="user[unit_id]" required="required">
+ <option value="">Select Branch</option>
+<% for(var i=0; i<type_info.length; i++) { %>
+ <option value="<%= type_info[i].id %>"><%= type_info[i].unit_name %> (<%= type_info[i].locality %>)</option>
+<%}%>
+</select>
+
+
+
+<!-- <% for(var i=0; i<type_info.length; i++) { %>
+ <input name="userkk[]" type="checkbox" value="<%= type_info[i].id %>" /><%= type_info[i].unit_name %> (<%= type_info[i].locality %>)
+ <br>
+<%}%> -->

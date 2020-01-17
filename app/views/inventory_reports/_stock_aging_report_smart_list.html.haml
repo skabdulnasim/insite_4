@@ -1,0 +1,19 @@
+-unless smart_listing.empty?
+	%table.table.table-striped
+		%tr
+			%th{:rowspan=>2} Product Name
+			%th{:colspan=>4,:style=>"text-align:center;"} Product quantity with aging duration
+		%tr{:style=>"text-align:center;color:blue"}
+			%th 0 to 6 months
+			%th 6 to 12 months
+			%th 12 to 18 months
+			%th 18 months and older
+		- smart_listing.collection.each do |product_object|
+			%tr
+				%td=product_object.product.name
+				%td=get_availabe_stock(product_object.product_id,0,6)
+				%td=get_availabe_stock(product_object.product_id,6,12)
+				%td=get_availabe_stock(product_object.product_id,12,18)
+				%td=get_availabe_stock(product_object.product_id,18)
+	= smart_listing.paginate
+-else

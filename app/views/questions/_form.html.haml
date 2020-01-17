@@ -1,0 +1,86 @@
+= form_for @question, :html => { :class => 'form-horizontal bordered-row question_option_form'} do |f|
+  - if @question.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@question.errors.count, "error")} prohibited this question from being saved:"
+      %ul
+        - @question.errors.full_messages.each do |msg|
+          %li= msg
+  .row
+    .col.m12.s12.col-lg-12
+      .card  
+        .card-content.p10
+          =hidden_field_tag 'option_selection'
+          #wizard
+
+            %h3 Question
+            %section.ptb0
+              %h5.header Question details
+              .divider
+              .col-lg-12.p0
+                %table.data-table
+                  %tbody
+                    .form-group.margin-t-15
+                      = f.label :question_type, :class => 'col-lg-3 control-label'
+                      .col-lg-7
+                        = f.select :question_type, options_for_select(Question::QUESTION_TYPE,@question.question_type),{ :include_blank=>false }, {:class => "form-control"}
+                    .form-group
+                      = f.label :title, :class => 'col-lg-3 control-label'
+                      .col-lg-7
+                        = f.text_area :title, :class => 'form-control', :style => "height:140px;"
+                    .form-group
+                      = f.label :option_type, :class => 'col-lg-3 control-label'
+                      .col-lg-7
+                        = f.select :option_type, options_for_select(Question::OPTION_TYPE,@question.option_type),{ :include_blank=>false }, {:class => "form-control"}
+                    .form-group
+                      = f.label 'Image', :class => 'col-lg-3 control-label'
+                      .col-lg-6
+                        = f.file_field :image, :class=>'margin-t-5'
+                      .col-sm-3
+                        - question_image = Question.find_by_id(f.object.id)
+                        - if question_image.present?
+                          = image_tag(question_image.image, width: '55', height: '45', :style => "margin-left:-8px;")
+
+            %h3 Options
+            %section.ptb0
+              .input_type_option.text-red * For input type, options are not required
+              %h5.header Option details
+              .divider
+              .col-lg-12.p0
+                %table.data-table
+                  %tbody
+                    = f.fields_for :options do |opt_builder|
+                      .divider
+                      .form-group.margin-t-15
+                        = opt_builder.label :title, :class => 'col-lg-3 control-label'
+                        .col-lg-7
+                          = opt_builder.text_area :title, :class => 'form-control', :style => "height: 80px;"
+                      .form-group
+                        = opt_builder.label 'Image', :class => 'col-lg-3 control-label'
+                        .col-lg-6
+                          = opt_builder.file_field :image, :class=>'margin-t-5'
+                        .col-sm-3
+                          - option_image = Option.find_by_id(opt_builder.object.id)
+                          - if option_image.present?
+                            = image_tag(option_image.image, width: '55', height: '45', :style => "margin-left:-8px;")
+                          - else
+                            = image_tag("icons/product-box-128.png", width: '55', height: '45', :class => "img-thumbnail", :style => "margin-left:-8px;")
+
+                    = link_to_add_fields "Add Option", f, :options, {}, 'm-btn green margin-l-15 add_options'
+
+            %h3 Allocate Units
+            %section.ptb0
+              %h5.header Select Units
+              .divider
+              .margin-t-15
+              .col-lg-12.p0
+                %table.data-table
+                  %tbody
+                    .col-sm-12
+                      .panel.panel-default
+                        .panel-heading
+                          Select Branch
+                        .panel-body{:style => "max-height: 400px !important; overflow: auto !important;position:relative !important;"}
+                          - Unit.by_unittype(3).each do |unit|
+                            .checkbox
+                              = check_box_tag "unit_ids[]", unit.id, @question.question_units.map(&:unit_id).include?(unit.id), :id=>"unit_#{unit.id}", :class => "unit_checkbox"
+                              %label{:for=>"unit_#{unit.id}"}= unit.unit_name

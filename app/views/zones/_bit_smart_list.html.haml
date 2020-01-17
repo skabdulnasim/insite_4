@@ -1,0 +1,17 @@
+- unless smart_listing.empty?
+	.panel.panel-default{:style=>"padding-left:20px; padding-right:20px;"}
+		%p.text-info *Please click on (+) button to add Beat and (-) to remove it 
+		-smart_listing.collection.each do|bit|
+			.card.grey
+				%b 
+					=bit.name
+				- if is_allocated_to_zone(bit.id) == false
+					%a.m-btn.green.m-btn-low-padding.selectable_item_list{:style=>"float:right;","data-item-id"=>bit.id,"data-item-name"=>bit.name,:class=>"action_for_selectable_item_list#{bit.id}"}
+						%i.fa.fa-plus
+				- else
+					%a.m-btn.red.m-btn-low-padding.selectable_item_list{:style=>"float:right;","data-item-id"=>bit.id,"data-item-name"=>bit.name,:class=>"action_for_selectable_item_list#{bit.id}"}
+						%i.fa.fa-minus
+			%br
+	= smart_listing.paginate
+-else
+	%p.warning No Beat found

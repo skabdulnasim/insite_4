@@ -1,0 +1,44 @@
+- if notice 
+  .alert.alert-success.alert-dismissible{:role => "alert"}
+    %span.fa-stack.fa-lg
+      %i.fa.fa-circle.fa-stack-2x
+      %i.fa.fa-check.fa-stack-1x.fa-inverse
+    %button.close{"data-dismiss" => "alert", :type => "button"}
+      %span{"aria-hidden" => "true"} &times;
+      %span.sr-only Close
+    = notice
+.row
+  .col-lg-12
+    .page-header
+      %h1
+        Assign Delivery Boys 
+        %small to Units
+    .page-container
+      =# debug @assigned_current_delivery_boy
+      - assigned_array = []
+      - @assigned_current_delivery_boy.each do |assigned|
+        - assigned_array.push("#{assigned.unit_id},#{assigned.account_id}")
+      = form_for @assign_unit,:url => create_assign_unit_delivery_boy_path(@delivery_boy), :html => { :id => "check_box_validate" } do |f|
+        - if @assign_unit.errors.any?
+          #error_explanation
+            %h2= "#{pluralize(@assign_unit.errors.count, "error")} prohibited this assign_unit from being saved:"
+            %ul
+              - @assign_unit.errors.full_messages.each do |msg|
+                %li= msg
+
+        .col-sm-4
+          %h3
+            Units
+          #related_data_scroll_list  
+            - @accounts.each do |account|
+              - Apartment::Database.switch(account.subdomain)
+              
+              - Unit.all.each do |unit|
+                = account.subdomain
+                - check_box_val = "#{unit.id},#{account.id}"
+                .form-group
+                  = check_box_tag("unit_id[]", check_box_val , assigned_array.include?(check_box_val), :id=>"unit_id_#{unit.id}")
+                  %label{:for=>"unit_id_#{unit.id}"}= "#{unit.unit_name}, (#{unit.locality})"
+
+        = f.submit 'Save',:class => 'btn btn-success'           
+            

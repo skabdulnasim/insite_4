@@ -1,0 +1,45 @@
+%h1 Listing addresses
+
+%table
+  %tr
+    %th Customer
+    %th Place
+    %th City
+    %th State
+    %th Locality
+    %th Landmark
+    %th Pincode
+    %th Receiver name
+    %th Receiver first name
+    %th Receiver last name
+    %th Latitude
+    %th Longitude
+    %th Delivery address
+    %th Contact no
+    %th
+    %th
+    %th
+
+  - @addresses.each do |address|
+    %tr
+      %td= address.customer_id
+      %td= address.place
+      %td= address.city
+      %td= address.state
+      %td= address.locality
+      %td= address.landmark
+      %td= address.pincode
+      %td= address.receiver_name
+      %td= address.receiver_first_name
+      %td= address.receiver_last_name
+      %td= address.latitude
+      %td= address.longitude
+      %td= address.delivery_address
+      %td= address.contact_no
+      %td= link_to 'Show', address
+      %td= link_to 'Edit', edit_address_path(address)
+      %td= link_to 'Destroy', address, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Address', new_address_path

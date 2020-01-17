@@ -1,0 +1,55 @@
+- unless smart_listing.empty?     
+  %table.data-table
+    %thead
+      %tr
+        %th.col-sm-2 Resource
+        %th.padding-l-10 Item Name
+        %th HSN CODE
+        %th Total QTY
+        %th Total Price
+        %th From Date
+        %th{:style => "padding-right: 0px !important;"} To Date
+    
+    %tbody
+      - smart_listing.collection.each do |resource|
+        - orderdetails = get_group_order_details_for_resource(resource.id,@from_datetime,@to_datetime,current_user.unit_id,@report_mode)
+        /= debug orderdetails
+        %tr
+          %td{:style=>"background-color:rgb(255, 210, 26);"}
+            = resource.name
+            - if resource.customer.present?  
+              %br
+              = "#{resource.customer.customer_profile.firstname}" "#{resource.customer.customer_profile.lastname}"
+              %br
+              Ph:
+              = resource.customer.mobile_no
+          - if orderdetails.present? 
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td{:style => "padding-right: 0px !important;"}
+          - else
+            %td{:style => "padding-left: 12px !important;",:colspan => 6} 
+              No Record Found ....
+          - if orderdetails.present?
+            - orderdetails.each do |object|
+              - product = Product.find(object["product_id"])
+              /=debug object
+              %tr{:style=>"background-color:rgb(255, 165, 27);"}
+                %td 
+                %td.padding-l-10= object["product_name"]
+                %td= product.hsn_code
+                %td= "#{object['total_sale']}" " #{product.basic_unit}"
+                %td= "#{object['total_sale']}" " #{currency}"  
+                %td= params[:from_date]  
+                %td= params[:to_date]
+          
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  %br            
+- else
+  .alert.alert-warning
+    No record found

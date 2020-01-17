@@ -1,0 +1,47 @@
+- @filters = Array.new
+
+- @form_data[:report_selectors].each do |filter_col|
+  - data_type = get_data_type(filter_col)
+  - if data_type == "integer" || data_type == "float"
+    - tmp = Hash.new
+    - tmp[:id]= filter_col
+    - tmp[:label]= filter_col
+    - tmp[:type] = data_type
+    - @filters << tmp
+    
+- @filter_json = @filters.to_json
+
+%table.newtable{:align => "center", :border => "0", :cellpadding => "0", :cellspacing => "0", :width => "100%"}
+  %tbody
+    %tr
+      %th{:width => "35%"} Columns
+      %th.aligncenter{:width => "10%"} Sum
+      %th.aligncenter{:width => "10%"} Average
+      %th.aligncenter{:width => "15%"} Lowest Value
+      %th.aligncenter{:width => "20%"} Largest Value
+  = form_for @report, method: "post", url: customize_step_report_folder_report_path(@report_folder,@report,4) do |f|
+    - @filters.each do |row| 
+      -# if row[:type] == "integer" || row[:type] == "float"
+      %tr
+        %td{:nowrap => ""}
+          = row[:label].humanize
+          =# debug row
+        %td.aligncenter
+          = f.check_box :aggregation_functions,  {:multiple => true ,:checked=>is_checked_agg_cb("SUM",row[:label]), id: "report_aggregation_functions_sum#{row[:id]}"}, get_cb_agg_name("SUM",row[:label]),nil
+          %label{:for=>"report_aggregation_functions_sum#{row[:id]}"}
+        %td.aligncenter
+          = f.check_box :aggregation_functions,  {:multiple => true ,:checked=>is_checked_agg_cb("AVG",row[:label]), id: "report_aggregation_functions_avg#{row[:id]}"}, get_cb_agg_name("AVG",row[:label]),nil
+          %label{:for=>"report_aggregation_functions_avg#{row[:id]}"}
+        %td.aligncenter
+          = f.check_box :aggregation_functions,  {:multiple => true ,:checked=>is_checked_agg_cb("MIN",row[:label]), id: "report_aggregation_functions_min#{row[:id]}"}, get_cb_agg_name("MIN",row[:label]),nil
+          %label{:for=>"report_aggregation_functions_min#{row[:id]}"}
+        %td.aligncenter
+          = f.check_box :aggregation_functions,  {:multiple => true ,:checked=>is_checked_agg_cb("MAX",row[:label]), id: "report_aggregation_functions_max#{row[:id]}"}, get_cb_agg_name("MAX",row[:label]),nil
+          %label{:for=>"report_aggregation_functions_max#{row[:id]}"}
+    %tr
+      %td  
+        #cvbutton{:align => "center"}
+        %br
+          = f.submit "Reset", :type => "reset", :class=>"m-btn white grey-text"
+          = f.submit "Next", :class=>"m-btn teal"
+=# debug (@filters)

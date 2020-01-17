@@ -1,0 +1,12 @@
+#page-wrapper
+  .row
+    .page-header
+      %h1
+        Product Management
+        %small Product attribute
+    .page-container
+      = @attribute.name
+
+= link_to 'Edit', edit_attribute_path(@attribute)
+\|
+= link_to 'Back', attributes_path

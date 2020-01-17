@@ -1,0 +1,63 @@
+- links_arr = [{:title=>"Comprehensive Sales Report",:url=>comprehensive_sale_reports_path,:active_class=>""},{:title=>"Bill by Bill Sales Report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+.main-section__content
+	.example
+		.example__content.p0
+			.data-table-container
+				%header.data-table-header
+					.data-table-header__label 
+					.data-table-header__actions
+
+						- url = "/comprehensive_sale_reports/bill_by_bill_report.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"
+						-if params[:unit_ids].present?
+							- params[:unit_ids].each do |u_id|
+								- url = url+"&unit_ids[]="+u_id
+
+						%a.export-bill-by-bill-sales-report.m-btn.indigo.margin-l-5{:href=>"#{url}"}
+							%i.mdi-file-file-download.left
+							CSV
+
+.col-sm-2.padding-5
+	.card
+		.padding-10
+			%b FILTER BY
+		= smart_listing_controls_for(:bill_by_bill_sales, {class: "text-left"}) do
+
+			= hidden_field_tag :from_date, "#{params[:from_date]}"
+			= hidden_field_tag :to_date, "#{params[:to_date]}"
+			- if @unit_arr.present?
+				- @unit_arr.each do |u_id|
+					= hidden_field_tag "unit_ids[]",u_id, :class=>'unit_ids'
+
+			.filter-title.margin-t-b-0 Deliverable Type
+			.padding-10
+				= select_tag "deliverable_type", options_from_collection_for_select(@deliverable, "deliverable_type", "deliverable_type"),class: "form-control", "data-from-date" =>"#{params[:from_date]}", "data-to-date" => "#{params[:to_date]}", "data-unit-id" => "#{@unit_id}", prompt: 'Select Deliverable Type'
+
+			.filter-title.margin-t-b-0 Section
+			.padding-10
+				= select_tag "section_id", options_from_collection_for_select(@sections, "id", "name"),class: "form-control", "data-from-date" =>"#{params[:from_date]}", "data-to-date" => "#{params[:to_date]}", "data-unit-id" => "#{@unit_id}", prompt: 'Select Section'
+
+			.filter-title Discount
+			.padding-10
+				.checkbox
+					= check_box_tag 'discountmode', 1, false,{ :id => "discountmode", :class=>"filled-in discountmode", "data-from-date" =>"#{params[:from_date]}", "data-to-date" => "#{params[:to_date]}", "data-unit-id" => "#{@unit_id}"}
+					%label.checkbox.inline.margin-l-5.font-sz-12{:for=>"discountmode", :style=>"padding-left:30px;"}= "Is Discount"
+
+			.filter-title Valid
+			.padding-10
+				.checkbox
+					= check_box_tag 'bill_validity', 1, false,{ :id => "bill_validity", :class=>"filled-in bill_validity", "data-from-date" =>"#{params[:from_date]}", "data-to-date" => "#{params[:to_date]}", "data-unit-id" => "#{@unit_id}"}
+					%label.checkbox.inline.margin-l-5.font-sz-12{:for=>"bill_validity", :style=>"padding-left:30px;"}= "Is Valid"
+
+			.filter-title Bill Status
+			.padding-10
+				- @bill_statuses.each do |bill_status|
+					.checkbox
+						= check_box_tag 'bill_statuses[]', bill_status.status, false,{ :id => "bill_status_#{bill_status.status}", :class=>"filled-in bill_statuses"}
+						%label.checkbox.inline.margin-l-5.font-sz-12{:for=>"bill_status_#{bill_status.status}", :style=>"padding-left:30px;"}= bill_status.status
+
+.col-sm-10.padding-5
+	.card{:style => "overflow-x : auto"}
+		= smart_listing_render :bill_by_bill_sales

@@ -1,0 +1,19 @@
+%h1 Listing feedback_options
+
+%table
+  %tr
+    %th Option title
+    %th
+    %th
+    %th
+
+  - @feedback_options.each do |feedback_option|
+    %tr
+      %td= feedback_option.option_title
+      %td= link_to 'Show', feedback_option
+      %td= link_to 'Edit', edit_feedback_option_path(feedback_option)
+      %td= link_to 'Destroy', feedback_option, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Feedback option', new_feedback_option_path

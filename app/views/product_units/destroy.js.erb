@@ -1,0 +1,6 @@
+$('#product_unit_edit_modal').closeModal();
+<% if @error.present? %>
+  Materialize.toast("<%= @error.message %>", 3000,'red');  
+<% else %>
+  $("#product_unit").find(".product_unit_of_<%= @product_unit.id %>").remove();
+<% end %>

@@ -1,0 +1,74 @@
+- unless smart_listing.empty?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Listing Users
+            .data-table-header__actions
+              - if can? :new, User    
+                %a.m-btn.m-btn-teal.waves-effect.waves-light{:href => "#{new_user_path}"}
+                  %i.mdi-content-add.left
+                  %span.hidden-sm.hidden-xs Add new user  
+          %table.table
+            %thead
+              %th= smart_listing.sortable "Id", "id"
+              %th= smart_listing.sortable "Email", "email"
+              %th="Name"
+              %th= smart_listing.sortable "Branch", "unit_id"
+              %th= smart_listing.sortable "PIN", "key_phrase"
+              %th="Role"
+              %th.col-lg-3 Actions
+
+            %tbody
+              - smart_listing.collection.each do |object|
+                %tr
+                  %td
+                    = object.id
+                  %td
+                    = object.email
+                  %td
+                    - if object.profile.present?  
+                      = object.profile.firstname+" "+object.profile.lastname
+                    - else
+                      N/A
+                  %td
+                    - if object.unit.present?
+                      = object.unit.unit_name
+                    - else
+                      N/A
+                  %td
+                    - if object.unit.present?
+                      = object.key_phrase
+                    - else
+                      N/A    
+                  %td
+                    - if object.role.present?  
+                      = object.role.name
+                    - else
+                      N/A
+                  %td    
+                    - if can? :profile, User           
+                      %a.m-btn.green.m-btn-small.waves-effect.waves-light{:href => "#{profile_user_path(object)}", :title => "View user"}
+                        %i.mdi-action-visibility
+                    - if can? :edit, User         
+                      %a.m-btn.orange.m-btn-small.waves-effect.waves-light{:href => "#{edit_user_path(object)}", :title => "Edit user"} 
+                        %i.mdi-editor-border-color
+                    - if can? :delete_user, User        
+                      %a.m-btn.red.m-btn-small.waves-effect.waves-light{:href => "#{delete_user_path(object)}", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete user"}
+                        %i.mdi-action-delete
+                    - if can? :toggle_status, User 
+                      - if object.status == 1        
+                        %a.m-btn.indigo.m-btn-small.waves-effect.waves-light{:href => "#{toggle_status_user_path(object)}", :title => "User account is currently active, click to Deactivate."} 
+                          %i.mdi-action-settings-power
+                      - else
+                        %a.m-btn.amber.m-btn-small.waves-effect.waves-light{:href => "#{toggle_status_user_path(object)}", :title => "User account currently deactivated, click to Activate."} 
+                          %i.mdi-action-settings-power
+
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No users found

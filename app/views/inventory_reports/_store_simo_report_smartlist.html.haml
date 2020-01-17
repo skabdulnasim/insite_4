@@ -1,0 +1,58 @@
+- unless smart_listing.empty?
+
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Simo Id
+        %th Simo Status
+        %th Stock Added
+        %th Input Product
+        %th Input Quantity
+        %th Input Price
+        %th Input Wastage
+        %th Output Products
+        %th Expected Quantity
+        %th Actual Quantity
+        %th Output Price
+        %th Total Weight
+
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td= object.id
+          %td= object.status
+          %td= object.isStockAdded == 1 ? 'Yes' : 'No'
+          
+          - simo_input = object.simo_input_product
+          %td= simo_input.product.name
+          %td= "#{simo_input.quantity} #{simo_input.product.conjugated_unit}"
+          %td= simo_input.price
+          %td= simo_input.wastage
+          %td
+          %td
+          %td
+          %td
+          %td
+
+          - simo_outputs = simo_input.simo_output_products
+          - simo_outputs.each do |simo_output_product|
+            %tr
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td
+              %td= simo_output_product.product.name
+              %td= "#{simo_output_product.expected_quantity} #{simo_output_product.product.basic_unit}"
+              %td= "#{simo_output_product.actual_quantity} #{simo_output_product.product.basic_unit}"
+              %td= simo_output_product.price
+              %td= simo_output_product.total_weight
+            
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  .alert.alert-warning
+    No record found

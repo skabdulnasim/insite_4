@@ -1,0 +1,43 @@
+/ %p#notice= notice
+
+/ %p
+/   %b Resource:
+/   = @commission_rule.resource_id
+/ %p
+/   %b Set by:
+/   = @commission_rule.set_by
+/ %p
+/   %b Month:
+/   = @commission_rule.month
+
+/ = link_to 'Edit', edit_commission_rule_path(@commission_rule)
+/ \|
+/ = link_to 'Back', commission_rules_path
+
+
+= render "layouts/flash"
+- links_arr = [{:title=>"Manage Commission Rules", :url=>"#{resource_path(@resource)}",:active_class=>""},{:title=>"Commission Rule Month: #{@commission_rule.month}", :url=>"",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+
+.row
+	.col-lg-12.padding-r-none
+		.card
+			.card-content.p10
+				%h5.font-w-400 Commission Rule Details
+				.divider
+				.margin-l-15.margin-t-15
+					.row
+						%span.font-w-400 Rule set by :
+						%span.margin-l-15= "#{@commission_rule.user.profile.full_name}"
+						.margin-t-10
+							%span.font-w-400 Rule Applicable in :
+							%span.margin-l-22.m-label.green= " #{@commission_rule.month}"
+						.margin-t-10
+							%span.font-w-400 Rule Output Type :
+							%span.margin-l-15.m-label.green= "#{@commission_rule.commission_rule_inputs.first.commission_rule_output.amount_type.humanize}"
+
+.row.margin-t-10
+	.col.col-lg-12
+		.card  
+			.card-content.p10
+				= smart_listing_render :commission_rule_products

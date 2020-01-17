@@ -1,0 +1,13 @@
+<select id="question_option_type_id" class="select optional form-control" name="unit[unit_parent]">
+ <option value="">Select Parent</option>
+<% pre_unittype_id = 0 %>
+<% for(var i=0; i<type_info.length; i++) { %> 
+  <% if (pre_unittype_id != type_info[i].unittype_id) { pre_unittype_id = type_info[i].unittype_id %>
+	 <optgroup label="<%= type_info[i]['unittype'].unit_type_name %>"> 
+  <%}%>
+		<option value="<%= type_info[i].id %>"><%= type_info[i].unit_name %> (<%= type_info[i].locality %>)</option>
+  <% if (pre_unittype_id != type_info[i].unittype_id) {%>  
+	 </optgroup>
+  <%}%>
+<%}%>
+</select>

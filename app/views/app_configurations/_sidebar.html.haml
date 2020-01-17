@@ -1,0 +1,30 @@
+/ %ul.nav.nav-pills.nav-stacked
+/   %li.active{:role => "presentation"}
+/     %a{:href => app_configurations_path} Home
+/   %li{:role => "presentation"}
+/     %a{:href => printers_app_configurations_path} Printers
+.card
+  .clearfix
+  .filter-title.margin-t-b-0 
+    %i.mdi-av-games.left
+    Modules
+  .tabbable.tabs-left
+    %ul.nav.nav-tabs.padding-none
+      %li
+        %a{"data-toggle" => "", :href => app_configurations_path} 
+          General
+      %li
+        %a{"data-toggle" => "", :href => app_configurations_path} 
+          Orders
+      %li
+        %a{"data-toggle" => "", :href => app_configurations_path} 
+          Inventory            
+      %li.active
+        %a{"data-toggle" => "", :href => printers_app_configurations_path}
+          Printers   
+      %li
+        %a{"data-toggle" => "", :href => app_configurations_path}
+          Advanced             
+      %li
+        %a{"data-toggle" => "", :href => app_configurations_path}
+          Clear Data 

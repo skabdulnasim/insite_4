@@ -1,0 +1,19 @@
+%h1 Listing product_meta
+
+%table
+  %tr
+    %th Raw
+    %th
+    %th
+    %th
+
+  - @product_meta.each do |product_metum|
+    %tr
+      %td= product_metum.raw
+      %td= link_to 'Show', product_metum
+      %td= link_to 'Edit', edit_product_metum_path(product_metum)
+      %td= link_to 'Destroy', product_metum, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Product metum', new_product_metum_path

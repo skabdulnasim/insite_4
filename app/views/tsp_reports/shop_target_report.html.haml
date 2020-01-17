@@ -1,0 +1,23 @@
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="Shop target reports #{params[:from_month]} to #{params[:to_month]}"  
+          .data-table-header__actions
+            .form-group
+              = smart_listing_controls_for(:shops_target_list, {class: "form-inline float-l margin-l-30"}) do
+                = hidden_field_tag :from_month, "#{params[:from_month]}"
+                = hidden_field_tag :to_month, "#{params[:to_month]}"
+                .form-group.filter.input-append
+                  .input-group
+                    %input.form-control.search.tse-filter{:placeholder => "Search Shop...", :type => "text", :name=> "shop_filter"}
+                      %span.input-group-btn
+                        %button.btn.btn-default.disabled{:type => "submit" }
+                          %span.glyphicon.glyphicon-search    
+              - url = "#{shop_target_report_tsp_reports_path}.csv?from_month=#{params[:from_month]}&to_month=#{params[:to_month]}"        
+              %a.m-btn.indigo.margin-l-5.export-tse-sales-report{:href=>"#{url}"}
+                %i.mdi-file-file-download.left
+                CSV
+      = smart_listing_render :shops_target_list

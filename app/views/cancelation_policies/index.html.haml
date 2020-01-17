@@ -1,0 +1,35 @@
+%h1 Listing cancelation_policies
+
+%table
+  %tr
+    %th Plolicy
+    %th Is refundable
+    %th Cancelation not allowed state
+    %th Unit
+    %th Is delivery charge refandable
+    %th Cancelation charge type
+    %th Cancelation charge
+    %th Cancellation allowed
+    %th Refund in
+    %th
+    %th
+    %th
+
+  - @cancelation_policies.each do |cancelation_policy|
+    %tr
+      %td= cancelation_policy.plolicy
+      %td= cancelation_policy.is_refundable
+      %td= cancelation_policy.cancelation_not_allowed_state
+      %td= cancelation_policy.unit_id
+      %td= cancelation_policy.is_delivery_charge_refandable
+      %td= cancelation_policy.cancelation_charge_type
+      %td= cancelation_policy.cancelation_charge
+      %td= cancelation_policy.cancellation_allowed
+      %td= cancelation_policy.refund_in
+      %td= link_to 'Show', cancelation_policy
+      %td= link_to 'Edit', edit_cancelation_policy_path(cancelation_policy)
+      %td= link_to 'Destroy', cancelation_policy, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Cancelation policy', new_cancelation_policy_path

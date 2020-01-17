@@ -1,0 +1,39 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Vendor",:url=>vendors_path,:active_class=>""},{:title=>"Vendor : #{@vendor.name}",:url=>vendor_path(@vendor),:active_class=>""},{:title=>"Add new Product",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+.col-sm-3.padding-5
+  = render 'products/material_product_filter'
+.col-sm-4.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Available Products  
+            %button.m-btn.blue.float-r.select-unit-products.waves-effect.waves-light{:type => "button",'data-unit-id'=>@vendor.unit_id}
+              %i.mdi-content-add.left
+              Select Products   
+          = smart_listing_render :products
+.col-sm-5.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Overview
+          .min-height-405
+            = form_tag(allocate_product_to_vendor_vendor_path method: "post", id:params[:id], multipart: true) do
+              .padding-10
+                %button.m-btn.green.float-r.waves-effect.waves-light.width-100{:type => "submit"}
+                  Save products
+              .clearfix
+              .filter-title.margin-t-b-0
+                %i.mdi-action-label.left
+                SELECTED PRODUCTS                  
+              %table.table          
+                %tbody.unit-product-list.m-input
+                  %tr.data-table__selectable-row.no-item-selected
+                    %td.alert.alert-warning{:colspan=>2} No products selected yet      
+.clearfix 

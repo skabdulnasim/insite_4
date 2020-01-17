@@ -1,0 +1,28 @@
+// Place all the styles related to the menu_cards controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+#add_menu_product.modal{
+  width: 80%;
+  margin-left: -546px;
+  display:none;
+}
+.sel_cat{
+  height:235px;
+  overflow-y:scroll;
+  background-color:#fff;
+  padding:10px;
+  float:right;
+  width:30%;
+}
+.sel_pro{
+  height:235px;
+  overflow-y:scroll;
+  background-color:#fff;
+  padding:10px;
+  float:left;
+  width:60%;
+}
+/*################################# Menu Card listing page #######################################*/
+
+/*#############################################################################################*/
+

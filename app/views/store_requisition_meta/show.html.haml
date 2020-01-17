@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Requisition:
+  = @store_requisition_metum.requisition_id
+%p
+  %b Product:
+  = @store_requisition_metum.product_id
+%p
+  %b Product ammount:
+  = @store_requisition_metum.product_ammount
+%p
+  %b Product unit:
+  = @store_requisition_metum.product_unit_id
+
+= link_to 'Edit', edit_store_requisition_metum_path(@store_requisition_metum)
+\|
+= link_to 'Back', store_requisition_meta_path

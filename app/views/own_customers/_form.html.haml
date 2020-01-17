@@ -1,0 +1,56 @@
+= form_for @own_customer do |f|
+  - if @own_customer.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      = "#{pluralize(@own_customer.errors.count, "error")} prohibited this product from being saved:"
+      %ul
+        - @own_customer.errors.full_messages.each do |msg|
+          %li= msg
+  .form-horizontal.bordered-row.m-input  
+    .form-group
+      = f.label :name, :class => 'col-sm-4 control-label'
+      .col-sm-6.input-field  
+        = f.text_field :name, :class => 'form-control validate'
+    .form-group
+      = f.label :customer_unique_id, :class => 'col-sm-4 control-label'
+      .col-sm-6.input-field
+        = f.text_field :customer_unique_id, :class => 'form-control validate'
+    .form-group
+      = f.label :mobile_no, :class => 'col-sm-4 control-label'
+      .col-sm-6.input-field
+        = f.text_field :mobile_no, :class => 'form-control validate'
+    .form-group
+      = f.label :email, :class => 'col-sm-4 control-label'
+      .col-sm-6.input-field
+        = f.text_field :email, :class => 'form-control validate'
+    = f.fields_for :own_customer_addresses do |addr|  
+      .form-group
+        = addr.label :contact_no, :class => 'col-sm-4 control-label'
+        .col-sm-6.input-field
+          = addr.text_field :contact_no, :class => 'form-control validate'
+      .form-group
+        = addr.label :pincode, :class => 'col-sm-4 control-label'
+        .col-sm-6.input-field
+          = addr.text_field :pincode, :class => 'form-control validate'
+      .form-group
+        = addr.label :landmark, :class => 'col-sm-4 control-label'
+        .col-sm-6.input-field
+          = addr.text_field :landmark, :class => 'form-control validate'
+      .form-group
+        = addr.label :city, :class => 'col-sm-4 control-label'
+        .col-sm-6.input-field
+          = addr.text_field :city, :class => 'form-control validate'
+      .form-group
+        = addr.label :state, :class => 'col-sm-4 control-label'
+        .col-sm-6.input-field
+          = addr.text_field :state, :class => 'form-control validate'
+      .form-group
+        = addr.label :latitude, :class => 'col-sm-4 control-label'
+        .col-sm-6.input-field
+          = addr.text_field :latitude, :class => 'form-control validate'
+      .form-group
+        = addr.label :longitude, :class => 'col-sm-4 control-label'
+        .col-sm-6.input-field
+          = addr.text_field :longitude, :class => 'form-control validate'
+      .form-group
+        .col-sm-offset-2.col-sm-10
+          = f.submit 'Save', class: 'm-btn btn-success float-r margin-r-5 margin-b-5'

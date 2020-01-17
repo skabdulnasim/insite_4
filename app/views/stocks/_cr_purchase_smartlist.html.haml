@@ -1,0 +1,42 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %th= smart_listing.sortable "#", "id"
+      %th= smart_listing.sortable "SKU", "sku"
+      %th Stock identity
+      %th Batch
+      %th Color
+      %th Size
+      %th= smart_listing.sortable "Stock credit", "stock_credit"
+      %th Vendor
+      %th= smart_listing.sortable "Available stock", "available_stock"
+      %th= smart_listing.sortable "Price", "sell_price"
+      %th= smart_listing.sortable "Weight", "weight"
+      %th= smart_listing.sortable "Date", "created_at"
+      - if @stock_expiry_date == 'enabled'   
+        %th
+          Expiry Date 
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr      
+          %td=object.id
+          %td=object.sku
+          %td=object.stock_identity.present? ? object.stock_identity : '-'
+          %td=object.batch_no.present? ? object.batch_no : '-'
+          %td=object.color_name.present? ? object.color_name : '-'
+          %td=object.size_name.present? ? object.size_name : '-'
+          %td="#{object.stock_credit} #{object.product.basic_unit}"
+          %td=object.stock_transaction.purchase_order.vendor.name
+          %td="#{object.available_stock} #{object.product.basic_unit}"
+          %td=object.product.business_type == "by_mrp" ? "#{currency} #{object.stock_defination.sell_price}" : "-"
+          %td=object.product.business_type == "by_weight" || object.product.business_type == "by_bulk_weight" ? "#{object.stock_defination.weight}" : "-"
+          %td=object.created_at.strftime("%d %b %Y, %I:%M %p") 
+          - if @stock_expiry_date == 'enabled'    
+            %td
+              - if object.expiry_date.present?
+                = object.expiry_date.strftime("%d-%m-%Y")
+      
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  %p.warning No records!

@@ -1,0 +1,10 @@
+<% if @user.new_record? %>
+  $("#error_explanation").html("<div class='alert alert-dismissable alert-danger'><h5><%= j pluralize(@user.errors.count, 'error') %> prohibited this form being saved.</h5><%= j @user.errors.full_messages.join(', ') %></div>")
+<% else %>
+  $("#error_explanation").html("")
+  Materialize.toast("User has been successfully created.", 3000,'green')
+  $('#new_user').hide();
+  $('#new_user_link').show();
+  $("#users").prepend("<%= j render@user %>")
+<% end %>
+

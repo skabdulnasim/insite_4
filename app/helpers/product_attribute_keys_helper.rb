@@ -1,0 +1,2 @@
+module ProductAttributeKeysHelper
+end

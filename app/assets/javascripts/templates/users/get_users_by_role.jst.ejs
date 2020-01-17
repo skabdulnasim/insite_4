@@ -1,0 +1,4 @@
+<!-- <option value="">Select User</option> -->
+<% for(var i=0; i< users.data.length; i++) { %>
+	<option value="<%= users.data[i].id %>"><%= users.data[i].full_name %></option>
+<%}%>

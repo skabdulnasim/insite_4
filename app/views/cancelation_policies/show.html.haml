@@ -1,0 +1,33 @@
+%p#notice= notice
+
+%p
+  %b Plolicy:
+  = @cancelation_policy.plolicy
+%p
+  %b Is refundable:
+  = @cancelation_policy.is_refundable
+%p
+  %b Cancelation not allowed state:
+  = @cancelation_policy.cancelation_not_allowed_state
+%p
+  %b Unit:
+  = @cancelation_policy.unit_id
+%p
+  %b Is delivery charge refandable:
+  = @cancelation_policy.is_delivery_charge_refandable
+%p
+  %b Cancelation charge type:
+  = @cancelation_policy.cancelation_charge_type
+%p
+  %b Cancelation charge:
+  = @cancelation_policy.cancelation_charge
+%p
+  %b Cancellation allowed:
+  = @cancelation_policy.cancellation_allowed
+%p
+  %b Refund in:
+  = @cancelation_policy.refund_in
+
+= link_to 'Edit', edit_cancelation_policy_path(@cancelation_policy)
+\|
+= link_to 'Back', cancelation_policies_path

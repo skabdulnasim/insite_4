@@ -1,0 +1,55 @@
+!!!
+%html
+  %head
+    %meta{:charset => "utf-8"}
+    %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
+    %meta{:content => "#4285f4", :name => "theme-color"}
+    %meta{:content => "Yottolabs Pvt Ltd", :name => "author"}
+    %title
+      = "#{@module_title} | #{I18n.t('brand.name')} | #{I18n.t('brand.parent')}"
+    = javascript_include_tag "application"
+
+    / Import Google Icon Font
+    %link{:href => "http://fonts.googleapis.com/icon?family=Material+Icons", :rel => "stylesheet", :type=>"text/css"}
+    / Compiled and minified CSS
+    %link{:href => "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css", :rel => "stylesheet"}
+    / Compiled and minified JavaScript
+    %script{:src => "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"}
+    = stylesheet_link_tag "style"
+
+    = csrf_meta_tags
+  %body
+    %header#header.page-topbar
+      .navbar-fixed
+        %nav.top-navbar.white
+          .nav-wrapper
+            .nav-logo-wrapper.left{style: 'width: 160px; height:50px !important'}
+              %a.brand-logo.admin{:href => root_path}
+                MoBLiT
+      = render 'layouts/material_sidebar'
+      = render 'layouts/right_sidebar'
+
+
+    #main
+      .wrapper
+        %aside#left-sidebar-nav
+          = render 'layouts/material_sidebar'
+
+          -# - render_sidenavbar_links(params[:controller], params[:action])
+        #content
+          .container
+            .clearfix
+            = yield
+  %footer
+    :javascript
+      $(document).ready(function() {
+        // Materialize component activation
+        Materialize.toast("#{notice}", 5000);
+        Materialize.toast("#{alert}", 5000, 'red');
+        $('.datepicker').pickadate({
+          selectMonths: true, // Creates a dropdown to control month
+          selectYears: 15, // Creates a dropdown of 15 years to control year
+          format: 'dd/mm/yyyy'
+        });
+        $('select').material_select();
+      });

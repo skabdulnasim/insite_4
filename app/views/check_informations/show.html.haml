@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Reservation:
+  = @check_information.reservation_id
+%p
+  %b Check in datetime:
+  = @check_information.check_in_datetime
+%p
+  %b Check out datetime:
+  = @check_information.check_out_datetime
+%p
+  %b Status:
+  = @check_information.status
+
+= link_to 'Edit', edit_check_information_path(@check_information)
+\|
+= link_to 'Back', check_informations_path

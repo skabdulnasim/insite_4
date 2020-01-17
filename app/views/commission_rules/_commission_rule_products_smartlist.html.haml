@@ -1,0 +1,40 @@
+- unless smart_listing.empty?
+	.data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+		%table.data-table-container#rule_input_accordion
+			%tbody.panel
+				- smart_listing.collection.each do |object|
+					%tr.data-table__selectable-row{"aria-controls" => "rule_input_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#rule_input_accordion", "data-toggle" => "collapse", :href => "#rule_input_collapse_#{object.id}", :role => "button"}
+						%td
+							.collapsible-header{:class=>"light-blue light-blue-text text-lighten-5", :id=>"product_header_#{object.id}"}
+								%i.mdi-maps-local-restaurant
+								=object.product.name
+								%span.m-label.white.blue-text.float-r{:style=>"line-height:1.3em; margin-top:0.8em"}
+									%span{:class=>"rule_output_amount_#{object.id}"}=object.commission_rule_output.amount
+					%tr.collapse.data-table__selectable-row.collapsible-body.light-blue.lighten-5.data-table__selectable-row--is-selected{"aria-labelledby" => "product_header_#{object.id}", :role => "tabpanel", :id => "rule_input_collapse_#{object.id}"}
+						%td
+							%table.data-table
+								%tr
+									%td.padding-30.light-blue.lighten-5 
+										.form-horizontal.m-input
+											QUICK EDIT
+											/ .form-group.p0
+											/ 	%label.col-lg-1.margin-t-15="Amount"
+											/ 	.col-lg-6.input-field
+											/ 		= text_field_tag :amount, object.commission_rule_output.amount, :placeholder=>"Enter amount", :class => "form-control validate edit_amount_#{object.id}"
+											.form-group.p0
+												%label.col-lg-3.margin-t-15="Owner Commission Amount"
+												.col-lg-6.input-field
+													= text_field_tag :amount, object.commission_rule_output.owner_commission_amount, :placeholder=>"Enter owner commission amount", :class => "form-control validate edit_owner_commission_amount_#{object.id}"
+											.form-group.p0
+												%label.col-lg-3.margin-t-15="Csm Commission Amount"
+												.col-lg-6.input-field
+													= text_field_tag :amount, object.commission_rule_output.csm_commission_amount, :placeholder=>"Enter csm commission amount", :class => "form-control validate edit_csm_commission_amount_#{object.id}"
+											.form-group.padding-15
+												- _mp_commission_capping = object.product.menu_products.present? ? object.product.menu_products.last.commission_capping : ""
+												%button.update_rule_input.m-btn.green.waves-effect.waves-light{"data-rule-input-id"=>object.id, "data-product-name"=>object.product.name, "data-rule-output-id"=>object.commission_rule_output.id, "data-mp-commission-capping"=>_mp_commission_capping} quick Updates
+		.padding-5
+			= smart_listing.paginate
+			= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		No products found

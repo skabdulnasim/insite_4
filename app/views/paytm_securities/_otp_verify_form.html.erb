@@ -1,0 +1,10 @@
+<form>
+	<div class="col-sm-4"></div>
+	<div class="col-sm-4" style="background-color:lavender;">
+	  <label for="otp">Enter otp:</label>
+	  <input type="text" class="form-control" name="otp_value" placeholder="Enter your otp"><br>
+	  <button type="submit" class="btn btn-primary">Check</button><br><br>
+	  <%= link_to ' Click here to regenerate otp', {controller: "paytm_securities", action: "regenerate_otp"} %>
+	 </div>
+	<div class="col-sm-4"></div>	    
+</form> 

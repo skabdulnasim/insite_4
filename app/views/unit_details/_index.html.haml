@@ -1,0 +1,105 @@
+.form-inline              
+  .col-sm-12         
+    #accordionadd.panel-group
+      .panel.panel-default
+        .panel-heading
+          %h4.panel-title
+            %a{"data-parent" => "#accordionadd", "data-toggle" => "collapse", :href => "#addOne"}
+              %i.fa.fa-money.fa-fw
+              Approved Forms of Payment #1
+            .pull-right
+              .input-group
+                %input.form-control{:type => "text", :class => "option_to_add"}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :class => "details_option_add"}
+                      %i.fa.fa-floppy-o
+        #addOne.panel-collapse.collapse.in
+          .panel-body#dd
+            - FormOfPayment.all.each do |fop|
+              .input-group{:id => "del#{fop.id}"}
+                %input.form-control{:type => "text", :value => fop.name}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :id => fop.id, :class => "details_option_del"}
+                      %i.fa.fa-trash-o
+      .panel.panel-default
+        .panel-heading
+          %h4.panel-title
+            %a{"data-parent" => "#accordionadd", "data-toggle" => "collapse", :href => "#addTwo"}
+              %i.fa.fa-soundcloud.fa-fw
+              Atmosphere #2
+            .pull-right
+              .input-group
+                %input.form-control{:type => "text", :class => "atmosphere_to_add"}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :class => "atmosphere"}
+                      %i.fa.fa-floppy-o
+        #addTwo.panel-collapse.collapse
+          .panel-body#pp
+            - Atmosphere.all.each do |atm|
+              .input-group{:id => "delatm#{atm.id}"}
+                %input.form-control{:type => "text", :value => atm.name}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :id => atm.id, :class => "details_atmos_del"}
+                      %i.fa.fa-trash-o
+      .panel.panel-default
+        .panel-heading
+          %h4.panel-title
+            %a{"data-parent" => "#accordionadd", "data-toggle" => "collapse", :href => "#addThree"}
+              %i.fa.fa-soundcloud.fa-fw
+              Type of Cuisines #3
+            .pull-right
+              .input-group
+                %input.form-control{:type => "text", :class => "type_of_cuisines_to_add"}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :class => "type_of_cuisines"}
+                      %i.fa.fa-floppy-o
+        #addThree.panel-collapse.collapse          
+          .panel-body#tt
+            - TypeOfCuisine.all.each do |toc|
+              .input-group{:id => "toc#{toc.id}"}
+                %input.form-control{:type => "text", :value => toc.name}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :id => toc.id, :class => "details_toc_del"}
+                      %i.fa.fa-trash-o
+
+      .panel.panel-default
+        .panel-heading
+          %h4.panel-title
+            %a{"data-parent" => "#accordionadd", "data-toggle" => "collapse", :href => "#addFour"}
+              %i.fa.fa-soundcloud.fa-fw
+              More Info #4
+            .pull-right
+              .input-group
+                %input.form-control{:type => "text", :class => "more_info_to_add"}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :class => "more_info"}
+                      %i.fa.fa-floppy-o
+        #addFour.panel-collapse.collapse          
+          .panel-body#more_info
+            - MoreInfo.all.each do |mi|
+              .input-group{:id => "mi#{mi.id}"}
+                %input.form-control{:type => "text", :value => mi.name}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :id => mi.id, :class => "details_toc_del"}
+                      %i.fa.fa-trash-o    
+      .panel.panel-default
+        .panel-heading
+          %h4.panel-title
+            %a{"data-parent" => "#accordionadd", "data-toggle" => "collapse", :href => "#addFive"}
+              %i.fa.fa-soundcloud.fa-fw
+              Outlet Type #5
+            .pull-right
+              .input-group
+                %input.form-control{:type => "text", :class => "outlet_type_to_add"}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :class => "outlet_type"}
+                      %i.fa.fa-floppy-o
+        #addFive.panel-collapse.collapse          
+          .panel-body#outlet_type
+            - OutletType.all.each do |ot|
+              .input-group{:id => "ot#{ot.id}"}
+                %input.form-control{:type => "text", :value => ot.name}
+                  %span.input-group-btn
+                    %button.btn.btn-default{:type => "button", :id => ot.id, :class => "details_toc_del"}
+                      %i.fa.fa-trash-o    
+                      

@@ -1,0 +1,6 @@
+<select id="upload_section_id" class="select optional form-control" name="upload_section_id" required="required">
+ 	<option value="">Select Section</option>
+	<% for(var i=0; i<sections.length; i++) { %>
+	 <option value="<%= sections[i].id %>"><%= sections[i].name %></option>
+	<%}%>
+</select>

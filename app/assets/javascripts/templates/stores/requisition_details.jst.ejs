@@ -1,0 +1,132 @@
+<% var stat_data = JSON.parse(data.sent_product_details)%>
+<div class="col-lg-7">
+  <h5>Requisition ID: <%= data.id%></h5>
+</div>
+<div class="col-lg-5">
+  <h5 class="float-r">Date: <%= data.created_at%></h5>
+</div>
+<br>
+<input type="hidden" name="secondary_store_id" value="<%=data.from_store_id%>">
+<input type="hidden" name="primary_store_id" value="<%=current_store%>">
+<input type="hidden" name="business_type" value="<%=data.business_type%>">
+
+<input type="hidden" name="store_requisition_log_id" value="<%=data.id%>">
+<table class="table table-bordered table-hover table-striped">
+    <thead>
+      <tr>
+        <% if(data.status == "3" && data.store_id == current_store) { %>
+          <th><input class="checkbox-parent-toggle filled-in" id="checkbox-parent-toggle" type="checkbox"><label for="checkbox-parent-toggle"></label></th>
+        <% } %>
+        <th>Product</th>
+        <th>Size</th>
+        <th>Color</th>
+        <th>Current Stock</th>
+        <th>Quantity in requisition</th>
+        <% if(data.status == "1" || data.status == "2") { %>
+          <th>Status</th>
+        <% } %> 
+        <% if(data.status == "3") { %>
+          <th>Transfer quantity</th>
+        <% } %>
+        <% if(data.status == "4") { %>
+          <th>Transfered quantity</th>
+        <% } %>        
+      </tr>
+    </thead>
+    <tbody>
+      <% for(var i=0; i< data.meta_attributes.length; i++) {%>
+        <% var pro_id = data.meta_attributes[i].product_id%>
+        <% var color_id = data.meta_attributes[i].color_id%>
+        <% var size_id = data.meta_attributes[i].size_id%>
+        <% 
+          if (color_id == null){
+            color_id = 0
+          }
+          if (size_id == null){
+            size_id = 0
+          }
+        %>
+        <tr>
+          
+          <% if(data.status == "3" && data.store_id == current_store) { %>
+            <td>
+              <% if(stat_data) {%>
+                <% if(stat_data[pro_id+"_"+color_id+"_"+size_id]) {%>
+                  <span class="label label-default">Item sent</span>
+                <% } else {%>
+                  <input class="checkbox-child filled-in" data-po-id="<%= pro_id%>" id="<%=pro_id%>_<%=color_id%>_<%=size_id%>" name="checked_raw[]" type="checkbox" value="<%=pro_id%>_<%=color_id%>_<%=size_id%>">
+                  <label for="<%=pro_id%>_<%=color_id%>_<%=size_id%>"></label>
+                <%}%>
+              <% } else {%>
+                  <input class="checkbox-child filled-in" data-po-id="<%= pro_id%>" id="<%= pro_id%>_<%=color_id%>_<%=size_id%>" name="checked_raw[]" type="checkbox" value="<%= pro_id%>_<%=color_id%>_<%=size_id%>">
+                  <label for="<%= pro_id%>_<%=color_id%>_<%=size_id%>"></label>
+              <%}%>
+            </td> 
+          <% } %>
+
+          <td>
+            #<%= pro_id%>
+            <%= data.meta_attributes[i].product_name%> 
+          </td>
+          <td>
+            <%= data.meta_attributes[i].size_name%> 
+          </td>
+          <td>
+            <%= data.meta_attributes[i].color_name%> 
+          </td>
+          <td>
+            <%= data.meta_attributes[i].product_current_stock%> 
+            <%= data.meta_attributes[i].basic_unit %>
+          </td>
+          <td class="width-18-p">
+            <%= data.meta_attributes[i].product_ammount %> 
+            <%= data.meta_attributes[i].basic_unit %>                   
+          </td>
+          <td class="col-lg-2">
+            <% if(data.status == "1") { %>
+              <span class="label label-primary">Not approved yet </span>
+            <% } %>
+            <% if(data.status == "2") { %>
+              <span class="label label-danger">Rejected </span>
+            <% } %>  
+            <% if(data.status == "3" && data.store_id == current_store) { %>
+              <% if(stat_data) {%>
+                <% if(stat_data[pro_id+"_"+color_id+"_"+size_id]) {%>
+                  Item sent: <%= stat_data[pro_id+"_"+color_id+"_"+size_id]%> <%= data.meta_attributes[i].basic_unit %>
+                <% } else {%>  
+                  <div class="input-group">
+                    <input class="check-input input-product-stcok check-input-<%=pro_id%>_<%=color_id%>_<%=size_id%> form-control" name="quantity<%= pro_id%>_<%=color_id%>_<%=size_id%>" type="text" data-current-stock=<%= data.meta_attributes[i].product_current_stock%>>
+                    <div class="input-group-addon"><%= data.meta_attributes[i].basic_unit%> </div>
+                  </div>                                
+              <% }} else {%>
+                <div class="input-group">
+                  <input class="check-input input-product-stcok check-input-<%=pro_id%>_<%=color_id%>_<%=size_id%> form-control" name="quantity<%= pro_id%>_<%=color_id%>_<%=size_id%>" type="text" data-current-stock=<%= data.meta_attributes[i].product_current_stock%>>
+                  <div class="input-group-addon"><%= data.meta_attributes[i].basic_unit %> </div>
+                </div>
+              <% } %>  
+            <% } %>  
+            <% if(data.status == "4") { %>
+              Item sent: <%= stat_data[pro_id+"_"+color_id+"_"+size_id]%> <%= data.meta_attributes[i].basic_unit %>
+            <% } %>                               
+          </td>         
+        </tr>
+      <%}%>
+    </tbody>
+  </table>
+
+<div class="modal-footer" style="clear:both">
+  <div class="form-group">
+    <div class="col-sm-offset-5 col-sm-7">
+      <button class="m-btn" data-dismiss="modal" type="button">Close</button>
+      <% if(data.store_id == current_store) {%>
+        <% if(data.status == "1") {%>
+          <a href="/store_requisitions/update_requisition_state?log_id=<%= data.id%>&status=2" class="btn btn-danger">Reject requisition</a>        
+          <a href="/store_requisitions/update_requisition_state?log_id=<%= data.id%>&status=3" class="btn btn-success">Approve requisition</a>
+        <% } %>
+        <% if(data.status == "3") {%>
+          <button class="m-btn green" type="submit"><i class="mdi-content-send left"></i>Transfer requisition products</button>
+        <% } %>
+      <% } %>    
+    </div>
+  </div>
+</div>

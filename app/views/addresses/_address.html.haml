@@ -1,0 +1,13 @@
+.col.s4
+  .card.address-card
+    .card-content
+      =link_to 'Deliver here', customer_address_path(@customer, address), :remote => true, :class => 'line-btn green width-100 waves-effect waves-light'
+      %br
+      %br
+      %strong=address.receiver_name
+      %p
+        ="#{address.delivery_address}, #{address.landmark}, #{address.city}, #{address.city} - #{address.pincode}, #{address.state}"
+        %br
+        ="Contact: #{address.contact_no}"
+    .card-action
+      = link_to 'Edit', edit_customer_address_path(@customer,address), :remote => true, :class => 'grey-text right'

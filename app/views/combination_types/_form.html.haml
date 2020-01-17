@@ -1,0 +1,16 @@
+= form_for @combination_type, :html => { :class => 'form-horizontal'} do |f|
+  - if @combination_type.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@combination_type.errors.count, "error")} prohibited this combination_type from being saved:"
+      %ul
+        - @combination_type.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-group
+    = f.label :name, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :name, :class => 'form-control'
+    
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'   

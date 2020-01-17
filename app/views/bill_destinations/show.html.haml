@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @bill_destination.name
+%p
+  %b Bill header:
+  = @bill_destination.bill_header
+%p
+  %b Bill footer:
+  = @bill_destination.bill_footer
+
+= link_to 'Edit', edit_bill_destination_path(@bill_destination)
+\|
+= link_to 'Back', bill_destinations_path

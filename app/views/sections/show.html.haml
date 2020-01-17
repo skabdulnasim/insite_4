@@ -1,0 +1,19 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title=@section.name
+        %table.table.table-bordered
+          %tr
+            %th Name
+            %th Description
+                 
+            %tr
+              %td= @section.name
+              %td= @section.description
+            
+      = link_to 'Edit', edit_section_path(@section), :class => 'btn btn-primary btn-mini active'
+      = link_to 'Back', sections_path, :class => 'btn btn-primary btn-mini active'

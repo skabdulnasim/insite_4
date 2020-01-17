@@ -1,0 +1,2 @@
+module ResourceOrderHistoriesHelper
+end

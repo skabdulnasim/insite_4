@@ -1,0 +1,56 @@
+- unless smart_listing.empty?
+  %table.table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-1= smart_listing.sortable "ID", "id"
+        %th.col-lg-3= smart_listing.sortable "Name", "name"
+        %th.col-lg-2= smart_listing.sortable "Category", "category_id"
+        %th.col-lg-1= smart_listing.sortable "Unit", "unit"
+        %th.col-lg-1= smart_listing.sortable "Type", "product_type" 
+        %th.col-lg-2= smart_listing.sortable "Price", "price" 
+        %th.col-lg-3
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td
+            = get_product_logo(object.product_image)
+          %td
+            = link_to object.name, object
+            %br
+            %small
+              ="ID: #{object.id}"
+              %br
+              = object.updated_at.strftime("%d %b %Y, %I:%M %p")
+          %td
+            - if object.category_id
+              = link_to object.category.name, object
+              / - if object.category.parent?
+              / = render "show_all_cat", {cats: object.category} if object.category.parent.present?
+            - else
+              %b= "no category"
+          %td
+            ="#{object.basic_unit}"
+          %td  
+            - if object.product_type == "simple"
+              %span.label.label-warning Simple
+            - elsif object.product_type == "variable"
+              %span.label.label-info Variable
+            - else
+              %span.label.label-danger=object.product_type
+          %td
+            - if object.vendor_products.by_vendor(@vendor.id).first.price?
+              ="#{object.vendor_products.by_vendor(@vendor.id).first.price}"
+            - else
+              %b= "N/A"  
+          %td{:style=>"text-align:right"}
+            %a.m-btn.red.m-btn-low-padding{:href => "#{remove_vendor_product_vendor_path(params[:id],object)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete product"}
+              %i.mdi-action-delete 
+            %a.m-btn.blue.m-btn-low-padding{:href => "#{edit_vendor_product_vendor_path(params[:id],object)}", :title => "Edit product"} 
+              %i.mdi-editor-border-color          
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

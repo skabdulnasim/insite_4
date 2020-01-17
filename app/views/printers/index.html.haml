@@ -1,0 +1,27 @@
+%h1 Listing printers
+
+%table
+  %tr
+    %th Name
+    %th Ip
+    %th Unit
+    %th Assignable
+    %th Assignable type
+    %th
+    %th
+    %th
+
+  - @printers.each do |printer|
+    %tr
+      %td= printer.name
+      %td= printer.ip
+      %td= printer.unit_id
+      %td= printer.assignable_id
+      %td= printer.assignable_type
+      %td= link_to 'Show', printer
+      %td= link_to 'Edit', edit_printer_path(printer)
+      %td= link_to 'Destroy', printer, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Printer', new_printer_path

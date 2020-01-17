@@ -1,0 +1,25 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Order Id
+        %th Order Item
+        %th Quantity
+        %th Cancel Cause
+        %th Cancel by
+        %th Date
+    %tbody
+      - smart_listing.collection.each do |object|
+        /= debug object
+        %tr.data-table__selectable-row  
+          %td= object.order_id 
+          %td= object.product_name  
+          %td= object.quantity        
+          %td= object.cancel_cause.humanize 
+          %td= object.remarks.split(' ')[2..-1].join(' ') if object.remarks.present?
+          %td= object.created_at.strftime("%d-%m-%Y, %I:%M %p") 
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

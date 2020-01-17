@@ -1,0 +1,1 @@
+json.extract! menu_card, :id, :name, :unit_id, :section_id

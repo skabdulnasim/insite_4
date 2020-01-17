@@ -1,0 +1,24 @@
+%tr.data-table__selectable-row{:id=>"cart_item_menu_product_#{f.object.menu_card_id}"}
+	%td
+		= label_tag "#{f.object.menu_card.name}", "#{f.object.menu_card.name}", :style=>"color:#000; border-bottom:none;"
+		= f.hidden_field :menu_card_id
+		= f.hidden_field :mode
+	%td
+		= f.text_field :sell_price_without_tax, :class=>"form-control", :style => "width:40px;"
+	%td
+		= f.text_field :procured_price, :class=>"form-control", :style => "width:40px;"
+	%td
+		= f.select :tax_group_id, options_for_select(f.object.menu_card.section.tax_groups.map{ |tax_group| [tax_group.name, tax_group.id] },f.object.tax_group_id), {}, {:class => "form-control", :required=> true}
+	%td
+		= f.select :menu_category_id, options_for_select(f.object.menu_card.menu_categories.map{ |menu_category| [menu_category.name, menu_category.id] },f.object.menu_category_id), {}, {:class => "form-control", :required=> true}
+	%td
+		= f.select :store_id, options_for_select(f.object.menu_card.unit.stores.map{ |store| [store.name, store.id] },f.object.store_id), {}, {:class => "form-control", :required=> true}
+	%td
+		= f.select :sort_id, options_for_select(f.object.menu_card.unit.sorts.map{ |sort| [sort.name, sort.id] },f.object.sort_id), {}, {:class => "form-control", :required=> true}
+	%td
+		= f.select :delivery_mode, options_for_select(MenuProduct::DELIVERY_MODES.map{ |d_m| [d_m, d_m] },f.object.delivery_mode), {}, {:class => "form-control", :required=> true}
+	%td
+		= f.text_field :max_order_qty, :class=>"form-control", :style => "width:40px;"
+	%td
+		= f.hidden_field :_destroy
+		= link_to "Remove", "#", class: "remove_menu_products", data:{"menu-product-id"=>"#{f.object.id}", "menu-card-id"=>"#{f.object.menu_card_id}"}

@@ -1,0 +1,22 @@
+%h1
+  %small= "New #{@attribute.name}"    
+.col-lg-4
+  %h2
+    %small Create a term attribute
+  = render 'form'
+.col-lg-8
+  %h2
+    %small= "Listing #{@attribute.name}"    
+
+  %table.table.table-bordered
+    %tr.table-header
+      %th Name
+      %th Actions
+  
+    - @term_attributes.each do |term_attribute|
+      %tr
+        %td= term_attribute.name
+        %td
+          %span= link_to image_tag( 'view.png'), term_attribute
+          %span= link_to image_tag( 'edit.png'), edit_term_attribute_path(term_attribute)
+          %span= link_to image_tag( 'delete.gif'), term_attribute, :method => :delete, :data => { :confirm => 'Are you sure?' }

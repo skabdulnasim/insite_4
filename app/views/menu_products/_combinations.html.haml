@@ -1,0 +1,31 @@
+#accordion.panel-group{:style => "clear:both;"}
+  - CombinationType.all.each do |ct|
+    .panel.panel-default
+      .panel-heading
+        %h4.panel-title
+          %input{:type => "checkbox", :name => "checked_comb[]", :value => ct.id, :id => "combination_#{ct.id}"}
+          %label{:for=>"combination_#{ct.id}"}
+            %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#menuCollapse#{ct.id}"}
+              = ct.name
+          = select_tag "rule_#{ct.id}", options_from_collection_for_select(CombinationsRule.all, "id", "name")
+      .panel-collapse.collapse{:id => "menuCollapse#{ct.id}"}
+        .panel-body
+          - Product.get_all.each do |raw_product|
+            .col-lg-12
+              .input-group
+                %span.input-group-addon
+                  %input{:type => "checkbox", :name => "ct#{ct.id}rp[]", :value => raw_product.id, :id => "combination_#{ct.id}_product_#{raw_product.id}"}
+                  %label{:for=>"combination_#{ct.id}_product_#{raw_product.id}"}
+                .form-control
+                  .col-sm-7
+                    = raw_product.name
+
+                  .product_unit{:class => "ct#{ct.id}#{raw_product.id}", :style => "float: right;"}
+                    = select_tag "ct#{ct.id}product_unit#{raw_product.id}", options_from_collection_for_select(ProductUnit.all, "id", "name")
+
+                  .ammount{:class => "ct#{ct.id}#{raw_product.id}", :style => "float: right;"}
+                    = number_field_tag "ct#{ct.id}ammount#{raw_product.id}", nil, placeholder:"ammount", size: "5", step: "any", :autocomplete => "off", :style => "width: 80px;"
+                  
+                  .price{:class => "ct#{ct.id}#{raw_product.id}", :style => "float: right;"}
+                    = number_field_tag "ct#{ct.id}price#{raw_product.id}", nil, placeholder:"price", size: "5", step: "any", :autocomplete => "off", :style => "width: 80px;"
+            %br

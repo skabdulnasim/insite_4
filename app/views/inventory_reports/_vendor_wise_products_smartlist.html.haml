@@ -1,0 +1,17 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Product Name
+        %th Total Received Quantity
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td=object.product.name
+          %td="#{object.total_credit} #{object.product.basic_unit}"
+  
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  .alert.alert-warning
+    No record found

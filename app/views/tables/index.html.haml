@@ -1,0 +1,76 @@
+-if @sections.present?
+  %ul.tabs.z-depth-1.width-100
+    %li.tab
+      %a.active{:href => "#active"} Active
+    %li.tab
+      %a{:href => "#inactive"} Inactive
+    %li.tab
+      %a{:href => "#addnew"} Add New
+  #active.white.z-depth-1
+    -@sections.each do |section|
+      - @tables = section.tables.enabled.order('created_at')
+      -if @tables.present?
+        %h4.header.margin-t-b-0.padding-10
+          %small Section
+          ="#{section.name}"
+        .divider
+        = render :partial => 'table', :collection => @tables
+        .clearfix
+  #inactive.white.z-depth-1
+    -@sections.each do |section|
+      - @tables = section.disabled_tables.order('created_at')
+      -if @tables.present?
+        %h4.header.margin-t-b-0.padding-10
+          %small Section
+          ="#{section.name}"
+        .divider
+        = render :partial => 'table', :collection => @tables
+        .clearfix
+  #addnew.white.z-depth-1
+    .padding-10
+      = render 'form'
+  :javascript
+    $(document).ready(function() {
+      ////////////////////////////// FAYE PUSH NOTIFICATION JS //////////////////////////////
+      $(function() {
+        var url = "#{FAYE_SERVER_URL}";
+        var faye = new Faye.Client(url);
+        var notification_channel = "#{get_unit_push_channel_name('portal','table_state_update')}";
+        faye.subscribe(notification_channel, function(data) {
+          console.log(data);
+          Materialize.toast("Table "+data.table.name+" updated to "+data.status_log.table_state_name+" state", 5000);
+          $(".table-status-"+data.table.id).html(data.status_log.table_state_name);
+          if(data.status_log.table_state_id == 1){
+            $(".table-card-"+data.table.id).removeClass( "orange purple red blue grey" ).addClass( "green" );
+            $(".table-card-text-"+data.table.id).removeClass( "orange-text purple-text red-text blue-text grey-text" ).addClass( "green-text" );
+          }else if(data.status_log.table_state_id == 2){
+            $(".table-card-"+data.table.id).removeClass( "green purple red blue grey" ).addClass( "orange" );
+            $(".table-card-text-"+data.table.id).removeClass( "green-text purple-text red-text blue-text grey-text" ).addClass( "orange-text" );
+          }else if(data.status_log.table_state_id == 3){
+            $(".table-card-"+data.table.id).removeClass( "green orange red blue grey" ).addClass( "purple" );
+            $(".table-card-text-"+data.table.id).removeClass( "green-text orange-text red-text blue-text grey-text" ).addClass( "purple-text" );
+          }else if(data.status_log.table_state_id == 4){
+            $(".table-card-"+data.table.id).removeClass( "green orange purple blue grey" ).addClass( "red" );
+            $(".table-card-text-"+data.table.id).removeClass( "green-text orange-text purple-text blue-text grey-text" ).addClass( "red-text" );
+          }else if(data.status_log.table_state_id == 5){
+            $(".table-card-"+data.table.id).removeClass( "green orange purple red grey" ).addClass( "blue" );
+            $(".table-card-text-"+data.table.id).removeClass( "green-text orange-text purple-text red-text grey-text" ).addClass( "blue-text" );
+          }else if(data.status_log.table_state_id == 6){
+            $(".table-card-"+data.table.id).removeClass( "green orange purple red blue" ).addClass( "grey" );
+            $(".table-card-text-"+data.table.id).removeClass( "green-text orange-text purple-text red-text blue-text" ).addClass( "grey-text" );
+          }
+        });
+      });
+    });
+- else
+  .col-sm-12
+    .card.orange.darken-1
+      .card-content.white-text
+        %span.card-title.white-text No tables available
+        %p
+          It seems that currently this branch have no sections and tables. Please follow the link given below
+          to add new table or section
+      .card-action
+        %a.white-text.float-r{:href => new_table_path} ADD NEW TABLE
+        %a.white-text.float-r.margin-r-10{:href => new_section_path} ADD NEW SECTION
+.clearfix

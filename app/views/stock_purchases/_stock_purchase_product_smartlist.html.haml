@@ -1,0 +1,15 @@
+- unless smart_listing.empty?
+	.product-wrapper
+		- smart_listing.collection.each do |stock|
+			.product-box{"data-sku"=>stock.sku}
+				.col-sm-2
+					%center
+						%strong.product_name{:style=>"text-align: center;vertical-align:middle;"}
+							=stock.product.name
+				.col-sm-12.blue.product_info{:style=>"height:22px;padding:10px;"}
+					%span.product_allocations{:style=>"float:left;", :id=>"product_allocations_#{stock.sku}"}
+					%span.allocation_satatus{:style=>"float:right",:id=>"allocation_satatus_#{stock.sku}"}
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	%p.warning record not  found

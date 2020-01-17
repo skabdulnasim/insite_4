@@ -1,0 +1,159 @@
+= render "layouts/flash"
+- manual_load_javascript "templates/menu_cards/changed_sell_price_of_lot"
+:css
+  .ring {
+    z-index:1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%); 
+    width: 150px;
+    height: 150px;
+    background: transparent;
+    border: 4px solid #3c3c3c;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 150px;
+    font-family: sans-serif;
+    font-size: 20px;
+    color: #00fa00;
+    letter-spacing:4px;
+    text-transform: uppercase;
+    text-shadow:0 0 10px #fff000;
+    box-shadow: 0 0 20px rgba(0,0,0,.5);
+  }
+  .ring:before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    width: 150px;
+    height: 150px;
+    border: 4px solid transparent;
+    border-top: 4px solid #fff000;
+    border-right: 4px solid #fff000;
+    border-radius: 50%;
+    animation: animateCircle 2s linear infinite;
+  }
+
+  @keyframes animateCircle
+  {
+    0%
+    {
+      transform: rotate(0deg);
+    }
+    100%
+    {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes animate
+  {
+    0%
+    {
+      transform: rotate(45deg);
+    }
+    100%
+    {
+      transform: rotate(405deg);
+    }
+  }
+.ring
+  Updating
+.col-sm-3.padding-5
+  .card
+    .padding-10 
+      %b FILTER BY
+    = smart_listing_controls_for(:brands_with_category, {class: "text-left"}) do
+      = render :partial => 'products/brand_name_filter'
+.col-sm-9.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Product Brands and Categories      
+                                                               
+          = smart_listing_render :brands_with_category   
+          /=debug @product_brands     
+#spinnerDiv
+#changedLotSellPriceModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "changedLotSellPriceModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content{:style=>"width: 153%;margin-left: -27%;"}
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4.modal-title#changedLotSellPriceModalTitle
+      .modal-body
+        #changedLotSellPriceDiv.padding-20
+        .clearfix
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Ok
+
+
+
+/ .col-lg-12
+/ 	.col-lg-2.font-w-400
+/ 		Brand Name
+/ 	.col-lg-2.font-w-400
+/ 		Category Name
+/ 	.col-lg-2.font-w-400
+/ 		Increase By Sale Price(%)
+/ 	.col-lg-2.font-w-400
+/ 		Decrease By Sale Price(%)
+/ 	.col-lg-2.font-w-400
+/ 		Decrease By MRP(%)
+/ 	.col-lg-1.font-w-400
+/ 	.col-lg-1.font-w-400
+/ 		Add Rule
+
+/ .col-lg-12
+/ 	- menu_card_id = params[:id]
+/ 	- all_brand_names = Product.uniq.pluck(:brand_name)
+/ 	- if all_brand_names.present?
+/ 		- all_brand_names = all_brand_names - ["", nil]
+/ 		- all_brand_names.each do |brand_name|
+/ 			.row.margin-t-15
+/ 				.col-lg-2.margin-b-5
+/ 					= brand_name
+/ 				.col-lg-2
+					
+/ 				.col-lg-2
+/ 					= text_field_tag 'brand_name_increase_by_sp', '', class: "form-control allow-numeric-only brand_name_increase_by_sp brand_name_increase_by_sp_#{brand_name}", placeholder: "Increase By", 'data-brand-name' => brand_name
+/ 				.col-lg-2
+/ 					= text_field_tag 'brand_name_decrease_by_sp', '', class: "form-control allow-numeric-only brand_name_decrease_by_sp brand_name_decrease_by_sp_#{brand_name}", placeholder: "Decrease By", 'data-brand-name' => brand_name
+/ 				.col-lg-2
+/ 					= text_field_tag 'brand_name_decrease_by_mrp', '', class: "form-control allow-numeric-only brand_name_decrease_by_mrp brand_name_decrease_by_mrp_#{brand_name}", placeholder: "Decrease By", 'data-brand-name' => brand_name
+/ 				.col-lg-1
+/ 					= button_tag "Save", :class => 'btn btn-success brand_name_price_btn', :type => 'button', 'data-brand-name' => brand_name
+/ 				.col-lg-1
+/ 					/ %a.m-btn.green.m-btn-low-padding#add_lot{"data-target" =>"#addLotModal", "data-toggle" => "modal"}
+/ 					/ 	/ , "data-lot-id"=>mp_lot.id
+/ 					/ 	%i.mdi-content-add
+/ 			- menu_category_ids = []
+/ 			- products = Product.by_brand_name(brand_name)
+/ 			- if products.present?
+/ 				- products.each do |product|
+/ 					- menu_product = MenuProduct.find_by_menu_card_id_and_product_id(menu_card_id,product)
+/ 					- if menu_product.present?
+/ 						- menu_category_ids.push menu_product.menu_category_id
+/ 						- if menu_category_ids.count(menu_product.menu_category_id) < 2
+/ 							- menu_category = MenuCategory.find(menu_product.menu_category_id)
+/ 							.row.margin-t-15
+/ 								.col-lg-2.margin-b-5
+/ 								.col-lg-2
+/ 									= menu_category.name
+/ 								.col-lg-2
+/ 									= text_field_tag 'brand_name_with_category_increase_by_sp', '', class: "form-control allow-numeric-only brand_name_with_category_increase_by_sp brand_name_with_category_increase_by_sp_#{menu_category.id}_#{brand_name}", placeholder: "Increase By", 'data-brand-name' => brand_name, "data-menu-category-id" => menu_category.id
+/ 								.col-lg-2
+/ 									= text_field_tag 'brand_name_with_category_decrease_by_sp', '', class: "form-control allow-numeric-only brand_name_with_category_decrease_by_sp brand_name_with_category_decrease_by_sp_#{menu_category.id}_#{brand_name}", placeholder: "Decrease By", 'data-brand-name' => brand_name, "data-menu-category-id" => menu_category.id
+/ 								.col-lg-2
+/ 									= text_field_tag 'brand_name_with_category_decrease_by_mrp', '', class: "form-control allow-numeric-only brand_name_with_category_decrease_by_mrp brand_name_with_category_decrease_by_mrp_#{menu_category.id}_#{brand_name}", placeholder: "Decrease By", 'data-brand-name' => brand_name, "data-menu-category-id" => menu_category.id
+/ 								.col-lg-1
+/ 									= button_tag "Save", :class => 'btn btn-success brand_name_with_category_price_btn', :type => 'button', 'data-brand-name' => brand_name, "data-menu-category-id" => menu_category.id
+/ 								.col-lg-1
+/ 									%a.m-btn.green.m-btn-low-padding#add_lot.add_lot_rule{"data-target" =>"#addLotModal", "data-toggle" => "modal", 'data-brand-name' => brand_name, "data-menu-category-id" => menu_category.id}
+/ 										/ , "data-lot-id"=>mp_lot.id
+/ 										%i.mdi-content-add

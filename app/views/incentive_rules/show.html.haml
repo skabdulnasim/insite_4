@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Role:
+  = @incentive_rule.role_id
+%p
+  %b Incentive amount:
+  = @incentive_rule.incentive_amount
+%p
+  %b Achivement lower range:
+  = @incentive_rule.achivement_lower_range
+%p
+  %b Achivement upper range:
+  = @incentive_rule.achivement_upper_range
+%p
+  %b Achivement range type:
+  = @incentive_rule.achivement_range_type
+
+= link_to 'Edit', edit_incentive_rule_path(@incentive_rule)
+\|
+= link_to 'Back', incentive_rules_path

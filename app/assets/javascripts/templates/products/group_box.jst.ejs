@@ -1,0 +1,17 @@
+<div id="box">
+	<p class="sub_heading">
+		Sub Products
+		<i class="fa fa-times cross" style="float:right;"></i>
+	</p>
+	<% for(var i=0; i<sub_products.length; i++) { %>
+		<div class="each_box">
+		 	<div id="left" class= "span4">
+		 	<img class= "thumb img-polaroid" src="/uploads/product.png"></imr>
+		 	</div>
+		 	<div id="right" class= "span8">
+			 	<a><%= sub_products[i].name %></a>
+			 	
+			</div>
+		</div>
+	<%}%>
+</div>

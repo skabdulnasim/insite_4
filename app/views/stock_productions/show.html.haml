@@ -1,0 +1,25 @@
+/= javascript_include_tag "https://code.jquery.com/jquery-1.10.2.js"
+/= javascript_include_tag "https://code.jquery.com/ui/1.10.4/jquery-ui.js"
+/%script{:src => "https://code.jquery.com/ui/1.10.4/jquery-ui.js"}
+/%script{:src => "https://code.jquery.com/jquery-1.10.2.js"}
+/%link{:href => "https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css", :rel => "stylesheet", :type => "text/css"}
+
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+    $('.datepick').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+  });
+  
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>"#{store_path(@store)}",:active_class=>""},{:title=>"Production: ID #{@stock_production.id}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+- if @stock_production.status == '2'
+  = render "stock_productions/processed_stock_production"
+- else
+  = render "stock_productions/processing_stock_production"

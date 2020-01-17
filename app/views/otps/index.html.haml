@@ -1,0 +1,23 @@
+%h1 Listing otps
+
+%table
+  %tr
+    %th Phone number
+    %th Otp
+    %th Verified
+    %th
+    %th
+    %th
+
+  - @otps.each do |otp|
+    %tr
+      %td= otp.phone_number
+      %td= otp.otp
+      %td= otp.verified
+      %td= link_to 'Show', otp
+      %td= link_to 'Edit', edit_otp_path(otp)
+      %td= link_to 'Destroy', otp, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Otp', new_otp_path

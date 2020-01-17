@@ -1,0 +1,111 @@
+- links_arr = [{:title=>"Sales Report",:url=>sale_reports_path,:active_class=>""},{:title=>"Sales Report By Sku",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+%ul.collapsible{"data-collapsible" => "accordion"}
+  %li
+    .collapsible-header
+      %b Column preferences
+    .collapsible-body
+      %p.col-lg-12
+        = form_tag(save_report_preferences_sale_reports_path, method: "post", :class=>"padding-20") do
+          - get_by_date_sku_sales_preferences(current_user.unit_id,'sales_report_by_date_sku')
+          = hidden_field_tag :report_key, "sales_report_by_date_sku"
+          = hidden_field_tag :unit_id, @unit_id          
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+            Save preferences
+      .clearfix
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Sales Report By Sku
+          .data-table-header__actions          
+            %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/sale_reports/sku_wise.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV 
+        -if @sales.to_a.present?
+          - preferences = ReportPreference.by_unit(current_user.unit_id).by_key('sales_report_by_date_sku').first
+          - @pref = preferences.present? ? JSON.parse(preferences.allowed_attributes) : ["bill_id","product_name","serial_no","sku","unit_price_without_tax","tax_amount","quantity","subtotal","status","payment_mode","name","phone_no","date"]        
+          %table.data-table
+            %thead
+              %tr.data-table__selectable-row
+                - if @pref.include?('bill_id')
+                  %th.col-sm-1 Bill Id
+                - if @pref.include?('product_name')  
+                  %th.col-sm-2 Product Name
+                - if @pref.include?('serial_no')  
+                  %th Serial No
+                - if @pref.include?('sku')  
+                  %th SKU
+                - if @pref.include?('unit_price_without_tax')  
+                  %th 
+                    Unit Price 
+                    %br
+                    (without Tax)
+                - if @pref.include?('unit_price_with_tax')  
+                  %th 
+                    Unit Price 
+                    %br 
+                    (with Tax)  
+                - if @pref.include?('tax_amount')  
+                  %th Tax
+                - if @pref.include?('quantity')  
+                  %th Quantity
+                - if @pref.include?('subtotal')  
+                  %th Subtotal
+                - if @pref.include?('status')  
+                  %th Status
+                - if @pref.include?('payment_mode')  
+                  %th Payment
+                - if @pref.include?('name')  
+                  %th Name
+                - if @pref.include?('phone_no')  
+                  %th Phone no
+                - if @pref.include?('date')  
+                  %th Date
+            %tbody
+              - @sales.each do|sale|
+                %tr.data-table__selectable-row
+                  - if @pref.include?('bill_id')
+                    %td=sale["id"]
+                  - if @pref.include?('product_name')  
+                    %td=sale["product_name"]
+                  - if @pref.include?('serial_no')  
+                    %td=sale["serial_no"]
+                  - if @pref.include?('sku')  
+                    %td=sale["sku"]
+                  - if @pref.include?('unit_price_without_tax')  
+                    %td=sale["unit_price_without_tax"]
+                  - if @pref.include?('unit_price_with_tax')  
+                    %td=sale["unit_price_with_tax"]  
+                  - if @pref.include?('tax_amount')  
+                    %td=sale["tax_amount"]
+                  - if @pref.include?('quantity')  
+                    %td=sale["quantity"]
+                  - if @pref.include?('subtotal')  
+                    %td=sale["subtotal"]
+                  - if @pref.include?('status')  
+                    %td=sale["status"]
+                  - if @pref.include?('payment_mode')  
+                    %td=sale["payment_mode"]
+                  - bill= Bill.find(sale["id"])
+                  - if @pref.include?('name') 
+                    -if bill.customer.present?
+                      - if bill.customer.customer_profile.customer_name.present?  
+                        %td= "#{bill.customer.customer_profile.customer_name}" 
+                      - else 
+                        %td= "#{bill.customer.customer_profile.firstname}"" #{bill.customer.profile.lastname}"
+                    -else
+                      %td= ""
+                  - if @pref.include?('phone_no') 
+                    -if bill.customer.present?
+                      %td=bill.customer.mobile_no
+                    -else
+                      %td= ""
+                  - if @pref.include?('date')  
+                    %td=Date.parse(sale["date"]).strftime("%d-%m-%Y")
+        - else
+          .alert.alert-warning
+            No record found           

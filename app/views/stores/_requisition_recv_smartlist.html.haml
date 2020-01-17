@@ -1,0 +1,37 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th
+          = smart_listing.sortable "Requisition details", "id" 
+        %th  
+          = smart_listing.sortable "Status", "status" 
+        %th= smart_listing.sortable "Date", "created_at"
+        %th.col-lg-3
+    %tbody
+      - smart_listing.collection.each do |object|
+        - _req_transfers = object.stock_transfers
+        %tr.data-table__selectable-row
+          %td
+            %h5
+              ="ID: #{object.id} | #{object.store_requisition.name}"                 
+            %p.module_description.font-sz-11
+              = "From store: #{object.from_store.name} | Address: #{object.from_store.address} | Contact: #{object.from_store.contact_number}"
+              -if _req_transfers.present?
+                %span
+                  Transfer ID:  
+                  - _req_transfers.each do |rt|
+                    = link_to "##{rt.id}", store_stock_transfer_path(@store,rt)
+          %td= req_status_tag(object.status)       
+          %td.font-sz-12=object.created_at.strftime("%d %b %Y, %I:%M %p")
+          %td.col-lg-2.col-xs-3.padding-top-20
+            %a.m-btn.blue.view-recevd-req-details.float-r{"data-target" => "#showRequisitionModal", "data-toggle" => "modal", 'data-req-log-id'=> "#{object.id}", 'data-store-id'=>"#{@store.id}"} 
+              %i.mdi-action-subject.left
+              View             
+      
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    This store yet not received any requisitions from other stores 

@@ -1,0 +1,5 @@
+<% if @unit.new_record? %>
+  $("#edit_form_explanation").html("<div class='alert alert-dismissable alert-danger'><h5><%= j pluralize(@unit.errors.count, 'error') %> prohibited this form being saved.</h5><%= j @unit.errors.full_messages.join(', ') %></div>")
+<% else %>
+  $("#edit_form_explanation").html("<div class='alert alert-dismissable alert-success'><%= j @unit.unit_name %> <%= j @unit.unittype.unit_type_name %> has been successfully updated.</div>")
+<% end %>

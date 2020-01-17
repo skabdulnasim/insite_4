@@ -1,0 +1,53 @@
+/ %h1 Listing countries
+
+/ %table
+/   %tr
+/     %th Name
+/     %th Code
+/     %th Currency
+/     %th
+/     %th
+/     %th
+
+/   - @countries.each do |country|
+/     %tr
+/       %td= country.name
+/       %td= country.code
+/       %td= country.currency
+/       %td= link_to 'Show', country
+/       %td= link_to 'Edit', edit_country_path(country)
+/       %td= link_to 'Destroy', country, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+/ %br
+
+/ = link_to 'New Country', new_country_path
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Countries 
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_country_path}"}
+              %i.mdi-content-add.left
+              Add new country 
+        %table.data-table    
+          %tr
+            %th Name
+            %th Code
+            %th Currency
+            %th Actions
+          - @countries.each do |country|
+            %tr
+              %td= country.name
+              %td= country.code
+              %td= country.currency
+              %td
+                %a.m-btn.green.m-btn-low-padding{:href => "#{country_path(country)}", :title => "View country"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_country_path(country)}", :title => "Edit country"} 
+                  %i.mdi-editor-border-color
+                %a.m-btn.red.m-btn-low-padding{:href => "#{country_path(country)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete country"}
+                  %i.mdi-action-delete

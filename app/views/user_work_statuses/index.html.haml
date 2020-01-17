@@ -1,0 +1,29 @@
+%h1 Listing user_work_statuses
+
+%table
+  %tr
+    %th User
+    %th Work status
+    %th Remarks
+    %th Latitude
+    %th Longitude
+    %th Recorded at
+    %th
+    %th
+    %th
+
+  - @user_work_statuses.each do |user_work_status|
+    %tr
+      %td= user_work_status.user_id
+      %td= user_work_status.work_status
+      %td= user_work_status.remarks
+      %td= user_work_status.latitude
+      %td= user_work_status.longitude
+      %td= user_work_status.recorded_at
+      %td= link_to 'Show', user_work_status
+      %td= link_to 'Edit', edit_user_work_status_path(user_work_status)
+      %td= link_to 'Destroy', user_work_status, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New User work status', new_user_work_status_path

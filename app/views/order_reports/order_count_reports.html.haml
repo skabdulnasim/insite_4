@@ -1,0 +1,22 @@
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title= params[:order_type]=="external_orders" ?  "External Order Report" : "Internal Order Report"
+            %br
+            %span{:style=>"color:blue;font-size:12px;"}
+              = "From #{params[:from_date]} -To- #{params[:to_date]}"
+          .data-table-header__actions
+            .form-group
+              = smart_listing_controls_for(:external_orders, {class: "form-inline float-l margin-l-30"}) do
+                = hidden_field_tag :from_date, "#{params[:from_date]}"
+                = hidden_field_tag :to_date, "#{params[:to_date]}"
+                = hidden_field_tag "unit_id","#{params[:unit_id]}"
+                .form-group.filter.input-append    
+                  = select_tag "source", options_for_select(@order_source.map{ |ext_source| ["#{ext_source.source}", ext_source.source] }),class: "form-control tsp-list", prompt: 'Select Source'  
+              %a.m-btn.indigo.margin-l-5.export_external_orders_report{:href=>"#{order_count_reports_order_reports_path}.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{params[:unit_id]}&order_type=#{params[:order_type]}"}
+                %i.mdi-file-file-download.left
+                CSV
+      = smart_listing_render :external_orders

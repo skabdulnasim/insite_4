@@ -1,0 +1,53 @@
+= render "layouts/flash"
+- child_users = @current_user.child_users
+.main-section__content
+	.example
+		.example__content.p0
+			.data-table-container  
+				%header.data-table-header
+					.data-table-header__label
+						%span.fs-title
+							TSP target vs actual sale report
+					.data-table-header__actions
+						%a.m-btn.indigo.margin-l-5.export-plant-wise-dispatch-report.right{:href=>"#{sale_person_target_report_tsp_reports_path}.csv?from_month=#{params[:from_month]}&to_month=#{params[:to_month]}"}
+							%i.mdi-file-file-download
+							CSV 
+				%table.data-table.table-hover
+					%thead   
+						%tr
+							%th.font-bold User
+							%th.font-bold Role
+							%th.font-bold Product
+							%th.font-bold Actual Target
+							%th.font-bold Actual Sales
+							%th.font-bold Product Unit
+					%tbody
+						- user_targets = @current_user.own_targets.by_month_range(@from_month,@to_month)
+						%tr
+							%td
+								%i.fa.fa-user
+								= @current_user.profile.full_name
+							%td= @current_user.role.name.humanize
+							%td
+							%td
+							%td
+						- if user_targets.present?
+							- user_targets.each do |user_target|
+								- user_target.user_target_products.each do |user_target_product|
+									-user_sale = 0
+									-if child_users.present?
+										- _user_lists = nested_child_users(@current_user,[])
+										- user_sale = UserSale.by_user_ids(_user_lists).by_recorded_at_month_range(@from_month,@to_month).sum(:quantity)
+									-else
+										- user_sale = UserSale.by_user_id(user.id).by_recorded_at_month_range(@from_month,@to_month).sum(:quantity)
+									%tr
+										%td
+										%td
+										%td= user_target_product.product.name
+										%td= "#{user_target_product.target_quantity.to_f.round(0)}"
+										%td= user_sale
+										%td= "#{user_target_product.product.basic_unit}" 
+
+						- p child_users
+						- if child_users.present?
+							= render :partial => 'tsp_reports/nested_child_targets', :collection => child_users, :as => "user"

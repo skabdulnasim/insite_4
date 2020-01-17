@@ -1,0 +1,52 @@
+:javascript
+  $(function(){
+      $(".icon_add_item").tooltip({
+          placement: "right",
+          title: "Click to add products under this menu"
+      });
+      $(".icon_delete").tooltip({
+          placement: "right",
+          title: "Delete this menu card."
+      });
+  });
+%ul#task-card.collection.with-header
+  %li.collection-header.white.blue-white
+    %span.blue-text.float-l{:style => "font-size:26px;"}
+      %i.fa.fa-filter
+
+    = smart_listing_controls_for(:menu_cards, {class: "form-inline float-l margin-l-30"}) do
+      .form-group.filter.input-append
+        = select_tag :mode, options_for_select({"Active"=>"1","Inactive"=>"0"}), class: "search form-control", :prompt => "All status"
+      .form-group.filter.input-append
+        = select_tag :scope, options_for_select({"Inhouse"=>"inhouse","Hungryleopard"=>"hungryleopard"}), class: "search form-control", :prompt => "All scopes"   
+    - if can? :new, MenuCard
+      %a.m-btn.blue.waves-effect.waves-light.float-r{:href => "#{new_menu_card_path}"}=I18n.t(:label_add_new)  
+    .clearfix
+- if current_user.users_role.role.name == "owner" 
+  = render "layouts/flash"
+  - _unit = current_user.unit
+  %section.card
+    %ul#task-card.collection.with-header.padding-top-20
+      / ############################################################
+
+      - load_section_selector_owner(_unit.id)
+      / = smart_listing_render :menu_cards
+
+      / ############################################################
+      / - load_section_selector_owner(current_user.unit.id)
+- elsif current_user.users_role.role.name == "dc_manager" 
+  = render "layouts/flash"
+  - _unit = current_user.unit
+  %section.card
+    %ul#task-card.collection.with-header.padding-top-20
+      / ############################################################
+
+      - load_section_selector_owner(_unit.id)
+      / = smart_listing_render :menu_cards
+
+      / ############################################################
+      / - load_section_selector_owner(current_user.unit.id)
+-else
+  / = render "layouts/flash"
+  = smart_listing_render :menu_cards
+

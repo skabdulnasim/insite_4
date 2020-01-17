@@ -1,0 +1,27 @@
+%h1 Listing loyalty_card_payments
+
+%table
+  %tr
+    %th Loyalty card
+    %th Card serial
+    %th Name on card
+    %th Amount
+    %th Points used
+    %th
+    %th
+    %th
+
+  - @loyalty_card_payments.each do |loyalty_card_payment|
+    %tr
+      %td= loyalty_card_payment.loyalty_card
+      %td= loyalty_card_payment.card_serial
+      %td= loyalty_card_payment.name_on_card
+      %td= loyalty_card_payment.amount
+      %td= loyalty_card_payment.points_used
+      %td= link_to 'Show', loyalty_card_payment
+      %td= link_to 'Edit', edit_loyalty_card_payment_path(loyalty_card_payment)
+      %td= link_to 'Destroy', loyalty_card_payment, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Loyalty card payment', new_loyalty_card_payment_path

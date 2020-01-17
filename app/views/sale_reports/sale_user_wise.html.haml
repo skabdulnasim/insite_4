@@ -1,0 +1,46 @@
+- links_arr = [{:title=>"Sale Reports",:url=>sale_reports_path,:active_class=>""},{:title=>"Sales by users across days",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title User Wise Sale
+          .data-table-header__actions        
+            %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/sale_reports/sale_user_wise.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+            .form-group.col-lg-6.cat_list
+              = form_tag(sale_user_wise_sale_reports_path, method: "get",multipart: true, :id=>"user_sales") do
+                = hidden_field_tag :from_date, '', :value=>params[:from_date]  
+                = hidden_field_tag :to_date, '', :value=>params[:to_date]  
+                = hidden_field_tag :unit_id, '', :value=>@unit_id 
+                = select_tag 'user_id', options_for_select(@users.collect{ |u| ["#{u.profile.firstname} #{u.profile.lastname}", u.id] },params[:user_id]),class: "form-control user_list", prompt: 'Select user' 
+                    
+        //= debug @user_sales
+        //= smart_listing_render :sales_by_user
+        - if @user_sales.present? 
+          %table.data-table
+            %thead
+              %tr.data-table__selectable-row
+                %th User
+                %th Bill Amount(without Tax)
+                %th Tax
+                %th Discount        
+                %th Grand Total
+                %th Date
+            %tbody
+              - @user_sales.each do |object|
+                - user = User.find(object.biller_id)
+                %tr.data-table__selectable-row
+                  %td="#{user.profile.firstname} #{user.profile.lastname}"
+                  %td=number_to_currency(object.total_bill_amount, unit: '')
+                  %td=number_to_currency(object.total_tax, unit: '')
+                  %td=number_to_currency(object.total_discount, unit: '')          
+                  %td=number_to_currency(object.total_grand_total, unit: '')
+                  %td=object.date
+        - else
+          .alert.alert-warning
+            No record found    

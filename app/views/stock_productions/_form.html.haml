@@ -1,0 +1,87 @@
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD HH:mm:ss',
+      useCurrent: true,
+    });           
+  });
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  });
+
+-if !@menu_products.present?
+  .col-lg-12
+    .jumbotron
+      %h2 No active menu cards available
+      %p It seems that your branch don't have any active menu cards. Follow the link given below for more datails.
+      %p
+        %a.btn.btn-primary.btn-lg{:href => "#{menu_cards_path}"} Add/ activate menu card
+
+- else    
+  = form_tag(store_stock_productions_path(@store), method: "post",multipart: true) do 
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#dynamic_form
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Step 1 : Select menu products to start production
+              .data-table-header__actions
+                %button.m-btn.blue.float-r.new-production-btn{:method => "post", :title => "done", :type =>"submit"}
+                  Start Production     
+            / = render 'kitchen_transaction_generic_form'
+            = hidden_field_tag "checked_raw[]"
+            
+            - @menu_products.each do |mp|
+              = hidden_field_tag "quantity_#{mp.id}", nil, value: "1", id: "hidden_quantity_#{mp.id}"
+            = hidden_field_tag "stock_production[kitchen_store_id]", nil, value: "#{@store.id}" 
+            = hidden_field_tag "stock_production[status]", nil, value: "0"
+
+            / .card
+            /   .row
+            /     .col-md-5
+            /       .form-group.col-lg-3
+            /         %b Start Date
+            /         = text_field_tag "stock_production[start_date]", '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+            /     .col-md-5
+            /       .form-group.col-lg-3
+            /         %b End Date
+            /         = text_field_tag "stock_production[end_date]", '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+  .example
+    .example__content.p0
+      .data-table-container
+        .card
+          .col-lg-12.margin-b-15
+            .col-lg-3
+              %span.font-sz-18
+                = smart_listing_controls_for(:menu_products, {class: "text-left"}) do
+                  .form-group.filter.input-append
+                    .input-group.float-r
+                      %input.form-control.search{:placeholder => "search by products...", :type => "text", :name=> "filter"}
+                        %span.input-group-btn
+                          %button.btn.btn-primary.disabled{:type => "submit"}
+                            %span.glyphicon.glyphicon-search
+        
+        .col-lg-8
+          = smart_listing_render :menu_products
+        .col-lg-4   
+          %h5
+            %b Consumption overview
+          %table.table.table-bordered
+            %thead
+              %tr
+                %th.col-lg-4 Product
+                %th.col-lg-2 Current Stock
+                %th.col-lg-5 Total estimation
+            %tbody
+              - @ingredient_arr_full.each do |ia|
+                %tr
+                  %td= ia[1][:raw_product_name]
+                  %td="#{ia[1][:raw_product_stock]} #{ia[1][:raw_product_unit]}"
+                  %td
+                    .input-group
+                      %input.form-control{:value=>"0", :class => "estm-numbers estm-numbers#{ia[1][:raw_product_id]}", :id => "#{ia[1][:raw_product_id]}", :type => "text", 'data-current-stock'=> "#{ia[1][:raw_product_stock]}"}
+                      .input-group-addon=ia[1][:raw_product_unit]
+                    %span.label.label-danger{:class=>"inefficient-raw-#{ia[1][:raw_product_id]}"}
+                    %input.err-counter-total{:type=>"hidden", :value=>"0", :class=>"error-counter-#{ia[1][:raw_product_id]}"}
+          

@@ -1,0 +1,33 @@
+= form_for @vendor, remote: true do |f|
+  - if @vendor.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+      %ul
+        %li= "#{pluralize(@vendor.errors.count, "error")} prohibited this vendor from being saved."
+        %li= @vendor.errors.full_messages.to_sentence
+  .input-field
+    /= f.hidden_field :unit_id, :class => 'form-control', :value => current_user.unit_id
+  .input-field
+    = f.text_field :name, :placeholder=>"Enter Name",:required=>true, :class => 'form-control validate'
+  .input-field
+    = f.number_field :phone, :placeholder=>"Enter valid Phone No",:required=>true, :class => 'form-control validate'
+  .input-field
+    = f.email_field :email, :placeholder=>"Enter valid Email ID",:required=>true, :class => 'form-control validate' 
+  .input-field
+    = f.text_field :pan_no, :placeholder=>"Enter Pan No", :class => 'form-control validate'  
+  .input-field
+    = f.text_area :address,:placeholder=>"Enter Address",:required=>true, :class => 'validate materialize-textarea'    
+  .input-field
+    = f.number_field :address_phone_no, :placeholder=>"Enter Address Phone No",:required=>true, :class => 'form-control validate'   
+  .input-field
+    = f.text_field :gst_hash, :placeholder=>"Enter Vendor Gst No",:required=>true, :class => 'form-control validate'
+  .input-field
+    = f.select :unit_id, option_groups_from_collection_for_select(Unittype.all, :units, :unit_type_name, :id, :unit_name, @vendor.unit_id),{ include_blank: "Select Branch"},  {:class => "browser-default",:required => true}
+  .input-field
+    = f.select :vendor_type, options_for_select(Vendor::VENDOR_TYPE.map{ |vt| [vt.humanize, vt] }, @vendor.vendor_type), { include_blank: "Select vendor type"}, {:class => "browser-default"}
+  .input-field
+    %button.btn.p0-10.green.green-text.text-lighten-5.waves-effect.waves-light{:type=>"submit"}
+      Save
+    %button.btn-flat.close-vendor-form
+      Cancel

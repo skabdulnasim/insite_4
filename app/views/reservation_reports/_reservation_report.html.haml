@@ -1,0 +1,37 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Slot
+        %th Doctor
+        %th Patient Name
+        %th Phone No
+        %th Appointment Time
+        %th Status
+        %th Amount
+        %th Created at
+    %tbody
+      - smart_listing.collection.each do |object|
+        /= debug object
+        %tr.data-table__selectable-row  
+          %td= object.slot.title
+          %td= object.resource.name
+          %td= "#{object.customer.customer_profile.firstname} #{object.customer.customer_profile.lastname}"
+          %td= object.customer.mobile_no
+          %td= "#{object.start_time.strftime("%I:%M %p")}-" "#{object.end_time.strftime("%I:%M %p")} " "- (#{object.reservation_date})"
+          - if object.status == "1"
+            %td= "Paid" 
+          - else  
+            %td= "Unpaid"  
+          - if object.bill.present?
+            %td= object.bill.bill_amount 
+          - else
+            %td= "-"  
+          %td= object.created_at.strftime("%d-%m-%Y %I:%M %p")
+
+        
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

@@ -1,0 +1,45 @@
+.col-sm-3.padding-l-r-none
+  = render 'products/material_product_filter'
+.col-sm-6.padding-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Products
+          = smart_listing_render :products
+.col-sm-3.padding-r-none  
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title New transfer
+          = form_tag("/stores/#{@store.id}/stock_transfers/transfer_options", method: "post",multipart: true) do
+            - if @transfer_type == "transfer-to-other"
+              %input{:type => "hidden",:name=>"transfer_type", :value=>"trans_to_oth"}
+            - elsif @transfer_type == "transfer-to-own"
+              %input{:type => "hidden",:name=>"transfer_type", :value=>"trans_to_own"}
+            .padding-10
+              %button.m-btn.teal.width-100.waves-effect.waves-light.transfer-options-btn{"aria-controls" => "collapseExample", "aria-expanded" => "false", "data-toggle" => "collapse", :href => "#collapseExample"} 
+                Proceed to Next step               
+              #collapseExample.collapse
+                .padding-10
+                  Do you want to save this data as template?
+                  %br
+                  %br
+                  %span#template-info
+                    %button.m-btn.green.show-template-btn
+                      Yes
+                    %button.m-btn.red.waves-effect.waves-light{:type=>"submit"}
+                      Not now                   
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Selected Products
+            %div{:style=>"max-height:300px; overflow-y:auto"}
+              %ul.collection.po-product-list
+                %li.collection-item.no-item-selected
+                  %div
+                    No products selected                

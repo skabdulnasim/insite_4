@@ -1,0 +1,35 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Coupons",:url=>coupons_path,:active_class=>""},{:title=>"coupon : #{@coupon.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+%table.table.table-bordered
+  %tr
+    %th Coupon Id
+    %th Coupon Name
+    %th Coupon Code
+    %th Coupon Type
+    %th Amount Type
+    %th Amount
+    %th Status
+    %th Count
+    %th From Date
+    %th To Date
+    %th Actions
+    
+    %tr
+      %td= @coupon.id
+      %td= @coupon.name
+      %td= @coupon.code
+      %td= @coupon.coupon_type
+      %td= @coupon.amount_type
+      %td= @coupon.amount
+      %td= @coupon.status
+      %td= @coupon.count
+      %td= @coupon.valid_from
+      %td= @coupon.valid_to
+      %td
+        %a{:href => "#{edit_coupon_path(@coupon)}", :class => 'btn btn-primary btn-mini active'}
+          %i.icon-edit
+          Edit
+        %a{:href => "#{coupons_path}", :class => 'btn btn-primary btn-mini active'}
+          %i.icon-backward
+          Back

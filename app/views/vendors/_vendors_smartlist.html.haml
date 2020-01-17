@@ -1,0 +1,42 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Name
+        %th Code
+        %th Address
+        %th Phone
+        %th Address Ph No
+        %th Pan No
+        %th Email
+        %th Gst No
+        %th Vendor Type
+        %th Actions
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td= object.name
+          %td= object.code
+          %td= object.address
+          %td= object.phone
+          %td= object.address_phone_no
+          %td= object.pan_no
+          %td= object.email
+          %td= object.gst_hash
+          %td= object.vendor_type.present? ? object.vendor_type.humanize : ''
+          %td
+            %a.m-btn.green.m-btn-low-padding{:href => "#{vendor_path(object)}", :title => "View branch type"}
+              %i.mdi-action-visibility
+            %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_vendor_path(object)}", :title => "Edit branch type"} 
+              %i.mdi-editor-border-color
+            %a.m-btn.red.m-btn-low-padding{:href => "#{vendor_path(object)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete vendor"}
+              %i.mdi-action-delete 
+
+               
+            %a.m-btn.yellow.m-btn-low-padding{:href => "#{payment_details_vendor_path(object)}", :title => "PAYMENT"}
+              %i.mdi-action-payment
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No vendor found

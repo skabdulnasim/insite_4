@@ -1,0 +1,39 @@
+:javascript
+  $(function() {   
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });     
+  });
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Stock in store",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Filter
+          .data-table-header__actions
+            %a.export-in-hand-report.m-btn.indigo.right{:href=>"/inventory_reports/stock_in_store.csv?units=#{params[:units_idss]}"}
+              %i.mdi-file-file-download.left
+              CSV
+            = smart_listing_controls_for(:reports, {class: "form-inline float-l margin-l-30"}) do  
+              = hidden_field_tag :units, '', :value=>"#{@unit_arr}"
+              .form-group
+                .input-group
+                  %input.form-control.search.store-product-name{:placeholder => "Search product...", :type => "text", :name=> "product_filter"}
+                    %span.input-group-btn
+                      %button.btn.btn-default.disabled{:type => "submit" }
+                        %span.glyphicon.glyphicon-search  
+              .form-group
+                = select_tag :stock_filter, options_for_select({"Menu products"=>"3","In stock"=>"1", "Out of stock"=>"2"}), class: "form-control", :prompt => "All products", style: "width: 100%"          
+              .form-group
+                = select_tag :catrgory, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, nil), class: "form-control", :prompt => "All categories"
+              .form-group
+                = select_tag "units_idss", options_from_collection_for_select(@child_units, "id", "unit_name"),class: "form-control",prompt: "Select Branch"
+                                                                               
+        = smart_listing_render :reports
+
+			

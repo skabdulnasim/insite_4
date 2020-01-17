@@ -1,0 +1,19 @@
+%h1 Listing combination_types
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @combination_types.each do |combination_type|
+    %tr
+      %td= combination_type.name
+      %td= link_to 'Show', combination_type
+      %td= link_to 'Edit', edit_combination_type_path(combination_type)
+      %td= link_to 'Destroy', combination_type, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Combination type', new_combination_type_path

@@ -1,0 +1,61 @@
+#wizard_horizontal
+	%h3 Search Customer
+	%section.ptb0
+		%h5.header Search customer by phone number
+		.divider
+		.margin-t-15
+		.col-lg-12
+			= form_tag '', {:method => :get, :remote => true, :class => 'form-horizontal bordered-row'} do
+				.col-lg-7.p0
+					%table.data-table
+						%tbody
+							.form-group.margin-t-15
+								%label{:class => 'col-lg-3 control-label'}
+									contact no
+								.col-lg-7
+									%input.blue-input.z-depth-2#customer-mobile-no.form-control.allow-numeric-only{:name => "login", :placeholder => "Search customer by contact number...", :type => "text", :autocomplete=>"off"}
+								.col-lg-2
+									= submit_tag('Search', :class => 'btn btn-success', :id => 'customer-search-btn')
+		.col-lg-12
+			#customer-form
+
+	%h3 Create Package
+	%section.ptb0
+		%h5.header 
+			Create New Package
+			= content_tag(:button, "Confirm package submition", :class => "m-btn green right", :id => "confirm-package-btn")
+		.margin-t-25
+		.divider
+		.margin-t-15
+		.col-lg-12
+			.row
+				.col-lg-10
+					.col-lg-6
+						.form-control.padding-5.txt-align-center#package-customer-name{:style=>"height:55px;"} Customer Name
+					.col-lg-6
+						.form-control.padding-5.txt-align-center#package-customer-address{:style=>"height:55px;"} Customer delivery Address
+				.col-lg-2
+			.row.margin-t-10
+				.col-lg-10
+					.package-units.padding-l-35
+						.input-group
+							%input.blue-input.z-depth-2.form-control.float-r{:placeholder => "Enter package name", :type => "text", :autocomplete=>"off", :id=>"package-name", :style=>"margin-top: 2px !important;"}
+								%span.input-group-btn#create-package-btn{:style=>"visibility:hidden;", "data-is-created"=>'false'}
+									%a.m-btn.green.m-btn-low-padding{:style=>"margin-left:20px;"}
+										%i.mdi-content-add
+								/ %span.input-group-btn
+								/ 	%a.m-btn.green.m-btn-low-padding.right{:style=>"margin-left:10px;  width:36px;"}
+								/ 		%i.fa.fa-bold
+			.row.margin-t-20
+				.col-lg-8
+					/ %a{:href=>"#", :id=>"add_product"} Add Product
+
+		.col-lg-12
+			.col-lg-4
+				#product-form
+
+	/ %h3 Preview Package
+	/ %section.ptb0
+	/ 	%h5.header Package preview
+	/ 	.divider
+	/ 	.margin-t-15

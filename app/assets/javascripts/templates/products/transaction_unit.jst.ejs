@@ -1,0 +1,35 @@
+<table class="data-table">
+  <thead>
+    <tr>
+      <th>Unit</th>
+      <th>Use unit as</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if(response.length > 0) {%>
+      <% for (var i = response.length - 1; i >= 0; i--) { %>
+        <tr>
+          <td>
+            <%= response[i].short_name %> (<%= response[i].name %>)
+          </td>
+          <td>
+            <input class="filled-in transaction_unit" name="input_units[]" id="unit_input_<%= response[i].id %>" type="checkbox" value="<%= response[i].id%>">
+            <label for="unit_input_<%= response[i].id %>">Input</label>  
+            <input type="number" hidden=true placeholder="please provide unit multiplier" name="input_multiplier_<%= response[i].id %>" id="input_multiplier_<%= response[i].id %>">
+            <br>        
+            <input class="filled-in transaction_unit" name="output_units[]" id="unit_output_<%= response[i].id %>" type="checkbox" value="<%= response[i].id%>">
+            <label for="unit_output_<%= response[i].id %>">Output</label>
+            <input type="number" hidden=true placeholder="please provide unit multiplier" name="output_multiplier_<%= response[i].id %>" id="output_multiplier_<%= response[i].id %>">                    
+          </td>        
+        </tr>
+      <% } %>
+      <tr>
+        <td colspan="2">Note: If no unit selected from above, basic inventory unit will be used as both input and output unit.</td>
+      </tr>
+      <% } else {%>
+      <tr>
+        <td colspan="2">Note: No product unit found for selected basic unit. basic inventory unit will be used as both input and output unit.</td>
+      </tr>      
+      <% }%>
+  </tbody>  
+</table>

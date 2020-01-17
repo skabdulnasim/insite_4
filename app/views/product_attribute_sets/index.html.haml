@@ -1,0 +1,43 @@
+- links_arr = [{:title=>"Products",:url=>products_path,:active_class=>""},{:title=>"Manage Attribute Sets",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper    
+= render "layouts/flash"
+
+.col-sm-12.padding-5.col.s12
+  .main-section__content
+    .example
+      .example__content.p0
+        - if @product_attribute_sets.present?
+          .data-table-container
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Listing Attribute Sets
+              = link_to 'Add New Attribute Set', new_product_attribute_set_path, :class=>"m-btn blue waves-effect waves-light"
+            %table.data-table
+              %thead
+                %tr.data-table__selectable-row
+                  %th Name
+                  %th Is default
+                  %th
+                  %th
+                  %th
+              %tbody
+                - @product_attribute_sets.each do |object|
+                  %td= object.name
+                  %td= object.is_default
+                  %td= link_to 'Show', object
+                  %td= link_to 'Edit', edit_product_attribute_set_path(object)
+                  %td= link_to 'Destroy', object, :method => :delete, :data => { :confirm => 'Are you sure?' }
+        - else
+          .padding-10.center
+            .col-lg-offset-2.col-lg-8
+              %h2 No attribute set available!
+              %br
+              %h4.grey-text Every product belongs to an attribute set
+              %br
+              %p A attribute set has many attributes that defines a product. As currently no attributes set is available in this system you can load a default attribute set or create a new one.
+              %br
+              = link_to 'Load default attribute set', seed_product_attribute_sets_path, :class=>"m-btn indigo  waves-effect waves-light"
+              = link_to 'Add New Attribute Set', new_product_attribute_set_path, :class=>"m-btn blue waves-effect waves-light"
+              %br
+              %br
+            .clearfix

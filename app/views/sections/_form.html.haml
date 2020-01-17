@@ -1,0 +1,64 @@
+= form_for @section, :html => { :class => 'form-horizontal'} do |f|
+  - if @section.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@section.errors.count, "error")} prohibited this section from being saved:"
+      %ul
+        - @section.errors.full_messages.each do |msg|
+          %li= msg
+  
+  .col-lg-8
+    .form-group
+      = f.label :unit_id, :class => 'col-sm-2 control-label'
+      .col-sm-4
+        - if @owner_will_crud_menu == '0'
+          = f.hidden_field :unit_id, :class => 'form-control', :required=> true, :value => current_user.unit_id
+          .form-control
+            = current_user.unit.unit_name
+        - else
+          = f.select :unit_id, options_for_select(Unit.all.map{ |u| [u.unit_name, u.id] }, @section.unit_id), { include_blank: "Select an unit"}, :class => 'form-control',:required => true
+    .form-group
+      = f.label :master_section_id, :class => 'col-sm-2 control-label'
+      .col-sm-4
+        = f.select :master_section_id, options_for_select(@master_sections.map{ |u| [u.name, u.id] }, @section.master_section_id), { include_blank: "Select master section"}, :class => 'form-control'     
+    .form-group
+      = f.label :name, :class => 'col-sm-2 control-label'
+      .col-sm-4
+        = f.text_field :name, :class => 'form-control', :required=> true
+    .form-group
+      = f.label :description, :class => 'col-sm-2 control-label'
+      .col-sm-4
+        = f.text_area :description, :class => 'form-control', :rows => "2" 
+    .form-group
+      = f.label :bill_header, :class => 'col-sm-2 control-label'
+      .col-sm-4
+        = f.text_area :bill_header, :class => 'form-control', :rows => "2" 
+    .form-group
+      = f.label :bill_footer, :class => 'col-sm-2 control-label'
+      .col-sm-4
+        = f.text_area :bill_footer, :class => 'form-control', :rows => "2"         
+    .form-group
+      = f.label :section_type, :class => 'col-sm-2 control-label'
+      .col-sm-4
+        = f.select :section_type, options_for_select({"Dine in section" => "dinein","Takeaway section" => "takeaway","Homedelivery section" => "homedelivery", "Sourcing section" => "sourcing", "Production section" => "production"},@section.section_type), { include_blank: "Select section type"}, {:class => "form-control"}
+ 
+    = f.fields_for :thirdparty_configurations do |conf_builder|
+      = render 'thirdparty_configuration_fields', f:conf_builder
+    = link_to_add_fields "Add Thitdparty Integration", f, :thirdparty_configurations, {}, 'm-btn green margin-l-15 add_thirdparty_configurations'
+        
+    .form-group
+      / = f.label :additional_tax, :class => 'col-sm-2 control-label'
+      .col-sm-4
+        / = f.text_area :additional_tax, :class => 'form-control', :rows => "2" 
+        = f.hidden_field :additional_tax, :class => 'form-control', :rows => "2" 
+
+  .col-lg-4
+    .panel.panel-default
+      .panel-heading Add tax - classes
+      .panel-body
+        = render "add_tax_class"
+
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'
+      %a.btn.btn-primary.btn-lg{:href => "#{sections_path}"}
+        Cancel

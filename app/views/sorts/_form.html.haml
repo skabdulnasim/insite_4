@@ -1,0 +1,32 @@
+= form_for @sort, :html => { :class => 'form-horizontal'} do |f|
+  - if @sort.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@sort.errors.count, "error")} prohibited this sort from being saved:"
+      %ul
+        - @sort.errors.full_messages.each do |msg|
+          %li= msg
+
+
+  .form-group
+    = f.label :name, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :name, :class => 'form-control'
+
+  .form-group
+    = f.label :kot_print, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :kot_print, options_for_select({"Yes" => "yes","No" => "no" },@sort.kot_print)    
+
+  .form-group
+    = f.label :description, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :description, :class => 'form-control'
+
+  = f.hidden_field :unit_id, :class => 'form-control', :value => current_user.unit_id
+
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'   
+      %a{:href => sorts_path, :class => 'btn btn-primary btn-lg'}
+        %i.icon-backward
+        Cancel

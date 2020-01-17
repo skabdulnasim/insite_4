@@ -1,0 +1,26 @@
+:css
+  .row:after {
+    clear: none;
+    }
+- if !@raw_product_id_arr.nil?
+  - if @raw_product_id_arr.include? "#{rp.id}"
+    - _current_index = @raw_product_id_arr.index("#{rp.id}")
+    - _current_raw_product_id = @raw_details[_current_index]['raw_product_id']
+    - _current_raw_product_quantity = @raw_details[_current_index]['raw_product_quantity']
+    - _current_raw_product_unit = @raw_details[_current_index]['raw_product_unit']
+  - else
+    - _current_raw_product_id = ""
+    - _current_raw_product_quantity = ""
+    - _current_raw_product_unit = ""
+.row{:style => "clear:unset"}
+  .col-lg-6
+    .input-group
+      %span.input-group-addon
+        %input{:type => "checkbox", :name => "checked_raw[]", :value => rp.id, :class => "check", :id => rp.id, :checked => (_current_raw_product_id == "#{rp.id}" )}
+        %lebel= rp.name
+      -#.ll{:class => "ll#{rp.id}"}
+      %input#InputAmount.form-control{:placeholder => "Amount", :type => "text",:name => "quantity#{rp.id}", :id => "quantity#{rp.id}", :readonly => :true, :value => _current_raw_product_quantity, type: "number", step: "any"}
+        .input-group-addon
+          = select_tag "product_unit#{rp.id}", options_from_collection_for_select(@product_units, "id", "name", _current_raw_product_unit)
+      / = number_field_tag "quantity#{rp.id}", _current_raw_product_quantity, placeholder:"quantity", step: "any" 
+      / = select_tag "product_unit#{rp.id}", options_from_collection_for_select(@product_units, "id", "name", _current_raw_product_unit)

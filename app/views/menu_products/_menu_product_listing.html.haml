@@ -1,0 +1,20 @@
+- unless smart_listing.empty?
+  .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+    %table.data-table#menu_product_accordion
+      %tbody.panel
+        - smart_listing.collection.each do |mp|
+          %tr.data-table__selectable-row{"aria-controls" => "menu_product_collapse_#{mp.id}", "aria-expanded" => "false", "data-parent" => "#menu_product_accordion", "data-toggle" => "collapse", :href => "#menu_product_collapse_#{mp.id}", :role => "button"}
+            %td.col-lg-3
+              - if mp.menu_category.parent.present?
+                %i.mdi-action-label-outline
+                  = mp.menu_category.name
+              - else
+                %i.mdi-action-label
+                  = mp.menu_category.name
+            %td.col-lg-9
+              .collapsible-header{:class=>"#{get_menu_product_mode_color(mp.mode)}", :id=>"product_header_#{mp.id}"}
+                %i.mdi-maps-local-restaurant
+                =mp.product.name
+                %span.m-label.white.blue-text.float-r{:style=>"line-height:1.3em; margin-top:0.8em"}
+                  =@currency
+                  %span{:class=>"sp_wot_#{mp.id}"}=mp.sell_price_without_tax

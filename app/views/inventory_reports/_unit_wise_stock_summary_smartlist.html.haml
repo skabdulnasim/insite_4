@@ -1,0 +1,105 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} Outlet
+      %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} Store
+      - if @pref.include?('opening_stock_value')
+        %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}
+          Opening Stock
+          %br Value (#{currency})
+      - if @pref.include?('total_credit_value')
+        %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} 
+          Total Credit 
+          %br Value (#{currency})
+      - if @pref.include?('total_transfer_credit_value')
+        %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}
+          Total Transfer 
+          %br Received Value(Credit) (#{currency})
+      - if @pref.include?('total_purchase_credit_value')
+        %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}
+          Total Purchase 
+          %br Credit Value(Credit) (#{currency})    
+        %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} 
+          Audit Credit
+          %br Value (#{currency})    
+      - if @pref.include?('total_cost_of_transfer')
+        %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} 
+          Total Cost 
+          %br of Transfer(Debit) (#{currency})
+      - if @pref.include?('closing_stock_value')
+        %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} 
+          Closing Stock
+          %br Value (#{currency})
+        %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} 
+          Audit debit
+          %br Value (#{currency})
+        
+      - if @pref.include?('total_sale')
+        %th{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} Total Sale (#{currency})
+    %tbody
+    - smart_listing.collection.each.each do |unit|
+      - unit_sale = get_unit_bill_data(unit.id,@from_datetime, @to_datetime)
+      %tr.data-table__selectable-row
+        %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= unit.unit_name
+        %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --
+        - if @pref.include?('opening_stock_value')
+          %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --
+        - if @pref.include?('total_credit_value')  
+          %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --
+        - if @pref.include?('total_transfer_credit_value')
+          %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --
+        - if @pref.include?('total_purchase_credit_value')  
+          %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --
+        - if @pref.include?('total_cost_of_transfer')  
+          %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --
+        - if @pref.include?('closing_stock_value')  
+          %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --
+        - if @pref.include?('closing_stock_value')  
+          %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --
+        - if @pref.include?('closing_stock_value')  
+          %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --    
+        - if @pref.include?('total_sale')  
+          %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}=unit_sale
+        - unit.stores.each do |store|
+          - from_datetime = @from_datetime
+          - to_datetime = @to_datetime
+          - unless @pro_scope.empty?
+            - opening_stock_cost_summery = 0
+            - closing_stock_cost_summery = 0
+            - opening_stock = 0
+            - @pro_scope.each do |product|
+              - product_opening_closing_data = get_product_opening_closing(store.id, product.id, from_datetime, to_datetime)
+              - opening_stock =product_opening_closing_data[:opening_stock].to_f
+              - unit_cost = product_opening_closing_data[:unit_price].to_f 
+              - opening_stock_cost_summery += unit_cost * product_opening_closing_data[:opening_stock].to_f
+              - closing_stock_cost_summery += unit_cost * product_opening_closing_data[:closing_stock].to_f
+          - stock_data = get_store_stock_data(store.id, from_datetime, to_datetime) # StoresHelper
+          %tr
+            %td
+            %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= store.name
+            - if @pref.include?('opening_stock_value')  
+              %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= number_to_currency(opening_stock_cost_summery.to_f, unit: '') 
+
+            - if @pref.include?('total_credit_value')  
+              %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= number_to_currency(stock_data[:total_credit_value].to_f, unit: '') 
+
+            - if @pref.include?('total_transfer_credit_value')
+              %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= number_to_currency(stock_data[:total_transfer_credit_value].to_f, unit: '') 
+            - if @pref.include?('closing_stock_value')  
+              %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= number_to_currency(stock_data[:total_purchase_credit].to_f, unit: '')   
+            - if @pref.include?('total_purchase_credit_value')
+              %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= number_to_currency(stock_data[:audit_credit_proce].to_f, unit: '')   
+
+            - if @pref.include?('total_cost_of_transfer')  
+              %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= number_to_currency(stock_data[:total_cost_of_transfer].to_f, unit: '') 
+
+            - if @pref.include?('closing_stock_value')  
+              %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= number_to_currency(closing_stock_cost_summery.to_f, unit: '') 
+            - if @pref.include?('closing_stock_value')  
+              %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"}= number_to_currency(stock_data[:audit_consumption_price].to_f, unit: '')  
+                
+            %td{:style => "border-right: 1px solid #ccc; text-align:center; border-bottom: 1px solid #ccc; border-left: 1px solid #ccc"} --  
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  %p.warning No records!

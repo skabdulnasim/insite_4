@@ -1,0 +1,64 @@
+/ %h1 Listing resource_states
+
+/ %table
+/   %tr
+/     %th Name
+/     %th Color code
+/     %th State priority
+/     %th Trash
+/     %th
+/     %th
+/     %th
+
+/   - @resource_states.each do |resource_state|
+/     %tr
+/       %td= resource_state.name
+/       %td= resource_state.color_code
+/       %td= resource_state.state_priority
+/       %td= resource_state.trash
+/       %td= link_to 'Show', resource_state
+/       %td= link_to 'Edit', edit_resource_state_path(resource_state)
+/       %td= link_to 'Destroy', resource_state, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+/ %br
+
+/ = link_to 'New Resource state', new_resource_state_path
+
+
+
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing RESOURCE_STATES
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal.waves-effect.waves-light{:href => "#{new_resource_state_path}"}
+              %i.mdi-content-add.left
+              %span.hidden-sm.hidden-xs Add new RESOURCE_STATE 
+
+
+        %table.data-table.white
+          %tr.table-header.well
+            %th Name
+            %th Color_Code
+            %th State_Priority
+            %th Actions
+
+          - @resource_states.each do |resource_state|
+            %tr
+              %td= resource_state.name
+              %td 
+                %span.status{:title => "#{resource_state.name}", :style=>"background: #{resource_state.color_code};"}
+                &nbsp;&nbsp;&nbsp;
+                =resource_state.color_code
+              %td= resource_state.state_priority
+              %td
+                = link_to 'Show', resource_state
+                = link_to 'Edit', edit_resource_state_path(resource_state)
+                = link_to 'Destroy', resource_state, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+

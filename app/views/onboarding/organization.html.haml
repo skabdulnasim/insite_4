@@ -1,0 +1,27 @@
+.row.m0
+  .col.l6.s12
+    %h4.mb20
+      = image_tag("logo_insites.png", :height => "30px")    
+    .p50
+      %h3.font-weight-200 What is the name of your organization?
+      .mt30.min-height-300
+        .input-field.mt50
+          = form_for @org_name_config, remote: true do |oc|  
+            = oc.label :config_value, "Organization Name", :class=>"l0"
+            = oc.text_field :config_value, :class=>"validate single_input_submit_form", :placeholder=>"Ex. ABC Corp (can be changed later)"
+            = oc.hidden_field :config_key, :value=>"organization_name"
+        %p.grey-text.font-12.font-weight-300
+          %span.grey-text.font-weight-400 What is mode of your business?
+          This information will help us to setup organization structure and different modules for your instance.            
+        .input-field
+          = form_for @business_type_config, html: {:class=>"business_type_form"}, remote: true do |ac|
+            = ac.hidden_field :config_key, :value=>"business_type"
+            = ac.select :config_value, options_for_select([['F&B','fnb'],['F&B (Fine Dine Only)','fnb_fd'],['F&B (QSR Only)','fnb_qsr'],['Retail','retail'],['Other','other']],@business_type_config.config_value), { :prompt=>"Select business type" }, {:class => "business_type_select"}        
+      .center.mt30
+        %a.btn-large.blue.waves-effect.waves-light{:href=>next_wizard_path}
+          Next
+          %i.right.material-icons keyboard_arrow_right
+
+  .col.l6.s12.palette-blue.right-sidebar.p0
+    / %h5.white-text.lighten-5 Progress
+    = image_tag("insites3.png", class: "right mt50")

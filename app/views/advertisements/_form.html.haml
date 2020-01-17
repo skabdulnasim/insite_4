@@ -1,0 +1,82 @@
+:javascript
+  $(function() {
+    var dateToday = new Date();
+    $('.datepick').datetimepicker({
+      pickTime: false,
+      format: 'YYYY-MM-DD',
+      minDate: dateToday,
+      useCurrent: true
+    });
+  });
+= form_for @advertisement, :html => { :multipart => true } do |f|
+  - if @advertisement.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@advertisement.errors.count, "error")} prohibited this advertisement from being saved:"
+      %ul
+        - @advertisement.errors.full_messages.each do |msg|
+          %li= msg
+
+  .col-sm-6
+    .form-group
+      = f.label :name, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = f.text_field :name, :class => 'form-control', :require => true
+    %br    
+    .form-group
+      = f.label :description, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = f.text_field :description, :class => 'form-control'
+    %br    
+    .form-group
+      = f.label :valid_from, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = f.text_field :valid_from, :class => 'form-control datepick', :require => true
+    %br    
+    .form-group
+      = f.label :valid_till, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = f.text_field :valid_till, :class => 'form-control datepick', :require => true
+    %br    
+    .form-group
+      = f.label :menu_card_id, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        =f.select :menu_card_id,option_groups_from_collection_for_select(@sections,:menu_cards, :name, :id,:name,@advertisement.menu_card_id),{ include_blank: "Select Menu"}, {:class => "form-control", :required=> true}  
+    %br 
+    .form-group
+      = f.label :repeating, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = f.text_field :repeating, :class => 'form-control'  
+    %br     
+    .form-group
+      = f.label :position, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = f.select :position, options_for_select({"Left" => "left","Right" => "right","Top" => "top", "Bottom" => "bottom" },@advertisement.position), { include_blank: "Select position"}, {:class => "form-control", :required=> true}             
+    %br
+    %br
+    .form-group
+      = fields_for :advertisement_gallery do |a_g|
+        = f.label "Advertisement Images", :class => 'col-sm-4 control-label'
+        .col-sm-7
+          = a_g.file_field :advertisement_image, :multiple => true
+      
+
+  .col-sm-6
+    .panel.panel-default
+      .panel-heading
+        Select Branch
+      .panel-body{:style => "max-height: 220px !important; overflow: auto !important;"}
+        - Unit.all.each do |unit|
+          .checkbox
+            
+            = check_box_tag "unit_ids[]", unit.id, @advertisement.unit_advertisements.map(&:unit_id).include?(unit.id), :id=>"unit_#{unit.id}"
+            %label{:for=>"unit_#{unit.id}"}= unit.unit_name
+              
+  .col-sm-4
+    - if @advertisement.advertisement_galleries.present?
+      %img.img-thumbnail{:alt => "...", :src => "..."}/
+          
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'
+      %a.btn.btn-primary.btn-lg{:href => advertisements_path}
+        Cancel

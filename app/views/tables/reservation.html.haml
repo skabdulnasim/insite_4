@@ -1,0 +1,39 @@
+:javascript
+  $(function() {
+    $('#reservation_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+    $('.time').datetimepicker({
+      pickDate: false,
+    });
+  });
+
+#page-wrapper
+  .row
+    .page-header
+      %h2
+        %i.fa.fa-tags
+        Table Management
+        %small Table Reservation
+  = unit_details("resturant_time_slot")
+  .form-group
+    = form_tag('/tables/check') do
+      .col-lg-4
+        = label_tag :Select_date
+      .col-lg-6
+        = text_field_tag :date, '', class: "form-control", id: "reservation_date", placeholder: "Select Date",:style => "padding: 6px 10px;"
+      .col-lg-4
+        = label_tag :Select_time_in
+      .col-lg-6
+        = text_field_tag :time_in, '', class: "form-control time", id: "time_in", placeholder: "Select Time In",:style => "padding: 6px 10px;"
+      .col-lg-4
+        = label_tag :Select_time_out
+      .col-lg-6
+        = text_field_tag :time_out, '', class: "form-control time", id: "time_out", placeholder: "Select Time Out",:style => "padding: 6px 10px;"
+      .col-lg-4
+        = label_tag :Number_of_person
+      .col-lg-6
+        = number_field_tag :person_count, '', class: "form-control", id: "person_count", placeholder: "Number Of Person",:style => "padding: 6px 10px;"
+
+      .col-lg-6
+        = submit_tag "check", class: "btn btn-success"

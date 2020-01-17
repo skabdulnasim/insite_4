@@ -1,0 +1,28 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= "Package Name"
+        %th= smart_listing.sortable "Boxing Name", "name"
+        %th= "Total Boxes"
+        %th Actions
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.boxing_source.name
+          %td=object.name
+          %td=object.boxes.count
+          %td
+            %a.m-btn.green.m-btn-low-padding{:href => "#{boxing_path(object)}", :title => "View boxing"}
+              %i.mdi-action-visibility
+            %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_boxing_path(object)}", :title => "Edit boxing"} 
+              %i.mdi-editor-border-color  
+            %a.m-btn.blue.view-boxing-details{"data-target" => "#showBoxingModal", "data-toggle" => "modal", 'data-boxing-id'=> "#{object.id}", 'data-store-id'=>"#{object.store_id}",'title' => 'Trasfer Boxing'} 
+              %i.mdi-action-trending-neutral
+                  
+      
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No boxing found

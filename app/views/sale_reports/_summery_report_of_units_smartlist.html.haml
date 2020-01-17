@@ -1,0 +1,37 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Branch Name
+        %th Grand Total
+        %th Material Cost
+        %th Unpaid Amt
+        %th Settled Amt
+        %th Cash
+        %th Card
+        //%th Others
+        %th Third Party
+        %th Loyalty 
+        %th Discount
+    %tbody
+      - smart_listing.collection.each do |object|
+        - meterial_cost = get_meterial_cost(object[:unit_id],@from_datetime,@to_datetime)
+        - settlement_bill_data = get_settlement_data_by_date(object[:unit_id],@from_datetime,@to_datetime)
+        - unpaid_ammount=(object[:total_grand_total].to_f - settlement_bill_data[:total_settlement].to_f).round(1)
+        %tr.data-table__selectable-row
+          %td=object.unit.unit_name
+          %td=object[:total_grand_total]
+          %td=meterial_cost
+          %td=unpaid_ammount 
+          %td=settlement_bill_data[:total_settlement]
+          %td=settlement_bill_data[:cash_sale] 
+          %td=settlement_bill_data[:card_sale]
+          %td=settlement_bill_data[:third_party_sale]
+          %td=settlement_bill_data[:loyalty_card_sale]
+          %td=object[:total_discount]
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

@@ -1,0 +1,15 @@
+<tr class='data-table__selectable-row' id="cart_item_vendor_<%= vendor_id %>">
+  <td>
+    <%=vendor_name%>
+    <input type="hidden" name="product[vendor_products_attributes][<%=key%>][vendor_id]" value="<%=vendor_id%>">
+  </td>
+
+  <td>
+  	<input class="allow-numeric-only" type="text" name="product[vendor_products_attributes][<%=key%>][price]" placeholder="Enter vendor price" required/>
+  </td>
+  
+  <td>
+    <input id="vendor_products_attributes_<%=key%>__destroy" name="product[vendor_products_attributes][<%=key%>][_destroy]" type="hidden" value="false">
+    <a href="#" class="remove_vendor_products" data-vendor-id="<%= vendor_id %>">Remove</a>
+  </td>
+</tr>

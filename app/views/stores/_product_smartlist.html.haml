@@ -1,0 +1,42 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "ID", "id"
+        %th= smart_listing.sortable "Name", "name"
+        %th= smart_listing.sortable "Category", "category_id"
+        %th Stock
+        %th Cost (#{currency})
+        %th
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.id
+          %td
+            =# get_product_logo(object.product_image)
+            =object.name
+            - if object.local_name.present?
+              %b
+                = " ( #{object.local_name} )"
+          %td=object.category.name
+          %td
+            - stock_qauntity =  number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            - product_input_units = object.input_units.active_only
+            = "#{stock_qauntity.to_f}#{object.basic_unit}"
+            - if product_input_units.present?
+              -product_input_units.each do |product_unit|
+                = "/#{(stock_qauntity.to_f/product_unit.basic_unit_multiplier).round(2)}#{product_unit.product_unit_name}"
+          - product_current_stock_cost = get_product_current_stock_cost(@store.id, object.id)
+          %td
+            = number_to_currency(product_current_stock_cost.present? ? product_current_stock_cost.current_price.to_f : 0, unit: '')
+          %td
+            %a.m-btn.blue.lighten-1{:href=>"#{store_stock_path(@store,object)}"}
+              %i.mdi-action-trending-up.left
+              Stock              
+      
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

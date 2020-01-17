@@ -1,0 +1,65 @@
+<hr>
+FILTER <span class="m-label teal"><b>Date</b> <%= from_date %> to <%= to_date %></span>
+<hr>
+<div class="col-lg-12 margin-t-15">
+  <h5 class="blue-text text-darken-1">TOTAL SALES BY LOCATION</h5>
+  <table class="table data-table">
+    <thead>
+      <tr class="data-table__selectable-row">
+        <th>Branch Name</th>
+        <th>Total Sales</th>
+      </tr>
+    </thead>
+    
+    <tbody>   
+      <% for(var i=0; i < sales_data.units.length; i++) { %>
+        <tr class="data-table__selectable-row">
+          <td><%= sales_data.units[i].unit_name %></td>
+          <td><%= sales_data.sale_amounts[i].toFixed(1) %></td>
+        </tr> 
+      <% } %>   
+    </tbody>
+  </table>  
+</div>
+<div class="col-lg-6">
+  <h5 class="green-text text-darken-1">BEST SELLERS (BY QTY)</h5>
+  <table class="table table-bordered">
+    <thead>
+      <tr class="data-table__selectable-row">
+        <th>Item</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    
+    <tbody>   
+      <% for(var i=0; i < sales_data.most_sold_items_by_quantity.length; i++) { %>
+        <tr class="data-table__selectable-row">
+          <td><%= sales_data.most_sold_items_by_quantity[i].product_name %></td>
+          <td><%= sales_data.most_sold_items_by_quantity[i].quantity %></td>
+        </tr> 
+      <% } %>   
+    </tbody>
+  </table>  
+</div>
+<div class="col-lg-6">
+  <h5 class="green-text text-darken-1">BEST SELLERS (BY PRICE)</h5>
+  <table class="table table-bordered">
+    <thead>
+      <tr class="data-table__selectable-row">
+        <th>Item</th>
+        <th>Total Sale Value</th>
+      </tr>
+    </thead>
+    
+    <tbody>   
+      <% for(var i=0; i < sales_data.most_sold_items_by_price.length; i++) { %>
+        <tr class="data-table__selectable-row">
+          <td><%= sales_data.most_sold_items_by_price[i].product_name %></td>
+          <td><%= sales_data.most_sold_items_by_price[i].total_sale %></td>
+        </tr> 
+      <% } %>   
+    </tbody>
+  </table>
+  
+</div>
+

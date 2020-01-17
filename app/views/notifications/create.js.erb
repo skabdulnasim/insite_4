@@ -1,0 +1,4 @@
+<% broadcast "/notifications/new" do %>
+	$("#chat").prepend("<%= escape_javascript render(@notification)%>");
+<% end %>
+$("#new_notification")[0].reset();

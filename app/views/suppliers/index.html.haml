@@ -1,0 +1,25 @@
+#page-wrapper
+  .row
+    .col-lg-12
+      .page-header
+        %h1
+          Supplier Management
+          %small Manage Suppliers
+      .page-container
+        %table.table.table-bordered
+          %tr.table-header
+            %th Name
+            %th Actions
+        
+          - @suppliers.each do |supplier|
+            %tr
+              %td= supplier.name
+              %td
+                %span= link_to image_tag( 'view.png'), supplier
+                %span= link_to image_tag( 'edit.png'), edit_supplier_path(supplier)
+                %span= link_to image_tag( 'delete.gif'), supplier, :method => :delete, :data => { :confirm => 'Are you sure?' }
+        
+        %br
+        %a{:href => "#{new_supplier_path}", :class => 'btn btn-primary btn-mini active'}
+          %i.icon-plus-sign
+          New Supplier

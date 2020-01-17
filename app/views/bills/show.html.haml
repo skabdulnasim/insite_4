@@ -1,0 +1,17 @@
+= render "layouts/flash"  
+%ul.collapsible{"data-collapsible" => "accordion"}
+  %li
+    .collapsible-header.bill-quickview{"data-bill-id"=>@bill.id,"data-currency"=>currency, :class=>"bill_collapse_#{@bill.id}","data-action"=>"view_bill", :style=>"height:auto"}
+      %h3.padding-10.margin-t-b-0
+        ="##{@bill.id}"
+        %small Click here to view complete details
+      %h5.padding-10.margin-t-b-0
+        =@bill.created_at.strftime("%d-%m-%Y, %I:%M %p")    
+        %span.float-r{:class=>"bill_status_#{@bill.id}"}=get_bill_status(@bill)
+    .collapsible-body
+      .col-lg-12{:id=>"bill_quickinfo_#{@bill.id}"}                         
+        %h5="Loading please wait..."
+      .clearfix  
+%input.current_user_id{:type=>"hidden", :value=>current_user.id}
+.clearfix
+- manual_load_javascript "templates/bills/quick_details"   

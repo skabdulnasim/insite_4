@@ -1,0 +1,50 @@
+- unless smart_listing.empty?
+  %table.data-table#accordion
+    %thead
+      %tr.data-table__selectable-row{:style=>"background-color: white;"}   
+        %th ID 
+        %th Mobile
+        %th Name
+        %th Eamil
+        - if AppConfiguration.get_config_value('tsp_module') == "enabled"
+          %th Resource
+        %th Due Amount
+        %th Wallet Balance
+        %th Action
+    %tbody.panel
+      - smart_listing.collection.each do |customer|
+        -_boh_ammount = Bill.select("sum(boh_amount) as total_boh_amount").valid_bill.by_customer(customer.id)
+        %tr.data-table__selectable-row.active
+          %td.customer-quickview{:href => "#customer_link_#{customer.id}", :role => "button", "data-customer-id"=>customer.id, :class=>"customer_link_#{customer.id}"}
+            = customer.id
+          %td.customer-quickview{:href => "#customer_link_#{customer.id}", :role => "button", "data-customer-id"=>customer.id, :class=>"customer_link_#{customer.id}"}
+            = customer.mobile_no
+          - if customer.customer_profile.customer_name.present?    
+            %td.customer-quickview{:href => "#customer_link_#{customer.id}", :role => "button", "data-customer-id"=>customer.id, :class=>"customer_link_#{customer.id}"}
+              / = "#{customer.try(:customer_profile).try(:firstname)} #{customer.try(:customer_profile).try(:lastname)}"
+              = customer.customer_profile.customer_name
+          - else
+            %td.customer-quickview{:href => "#customer_link_#{customer.id}", :role => "button", "data-customer-id"=>customer.id, :class=>"customer_link_#{customer.id}"}
+              = "#{customer.try(:customer_profile).try(:firstname)} #{customer.try(:customer_profile).try(:lastname)}"
+              /= customer.customer_profile.customer_name  
+          %td.customer-quickview{:href => "#customer_link_#{customer.id}", :role => "button", "data-customer-id"=>customer.id, :class=>"customer_link_#{customer.id}"}
+            = customer.email  
+          - if AppConfiguration.get_config_value('tsp_module') == "enabled"
+            %td
+              = customer.resource.present? ? "#{customer.resource.name} (#{customer.resource.unique_identity_no})" : "-"
+          %td.customer-quickview{:href => "#customer_link_#{customer.id}", :role => "button", "data-customer-id"=>customer.id, :class=>"customer_link_#{customer.id}"}
+            = "#{_boh_ammount[0].total_boh_amount.to_f.round(2)}"" (#{currency})"    
+          %td.customer-quickview{:href => "#customer_link_#{customer.id}", :role => "button", "data-customer-id"=>customer.id, :class=>"customer_link_#{customer.id}"}
+            = customer.wallet.current_balance if customer.wallet.present? 
+          %td{:style=>"text-align:right"}
+            %a.m-btn.blue.m-btn-low-padding{:href => "#{edit_customer_path(customer)}", :title => "Edit customer"}
+              %i.mdi-editor-border-color
+            
+        %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{customer.id}", :role => "tabpanel", :id => "customer_link_#{customer.id}"}
+          %td.p0{:colspan=>8,:id=>"customer_quickinfo_#{customer.id}"}
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No customer found
+    

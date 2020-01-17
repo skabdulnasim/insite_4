@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Conjugated name:
+  = @conjugated_unit.conjugated_name
+
+= link_to 'Edit', edit_conjugated_unit_path(@conjugated_unit)
+\|
+= link_to 'Back', conjugated_units_path

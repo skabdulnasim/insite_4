@@ -1,0 +1,23 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @loyalty_card_class.name
+%p
+  %b Enrollment Rule:
+  = "Rs. #{@loyalty_card_class.enrollment_rule[:amount]} = #{@loyalty_card_class.enrollment_rule[:point]} Pt."
+
+%p
+  %b Recharge Rule:
+  = "Rs. #{@loyalty_card_class.recharge_rule[:amount]} = #{@loyalty_card_class.recharge_rule[:point]} Pt."
+
+%p
+  %b Reward Rule:
+  = "Rs. #{@loyalty_card_class.reward_rule[:amount]} = #{@loyalty_card_class.reward_rule[:point]} Pt."
+%p
+  %b Debit Rule:
+  = "#{@loyalty_card_class.debit_rule[:point]} Pt. = Rs. #{@loyalty_card_class.debit_rule[:amount]}"
+
+= link_to 'Edit', edit_loyalty_card_class_path(@loyalty_card_class)
+\|
+= link_to 'Back', loyalty_card_classes_path

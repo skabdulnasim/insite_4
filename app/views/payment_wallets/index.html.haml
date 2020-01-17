@@ -1,0 +1,19 @@
+%h1 Listing payment_wallets
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @payment_wallets.each do |payment_wallet|
+    %tr
+      %td= payment_wallet.name
+      %td= link_to 'Show', payment_wallet
+      %td= link_to 'Edit', edit_payment_wallet_path(payment_wallet)
+      %td= link_to 'Destroy', payment_wallet, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Payment wallet', new_payment_wallet_path

@@ -1,0 +1,64 @@
+- manual_load_javascript "templates/commission_rules/add_new_product"
+/ = form_for @commission_rule do |f|
+/   - if @commission_rule.errors.any?
+/     #error_explanation
+/       %h2= "#{pluralize(@commission_rule.errors.count, "error")} prohibited this commission_rule from being saved:"
+/       %ul
+/         - @commission_rule.errors.full_messages.each do |msg|
+/           %li= msg
+
+/   .field
+/     = f.label :resource_id
+/     = f.number_field :resource_id
+/   .field
+/     = f.label :set_by
+/     = f.number_field :set_by
+/   .field
+/     = f.label :month
+/     = f.text_field :month
+/   .actions
+/     = f.submit 'Save'
+
+.main-section__content.padding-r-none
+	.example
+		.example__content.p0
+			.data-table-container
+				%header.data-table-header
+					.data-table-header__label
+						%span.fs-title Set new commission rule
+						.margin-l-15.float-r= select_tag :set_output_amount_type, options_for_select(CommissionRule::AMOUNT_TYPE), class: "form-control", :prompt => "Select commission amount type"
+				.margin-l-2
+					= form_for @commission_rule, :html => { :class => ''} do |cr|
+						= cr.hidden_field :resource_id, :class => 'form-control', :value => @resource.id
+						= cr.hidden_field :set_by, :class => 'form-control', :value => @current_user.id
+						- CommissionRule::MONTHS.each do |month|
+							.card.float-l.padding-t-b-5{:style=>'width:80px;margin-left:3px;'}
+								= check_box_tag "select_months[]", "#{month}", false, :class=>"filled-in", :id => "month_#{month}"
+								%label.font-sz-11{:for=>"month_#{month}"}= month
+						.col-lg-12
+							.col-lg-4.card.padding-l-r-none.margin-t-b-0
+								.filter-title.margin-t-b-0
+									%i.mdi-action-search.left
+									AVAILABLE PRODUCTS
+								.min-height-405
+									= smart_listing_render :products
+							.col-lg-8.card.padding-l-r-none.margin-t-b-0
+								%table.data-table#accordion    
+									%thead
+										%tr.data-table__selectable-row
+											%th.col-lg-5 Selected Product
+											%th.col-lg-1
+												Commission 
+												%br	Capping
+											%th.col-lg-3
+												Owner Commission
+												%br Amount
+											%th.col-lg-3
+												Csm Commission
+												%br Amount
+											%th.col-lg-1
+									%tbody.m-input.panel.selected-product-list
+										%tr.no-item-selected
+											%td No product selected
+						.padding-10
+							= cr.submit 'Save Commission Rule', :class => 'm-btn green width-100'

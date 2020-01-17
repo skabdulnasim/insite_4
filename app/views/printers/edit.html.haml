@@ -1,0 +1,13 @@
+#page-wrapper
+  .row
+    .page-header
+      %h2.margin-b-t-none
+        %i.fa.fa-wrench
+        App Configurations  
+        %small
+          Editing printer
+    .page-container
+      = render "layouts/flash"
+
+      .col-sm-5
+        = render 'form'

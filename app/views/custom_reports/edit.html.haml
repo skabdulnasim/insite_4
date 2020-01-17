@@ -1,0 +1,16 @@
+
+.page-header
+  - if notice.nil? == false
+    #notice.alert.alert-info
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-info.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"} ×
+      = notice
+  %h2
+    %i.fa.fa-tags
+    Edit Custom Report
+    %small Report Edit
+.page-container
+  = render 'form'
+  = link_to 'Back', report_folders_path 

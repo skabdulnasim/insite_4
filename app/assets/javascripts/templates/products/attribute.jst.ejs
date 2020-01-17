@@ -1,0 +1,15 @@
+<% for(var i=0; i<attributes.length; i++) { %>
+  <div class="form-group">
+  	<label for="" class="col-sm-3 control-label"><%= attributes[i].attribute_name %></label>
+    <div class="col-sm-5">
+      <input type="hidden" name="attribute[]" value="<%= attributes[i].attribute_id %>">
+    	<select name="variant[]" class="form-control">
+    		<% for(var j=0; j<attributes[i].terms.length; j++) { %>
+    			<%= attributes[i].terms.length %>
+    			<option value="<%= attributes[i].terms[j].id %>"><%= attributes[i].terms[j].name %></option>
+    		<%}%>
+    	</select>
+    </div>
+  </div>
+<%}%>
+

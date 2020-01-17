@@ -1,0 +1,30 @@
+%p#notice= notice
+
+%p
+  %b Media file name:
+  = @medium.media_file_name
+%p
+  %b Media content type:
+  = @medium.media_content_type
+%p
+  %b Media file size:
+  = @medium.media_file_size
+%p
+  %b Media updated at:
+  = @medium.media_updated_at
+%p
+  %b Asset:
+  = @medium.asset_id
+%p
+  %b Asset type:
+  = @medium.asset_type
+%p
+  %b Properties:
+  = @medium.properties
+%p
+  %b Deleted at:
+  = @medium.deleted_at
+
+= link_to 'Edit', edit_medium_path(@medium)
+\|
+= link_to 'Back', media_path

@@ -1,0 +1,4 @@
+id,menu_category_id,product_id,mode,sell_price,sell_price_without_tax,sort_id,store_id,is_buffet_product,isdefault,stock_status,variable_id,combo_id,tax_group_id,procured_price,mrp,menu_category_name,bill_destination_id,tax_group_name,tax_group_amount,product_name,product_type,product_callorie,sort_name,local_name,product_hsn_code,product_basic_unit,product_description
+4139,795,350,1,12,12,3,18,f,,0,,,3,12,12,tests,3,tax1,0,debu2,simple,"",Sort1,"","",Kg,""
+4136,795,346,1,1120,1120,3,18,f,0,1,,,3,100,1120,tests,3,tax1,0,Pad,simple,"",Sort1,"",qwer45678,Pc,""
+4135,795,344,1,1121,1121,3,2,f,,1,,,3,100,1121,tests,3,tax1,0,napkin,simple,"",Sort1,"",1234567890,Pc,""

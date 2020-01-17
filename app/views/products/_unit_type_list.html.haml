@@ -1,0 +1,10 @@
+#select_div
+  - @unittypes.each do |unittype|
+    %ul{:style => "list-style:none"}
+      - if !unittype.blank?
+        %li
+          .radio
+            %label
+              %input#optionsRadios1{:type => "radio", :name => "product[unittype_id]", :value => unittype.id, :checked => (unittype.id == @product.unittype_id)}
+                = unittype.unit_type_name       
+ 

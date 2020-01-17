@@ -1,0 +1,47 @@
+= render "layouts/flash"
+.col-sm-3.padding-5
+	.card
+		.padding-10 
+			%b FILTER BY
+		= smart_listing_controls_for(:customer_queues, {class: "text-left"}) do
+			.filter-title.margin-t-b-0 
+				%i.mdi-action-search.left
+				Search
+			.padding-10 
+				.form-group.filter.input-append
+					.input-group
+						%input.form-control.search{:placeholder => "Type to search ...", :type => "text", :name=> "name_filter"}
+							%span.input-group-btn
+								%button.btn.btn-primary.disabled{:type => "submit" }
+									%span.glyphicon.glyphicon-search
+			.filter-title.margin-t-b-0 
+				%i.mdi-action-label.left
+				Slot
+			.padding-l-r-5
+				- Slot.all.each do |slot|
+					.checkbox.margin-t-b-2
+						= check_box_tag 'slot_id[]', slot.id, false,{ :id => "slot#{slot.id}", :class=>"filled-in"}
+						%label.checkbox.inline.margin-l-5{:for=>"slot#{slot.id}", :style=>"padding-left:30px;"}= slot.title.humanize
+			.filter-title.margin-t-b-0 
+				%i.mdi-action-label.left
+				Preauth
+			.padding-l-r-5
+				.checkbox.margin-t-b-2
+					= radio_button_tag 'is_preauth', true, false,{ :id => "preauth_true", :class=>"filled-in"}
+					%label.checkbox.inline.margin-l-5.font-sz-12{:for=>"preauth_true", :style=>"padding-left:30px;"}= "Done"
+				.checkbox.margin-t-b-2
+					= radio_button_tag 'is_preauth', false, false,{ :id => "preauth_false", :class=>"filled-in"}
+					%label.checkbox.inline.margin-l-5.font-sz-12{:for=>"preauth_false", :style=>"padding-left:30px;"}= "Not Done"
+			.filter-title.margin-t-b-0 
+				%i.mdi-action-label.left
+				Is reserved
+			.padding-l-r-5
+				.checkbox.margin-t-b-2
+					= radio_button_tag 'is_reserved', 1, false,{ :id => "reserved", :class=>"filled-in"}
+					%label.checkbox.inline.margin-l-5.font-sz-12{:for=>"reserved", :style=>"padding-left:30px;"}= "Yes"
+				.checkbox.margin-t-b-2
+					= radio_button_tag 'is_reserved', 0, false,{ :id => "unreserved", :class=>"filled-in"}
+					%label.checkbox.inline.margin-l-5.font-sz-12{:for=>"unreserved", :style=>"padding-left:30px;"}= "No"
+     
+.col-sm-9.padding-5
+	= smart_listing_render :customer_queues

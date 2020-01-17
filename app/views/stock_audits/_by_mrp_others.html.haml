@@ -1,0 +1,125 @@
+:javascript
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+  })
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Stock Audit : ID #{@stock_audit.id}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper   
+= render "layouts/flash"
+= form_tag(store_stock_audit_path(@store,@stock_audit), method: "put",multipart: true) do  
+  .col-lg-9.col-sm-12.padding-5
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Products in Audit
+            - _audit_products = @stock_audit.stock_audit_metas
+            %table.table
+              %thead
+                %tr.data-table__selectable-row
+                  %th.col-lg-1 Product
+                  %th.col-lg-4 Audit Details
+                  - if @stock_audit.status == "1"
+                    %th.col-lg-4 Action
+                  - elsif @stock_audit.status == "2"
+                    %th.col-lg-2 Stock consumed
+                    %th.col-lg-2 Stock added
+                  %th.col-lg-2 Remarks
+              %tbody            
+                - _audit_products.each do |object|
+                  - _current_stock = get_product_sku_stock(@store, object.product_id, object.sku) 
+                  - _current_stock_date = StockUpdate.by_product(object.product_id).by_store(@store).last.created_at
+                  - _stock_to_consume = _current_stock - (object.counted_stock).to_i
+                  - if _current_stock_date > object.created_at and @stock_audit.status == "1"
+                    %td{:colspan=>4}
+                      .alert.m-alert-danger.padding-5.margin-t-b-0
+                        %h6.text-white.margin-t-b-0 
+                          ="Stock audit of #{object.product.name} can't be approved as it's stock updated on #{_current_stock_date.strftime('%d %b %Y, %I:%M %p')} after the audit on #{object.created_at.strftime('%d %b %Y, %I:%M %p')}."
+                  %tr
+                    %td{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                      =object.product.name
+                      %br
+                      %small="ID: #{object.product_id}"
+                      %br
+                      %small="SKU: #{object.sku}"
+                    %td{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                      %table.table.table-bordered{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                        %thead
+                          %tr
+                            %th
+                            %th Current stock
+                            %th Counted Stock
+                            %th Delta stock
+                        %tbody
+                          %tr
+                            %td While audit
+                            %td= "#{object.current_stock} #{object.product.basic_unit}"
+                            %td= "#{object.counted_stock} #{object.product.basic_unit}"
+                            %td= "#{object.delta_stock} #{object.product.basic_unit}"
+                          - if @stock_audit.status == "1"  
+                            %tr  
+                              %td Right now
+                              %td= "#{_current_stock} #{object.product.basic_unit}"
+                              %td= "#{object.counted_stock } #{object.product.basic_unit}"
+                              %td= "#{_stock_to_consume} #{object.product.basic_unit}"
+                          - elsif @stock_audit.status == "2"  
+                            %tr  
+                              %td On review
+                              %td= "#{object.current_stock_at_review} #{object.product.basic_unit}"
+                              %td= "#{object.counted_stock } #{object.product.basic_unit}"
+                              %td= "#{(object.current_stock_at_review - object.counted_stock )} #{object.product.basic_unit}"                              
+                    - if @stock_audit.status == "1"
+                      %td{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                        %input.form-control.allow-numeric-only{:type => "hidden", :name=>"set_stock_#{object.product_id}", :value=>object.counted_stock}
+                        - if _stock_to_consume <0 && _current_stock_date < object.created_at
+                          %strike= "#{object.counted_stock} #{object.product.basic_unit}"
+                          %br
+                          %span.text-danger Note: Counted stock in audit exceed currently available stock. To adjust the stock please provide these details.
+                          %br
+                          .input-group.margin-t-5
+                            %span.input-group-addon{:style => "width:50%;text-align:left"} Add to stock
+                            %input.form-control.allow-numeric-only{:type => "hidden", :value => "#{_stock_to_consume.abs}", :name=>"extra_stock_#{object.product_id}"}
+                            %input.form-control.allow-numeric-only{:type => "text", :value => "#{_stock_to_consume.abs}", :name=>"extra_stock", disabled: true}
+                            .input-group-addon=object.product.basic_unit
+                          .input-group.margin-t-5
+                            %span.input-group-addon{:style => "width:50%;text-align:left"} Stock price per unit
+                            %input.form-control.allow-numeric-only{:type => "text", :required=> true, :placeholder=>"Required", :name=>"extra_stock_price_#{object.product_id}"}
+                            .input-group-addon=currency
+                        - else
+                          ="#{object.counted_stock} #{object.product.basic_unit}"
+                    - elsif @stock_audit.status == "2"
+                      %td
+                        ="#{object.stock_consumed } #{object.product.basic_unit}" if object.stock_consumed.present?
+                      %td  
+                        ="#{object.stock_added } #{object.product.basic_unit}" if object.stock_added.present?
+                    %td{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                      =object.remarks           
+  .col-lg-3.col-sm-12.padding-5
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Audit details
+            - if @stock_audit.status == "1"
+              .padding-10
+                %input.m-btn.green.width-100.waves.waves-light{:name => "commit",:type => "submit",:value => "Confirm and Submit"}
+              .filter-title.margin-t-b-0
+                %label.control-label Select action for this audit
+              .padding-10
+                =select_tag('status', options_for_select({"Approve this stock audit" => "2","Reject this stock audit" => "3"}), {:class => "form-control"} )            
+            .filter-title.margin-t-b-0
+              %i.mdi-action-perm-contact-cal.left
+              Audit date
+            .padding-10=@stock_audit.created_at.strftime("%d %b %Y, %I:%M %p")   
+            .filter-title.margin-t-b-0
+              %i.mdi-action-label.left
+              Current status
+            .padding-10=audit_status_tag(@stock_audit.status)                        
+            / .filter-title.margin-t-b-0
+            /   %i.mdi-action-label.left
+            /   Audited by
+            / .padding-10= debug @stock_audit.audit_user
+.clearfix            

@@ -1,0 +1,30 @@
+%p#notice= notice
+
+%p
+  %b Menu product:
+  = @combo_item.menu_product_id
+%p
+  %b Combo item:
+  = @combo_item.item_id
+%p
+  %b Tax group:
+  = @combo_item.tax_group_id
+%p
+  %b Sell price:
+  = @combo_item.sell_price
+%p
+  %b Sell price without tax:
+  = @combo_item.sell_price_without_tax
+%p
+  %b Mode:
+  = @combo_item.mode
+%p
+  %b Size:
+  = @combo_item.size_id
+%p
+  %b Color:
+  = @combo_item.color_id
+
+= link_to 'Edit', edit_combo_item_path(@combo_item)
+\|
+= link_to 'Back', combo_items_path

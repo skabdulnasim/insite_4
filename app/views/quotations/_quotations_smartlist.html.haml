@@ -1,0 +1,50 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+
+  $('.show_pop').popover('hide');
+  });
+- unless smart_listing.empty?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Listing Quotations
+          %table.data-table#accordion
+            %thead
+              %tr.data-table__selectable-row  
+                %th= smart_listing.sortable "ID", "id"
+                %th= smart_listing.sortable "Serial No", "serial_no"
+                %th= smart_listing.sortable "Grand Total", "grand_total"
+                %th Customer
+                %th= smart_listing.sortable "Date", "created_at"
+            %tbody.panel
+              - smart_listing.collection.each do |object|
+                /= debug object
+                %tr.data-table__selectable-row
+                  %td.quotation-quickview{"aria-controls" => "quotation_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#quotation_collapse_#{object.id}", :role => "button", "data-quotation-id"=>object.id,:class=>"quotation_collapse_#{object.id}"}
+                    = object.id
+                  %td.quotation-quickview{"aria-controls" => "quotation_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#quotation_collapse_#{object.id}", :role => "button", "data-quotation-id"=>object.id,:class=>"quotation_collapse_#{object.id}"}
+                    = object.serial_no
+                  %td.quotation-quickview{"aria-controls" => "quotation_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#quotation_collapse_#{object.id}", :role => "button", "data-quotation-id"=>object.id,:class=>"quotation_collapse_#{object.id}"}
+                    = object.grand_total
+                  %td.quotation-quickview{"aria-controls" => "quotation_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#quotation_collapse_#{object.id}", :role => "button", "data-quotation-id"=>object.id,:class=>"quotation_collapse_#{object.id}"}
+                    = "#{object.try(:customer).try(:customer_profile).try(:customer_name)} # #{object.try(:customer).try(:mobile_no)}"
+                  %td.quotation-quickview{"aria-controls" => "quotation_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#quotation_collapse_#{object.id}", :role => "button", "data-quotation-id"=>object.id,:class=>"quotation_collapse_#{object.id}"}
+                    = object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+                %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{object.id}", :role => "tabpanel", :id => "quotation_collapse_#{object.id}"}
+                  %td.p0{:colspan=>8,:id=>"quotation_quickinfo_#{object.id}"}
+                    Loading please wait...
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links
+          %br
+- else
+  .alert.alert-warning
+    No orders found

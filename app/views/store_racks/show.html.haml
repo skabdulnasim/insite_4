@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @store_rack.name
+%p
+  %b Height:
+  = @store_rack.height
+%p
+  %b Width:
+  = @store_rack.width
+%p
+  %b Store:
+  = @store_rack.store
+
+= link_to 'Edit', edit_store_rack_path(@store_rack)
+\|
+= link_to 'Back', store_racks_path

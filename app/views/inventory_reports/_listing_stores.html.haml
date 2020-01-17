@@ -1,0 +1,8 @@
+- @stores = Store.all
+- if @stores.present?
+	- @stores.each do |store|
+		%ul{:style => "list-style:none; padding:0px;"}
+			%li
+				.checkbox.margin-t-b-2
+					= check_box_tag 'thresh_hold_store[]', store.id, true,{ :id => "store_#{store.id}", :class=>"filled-in-store"}
+					%label.checkbox.inline.margin-l-5.margin-t-2{:for=>"store_#{store.id}", :style=>"padding-left:30px;"}=store.name

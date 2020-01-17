@@ -1,0 +1,11 @@
+= render "layouts/flash" 
+
+.col-md-12
+  .panel.panel-default
+    .panel-heading Printer Settings
+    .panel-body
+
+      .col-md-9
+        = render "printer_listing"
+      .col-md-3.well
+        = render partial:"/printers/form"

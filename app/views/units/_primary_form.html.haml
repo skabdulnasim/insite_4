@@ -1,0 +1,132 @@
+- manual_load_javascript "jquery.geocomplete", "templates/units/unit_parent"
+%script{:src => "http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBq5JlSzFQkPFTx5kT7w-d2gRzwZzeO8Y8"}
+:javascript
+  $( document ).ready(function() {
+    $("#unit_address").geocomplete()
+  });
+  
+= form_for @unit,:html => { :class => 'form-horizontal', :multipart => true } do |f|
+  /= debug f.object
+  - if @unit.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+      = "#{pluralize(@unit.errors.count, "error")} prohibited this product from being saved:"
+  .col-sm-5
+    .form-group
+      = f.label "Branch type", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :unittype_id do
+          = f.select :unittype_id, options_for_select(@unittypes.map{ |ut| [ut.unit_type_name, ut.id] if (ut.unit_type_priority.to_i != 1)}.compact, @unit.unittype_id), { include_blank: "Select Unit Type"},  {:class => "form-control",:required => true}  
+          = add_new_unit_type
+    .form-group.dn
+      = f.label "Branch parent", :class => 'col-sm-4 control-label'
+      .col-sm-7#text-selector
+    - if @unit.unit_parent 
+      .form-group.dn1
+        = f.label "Branch parent", :class => 'col-sm-4 control-label'
+        .col-sm-7
+          = f.text_field :unit_parent, :value => @unit.unit_parent, :class => 'form-control hidden_unit_parent', :type => "hidden"
+          .form-control
+            = Unit.get_unit_name(@unit.unit_parent)[0].unit_name
+    .form-group
+      = f.label "Branch name", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :unit_name do
+          = f.text_field :unit_name, :class => 'form-control'
+    .form-group
+      = f.label :credit_limit, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :credit_limit do
+          = f.text_field :credit_limit, :class => 'form-control'  
+    .form-group
+      = f.label :phone, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :phone do
+          = f.number_field  :phone, :class => 'form-control'
+    .form-group
+      = f.label "Branch image or logo", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :unit_image do
+          = f.file_field :unit_image  
+        = image_tag @unit.unit_image.url(:thumb) if @unit.unit_image.present? 
+    .form-group
+      = f.label :time_zone, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :time_zone do
+          /= f.collection_select :time_zone, Unit::TIMEZONES, :last, :first, {:selected => @unit.time_zone}, {:class => "form-control"}
+          = f.time_zone_select :time_zone, nil, {:selected => @unit.time_zone, :class => "form-control"}
+
+    = f.fields_for :unit_images do |builder|
+      = render 'unit_image_fields', f:builder
+    = link_to_add_fields "Add Image", f, :unit_images, {}, 'm-btn green margin-l-15'      
+
+  .col-sm-5
+    .form-group
+      = f.label :address, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :address do
+          = f.text_field :address, :class => 'form-control', :rows => "2"
+    .form-group
+      = f.label :landmark, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :landmark do
+          = f.text_field :landmark, :class => 'form-control'
+    .form-group
+      = f.label :locality, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :locality do
+          = f.text_field :locality, :class => 'form-control'
+    .form-group
+      = f.label :pincode, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :pincode do
+          = f.number_field  :pincode, :class => 'form-control '          
+    .form-group
+      = f.label :city, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :city do
+          = f.text_field :city, :class => 'form-control'
+    .form-group
+      = f.label :state, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :state do
+          = f.text_field :state, :class => 'form-control'     
+    .form-group
+      = f.label :country, :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :country do
+          = f.text_field :country, :class => 'form-control'   
+  .col-sm-12        
+    .form-group
+      = f.label :unit_currency, :class => 'col-sm-2 control-label'
+      .col-sm-8
+        = form_group_for f, :unit_currency do
+          = f.text_field :unit_currency, :class => 'form-control' 
+          = f.hidden_field :conversion_rate, :class => 'form-control'   
+    .form-group
+      = f.label :conversion_rates, :class => 'col-sm-2 control-label'
+      .col-sm-7
+        %body
+          %header.data-table-header
+            #conversion-module.data-table-header__label
+              .col-sm-5
+                %span.input-curency{:style => "float:left;font-family: monospace; font-size:18px;"}=@unit.unit_currency.present? ? @unit.unit_currency : "N/A"
+                %span{:style => "margin-left:50px;"}
+                  %i.fa.fa-exchange.fa-2x{:style => "color:green;"}
+                %span{:style => "float:right; font-family: monospace;font-size:18px;"}=currency
+              .col-sm-3
+                %input#conversion-rate.form-control.allow-numeric-only{:style => "width:200px;", :type => "text", :value => "#{@unit.conversion_rate}"}      
+    
+
+                     
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      .col-sm-3.margin-t-15
+        = check_box_tag 'is_account_creation', @unit.financial_account.present?, @unit.financial_account.present?, {}
+        = label_tag("is_account_creation", "Account creation")
+      .col-sm-1
+      .col-sm-8
+        = f.submit 'Save', :class => 'btn btn-success btn-lg'
+        %a.btn.btn-primary.btn-lg{:href => "#{units_path}"}
+          Cancel

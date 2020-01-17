@@ -1,0 +1,25 @@
+
+-  child_users = parent_user.child_users
+- if child_users.present?
+	- child_users.each do |object|
+		%li.timeline-inverted
+			.row.m0.timeline-entry.mt15
+				.card.m0.col.pointer
+					.card-content.p10
+						%h6.m0
+							%span.label.font-13.teal
+								= object.role.name.humanize
+							%table.data-table
+								%tr.bg-red
+									%th ID
+									%th Email
+								%tr
+									%td 
+										= object.id
+									%td
+										= object.email.present? ? object.email : "-"
+				- if User.has_child(object.id) == true
+					%ul
+						%li.timeline-inverted
+							.row.m0.timeline-entry.mt15
+								= render :partial => 'incentive_reports/child_users', :object => object, :as => "parent_user"

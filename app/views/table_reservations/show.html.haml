@@ -1,0 +1,30 @@
+%p#notice= notice
+
+%p
+  %b Customer name:
+  = @table_reservation.customer_name
+%p
+  %b Contact no:
+  = @table_reservation.contact_no
+%p
+  %b Reservation date:
+  = @table_reservation.reservation_date
+%p
+  %b Remarks:
+  = @table_reservation.remarks
+%p
+  %b Head count:
+  = @table_reservation.head_count
+%p
+  %b From time:
+  = @table_reservation.from_time
+%p
+  %b To time:
+  = @table_reservation.to_time
+%p
+  %b Status:
+  = @table_reservation.status
+
+= link_to 'Edit', edit_table_reservation_path(@table_reservation)
+\|
+= link_to 'Back', table_reservations_path

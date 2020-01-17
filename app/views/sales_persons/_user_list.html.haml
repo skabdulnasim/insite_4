@@ -1,0 +1,111 @@
+:css
+  #mySidenav a {
+    position: fixed;
+    right: -50px;
+    transition: 0.3s;
+    padding: 10px;
+    width: 100px;
+    text-decoration: none;
+    font-size: 14px;
+    color: white;
+    border-radius: 5px 0 0 5px;
+    z-index: 9999;
+  }
+  #mySidenav a:hover {
+    right: 0;
+  }
+  #bulk_upload {
+    top: 75%;
+    background-color: #3B0B0B;
+  }
+  #external-events {
+      float: left;
+      width: 150px;
+      padding: 0 10px;
+      border: 1px solid #ccc;
+      background: #eee;
+      text-align: left;
+  }
+  #external-events h4 {
+      font-size: 16px;
+      margin-top: 0;
+      padding-top: 1em;
+  }
+  #external-events .fc-event {
+      margin: 10px 0;
+      cursor: pointer;
+  }
+  #external-events p {
+      margin: 1.5em 0;
+      font-size: 11px;
+      color: #666;
+  }
+  #external-events p input {
+      margin: 0;
+      vertical-align: middle;
+  }
+  #calendar {
+      float: left;
+      width: 970px;
+  }
+  .modal-header-calendar {
+    color:orange;
+    padding:9px 15px;
+    border-bottom:1px solid #eee;
+    background-color: royalblue;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+  }     
+
+#mySidenav.sidenav
+  %a#bulk_upload{"data-target" => "#showBulkSalesPersonModal", "data-toggle" => "modal"} 
+    Bulk Allocation
+  .clearfix
+-unless smart_listing.empty?
+  .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+    %table.data-table{:style=>"margin-top:70px;"}
+      %thead
+        %tr.success
+          %th{ :style => "font-size:16px;text-align: center;" }
+            Sl No.
+          %th{ :style => "font-size:16px;text-align: center;" }
+            %i.fa.fa-male
+            Executive Name
+          %th{ :style => "font-size:16px;text-align: center;" }
+            %i.fa.fa-building
+            Zone/Branch
+          %th{ :style => "font-size:16px;text-align: center;" }  
+            %i.fa.fa-list
+            No of Nodes
+          %th{ :style => "font-size:16px;text-align: center;" }
+            %i.fa.fa-calendar 
+            Today's Targer
+          %th{ :style => "font-size:16px;text-align: center;" }
+            %i.fa.fa-check-circle 
+            Today Completed
+      %tbody.panel
+        -i =0
+        - smart_listing.collection.each do |object|
+          %tr.data-table__selectable-row.loadallocation{"data-parent" => "#accordion", :role => "button", "data-sale-person-id"=>object.id,:class=>"calendar_view","data-target" => "#showCalendarModal", "data-toggle" => "modal","data-sale_person"=>object.profile.full_name}
+            %td{ :style => "font-size:14px; text-align: center;" } 
+              =object.id
+            %td{ :style => "font-size:14px; text-align: center;" } 
+              =object.profile.full_name
+            %td{ :style => "font-size:14px; text-align: center;" } 
+              =object.unit.unit_name
+            %td{ :style => "font-size:14px; text-align: center;" } 
+              =get_resource_count(object)
+            %td{ :style => "font-size:14px; text-align: center;" }
+              =get_day_count(object)
+            %td{ :style => "font-size:14px; text-align: center;" } 0
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning{:style=>"margin-top:100px;"}
+    No record found      
+
+              

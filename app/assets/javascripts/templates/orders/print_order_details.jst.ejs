@@ -1,0 +1,311 @@
+<div>
+  <style>
+    html{
+      font-family: "Roboto", sans-serif;
+      color: rgba(0, 0, 0, 0.87);
+    }
+    table {
+        width: 100%;
+        display: table
+    }
+/*    table{
+      table-layout: fixed;
+      width: 200px;
+    }*/
+
+    .mytable{
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 9px !important;
+    }
+ 
+    .border_horizon{
+      border-right: solid 3px black; 
+      border-left: solid 3px black;
+    }
+
+    .mytd {
+      max-width: 300px;
+      text-overflow: ellipsis;
+      overflow-wrap: break-word;
+    }
+    .invoice_invoice_title{
+      font-size: 13px;
+      font-weight: bold;
+      position: relative;
+      margin-left: 10px;
+    }
+    .row {
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 20px
+
+    }
+
+    .row:after {
+        content: "";
+        display: table;
+        clear: both
+    }
+
+    .row .col.s5 {
+        width: 41.6666666667%;
+        margin-left: auto;
+        left: auto;
+        right: auto
+    }
+
+    .row .col.s7 {
+        width: 58.3333333333%;
+        margin-left: auto;
+        left: auto;
+        right: auto
+    }
+    .mt10 { margin-top: 9px !important; }
+    .p10 { padding: 9px !important; }
+    h6 {
+      font-size: 0.8rem;
+      font-weight: 400;
+    }
+    /* hide the page footer on screen display */
+    /*.page-break { display: none; }*/
+    @media print {
+      /* make a 10-inch high block that sits on top of the page content */
+      .page-break {
+        page-break-before: always;
+        display: block;
+        position: absolute;
+        /*height: 640pt;*/
+        height: <%=page_size%>pt;
+      }
+
+      /* stick the contents of .page-break to the bottom of the 10 inch block */
+      .page-break .copyright {
+        position: absolute;
+        bottom: 0px;
+      }
+    }
+  </style>
+  <!-- <span style="float: right; margin: 20px;"><h3><ul>Triplicate for Consigner</ul></h></span> --> 
+  <table border='1' class="mytable" cellpadding="10">
+    <tr><td colspan="14"> <span style="font-size: 15px; font-weight: bold;"><center>Tax Invoice</center></span></td></tr>
+    <tr>
+      <td class="col-sm-6">
+        <span style="font-weight: bold;">CONSIGNOR</span>
+        <div>
+          <div>
+            <div>
+              <label>Name:</label>
+                <%=response.unit_details.unit_name %>
+            </div>
+            <div>
+              <label>Address:</label>
+                <%=response.unit_details.address %>
+            </div>
+            <div>
+              <label>Pin:</label>
+                <%=response.unit_details.pincode %>
+            </div>
+            <div>
+              <label>GSTN:</label>
+                <%=response.unit_details_gst.options.gst_code %>
+            </div>
+          </div>
+        <div>
+      </td>
+      <td class="col-sm-6">
+        <div>
+          <div>
+            <div>
+              <label>Invoice No:</label>
+                <%=response.serial_no%>
+            </div>
+            <div>
+              <label>Invoice Date:</label>
+                <%=response.recorded_at%>
+            </div>
+            <div>
+              <label>Buyer's Order No:</label>
+              <% for (var i = 0; i < response.orders.length; i++) { %>
+                <%=response.orders[i].id %>,
+              <% } %>
+            </div>
+          </div>
+        <div>
+      </td>
+    </tr>
+    <tr>
+      <td class="col-sm-6">
+        <span>To,</span><br>
+        <span style="font-weight: bold;">BUYER (BILL TO)</span>
+        <div>
+          <div>
+            <div>
+              <label>Name:</label>
+                <%=response.customer_details.firstname %> <%=response.customer_details.lastname %>
+            </div>
+            <div>
+              <label>Biling Address:</label>
+                <%=response.customer_details.address %>
+            </div>
+            <div>
+              <label>Dist:</label>
+            </div>
+            <div>
+              <label>Pin:</label>
+                <%=response.address[0].pincode %>
+            </div>
+            <div>
+              <label>GSTN:</label>
+                <%=response.customer.gstin %>
+            </div>
+            <div>
+              <label>PAN:</label>
+                <%=response.customer_details.pan_no %>
+            </div>
+          </div>
+        <div>
+      </td>
+      <td class="col-sm-6">
+        <div>
+          <label>Dispatch Details:</label>
+        </div>
+        <div>
+          <label>Mode of Dispatch:</label>
+        </div>
+        <div>
+          <label>Dispatch Through:</label>
+        </div>
+        <div>
+          <label>Velicle No:</label>
+        </div>
+      </td>
+    </tr>
+  </table>
+  <table border="1" class="mytable">
+    <tr>
+      <th class="invoice_invoice_title"><center>Sr.No</center></th>
+      <th class="invoice_invoice_title"><center>Item Name</center></th>
+      <th class="invoice_invoice_title"><center>Hsn</center></th>
+      <th class="invoice_invoice_title"><center>Qty</center></th>
+      <th class="invoice_invoice_title"><center>Unit</center></th>
+      <th class="invoice_invoice_title"><center>Price</center></th>
+      <th class="invoice_invoice_title"><center>Amt.</center></th>
+      <% 
+        var tax_class_name = [];
+        var tax_class = [];
+      %>
+      <% for (var i = 0; i < response.orders.length; i++) { %>
+        <% for (var j = 0; j < response.orders[i].order_items.length; j++ ) { %>
+          <% for (var m = 0; m < response.orders[i].order_items[j].tax_details.length; m++ ) { %>
+            <% 
+              if(tax_class_name.includes(response.orders[i].order_items[j].tax_details[m].tax_class_name)==false){
+                tax_class_name.push(response.orders[i].order_items[j].tax_details[m].tax_class_name)
+                tax_class.push(response.orders[i].order_items[j].tax_details[m]) 
+              }
+            %>
+          <% } %>
+        <% } %>
+      <% } %>
+      <% for (var l = 0; l < tax_class.length; l++ ) { %>
+        <th colspan="2" class="invoice_invoice_title"><center><%=tax_class[l].tax_class_name %>(%)</center></th>
+      <% } %>
+      <th rowspan="2" class="invoice_invoice_title"><center>Total</center></th>
+    </tr>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th class="invoice_invoice_title"><center>Rate</center></th> 
+      <th class="invoice_invoice_title"><center>Amt</center></th>
+    </tr>
+      <% for (i = 0; i < response.orders.length; i++) { %>
+        <% for ( var j = 0, k = i+1; j < response.orders[i].order_items.length; j++, k++ ) { %>
+          <tr>
+            <td><%=k%></td>
+            <td><%=response.orders[i].order_items[j].product_name %></td>
+            <td><%=response.orders[i].order_items[j].hsn_code %></td>
+            <td><%=response.orders[i].order_items[j].quantity %></td>
+            <td><%=response.orders[i].order_items[j].product_unit%></td>
+            <td><%=response.orders[i].order_items[j].product_price %></td>
+            <td><%=response.orders[i].order_items[j].product_price * response.orders[i].order_items[j].quantity %></td>
+            <% for (var l = 0; l < tax_class.length; l++ ) { %>
+              <td><%=tax_class[l].tax_percentage%></td>
+              <td><%=tax_class[l].tax_amount%></td>
+            <% } %>
+            <td><%=response.orders[i].order_items[j].subtotal%></td> 
+          </tr>
+          <% 
+            var total = 0;
+            var grand_total = 0;
+            var discount = 0;
+            var tax_amount = 0;
+            total = total + (response.orders[i].order_items[j].product_price * response.orders[i].order_items[j].quantity)
+            grand_total = response.grand_total
+            discount = response.discount
+            tax_amount = response.tax_amount
+          %>
+        <% } %>
+      <% } %>
+
+    <tr>
+      <td colspan="9" class="invoice_invoice_title"><span style="float: right;margin-right: 20px;" >Total</span></td>
+      <td><%=grand_total %></td>
+    </tr>
+    <tr>
+      <td colspan="9" class="invoice_invoice_title"><span style="float: left; margin: 20px;">Total Amt. Berofe Tax:</td>
+      <td><%=grand_total%></td>
+    </tr>
+    <tr>
+      <td colspan=9 class="invoice_invoice_title"><span style="float: left; margin: 20px;">Total Discount:</span></td>
+      <td><%=discount %></td>
+    </tr>
+    <% for (var l = 0; l < tax_class.length; l++ ) { %>
+      <tr>
+        <td colspan="9" class="invoice_invoice_title"><span style="float: left; margin: 20px;"><%=tax_class[l].tax_class_name %>(%)</span></td>
+        <td><%=tax_class[l].tax_amount%></td>
+      </tr>
+    <% } %>
+    <tr>
+      <td colspan="9" class="invoice_invoice_title"><span style="float: left; margin: 20px;">Total Tax Amt.</td>
+      <td><%=tax_amount%></td>
+    </tr>
+    <tr>
+      <td colspan="9" class="invoice_invoice_title"><span style="float: left; margin: 20px;">Total Amt After Tax: (Rounded) </td>
+      <td><%=grand_total%></td>
+    </tr>
+  </table>
+  <table border="1" class="mytable" cellpadding="10">
+    <tr>
+      <td colspan="24">
+        <div class="col-sm-6">
+          <%
+            var amount_to_word = convert_amount_to_word(grand_total);
+          %>
+          <span style="float: left; margin: 20px;"> Amount in words:<br><%=amount_to_word%>only<br><br><h5 style="font-weight: bold;">Company Pan: <%=response.unit_details_gst.options.pan_no %></h5></span>
+        </div>
+        <div class="col-sm-6">
+          <div>
+            <label>Company Bank Details:</label>
+              ldkjalkdjlkdj dsfskjdfs sdfjdsfs sd dadaddadfaffafff dadaddadfaffafff
+          </div>
+          <div>
+            <label>A/C No:</label>
+            442424
+          </div>
+          <div>
+            <label>IFSC:</label>
+            3421143
+            <br><label><%=response.unit_details.unit_name %></label><br><br>
+            <label style="font-weight: bold;">Authorized Signature</label>
+          </div>
+          <br><br>
+        </div>
+      </td>
+    </tr>
+  </table>
+</div>

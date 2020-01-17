@@ -1,0 +1,22 @@
+.modal-dialog
+	.modal-content
+		.modal-header
+			%button.close{"data-dismiss" => "modal", :type => "button"}
+				%span{"aria-hidden" => "true"} &times;
+				%span.sr-only Close
+			%h4#addRoleModalLabel.modal-title Edit role details
+		.modal-body
+			=form_for role, :url => access_manager_update_role_path, :html => { :class => 'form-horizontal' } do |f|
+				.form-group
+					= f.label :name, :class => 'control-label col-sm-4'
+					.col-sm-7
+						= f.hidden_field :id, :class => 'form-control', :required=>true
+						= f.text_field :name, :class => 'form-control', :required=>true
+				.form-group
+					= f.label :parent_role, :class => 'control-label col-sm-4'
+					.col-sm-7
+						= f.select :parent, options_for_select(@all_roles.map{ |role| [role.name, role.id] }, role.parent), { include_blank: "Select its parent role"}, {:class => "form-control"}
+
+				.modal-footer{:style=>"clear:both"}
+					%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+					%button.btn.btn-success{:type => "submit"} Edit role        

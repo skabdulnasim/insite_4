@@ -1,0 +1,51 @@
+= render "layouts/flash"
+.main-section__content
+	.example
+		.exapmle__content.p0
+			.data-table-container
+				%header.data-table-header
+					.data-table-header__lable
+						%span.fs-title Paytm Security
+				%br
+				= form_for @paytm_security, :html => { :class => 'form-horizontal'} do |f|
+					.col-lg-8
+						.form-group
+							.field
+								= f.label :"Channel id", :class => 'col-sm-4 control-label'
+								.col-sm-4
+									= f.text_field :channel_id, :class => 'form-control', :required=> true
+
+						.form-group
+							.field
+								= f.label :"Industry type id", :class => "col-sm-4 control-label"
+								.col-sm-4
+									= f.text_field :industry_type_id, :class => "form-control", :required=> true
+
+						.form-group
+							.field 
+								= f.label :"Mid", :class => 'col-sm-4 control-label'
+								.col-sm-4
+									= f.text_field :mid, :class => 'form-control', :required=> true
+
+						.form-group
+							.field
+								= f.label :"Paytm marchant key", :class =>"col-sm-4 control-label"
+								.col-sm-4
+									= f.text_field :paytm_marchant_key, :class=> "form-control", :required=> true
+						.form-group
+							.field
+								= f.label :"Paytm url", :class =>"col-sm-4 control-label" 
+								.col-sm-4
+									= f.text_field :"paytm_url", :class=>"form-control", :required=> true
+						.form-group
+							.field
+								= f.label :"Website", :class=>"col-sm-4 control-label"
+								.col-sm-4
+									= f.text_field :"website", :class=>"form-control", :required=> true
+						.form-group
+							.col-sm-offset-4.col-sm-10
+								= f.submit "Save", :calss=> 'btn btn-success btn-sm-lg'
+								%a.btn.btn-success.btn-sm-lg{:href =>"#{root_url}"}
+									Cancel
+
+				    

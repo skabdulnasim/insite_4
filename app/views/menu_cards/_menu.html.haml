@@ -1,0 +1,186 @@
+=# debug menu
+- if menu.parent.present?
+  .col-lg-3
+    %h5
+      %i.mdi-action-label-outline
+      =menu.name
+- else
+  .divider
+  .col-lg-3
+    %h4.header
+      %i.mdi-action-label
+      =menu.name
+.col-lg-9
+  - _menu_products = menu.menu_products.by_menu_card(@menu_card.id)
+  - if _menu_products.present?
+    %ul.collapsible{"data-collapsible" => "accordion"}
+      - _menu_products.each do |mp|
+        %li
+          .collapsible-header{:class=>"#{get_menu_product_mode_color(mp.mode)}", :id=>"product_header_#{mp.id}"}
+            %i.mdi-maps-local-restaurant
+            =mp.product.name
+            %span.m-label.white.blue-text.float-r{:style=>"line-height:1.3em; margin-top:0.8em"}
+              =@currency
+              %span{:class=>"sp_wot_#{mp.id}"}=mp.sell_price_without_tax
+          .collapsible-body.light-blue.lighten-5
+            .col-lg-6.padding-10  
+              .form-horizontal.bordered-row.m-input
+                QUICK EDIT
+                .form-group.p0
+                  %label.col-sm-5.control-label="Sell price without tax (#{@currency})"
+                  .col-sm-7.input-field
+                    = text_field_tag :sell_price, mp.sell_price_without_tax, :placeholder=>"Enter selling price", :class => "form-control validate sell_price_wot_#{mp.id}"
+                .form-group.p0
+                  %label.col-sm-5.control-label="Procurement price (#{@currency})"
+                  .col-sm-7.input-field
+                    = text_field_tag :procurement_price, mp.procured_price, :placeholder=>"Enter procurement price", :class => "form-control validate procure_price_#{mp.id}"
+                .form-group.p0
+                  %label.col-sm-5.control-label Status
+                  .col-sm-7.input-field
+                    =select_tag "mode", options_for_select({ "Active" => "1", "Inactive" => "0" }, "#{mp.mode}"), :class=> "form-control mode_#{mp.id}"               
+                .form-group.p0
+                  %label.col-sm-5.control-label Tax group
+                  .col-sm-7.input-field
+                    =select_tag "mode", options_from_collection_for_select(@menu_card.section.tax_groups, "id", "name", mp.tax_group_id), :class=> "form-control  tax_group_#{mp.id}"  
+                .form-group.p0
+                  %label.col-sm-5.control-label Promo code
+                  .col-sm-7.input-field
+                    =select_tag "promo_code", options_for_select(@alpha_promotion_codes.map{ |apc| [apc.promo_code, apc.id] }, mp.alpha_promotion_id), {:class=> "form-control promo_code_#{mp.id}",:prompt => "Select Promo code"}
+
+                .form-group
+                  %button.update_menu_product.m-btn.green.waves-effect.waves-light{"data-id"=>mp.id,"data-product-name"=>mp.product.name} quick Update
+                  %a.col-lg-6{:href=>edit_menu_product_path(mp), :target=>"_blank"} Update more details
+            %ul#profile-page-about-details.collection.z-depth-1.col-lg-6.margin-t-b-0
+              %li.collection-item
+                %span.grey-text.darken-1
+                  %i.mdi-hardware-keyboard-arrow-right
+                  Menu product ID
+                .secondary-content.grey-text.text-darken-4=mp.id
+              %li.collection-item
+                %span.grey-text.darken-1
+                  %i.mdi-hardware-keyboard-arrow-right
+                  Product ID
+                .secondary-content.grey-text.text-darken-4=mp.product_id
+              %li.collection-item
+                %span.grey-text.darken-1
+                  %i.mdi-action-account-balance-wallet
+                  Tax
+                .secondary-content.grey-text.text-darken-4="#{mp.tax_group.total_amnt} %"
+              %li.collection-item
+                %span.grey-text.darken-1
+                  %i.mdi-action-bookmark-outline
+                  Sell price
+                .secondary-content.grey-text.text-darken-4
+                  =@currency
+                  %span{:class=>"sp_wot_#{mp.id}"}=mp.sell_price_without_tax
+              %li.collection-item
+                %span.grey-text.darken-1
+                  %i.mdi-action-bookmark
+                  Sell price with tax
+                .secondary-content.grey-text.text-darken-4
+                  =@currency
+                  %span{:class=>"sp_wt_#{mp.id}"}=mp.sell_price
+              %li.collection-item
+                %span.grey-text.darken-1
+                  %i.mdi-action-dns
+                  Store
+                .secondary-content.grey-text.text-darken-4
+                  =mp.store.name if mp.store_id.present?
+              %li.collection-item
+                %span.grey-text.darken-1
+                  %i.mdi-action-input
+                  SORT
+                .secondary-content.grey-text.text-darken-4
+                  =mp.sort.name if mp.sort_id.present?
+              %li.collection-item
+                %span.grey-text.darken-1
+                  %i.mdi-action-event
+                  Created at
+                .secondary-content.grey-text.text-darken-4=mp.created_at.strftime("%d %b %Y, %I:%M %p")
+              %li.collection-item
+                %span.grey-text.darken-1
+                  %i.mdi-notification-event-available
+                  Last updated at
+                .secondary-content.grey-text.text-darken-4{:class=>"last_up_#{mp.id}"}=mp.updated_at.strftime("%d %b %Y, %I:%M %p")
+            .clearfix
+              - if mp.lots.active.not_expiry.present?
+                .data-table-container.collection.z-depth-1.col-lg-12{"aria-multiselectable" => "true", :role => "tablist"}
+                  %table.data-table#accordion{:style => "width:100%;"}
+                    %thead
+                      %tr
+                        %th.collection-item= "Lot Id"
+                        %th.collection-item= "Size"
+                        %th.collection-item= "Color"
+                        %th.collection-item= "Sku"
+                        %th.collection-item= "Stock Quantity"
+                        %th.collection-item= "Sell Price Witdout Tax"
+                        %th.collection-item= "Sell Price"
+                        %th.collection-item= "Expiry Date"
+                        %th.collection-item= "Stock Id"
+                        %th.collection-item= "Mrp"
+                        %th.collection-item= "Actions"
+                        %th.collection-item= "Add Rule"
+
+                    %tbody.panel
+                    - mp.lots.active.not_expiry.each do |mp_lot|
+                      %tr.data-table__selectable-row.mp-lot-quick-overview{"aria-controls" => "collapse_#{mp_lot.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{mp_lot.id}", :role => "button", "data-mp-lot-id"=>mp_lot.id, :class=>"mp_lot_collapse_#{mp_lot.id}","data-action"=>"view_mp_lot"}
+                        %td.collection-item= mp_lot.id
+                        %td.collection-item= mp_lot.size_name
+                        %td.collection-item= mp_lot.color_name
+                        %td.collection-item= mp_lot.sku
+                        %td.collection-item= mp_lot.stock_qty
+                        %td.collection-item= mp_lot.sell_price_without_tax
+                        %td.collection-item= mp_lot.sell_price
+                        %td.collection-item= mp_lot.expiry_date
+                        %td.collection-item= mp_lot.stock_id
+                        %td.collection-item= mp_lot.mrp
+                        %td.collection-item
+                          .switch
+                            %label
+                              = check_box_tag :mode_enable_disable, 'enabled', mp_lot.mode == 0 ? true : false, {"class"=> "mode_enable_disable", "id"=>"mode_enable_disable#{mp_lot.id}","data-lot-id"=>mp_lot.id, "data-menu-card-id" => @menu_card.id}
+                              %span.lever.float-l
+                        %td.collection-item      
+                          %a.m-btn.green.m-btn-low-padding#add_lot{"data-target" =>"#addLotModal", "data-toggle" => "modal", "data-lot-id"=>mp_lot.id}
+                            %i.mdi-content-add   
+
+                      %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{mp_lot.id}", :role => "tabpanel", :id => "collapse_#{mp_lot.id}"}
+                        %td.p0.yellow.lighten-3{:colspan=>12,:id=>"mp_lot_quickinfo_#{mp_lot.id}"}
+                          Loading please wait... 
+.clearfix            
+- if menu.submenucategories.present?
+  = render :partial => 'menu', :collection => menu.submenucategories.set_parent_category(menu.id)
+
+#addLotModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "addLotModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      = form_tag(allocate_sale_rules_to_lots_menu_card_path method: "post", id:params[:id], multipart: true) do
+        .modal-header.m-modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#addLotModalLabel.modal-title Add lots to menu products
+        .modal-body
+          .col-md-12
+            .col-md-1
+            .col-md-9
+              %table.data-table
+                %thead
+                  %tr.data-table__selectable-row
+                    %th
+                      %input.checkbox-parent-toggle.filled-in{:type=>"checkbox"}
+                    %th= "SALE RULE ID"
+                    %th= "SALE RULE NAME"
+                %tbody
+                  #mp_lot_id
+                    = hidden_field_tag 'lot_id', ''
+                  - @sale_rules.each do |sale_rule|
+                    %tr.data-table__selectable-row
+                      %td
+                        %input.checkbox-child.filled-in{:value=> "#{sale_rule.id}",:name=>"selected_sale_rules[]",:type=>"checkbox", "data-sale-rule-id" => "#{sale_rule.id}",:id=>"sale_rule_#{sale_rule.id}", "data-sale-rule-name" => "#{sale_rule.name}"}
+                        %label{:for=>"sale_rule_#{sale_rule.id}"}        
+                      %td=sale_rule.id
+                      %td=sale_rule.name
+          .clearfix
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          = submit_tag "Save", class: "btn btn-primary"

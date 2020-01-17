@@ -1,0 +1,44 @@
+- unless smart_listing.empty?
+  - smart_listing.collection.each do |object|
+    /=debug object
+    .card.col-lg-4.col-xs-12.col-sm-12.margin-l-5{:style=>"width: 32.333% !important;"}
+      .card-image.padding-20
+        %img{:src => "/benefesheri.png", :class => "img-thumbnail", :width => "30px",:height => "30px"}/
+        
+      .card-content
+        %span.card-title
+          ="#{object.name} ""(#{object.beneficiary_type})"
+        %table.data-table
+          %tr
+            %td Bank
+            %td= object.bank_name
+          %tr
+            %td Branch  
+            %td= object.branch
+          %tr
+            %td Ifsc
+            %td= object.ifsc
+          %tr
+            %td AC No
+            %td= object.account_number  
+          %tr
+            %td Payment Mode  
+            %td= object.payment_mode
+          %tr
+            %td Pan No  
+            %td= object.pan_no
+          %tr
+            %td Beneficiary percentage  
+            %td= object.beneficiary_percentage
+          %tr
+            %td{:style=>"text-align:right"}
+              - if can? :edit, Beneficiary
+                %a.m-btn.blue.m-btn-low-padding{:href=>"#{edit_beneficiary_path(object)}", :title=>"Edit process"}
+                  %i.mdi-editor-border-color
+            %td{:style=>"text-align:right"}
+              - if can? :delete, Beneficiary
+                %a.m-btn.red.m-btn-low-padding{:href => "#{beneficiary_path(object)}",:method => :delete, :data => { :confirm => 'Are you sure about deleting this process?' }, :title => "Delete process"}
+                  %i.mdi-action-highlight-remove
+      .card-action.white-text
+        %span
+

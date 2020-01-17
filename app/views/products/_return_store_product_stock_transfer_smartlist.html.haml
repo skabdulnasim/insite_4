@@ -1,0 +1,80 @@
+- if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+  - unless smart_listing.empty?
+    %table.data-table
+      %thead
+        %tr.data-table__selectable-row
+          %th.col-lg-4= smart_listing.sortable "Name", "name"
+          %th.col-lg-2 Sku
+          %th.col-lg-2 Current Stock
+          %th.col-lg-4.padding-r-none Quentity
+      %tbody
+        - smart_listing.collection.each do |object| 
+          / - puts object.inspect
+          / - if params[:sku_filter].present?
+          /   - products = Stock.get_product(object.id).set_store(@store.id).available.by_sku(params[:sku_filter]) 
+          / - else 
+          /   - products = Stock.get_product(object.id).set_store(@store.id).available
+          /   = debug products
+          / - products.each do |product|
+          - if object.stock_price.present?
+            / - if return_item.price.present?
+            - mrp = object.stock_price.mrp
+            / - mrp = return_item.price
+            - procurement_price = object.stock_price.landing_price
+            / - procurement_price = return_item.price
+          - else
+            - mrp = 0.0
+            - procurement_price = 0.0
+          %tr.data-table__selectable-row
+            %td.col-lg-4
+              =object.product.name
+              - if object.product.local_name.present?
+                %b
+                  = " ( #{object.product.local_name} )"
+            / %td.col-lg-4=return_item.product.name
+            %td.col-lg-2=object.sku
+            %td.col-lg-2
+              %span.label.label-default
+                / =number_with_precision(Stock.available_stock(object.id, @store.id, product.sku), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                / =object.basic_unit    
+                =number_with_precision(Stock.available_stock(object.product_id, @store.id, object.sku), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                =object.product.basic_unit     
+            %td.col-lg-4.padding-r-none
+              %input.form-control.allow-numeric-only{:name => "filter", autocomplete: "off", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.product_id, :class=>"sku_transfer_qty transfer_quantity_#{object.sku}", :id=>"transfer_product_#{object.product_id}", "data-mrp"=>"#{mrp}","data-procurment-price"=>"#{procurement_price}","data-sku"=>object.sku, "data-product-name"=>object.product.name, "data-current-stock"=>number_with_precision(Stock.available_stock(object.product_id, @store.id, object.sku), :precision => 8, :significant => true, :strip_insignificant_zeros => true),"data-expiry-date"=>"#{object.expiry_date}","data-model-number"=>"#{object.model_number}","data-size"=>"#{object.size}","data-color-name"=>"#{object.color_name}","data-sell-price-without-tax"=>"#{object.sell_price_with_tax}"}
+
+              / "data-expiry-date"=>"#{product.expiry_date}","data-model-number"=>"#{product.model_number}","data-size"=>"#{product.size}","data-color-name"=>"#{product.color_name}","data-sell-price-without-tax"=>"#{product.sell_price_without_tax}",
+                
+                   
+                              
+    = smart_listing.paginate
+    = smart_listing.pagination_per_page_links
+  - else
+    .alert.alert-warning
+      No products found
+- else
+  - unless smart_listing.empty?
+    %table.data-table
+      %thead
+        %tr.data-table__selectable-row
+          %th.col-lg-4= smart_listing.sortable "Name", "name"
+          %th.col-lg-3 Current Stock
+          %th.col-lg-5.padding-r-none Quentity
+      %tbody
+        - smart_listing.collection.each do |object| 
+          %tr.data-table__selectable-row
+            %td.col-lg-4=object.product.name
+            %td.col-lg-3
+              %span.label.label-default
+                / =number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                / =object.basic_unit 
+                =number_with_precision(get_product_current_stock(@store.id, object.product_id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                =object.product.basic_unit    
+            %td.col-lg-5.padding-r-none
+              %input.form-control.allow-numeric-only{:name => "filter", autocomplete: "off", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.product_id, :class=>"transfer_qty transfer_quantity_#{object.product_id}", :id=>"transfer_product_#{object.product_id}","data-product-name"=>object.product.name, "data-current-stock"=>number_with_precision(get_product_current_stock(@store.id, object.product_id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)}
+                   
+                              
+    = smart_listing.paginate
+    = smart_listing.pagination_per_page_links
+  - else
+    .alert.alert-warning
+      No products found

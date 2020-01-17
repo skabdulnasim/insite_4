@@ -1,0 +1,29 @@
+<table class="data-table">
+  <thead>
+    <tr class="data-table__selectable-row">
+      <th>
+        <input class="checkbox-parent-toggle filled-in" type="checkbox">
+      </th>
+      <th>SALE RULE ID</th>
+      <th>SALE RULE NAME</th>
+    </tr>
+  </thead>
+  <tbody>
+		<% for (var i = 0; i < sale_rules.length; i++) { %>
+			<% if (sale_rules[i]['checked'] == false) {
+				checked = ''
+			}
+			else{
+				checked = "checked"				
+			} %>
+			<tr class="data-table__selectable-row">
+			  <td>
+			    <input <%= checked %> class="checkbox-child filled-in" data-sale-rule-id="<%= sale_rules[i]['sale_rule'].id %>" data-sale-rule-name="<%= sale_rules[i]['sale_rule'].name %>" id="mp_sale_rule_<%= sale_rules[i]['sale_rule'].id %>" name="selected_sale_rules[]" type="checkbox" value="<%= sale_rules[i]['sale_rule'].id %>">
+			    <label for="mp_sale_rule_<%= sale_rules[i]['sale_rule'].id %>"></label>
+			  </td>
+			  <td><%= sale_rules[i]['sale_rule'].id %></td>
+			  <td><%= sale_rules[i]['sale_rule'].name %></td>
+			</tr>
+		<% } %>
+	</tbody>
+</table>

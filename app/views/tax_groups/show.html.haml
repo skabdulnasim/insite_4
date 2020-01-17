@@ -1,0 +1,21 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title
+              Tax Group
+              %small= "#{@tax_group.name} [ Section : #{@tax_group.section.name} ]"
+
+        = form_tag "/tax_groups/save_tax_groups_tax_classes", :method => "get" do   
+          .col-sm-8.padding.10
+            = hidden_field_tag :tax_group, nil, :value => @tax_group.id
+            - @tax_classes.each do |tax_class|
+              %li{:style => "list-style:none"}
+                %input#optionscheckboxes1.filled-in{:type => "checkbox", :name => "tax_classes[]", :id=>"tax_#{tax_class.id}", :value => tax_class.id, :checked => (@save_tax_groups_tax_classes_id.include?(tax_class[:id]))}
+                %label{:for=>"optionscheckboxes1_tax_#{tax_class.id}"}= "#{tax_class.name} [#{tax_class.amount_type.humanize}: #{tax_class.ammount} ]"
+
+            %button.btn{:type => "submit", :id => "filter_drop"} save
+          

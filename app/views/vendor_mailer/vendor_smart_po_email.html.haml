@@ -1,0 +1,208 @@
+!!!
+%html
+	%head
+		%meta{:charset => "UTF-8"}
+	%body
+		%div{:style => "margin-top:40px; margin-left:40px;"}
+			%div{:style => "min-height: 100px; width:63%;"}
+				%div{:style => "float: left; width: 200px;  margin: 2px 10px; display: inline; "}
+					%p
+					To,
+					%br/
+					%span{:style => "font-weight: 600;"} #{@smart_po.purchase_orders.first.vendor.name}
+					%br/
+					%span #{@smart_po.purchase_orders.first.vendor.address}
+					%br/
+					%span #{@smart_po.purchase_orders.first.vendor.phone}
+					%br
+					%span Gst No: #{@smart_po.purchase_orders.first.vendor.gst_hash}
+				%div{:style => "float: right; width: 200px;  margin: 2px 10px; display: inline; "}
+					%p
+					From,
+					%br/
+					%span{:style => "font-weight: 600;"} #{@current_user.unit.unit_name}
+					%br/
+					%span #{@current_user.unit.address}
+					%br/
+					%span #{@current_user.unit.phone}
+
+			- if @current_user.unit.unittype.unit_type_name.humanize == 'Distribution center'
+				%div{:style => "margin-top:8%;"}
+					%span{:style=>"font-size:16px; font-weight:500;"} Summary:
+					%table.responstable1{:style => "margin: 1em 0;width: 64%;overflow: hidden;background: #FFF;color: #024457;border-radius: 10px;border: 1px solid #927816;"}
+						%tr{:style => "border: 1px solid #D9E4E6;"}
+							%th{:style => "border: 1px solid #FFF;background-color: #927816;color: #FFF;padding: 1em;"} 
+								Sl
+							%th{:style => "border: 1px solid #FFF;background-color: #927816;color: #FFF;padding: 1em;"} 
+								Product Name
+							%th{:style => "border: 1px solid #FFF;background-color: #927816;color: #FFF;padding: 1em;"} 
+								Product Colour
+							%th{:style => "border: 1px solid #FFF;background-color: #927816;color: #FFF;padding: 1em;"} 
+								Product Size
+							%th{:style => "border: 1px solid #FFF;background-color: #927816;color: #FFF;padding: 1em;"} 
+								Contract Price 
+								%br/
+								="(in #{@currency})"
+							%th{:style => "border: 1px solid #FFF;background-color: #927816;color: #FFF;padding: 1em;"}
+								Quantity
+							%th{:style => "border: 1px solid #FFF;background-color: #927816;color: #FFF;padding: 1em;"}
+								Total Price
+								%br/
+								="(in #{@currency})"
+
+				 
+						- _po_summary_details = Array.new
+						- @po_summary = {}
+						- @pod_price = {}
+						- @smart_po.purchase_orders.each do |po|
+							
+							
+							- po.purchase_order_metum.each_with_index do |pod,i|
+								- if pod.product.vendor_products.by_vendor(po.vendor.id).first.present?
+									- price = pod.product.vendor_products.by_vendor(po.vendor.id).first.price
+								- product_id = "#{pod.product.id}"
+								- if price.present?
+									- @pod_price[product_id] = price
+								- else
+									- @pod_price[product_id] = 'NA'
+								- if pod.purchase_order_metum_descrptions.present?
+									- pod.purchase_order_metum_descrptions.each_with_index do |pomd,j|
+										- color_id = pomd.color_id
+										- size_id = pomd.size_id
+										- pomd_key = "#{product_id}_#{color_id}_#{size_id}"
+										- if @po_summary.has_key?(pomd_key)
+											- @po_summary[pomd_key] = @po_summary[pomd_key] + pomd.quantity
+										- else
+											- @po_summary[pomd_key] = pomd.quantity
+								- else
+									- pom_key = "#{product_id}_0_0"
+									- if @po_summary.has_key?(pom_key)
+										- @po_summary[pom_key] = @po_summary[pom_key] + pod.product_amount
+									- else
+										- @po_summary[pom_key] = pod.product_amount
+
+						- puts @po_summary
+						- j = 0
+						- @po_summary.each do |po_product|
+							- j += 1
+							- product_id = po_product[0].split('_')[0]
+							- product_quantity = po_product[1]
+							- _product = Product.find(product_id)
+							- _color_id = po_product[0].split('_')[1]
+							- _size_id = po_product[0].split('_')[2]
+							- _color_name = _color_id == "0" ? '-' : Color.find(_color_id).name
+							- _size_name = _size_id == "0" ? '-' : Size.find(_size_id).name
+
+							%tr{:style => "border: 1px solid #D9E4E6;"}
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em; text-align:center;"}= j
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= _product.name
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= _color_name
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= _size_name
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em; text-align:center"}
+									- if @pod_price[product_id] != 'NA'
+										= [@pod_price[product_id] , _product.basic_unit].join(" /")
+									- else
+										= 'NA'
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= [product_quantity, _product.basic_unit].join(" ")
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}
+									- if @pod_price[product_id] != 'NA'
+										= @pod_price[product_id] * product_quantity
+									- else
+										= 'NA'
+
+			- @smart_po.purchase_orders.each do |po|
+				
+				%div{:style => "margin-top:8%; font-size: 15px;"}
+					- if @current_user.unit.unittype.unit_type_name.humanize == 'Distribution center'
+						Deliver To: 
+						%br
+						%span{:style=>"font-weight: 500;"} #{po.unit.unit_name}
+						%br
+						%span #{po.unit.address}
+						%br
+						%span #{po.unit.phone}
+				%div{:style => " background-color: #2189b9;border: 1px solid #e3e3e3;border-radius: 2px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset; margin-bottom: 20px; min-height: 28px; padding: 19px; width:60%;margin-top:1%;"}
+					%div{:style => "float:left; font-size:20px; color:#fff; margin-top:-2%;"} Purchase Order
+					%div{:style => "float:left; position: relative; margin-left:25%; color:#fff; margin-top: 8px;"} PO ID: #{po.id}
+					%div{:style => "float:right; color:#fff; margin-top: 8px;"} Date: #{po.created_at.strftime("%m-%d-%y")}
+				%table.responstable1{:style => "margin: 1em 0;width: 64%;overflow: hidden;background: #FFF;color: #024457;border-radius: 10px;border: 1px solid #167F92;"}
+					%tr{:style => "border: 1px solid #D9E4E6;"}
+						%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"} 
+							Sl
+						%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"} 
+							Product Name
+						%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"} 
+							Product Colour
+						%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"} 
+							Product Size
+						%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"} 
+							Contract Price 
+							%br/
+							="(in #{@currency})"
+						%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+							Quantity
+						%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+							Total Price
+							%br/
+							="(in #{@currency})"
+
+
+					- sl = 0
+					- po.purchase_order_metum.each_with_index do |pod,i|  
+						- po_metum_descrptions = pod.purchase_order_metum_descrptions
+						- if po_metum_descrptions.present?
+							- po_metum_descrptions.each_with_index do |pomd,j|
+								- sl = sl + 1
+								- if pod.product.vendor_products.by_vendor(po.vendor.id).first.present?
+									- price = pod.product.vendor_products.by_vendor(po.vendor.id).first.price 
+								- if price.present?
+									- total_price = price * pomd.quantity
+								%tr{:style => "border: 1px solid #D9E4E6;"}
+									%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em; text-align:center;"}= sl
+									%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= pod.product.name
+									
+									- if pomd.color.present?
+										%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= pomd.color.name
+									- else
+										%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= '-'
+									
+									- if pomd.size.present?
+										%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= pomd.size.name
+									- else
+										%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= '-'
+									
+									%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em; text-align:center"}
+										- if price.present?
+											= [price , pod.product.basic_unit].join(" /")
+										- else
+											= "-"	
+									%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= [pomd.quantity , pod.product.basic_unit].join(" ")
+									%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}
+										- if total_price.present?
+											= total_price.round(2)
+										- else
+											= '-'
+
+
+						- else
+							- sl = sl + 1
+							- if pod.product.vendor_products.by_vendor(po.vendor.id).first.present?
+								- price = pod.product.vendor_products.by_vendor(po.vendor.id).first.price
+							- if price.present?
+								- total_price = price * pod.product_amount
+							%tr{:style => "border: 1px solid #D9E4E6;"}
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em; text-align:center;"}= sl
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= pod.product.name
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= '-'
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= '-'
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em; text-align:center"}
+									- if price.present?
+										= [price , pod.product.basic_unit].join(" /")
+									- else
+										= "NA"	
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= [pod.product_amount , pod.product.basic_unit].join(" ")
+								%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}
+									- if total_price.present?
+										= total_price.round(2)
+									- else
+										= 'NA'

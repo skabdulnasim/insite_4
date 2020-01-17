@@ -1,0 +1,147 @@
+- if business_type == "by_mrp"
+	%thead
+		%tr.data-table__selectable-row
+			%th
+				Product
+			%th
+				Hsn Code	
+			%th
+				Quantity
+			%th
+				COG
+				%br
+				%small="(in #{currency})"
+			%th
+				MRP
+				%br
+				%small="(in #{currency})"
+			%th
+				Description
+			- if stock_purchase.status == "1"
+				%th
+					SKU
+	%tbody.test
+		- @stock_purchase.purchase_order.purchase_order_metum.each do |object|
+			- _stock = @stock_purchase.stocks.get_product(object.product_id)
+			- is_base_unit = object.product_unit.present? ? false : true
+			- _unit_name = object.product_unit.present? ? object.product_unit.short_name : object.product.basic_unit
+			- if _stock.present?
+				%tr
+					%td
+						%label.font-sz-11.padding-l-20{:for=>"#{object.id}"}="#{object.product.name}"
+					%td
+						="#{object.product.hsn_code}"	
+					%td
+						= "#{object.product_amount} #{object.product.basic_unit}"
+					%td
+						= _stock.first.price
+					%td
+						= _stock.first.stock_defination.sell_price
+					%td
+						= _stock.first.stock_defination.description
+			- else
+				- _unit_name = object.product_unit.present? ? object.product_unit.short_name : object.product.basic_unit
+				- count = object.product_amount.to_i
+				- for i in 1..count
+					%tr.m-input.data-table__selectable-row
+						%td.padding-r-5
+							= check_box_tag "selected_po_srials[]", "#{object.id}_#{i}", false, :class=>"checkbox-child filled-in", "data-po-id" => "#{object.id}","data-product-id"=>object.product_id,"data-uid"=>"#{i}",:id=>"#{object.id}-#{i}"
+							%label.font-sz-11.padding-l-20{:for=>"#{object.id}-#{i}"}="#{object.product.name}"
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2{:type => "text", :name=>"pro_hsn_code_#{object.id}_#{i}", :value=>"#{object.product.hsn_code}", "data-product-id"=>object.product_id, "data-id"=>object.id,"data-uid"=>"#{i}" }	
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only.purchase-qty{:type => "text", :name=>"pro_qty_#{object.id}_#{i}", :value=>"1", :class=>"pro_qty_#{object.id}_#{i} check-input-#{object.id}-#{i}", "data-product-id"=>object.product_id, "data-id"=>object.id,"data-uid"=>"#{i}" }
+							=_unit_name
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only.purchase-cost{:type => "text", :name=>"pro_cog_#{object.id}_#{i}",:placeholder=>"Cost Of Good", :class=>"check-input-#{object.id}-#{i}" }
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :name=>"pro_mrp_#{object.id}_#{i}",:placeholder=>"MRP", :class=>"check-input-#{object.id}-#{i}" }
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2{:type => "text", :name=>"pro_description_#{object.id}_#{i}",:placeholder=>"Description" }
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.product-sku{:type => "text", :name=>"pro_sku_#{object.id}_#{i}",:placeholder=>"SKU" }
+- else
+	%thead
+		%tr.data-table__selectable-row
+			%th
+				Product
+			- if business_type == "by_weight"
+				%th
+					Quantity
+			%th
+				Weight
+			- if stock_purchase.status == "1"
+				%th
+					Product Unit ID
+			%th
+				- if business_type == "by_weight"
+					Making Charge
+				- else
+					Total Making Charge
+				%br
+				%small="(in #{currency})"
+			%th
+				- if business_type == "by_weight"
+					COG
+				- else
+					Total COG
+				%br
+				%small="(in #{currency})"
+			%th
+				- if business_type == "by_weight"
+					Wastage
+				- else
+					Total Wastage
+			%th
+				Description
+			- if stock_purchase.status == "1"
+				%th
+					SKU
+	%tbody.test
+		- @stock_purchase.purchase_order.purchase_order_metum.each do |object|
+			- _stock = @stock_purchase.stocks.get_product(object.product_id)
+			- is_base_unit = object.product_unit.present? ? false : true
+			- _unit_name = object.product_unit.present? ? object.product_unit.short_name : object.product.basic_unit
+			- if _stock.present?
+				%tr
+					%td
+						%label.font-sz-11.padding-l-20{:for=>"#{object.id}"}="#{object.product.name}"
+					- if business_type == "by_weight"
+						%td
+							= "#{object.product_amount} #{object.product.basic_unit}"
+					%td
+						= _stock.first.stock_defination.weight
+					%td
+						= _stock.first.stock_defination.making_cost
+					%td
+						= _stock.first.price
+					%td
+						= _stock.first.stock_defination.wastage
+					%td
+						= _stock.first.stock_defination.description
+			- else
+				- _unit_name = object.product_unit.present? ? object.product_unit.short_name : object.product.basic_unit
+				- count = object.product_amount.to_i
+				- for i in 1..count
+					%tr.m-input.data-table__selectable-row
+						%td.padding-r-5
+							= check_box_tag "selected_po_srials[]", "#{object.id}_#{i}", false, :class=>"checkbox-child filled-in", "data-po-id" => "#{object.id}","data-product-id"=>object.product_id,"data-uid"=>"#{i}",:id=>"#{object.id}-#{i}"
+							%label.font-sz-11.padding-l-20{:for=>"#{object.id}-#{i}"}="#{object.product.name}"
+						- if business_type == "by_weight"
+							%td.padding-r-5
+								%input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :name=>"pro_qty_#{object.id}_#{i}", :value=>"1", :class=>"pro_qty_#{object.id}_#{i} check-input-#{object.id}-#{i}", "data-product-id"=>object.product_id, "data-id"=>object.id,"data-uid"=>"#{i}" }
+								=_unit_name
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :name=>"pro_wet_#{object.id}_#{i}",:placeholder=>"Weight", :class=>"check-input-#{object.id}-#{i}" }
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :name=>"pro_unit_id_#{object.id}_#{i}",:placeholder=>"Product Unit ID", :value=>'1', :class=>"check-input-#{object.id}-#{i}" }
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :name=>"pro_mc_#{object.id}_#{i}",:placeholder=>"Making Charge", :value=>'0', :class=>"check-input-#{object.id}-#{i}" }
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :name=>"pro_cog_#{object.id}_#{i}",:placeholder=>"COG", :value=>'0', :class=>"check-input-#{object.id}-#{i}" }
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :name=>"pro_wstg_#{object.id}_#{i}",:placeholder=>"Wastage", :value=>'0', :class=>"check-input-#{object.id}-#{i}" }
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2{:type => "text", :name=>"pro_description_#{object.id}_#{i}",:placeholder=>"Description" }
+						%td.padding-r-5
+							%input.validate.form-control.check-input.purchase_input.margin-b-2.product-sku{:type => "text", :name=>"pro_sku_#{object.id}_#{i}",:placeholder=>"SKU" }

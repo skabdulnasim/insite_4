@@ -1,0 +1,37 @@
+.card
+	.padding-10 
+		%b FILTER BY
+	= smart_listing_controls_for(:thresh_hold_reports, {class: "text-left"}) do
+		.filter-title.margin-t-b-0 
+			%i.mdi-action-search.left
+			Search
+		
+		.padding-10 
+			.filter.input-append
+				.input-group
+					%input.form-control.search{:placeholder => "Search products...", :type => "text", :name=> "filter", :class=> "thresh-hold-filter"}
+						%span.input-group-btn
+							%button.btn.btn-primary.disabled{:type => "submit" }
+								%span.glyphicon.glyphicon-search
+
+		.padding-10 
+			.filter.input-append
+				.input-group
+					%input.form-control.search{:placeholder => "Search product by Id", :type => "text", :name=> "product_id_filter", :class=> "thresh-hold-product-id-filter"}
+						%span.input-group-btn
+							%button.btn.btn-primary.disabled{:type => "submit" }
+								%span.glyphicon.glyphicon-search
+
+		.filter-title.margin-t-b-0 
+			%i.mdi-action-list.left
+			Categories          
+		.padding-10{:style => "overflow-y: scroll; position: sticky; height: 400px;"}
+			= render 'products/listing_category'
+
+		.filter-title.margin-t-b-0 
+			%i.mdi-action-list.left
+			Stores          
+		.padding-10{:style => "overflow-y: scroll; position: sticky; height: 400px;"}
+			= render 'inventory_reports/listing_stores'
+			- params['thresh_hold_unid_ids'].each do |thu|
+				%input{:type=>"hidden", :class=>"thresh_hold_unid_ids", :name=>"thresh_hold_unid_ids[]", :value=>"#{thu}"}

@@ -1,0 +1,68 @@
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label.col-sm-6
+            %span.fs-title Listing Resources
+          .data-table-header__actions.col-sm-6
+            = form_tag new_resource_path, method: :get do |data|
+              .form-group
+                .col-sm-6
+                  = select_tag :resource_type_id, options_from_collection_for_select(ResourceType.all, :id, :name),class: 'form-control'
+                = submit_tag "New Resource", name: nil, class: 'm-btn m-btn-teal col-sm-6'
+        - unless smart_listing.empty?
+          - smart_listing.collection.each do |object|
+            .product-card.col-lg-3.col-xs-12.col-sm-12.padding-5
+              .card.margin-t-b-0{:class=>"resource-card-#{object.id} #{get_resource_color(object.resource_state_id)}"}
+                .card-image
+                  %a{:href => "#{edit_resource_path(object)}" }
+                    = image_tag object.resource_image.url(:thumb)
+                .card-content.white-text
+                  %p
+                    = link_to "#{object.resource_type.name}""-(##{object.id}-#{object.name})",edit_resource_path(object), :class => "white-text"
+                  %small.text-lighten-3.font-sz-11
+                    = object.properties.map{|key,value| value}.join(" | ")
+                .card-action.white-text
+                  %span.font-sz-12{:class=>"resource-status-#{object.id}"}=object.resource_state.name.upcase if object.resource_state.present?
+                  %i.mdi-content-send.smaller.float-r
+          :javascript
+            $(document).ready(function() {
+              ////////////////////////////// FAYE PUSH NOTIFICATION JS //////////////////////////////
+              $(function() {
+                var url = "#{FAYE_SERVER_URL}";
+                var faye = new Faye.Client(url);
+                var notification_channel = "#{get_unit_push_channel_name('portal','resource_state_update')}";
+                faye.subscribe(notification_channel, function(data) {
+                  console.log(data);
+                  Materialize.toast("Resource "+data.resource.name+" updated to "+data.status_log.resource_state_name+" state", 5000);
+                  $(".resource-status-"+data.resource.id).html(data.status_log.resource_state_name);
+                  if(data.status_log.resource_state_id == 1){
+                    $(".resource-card-"+data.resource.id).removeClass( "orange purple red blue grey" ).addClass( "green" );
+                    
+                  }else if(data.status_log.resource_state_id == 2){
+                    $(".resource-card-"+data.resource.id).removeClass( "green purple red blue grey" ).addClass( "orange" );
+                    
+                  }else if(data.status_log.resource_state_id == 3){
+                    $(".resource-card-"+data.resource.id).removeClass( "green orange red blue grey" ).addClass( "purple" );
+                    
+                  }else if(data.status_log.resource_state_id == 4){
+                    $(".resource-card-"+data.resource.id).removeClass( "green orange purple blue grey" ).addClass( "red" );
+                    
+                  }else if(data.status_log.resource_state_id == 5){
+                    $(".resource-card-"+data.resource.id).removeClass( "green orange purple red grey" ).addClass( "blue" );
+                    
+                  }else if(data.status_log.resource_state_id == 6){
+                    $(".resource-card-"+data.resource.id).removeClass( "green orange purple red blue" ).addClass( "grey" );
+                    
+                  }
+                });
+              });
+            });
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links  
+        - else
+          .alert.alert-warning
+            No resource found          
+                

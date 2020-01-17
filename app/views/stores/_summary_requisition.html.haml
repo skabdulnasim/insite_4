@@ -1,0 +1,60 @@
+- manual_load_javascript "templates/stores/summary_details"   
+.col-lg-12.col-sm-12.padding-r-5#summary-container
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          .filter-title.margin-t-b-0 
+            Summary Details
+        - if @summary_requisitions.present? 
+          %table.data-table#accordion-req
+            %thead
+              %tr.data-table__selectable-row
+                %th
+                %th product  
+                %th Quantity             
+                %th Stock
+            %tbody.panel
+              - @summary_requisitions.each  do |product_id,data|
+                - basic_unit = Product.find(product_id).basic_unit 
+                - product_name = Product.find(product_id).name 
+                %tr.data-table__selectable-row
+                  %td
+                    %input.checkbox-child.filled-in.summary-products{:value=> "#{product_id}",:name=>"selected_products[]",:type=>"checkbox", "data-product-id" => "#{product_id}",:id=>"product_summary_#{product_id}","data-product-name" => "#{product_name}","data-basic-unit"=>"#{basic_unit}","data-product-quantity"=>"#{data['total_amount']}"}
+                    %label{:for=>"product_summary_#{product_id}"}
+                  %td.product-details{"aria-controls" => "collapse_#{product_id}", "aria-expanded" => "false", "data-parent" => "#accordion-req", "data-toggle" => "collapse", :href => "#collapse_#{product_id}", :role => "button", :class=>"requ_collapse_#{product_id}","data-action"=>"view_deatils","data-store-id"=>"#{@store.id}","data-basic-unit"=>"#{basic_unit}","data-product-id"=>"#{product_id}"}
+                    = product_name
+                  %td.product-details{"aria-controls" => "collapse_#{product_id}", "aria-expanded" => "false", "data-parent" => "#accordion-req", "data-toggle" => "collapse", :href => "#collapse_#{product_id}", :role => "button", :class=>"requ_collapse_#{product_id}","data-action"=>"view_deatils","data-store-id"=>"#{@store.id}","data-basic-unit"=>"#{basic_unit}","data-product-id"=>"#{product_id}"} 
+                    = data['total_amount']  
+                    =basic_unit 
+                  %td.product-details{"aria-controls" => "collapse_#{product_id}", "aria-expanded" => "false", "data-parent" => "#accordion-req", "data-toggle" => "collapse", :href => "#collapse_#{product_id}", :role => "button", :class=>"requ_collapse_#{product_id}","data-action"=>"view_deatils","data-store-id"=>"#{@store.id}","data-basic-unit"=>"#{basic_unit}","data-product-id"=>"#{product_id}"}
+                    %span.label.label-default
+                      =number_with_precision(get_product_current_stock(@store.id, product_id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                      =basic_unit   
+                %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{product_id}", :role => "tabpanel", :id => "collapse_#{product_id}"}
+                  %td.p0{:colspan=>9,:id=>"requ_quickinfo_#{product_id}"}
+                    Loading please wait...
+               
+        - else
+          .alert.alert-warning
+            No record found.
+.col-lg-5.col-sm-5.padding-r-5.hidden#product-container  
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          .filter-title.margin-t-b-0 
+            %i.mdi-action-label.left
+            Selected Products
+          = form_tag(product_vendors_store_purchase_orders_path(@store), method: "get",multipart: true) do
+            .padding-10
+              %button.m-btn.green.float-r.waves-effect.waves-light.width-100{:type => "submit"}
+                Next
+              .clearfix    
+            .padding-10
+              = select_tag :summary_filter, options_for_select({"Purchase Order"=>"pruchase_order","Stock Production"=>"kitchen_production"}), class: "search form-control", :prompt => "Select Action"
+            .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+              %ul.collection.po-product-list
+                %li.collection-item.no-item-selected
+                  %div
+                    No products selected            

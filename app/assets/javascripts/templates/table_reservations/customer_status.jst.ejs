@@ -1,0 +1,13 @@
+<% for(var i=0; i<package_obj.length; i++) {%>
+  <div class="panel panel-warning">
+    <div class="panel-heading"><%=package_obj[i].customer_name%></div>
+    <div class="panel-body">
+      <% for(var j=0; j<package_obj[i].table_reservation_meta.length; j++) {%> 
+          
+          <%=package_obj[i].table_reservation_meta[j].table_id %>
+     
+      <% } %> 
+    </div>
+  </div>
+  <% } %>
+</div>

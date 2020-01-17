@@ -1,0 +1,6 @@
+- @cat_data = Category.get_parent_cat(cats.parent)[0]
+%span
+  = link_to ", "+@cat_data.name, @cat_data
+- if @cat_data.parent?
+  = render "show_all_cat", {cats: @cat_data} if @cat_data.parent.present?
+

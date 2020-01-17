@@ -1,0 +1,350 @@
+# Sample localization file for English. Add more files in this directory for other locales.
+# See https://github.com/svenfuchs/rails-i18n/tree/master/rails%2Flocale for starting points.
+
+en:
+
+  ################################## APPLICATION LOCALES##################################
+  company: 'Yottolabs'
+  software_title: 'inSites'
+  parent_software_title: 'Digitalbricks'
+
+  brand:
+    parent: 'DigitalBricks'
+    name: 'inSites'
+  ########################################################################################
+  ##################################### UNIT LOCALES #####################################
+  unit:
+    title: 'Branches'
+    sub-title: 'Manage Branches'
+    module:
+      title: 'Branch Management'
+    new:
+      link: 'Add branch'
+    show:
+      title: 'View this branch'
+      link: 'View this branch'
+    edit:
+      title: 'Edit this branch'
+      link: 'Edit this branch'
+    destroy:
+      title: 'Delete this branch'
+      link: 'Delete this branch'
+      prompt: 'Delete this branch?'
+      # warning: 'This branch will be permanently deleted. This cannot be undone.'
+      notice: 'You have successfully deleted the branch.'
+      # submit: 'Yes, delete this branch'
+      cancel: 'Cancel'
+    create:
+      notice: 'You have successfully created a branch.'
+    update:
+      notice: 'You have successfully updated the branch.'
+  #######################################################################################
+  ################################## UNIT TYPE LOCALES ##################################
+  unittype:
+    title: 'Branch types'
+    new:
+      link: 'Add branch type'
+    show:
+      title: 'View this branch type'
+      link: 'View this branch type'
+    edit:
+      title: 'Edit this branch type'
+      link: 'Edit this branch type'
+    destroy:
+      title: 'Delete this branch type'
+      link: 'Delete this branch type'
+      prompt: 'Delete this branch type?'
+      # warning: 'Your account will be permanently deleted. This cannot be undone.'
+      notice: 'You have successfully deleted the branch type.'
+      # submit: 'Yes, delete my account'
+      cancel: 'Cancel'
+    create:
+      notice: 'You have successfully created a branch type.'
+    update:
+      notice: 'You have successfully updated the branch type.'
+  ######################################################################################
+
+  inventory_title: "Inventory Management"
+  shipment_title: "Shipment Management"
+  heading_requisition: "Manage requisitions"
+  store_add_new: "Add new store"
+  vehicle_add_new: "Add new vehicle"
+  calatog_title: "Catalogs"
+  calatog_text: "Catalog"
+  manage_calatog: "Manage Catalogs"
+  copy_calatog: "Copy Catalog"
+  branches_title: "Branches"
+
+  title_sections: "Sections"
+  title_section: "Section"
+  title_categories: "Categories"
+  title_category: "Category"
+  title_products: "Products"
+
+  btn_help: "Help"
+  btn_save: "Save"
+  btn_next_step: "proceed to next step"
+  label_address: "Address"
+  label_pincode: "Pincode"
+  label_contact: "Contact"
+  label_email: "Email"
+  label_password: "Password"
+  label_confirm_password: "Re-enter password"
+  label_license: "License Key"
+  label_next_step: "Next Step"
+  label_get_started: "Get Started"
+  label_login: "Log In"
+  label_sign_up: "Sign Up"
+  label_forgot_password: "Forgot your password?"
+  label_reset_instruction: "Reset password"
+  label_address: "Address"
+  label_pincode: "Pincode"
+  label_contact: "Contact"
+  label_edit: "Edit"
+  label_trash: "Move to trash"
+  label_copy: "Copy"
+  label_view: "View"
+  label_add: "Add"
+  label_add_new: "Add New"
+  label_edit: "Edit"
+  label_updated_at: "Updated at"
+  label_scope: "Scope"
+  label_section: "Section"
+  label_add_products: "Add Products"
+  label_simple_product: "Simple Product"
+  label_variable_product: "Variable Product"
+  label_combo_product: "Combo Product"
+  label_filter: "Filter"
+  label_select: "Select"
+  label_clone: "Clone"
+  label_details: "Details"
+  label_scope: "Scope"
+  label_mode: "Mode"
+  label_firstname: "First name"
+  label_lastname: "Last name"
+  label_tinno: "Tin No"
+  label_tanno: "Tan No"
+  label_cash_in: "Cash In"
+  label_cash_out: "Cash Out"
+  label_bulkupload: "Bulk Upload"
+  # Error texts
+  error: 'error'
+  error_ordering_disabled: 'Ordering is temporarily disabled, please try again later'
+  error_there_are_no_items_for_this_order: 'Sorry! no items found in this order. Please add some item to continue'
+  error_order_not_placed: 'Something went wrong while placing new order'
+  error_insufficient_stock: "Some item(s) (%{items}) in this order, have insufficient stock"
+  error_stock_not_issued: "(%{item}) or it's ingredients in this order have insufficient stock"
+  error_order_item_cancelation_failed: 'Something went wrong canceling the order item'
+  error_try_after_sometime: 'Something went wrong, try after sometime'
+  error_order_billed: "Order ID %{order}, already billed"
+  error_no_orders_found_for_bill: "Cannot generate bill without any order(s)"
+  error_payment_amount_not_matching: "Bill amount (%{bill_amount}) is not matching with settled amount (%{payment_amount})"
+  error_bill_already_paid: "Bill ID %{bill_id} already settled"
+  error_no_records_found: 'No record found'
+  error_insufficient_loyalty_point: "Insufficient balance in Loyalty Card"
+  error_loyalty_card_not_found: "No card found with given card no"
+  error_canceled_order: "Order canceled"
+  error_stock_not_found: "No Stocks Found"
+  error_stock_ship: "Fail to ship stock"
+  error_requisition_creation: "Error creating requisition"
+  error_purchase_order_listing: "Error listing purchase orders"
+  error_purchase_order_receive: "Error receiving purchase order"
+  error_listing_vehicle: "Error listing vehicles"
+  error_order_details_update: "Error updating order details"
+  error_order_update: "Error updating order"
+  error_listing_audit: "Error listing stock audits"
+  error_updating_audit: "Error updating stock audit of id %{audit_id}"
+  error_invalid_sku: "Current stock of SKU (%{sku}) is insufficient"
+  error_invalid_sku_lot: "Current stock of SKU (%{sku}) is insufficient for Lot Id:%{lot} has Current stock %{lot_qty} and order qty %{order_qty}"
+  error_generating_report: "Error generating report data"
+  error_listing_vendor: "Error listing vendors"
+  error_listing_vendor_products: "Error listing vendor products"
+  error_creating_purchase_order: "Error creating purchase order"
+  error_listing_vehicle: "Error listing vehicles"
+  error_duplicate_bill: "Error duplicate bill"
+  error_duplicate_order: "Error duplicate order"
+  error_duplicate_checksum: "already exists, it looks like a duplicate request."
+  error_invalid_license_key: 'Invalid license key'
+  error_insufficient_stock_for_transfer: "Sorry!! %{items} have insufficient stock"
+  error_creating_stock_transfer: "Error creating stock transfer"
+  error_est_price_not_found: "Error estimate price not fount"
+  error_requisition_send: "Error sending requisition"
+  error_requistion_not_found: "Error Listing Requisition"
+  error_requisition_update: "Requisition not updated"
+  error_reservation_cancelation_failed: "Reservation cancelation failed"
+  error_reservation_not_update: "Reservation not update"
+  error_customer_queue_not_found: "Customer queue not created"
+  error_queue_customers_not_found: "Queue customers not found"
+  error_queue_customer_cancelation_failed: "Queue customer successfully canceled"
+  error_pax_not_match: "Pax not match with resource capacity"
+  reservation_not_swap: "Reservation not swap"
+  error_cash_in_not_created: "Error Cash_in not created"
+  error_cash_out_not_created: "Error Cash_out not created"
+  error_denomination_not_showing: "Error denomination not showing"
+  error_otp_not_sent: "Otp not send"
+  order_already_delivered: "Order already delivered"
+  error_verify_promo: "Invalid promo code"
+  error_verify_coupon: "Invalid coupon code"
+  error_stock_production_create: "Stock production not created"
+  error_stock_production_not_found: "Stock production not found"
+  error_capillary_customer_updated: "Customer is not updated  successfully"
+  error_regular_transaction: "Regular transaction is not successful"
+  error_loyality_full_bill_return: "In loyalaty card full bill return transaction is not successfully done"
+  error_loyality_bill_amount_return: "In loyality card bill amount return is not successfully done"
+  error_loyality_line_item_return: "In loyality card line item return is not successfully done"
+  error_nonloyality_bill_return: "In nonloyality bill return is not successful"
+  error_nonloyality_amount_return: "In nonloyality amount return is not successful"
+  error_nonloyality_line_item_return: "In nonloyality line item return is not successful"
+  error_point_redeem: "In capillary point redeemtion is not successful "
+  error_validation_code: "Validation code not generated"
+  error_check_coupon: "Coupon code is invalid"
+  error_coupon_redeem: "Coupon redeemption is not successful"
+  error_urbanpiper_customer_registered: "Customer is not registered successfully"
+  error_urbanpiper_customer_found: "Customer not found"
+  error_urbanpiper_customer_updated: "Customer is not updated successfully"
+  error_wallet_transaction: "Wallet transaction is not successful"
+  error_processing_purchase: "Processing purchase for reward points or cashback is not successful"
+  error_reward_redemption: "Redemption code is not valid"
+  error_listing_wallet: "Error listing wallets"
+  error_varifying_otp: "OTP could not be varified"
+  error_listing_slot: "Error listing slots"
+  error_listing_resource: "Error listing vendors"
+  duplicate_record_present: "record already created"
+
+  # Success texts
+  ok: 'ok'
+  success_wishlist_generated: 'Added to your wishlist'
+  success_wishlist_removed: 'Removed from your wishlist'
+  success_resource_product_stock_generated: 'Product Stock added successfully'
+  success_visiting_history_generated: 'Visiting history generated successfully'
+  success_order_placed: "Order placed successfully"
+  success_bill_generated: "Bill generated successfully"
+  success_quotation_generated: "Quotation generated successfully"
+  success_bill_settled: "Bill settled successfully"
+  success_bill_updated: "Bill updated successfully"
+  success_order_item_cancled: "Order item cancled successfully"
+  success_user_logout: "Logged out successfully"
+  success_user_login: "Logged in successfully"
+  success_unit_found: "Branch found"
+  success_menu_found: "Menu card fetched properly"
+  success_customer_fond: "Customer found"
+  success_customer_registered: "Customer successfully registered"
+  success_new_address_saved: "New address saved"
+  success_records_found_with_count: "%{count} record(s) found"
+  success_record_found: 'Record found'
+  success_loyalty_purchase: "Purchase has been successfully done"
+  success_loyalty_card_found:  "Loyalty card detials found"
+  success_table_updated: "Table status updated successfully"
+  success_table_swap: "Table swap successfully"
+  success_resource_swap: "Resource swap successfully"
+  success_reservation_swap: "Reservation swap successfully"
+  success_stock_found: "Stock found successfully"
+  success_stock_ship: "Stock shipped successfully"
+  success_requisition_creation: "Requisition created successfully"
+  success_purchase_order_listing: "Purchase order listed successfully"
+  success_purchase_order_receive: "Purchase order received successfully"
+  success_listing_vehicle: "Vehicles listed successfully"
+  success_generating_report: "Report data between %{from_date} and %{to_date} generated successfully"
+  success_order_details_update: "Order Details updated successfully"
+  success_order_update: "Order updated successfully"
+  success_order_found: "Order fetched properly"
+  success_listing_audit: "Audits listed successfully"
+  success_updating_audit: "Stock audit has been updated successfully"
+  success_listing_vendor: "Vendor listed successfully"
+  success_listing_vendor_product: "Vendor products listed successfully"
+  success_creating_purchase_order: "Purchase order created successfully"
+  success_listing_vehicle: "Vehicles listed successfully"
+  success_customer_login: "Logged in successfully"
+  success_user_login: 'User found'
+  success_valid_license: 'License key successfully validated'
+  success_resource_updated: 'Resource status updated successfully'
+  sucess_creating_stock_transfer: "stock transfer successfully"
+  success_est_price_found: "Estimate price found successfully"
+  success_requisition_send: "Successfully requisition send"
+  success_requistion_found: "Requisition listed successfully"
+  success_requisition_update: "Requisition updated successfully"
+  success_customer_feedback: "Thank you! We've received your answer."
+  success_shipment: "Shipment found"    
+  success_pick_up: "Shipment has been picked up and will be delivered soon."    
+  success_delivered: "Shipment has been delivered."
+  text_signup_intro: "From signup to taking orders, you’ll be up and running within few steps."
+  text_profile_info: "Please provide following details, so that we can create an instance for you."
+  text_welcome_to: "WELCOME TO"
+  text_get_started: "GET STARTED WITH"
+  text_reset_password: "Enter your email address that you used to register. We'll send you an email with your instructions to retrieve password."
+  text_no_of_products: "No. of products"
+  text_set_attributes: "Set Attributes"
+  text_branch: "Branch"
+  text_root: "root"
+  text_reset_password: "Enter your email address that you used to register. We'll send you an email with your instructions to retrieve password."
+  success_own_customer_found: "Customer created"
+  success_own__customer_updated: "Customer updated"
+  success_user_work_status_generated: "Wrok Status Generated successfully"
+  success_reservation_generated: "Reservation successfully created"
+  success_reservation_destroyed: "Reservation successfully canceled"
+  success_reservation_updated: "Reservation successfully updated"
+  success_cutomer_queue_found: "Customer queue created"
+  success_all_customer_records_found: "All customers found in queue"
+  success_queue_customer_destroyed: "Queue customer successfully canceled"
+  success_reprint_generated: "reprint generated successfully"
+  success_data_fetched: "data successfully fetched"
+  success_cash_in_created: "Cashin successfully created"
+  success_cash_out_created: "Cashout successfully created"
+  success_denomination_showing: "Denomination successfully showing"
+  success_otp_generated: "Otp has been generated successfully."
+  success_otp_verified: "Otp has been verified successfully."
+  success_otp_resend: "Otp has been sent"
+  success_preauth_initiate: "Preauth successfully initiated"
+  success_customer_updated: "Profile sucessfully updated"
+  success_verify_promo: "Promo code has been verified successfully"
+  success_verify_coupon: "Coupon code has been verified successfully"
+  paypal_payment: "Transaction successfully"
+  success_stock_production_create: "Stock production succesfully created"
+  success_stock_production_found: "Stock production found successfully"
+  success_capillary_customer_updated: "Customer updated successfully"
+  success_regular_transaction: "Regular transaction is successfully done"
+  success_loyality_full_bill_return: "In loyalaty card full bill return transaction is successfully done"
+  success_loyality_bill_amount_return: "In loyality card bill amount return transaction is successfully done"
+  success_loyality_line_item_return: "In loyality card bill line item return transaction is successfully done"
+  success_nonloyality_bill_return: "In nonloyality card bill return is successful"
+  success_nonloyality_amount_return: "In nonloyality card amount return is successful"
+  success_nonloyality_line_item_return: "In nonloyality card line item return is successful"
+  success_point_redeem: "In capilarry point redeemtion is successful"
+  success_validation_code: "Validation code generated successfully"
+  success_check_coupon: "Coupon processing successful"
+  success_coupon_redeem: "Coupon redeemption is successful" 
+  password_reset: "Password reset successfully"
+  customer_exists: "Customer already exists"
+  success_party_create: "Party successfully created"
+  pax_avaliable: "Pax avaliable for Preauth"
+  success_inspection_created: "Inspection created successfully"
+  success_urbanpiper_customer_updated: "Customer is successfully updated"
+  success_wallet_transaction: "Wallet transaction is successful"
+  success_processing_purchase: "Processing purchase for reward points or cashback is successful"
+  success_reward_redemption: "Redemption code is validated successfully"
+  success_listing_wallet: "Wallets listed successfully"
+  success_customer_found: "Customer found"
+  sucess_transaction: "Transaction Successfully"
+  success_read_upi_merchant: "UPI merchant successfully readed"
+  success_otp_verified: "OTP verified Successfully"
+  success_listing_slot: "Slots listed successfully"
+  success_slot_found: 'Slots found'
+  success_creating_vendor: "Vendor created successfully"
+  success_allocate_vendor_products: "Products allocated to vendors successfully."
+  success_creating_vendor_contract: "Vendor contract details saved successfully"
+  success_return_item_updated: "Return item sucessfully updated"
+  success_listing_resource: "Resource Listing vendors"
+  success_customer_state_transition_created: "Customer State Transition saved successfully"
+  success_customer_communication_created: "Customer Communication saved successfuly"
+  success_customer_note_created: "Customer Note saved successfully"
+  success_customer_tag_created: "Customer tag saved successfully"
+  success_warehouse_product_put: "Product successfully mapped with bin"
+  success_warehouse_product_pick: "Product successfully removed from bin"
+  success_products_bin_found: "product found"
+  success_bin_product_found: "product found"
+  success_resource_order_history_generated: "Resource order history saved successfuly"
+  success_store_created: "Store created successfully"
+  success_proforma_generated: "Proforma generated successfully"
+  success_new_financial_account: "Financial account created successfully"
+  success_proforma_transaction: "Transaction successful"
+  success_financial_account_found: "Financial account fetched properly"

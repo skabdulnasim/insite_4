@@ -1,0 +1,106 @@
+!!!
+%html
+	%head
+		%meta{:charset => "UTF-8"}
+	%body
+		%div{:style => "margin-top:40px; margin-left:0px;"}				
+			%div{:style => "border: 1px solid #e3e3e3;border-radius: 2px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset; padding: 3px; width:99%;"}
+				%div{:style => "font-size:22px; color:#fff;  background-color: #2189b9;border: 1px solid #e3e3e3;border-radius: 2px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset; min-height: 15px; padding: 4px;"}
+					%span Sale Summary Branch by Branch
+					%span{:style => "float:right;"} Date: #{Date.today - 1.days}
+			%table.responstable1{:style => "margin: 1em 0;width: 99%;overflow: hidden;background: #FFF;color: #024457;border-radius: 2px;border: 1px solid #167F92;"}
+				%tr{:style => "border: 1px solid #D9E4E6;"}
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"} 
+						Branch Name
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"} 
+						Grand Total
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"} 
+						Material Cost
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+						Percentage(%)
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+						Unpaid Amt
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+						Settled Amt
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+						Cash
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+						Card
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+						Third Party	
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+						Loyalty
+					%th{:style => "border: 1px solid #FFF;background-color: #167F92;color: #FFF;padding: 1em;"}
+						Discount
+					- summery_total_sale = 0
+					- summery_meterial_cost = 0
+					- summery_total_settlement = 0
+					- summery_unpaid_amount = 0
+					- summery_cash_sale = 0
+					- summery_card_sale = 0
+					- summery_third_sale = 0
+					- summery_loyalty_sale = 0
+					- summery_discount = 0
+					- total_percentage = 0
+					- @from_date = Date.today - 1.days
+					- @to_date = Date.today - 1.days
+				- @units.each do |unit|
+					- unit_detail_options = unit.unit_detail.options if unit.unit_detail.present?
+					- _from_datetime = @from_date.to_date.beginning_of_day+unit_detail_options[:day_closing_time].to_i.hours if unit.unit_detail.present?
+					- _from_datetime ||= @from_date.beginning_of_day
+					- _to_datetime = @to_date.to_date.end_of_day+unit_detail_options[:day_closing_time].to_i.hours if unit.unit_detail.present?
+					- _to_datetime ||= @to_date.to_date.end_of_day   
+					- settlement_data = Bill.get_unit_settlement_data(unit.id,_from_datetime,_to_datetime)
+					- _total_sale = Bill.unit_bills(unit.id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum{|data| data.grand_total}
+					- meterial_cost = OrderDetail.set_unit(unit.id).by_date_range(_from_datetime,_to_datetime).sum("material_cost")
+					- total_discount = Bill.unit_bills(unit.id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum{|data| data.discount}
+					- unpaid_amount = _total_sale.to_f - settlement_data[:total_settlement].to_f
+					- summery_total_sale = summery_total_sale + _total_sale
+					- summery_meterial_cost = summery_meterial_cost + meterial_cost
+					- summery_unpaid_amount = summery_unpaid_amount + unpaid_amount
+					- summery_total_settlement = summery_total_settlement + settlement_data[:total_settlement].to_i
+					- summery_cash_sale = summery_cash_sale + settlement_data[:cash_sale].to_i
+					- summery_card_sale = summery_card_sale + settlement_data[:card_sale].to_i
+					- summery_third_sale = summery_third_sale + settlement_data[:third_party_sale].to_i
+					- summery_loyalty_sale = summery_loyalty_sale + settlement_data[:loyalty_card_sale].to_i
+					- summery_discount = summery_discount + total_discount
+					- percentage = (meterial_cost/_total_sale)*100
+					- percentage = (percentage.is_a?(Float) && percentage.nan?) ? 0 : percentage
+					- total_percentage = (summery_meterial_cost/summery_total_sale)*100
+					- total_percentage = (total_percentage.is_a?(Float) && total_percentage.nan?) ? 0 : total_percentage    
+					%tr{:style => "border: 1px solid #D9E4E6;"}
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em; text-align:left"}= unit.unit_name
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(_total_sale, unit: '')
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(meterial_cost, unit: '')
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(percentage, unit: '')
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(unpaid_amount, unit: '')
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(settlement_data[:total_settlement], unit: '')
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(settlement_data[:cash_sale], unit: '')
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(settlement_data[:card_sale], unit: '')
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(settlement_data[:third_party_sale], unit: '')
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(settlement_data[:loyalty_card_sale], unit: '')
+						%td{:style => "border: 1px solid #FFF;background-color: #ccc;color: #000;padding: 1em;text-align:center;"}= number_to_currency(total_discount, unit: '')
+				%tr{:style => "border: 1px solid #D9E4E6;"}
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em; text-align:center"}Summary
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(summery_total_sale, unit: '')
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(summery_meterial_cost, unit: '')
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(total_percentage, unit: '')
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(summery_unpaid_amount, unit: '')
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(summery_total_settlement, unit: '')
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(summery_cash_sale, unit: '')
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(summery_card_sale, unit: '')
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(summery_third_sale, unit: '')
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(summery_loyalty_sale, unit: '')
+					%td{:style => "border: 1px solid #FFF;background-color: #85C1E9;color: #000;padding: 1em;text-align:center;"}= number_to_currency(summery_discount, unit: '')      
+			%span{:style => "padding :10px; color: red;"} ** Unpaid amount represent unsettled COD amount also.	
+			- site_url = AppConfiguration.get_config('site_url')
+			- site_url = "#{site_url}/sale_reports"
+			%a{:href => site_url}
+				To see more report click here... 
+
+
+
+
+
+
+

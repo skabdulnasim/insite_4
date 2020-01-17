@@ -1,0 +1,44 @@
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label.col-sm-2
+            %span.fs-title Racks
+          .data-table-header__actions.col-sm-10
+            
+            .form-group
+              .right
+                /= submit_tag "New Rack", name: nil, class: 'm-btn m-btn-teal'
+                %a.m-btn.m-btn-teal{"data-target" =>"#showRakeOptionModal", "data-toggle" => "modal"}
+                  %i.mdi-editor-format-list-numbered.left
+                  New Racks 
+              / .col-sm-5
+              /   %a.m-btn.blue{"data-target" => "#resourceBulkUpload", "data-toggle" => "modal"} 
+              /     %i.mdi-file-cloud-upload.left
+              /     %span.hidden-sm.hidden-xs Upload Resource
+              /     .clearfix    
+                
+        - unless smart_listing.empty?
+          - smart_listing.collection.each do |object|
+            .product-card.col-lg-3.col-xs-12.col-sm-12.padding-5
+              .card.margin-t-b-0{:class=>"rack-card-#{object.id}"}
+                .card-image
+                  %a{:href => "#" }
+                    = image_tag("/rack1.png", width: '200', :class => "img-thumbnail")
+                .card-content.white-text
+                  %p
+                    = link_to "(##{object.id}-#{object.name})", :class => "white-text"
+                .card-action
+                  %span.float-l.badge.bincount 12
+                  %a.addbin{"data-target"=>"#AddBinsModal", "data-toggle"=>"modal",:style=>"margin-left:5px;cursor:pointer;","title"=>"Add Bins","data-rack-id"=>"#{object.id}"}
+                    .fa.fa-plus
+                  %a{:href => "#{store_rack_bins_path(object.id)}" }
+                    %i.mdi-content-send.smaller.float-r
+          
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links  
+        - else
+          .alert.alert-warning
+            No rack found          
+                

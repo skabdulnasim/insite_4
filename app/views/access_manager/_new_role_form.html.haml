@@ -1,0 +1,20 @@
+=form_for @new_role, :url => access_manager_create_role_path, :html => { :class => 'form-horizontal' } do |f|
+  .form-group
+    = f.label :name, :class => 'control-label col-sm-4'
+    .col-sm-7
+      = f.text_field :name, :class => 'form-control', :required=>true
+  .form-group
+    = f.label :parent_role, :class => 'control-label col-sm-4'
+    .col-sm-7
+      = f.select :parent, options_for_select(@all_roles.map{ |role| [role.name, role.id] }, @new_role.parent), { include_blank: "Select its parent role"}, {:class => "form-control"}
+  .form-group
+    = f.label "Make copy of (capabilities)", :class => 'control-label col-sm-4'
+    .col-sm-7
+      %select{:class => 'form-control',:name=>"copy_role_id"}
+        %option{:value=>""} None
+        -@all_roles.each do |ar|
+          %option{:value=>"#{ar.id}"}
+            =ar.name 
+  .modal-footer{:style=>"clear:both"}
+    %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+    %button.btn.btn-success{:type => "submit"} Create new  role        

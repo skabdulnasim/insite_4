@@ -1,0 +1,16 @@
+= form_for @news_event_gallery do |f|
+  - if @news_event_gallery.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@news_event_gallery.errors.count, "error")} prohibited this news_event_gallery from being saved:"
+      %ul
+        - @news_event_gallery.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :news_event_id
+    = f.number_field :news_event_id
+  .field
+    = f.label :news_event_image
+    = f.text_field :news_event_image
+  .actions
+    = f.submit 'Save'

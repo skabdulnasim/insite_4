@@ -1,0 +1,28 @@
+- unless smart_listing.empty?
+	%table.data-table
+		%thead
+			%tr.data-table__selectable-row.bg-gray
+				%th="Order Id"
+				%th="Refund Amount"
+				%th="Customer Name"
+				%th="Account No."
+				%th="Ifsc Code"
+		%tbody
+			- smart_listing.collection.each do |object|
+				%tr.data-table__selectable-row
+					%td=object.order_id
+					%td=object.refund_amount
+					- if object.customer.present?
+						- if object.customer.customer_profile.customer_name.present?
+							%td= object.customer.customer_profile.customer_name
+						- else
+							%td= "#{object.customer.customer_profile.firstname} #{object.customer.customer_profile.lastname}"  
+					- else
+						%td= '-'
+					%td=object.account_no
+					%td=object.ifsc_code
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		No money refund details found

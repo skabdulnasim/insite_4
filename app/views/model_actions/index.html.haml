@@ -1,0 +1,59 @@
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing reason codes
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_model_action_path}"}
+              %i.mdi-content-add.left
+              New reason code
+  - if @model_actions.present?
+    .example
+      .example__content.p0
+        .data-table-container
+          %table.data-table
+            %tr
+              %th 
+                %strong Master model
+              %th
+                %strong Action Name
+              %th
+                %span{:style=>"margin-left:55px;"} 
+                  %strong actions
+
+            - @model_actions.each do |model_action|
+              %tr.data-table__selectable-row
+                %td{"data-toggle" => "collapse","aria-controls" => "collapse_#{model_action.id}", :href=>"#collapse_#{model_action.id}",}
+                  = model_action.master_model.name
+                %td{"data-toggle" => "collapse","aria-controls" => "collapse_#{model_action.id}", :href=>"#collapse_#{model_action.id}",}
+                  = model_action.name
+                %td 
+                  .col-sm-2
+                    %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_model_action_path(model_action)}", :title => "Edit reason action"} 
+                      %i.mdi-editor-border-color
+                  .com-sm-2
+                    %a.m-btn.red.m-btn-low-padding{:title => "Remove ",:href => "#{model_action_path(model_action)}",:method => :delete,:method => :delete, :data => { :confirm => 'Are you sure?' } }
+                      %i.mdi-action-delete
+              %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{model_action.id}", :role => "tabpanel", :id => "collapse_#{model_action.id}"}
+                %td{:style=>"width:500px;"}
+                  .example
+                    .example__content.p0
+                      .data-table-container
+                        %table.data-table
+                          %thead.bg-primary
+                            %th Reason Code
+                            %th Reason Descriptions
+                            %th stock adjustment
+                          - model_action.reason_codes.each do |reason_code|
+                            %tr
+                              %td
+                                =reason_code.code
+                              %td 
+                                =reason_code.reason
+                              %td
+                                =reason_code.stock_adjustment
+  -else
+    %p.warning No record found

@@ -1,0 +1,49 @@
+- unless smart_listing.empty?
+	%table.data-table
+		%tr
+			%th.font-bold District Name
+			%th.font-bold Item Name
+			%th.font-bold Despatch Quantity
+			%th.font-bold Despatch Quantity for the Year
+			%th.font-bold Despatch Quantity for Last Year
+			%th.font-bold Product Unit
+		- resource_count = 0 #for data mismatch
+		- resources = Array.new
+		- all_quantity = 0 #for data mismatch
+		- smart_listing.collection.each do |object|
+			- district_name = object[:district_name]
+			- district_id = object[:district_id]
+			%tr
+				%td= "#{district_name}"
+				%td
+				%td
+				%td
+				%td
+				%td
+			- district_resources = Resource.set_district_ids_like(district_id).by_unit_list(@unit_ids)
+
+			- district_resource_ids = district_resources.uniq.pluck(:id)
+			
+			- district_resource_order_details = fetch_order_details_by_resources(district_resource_ids,@from_datetime,@to_datetime)
+			- district_resource_order_details = district_resource_order_details.by_store(params[:store_id]) if params[:store_id].present? and district_resource_order_details.present?
+			/ - selled_product_ids = district_resource_order_details.uniq.pluck(:product_id)
+			/ - selled_products = Product.set_product_id_in(selled_product_ids)
+			- selled_products = district_resource_order_details
+
+			- if selled_products.present?
+				- selled_products.each do |product_sale|
+					- product = Product.find(product_sale.product_id)
+					- current_year_product_dispatch,previous_year_product_dispatch = current_year_and_previous_year_product_dispatch(product_sale.product_id,'',district_resource_ids)
+					%tr
+						%td
+						%td= "#{product.name}"
+						%td= "#{product_sale.total_quantity.to_f.round(0)}"
+						%td= "#{current_year_product_dispatch.to_f.round(0)}"
+						%td= "#{previous_year_product_dispatch.to_f.round(0)}"
+						%td= "#{product.basic_unit}"
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		%td
+			No record found

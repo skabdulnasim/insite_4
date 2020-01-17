@@ -1,0 +1,16 @@
+#page-wrapper
+	.row
+		.page-header
+			%h2.margin-b-t-none
+				%span.fa-stack
+					%i.fa.fa-circle.fa-stack-2x{:style=>"color:#3498DB"}
+					%i.fa.fa-bell-o.fa-stack-1x.fa-inverse
+				Notifications   
+		.page-container  
+			.col-lg-12
+				= render "layouts/flash"
+				= form_for Notification.new, :remote=>true do |f|
+					.field
+						= f.text_field :title , :placeholder=>"Write your message here"
+					%ul#chat
+						= render @notifications

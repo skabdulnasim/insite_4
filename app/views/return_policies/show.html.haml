@@ -1,0 +1,36 @@
+%p#notice= notice
+
+%p
+  %b Return allowed:
+  = @return_policy.return_allowed
+%p
+  %b Policy:
+  = @return_policy.policy
+%p
+  %b Return alowed on order state:
+  = @return_policy.return_alowed_on_order_state
+%p
+  %b Is delivery charge refandable:
+  = @return_policy.is_delivery_charge_refandable
+%p
+  %b Unit:
+  = @return_policy.unit_id
+%p
+  %b Return allowed after deliverable:
+  = @return_policy.return_allowed_after_deliverable
+%p
+  %b Return charge type:
+  = @return_policy.return_charge_type
+%p
+  %b Return charge:
+  = @return_policy.return_charge
+%p
+  %b Is delivery charge refandable:
+  = @return_policy.is_delivery_charge_refandable
+%p
+  %b Is refundable:
+  = @return_policy.is_refundable
+
+= link_to 'Edit', edit_return_policy_path(@return_policy)
+\|
+= link_to 'Back', return_policies_path

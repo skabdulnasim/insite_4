@@ -1,0 +1,17 @@
+.row.m0
+  .col.s12
+    .card
+      .card-content.p10
+        .row.m0
+          .col.s1
+            %i.material-icons.circle.blue.blue-text.text-lighten-5.p3 person
+          .col.s4
+            %h6.m0=customer.customer_profile.customer_name
+            %small.grey-text
+              ="Contact  #{customer.mobile_no}"
+          .col.s7
+            =link_to 'Deliver to customer', customer_path(customer), :remote => true, :class => 'right btn line-btn blue font-08 waves-effect waves-light'
+          .clearfix
+.clearfix        
+=render :partial=> 'addresses/new_link'
+=render :partial=> 'addresses/address', :collection=>customer.addresses, :as=>'address'

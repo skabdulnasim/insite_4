@@ -1,0 +1,8 @@
+= stylesheet_link_tag "step_progress"
+- manual_load_javascript "templates/stores/po_details","templates/stores/requisition_details"
+= render "layouts/flash"
+- if @store.store_type == "physical_store" || @store.store_type == "waste_bin"
+  = render "physical_store"
+
+  
+

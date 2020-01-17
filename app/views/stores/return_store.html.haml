@@ -1,0 +1,127 @@
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+- @unit_currency = currency
+.col-lg-3.col-sm-12.col-xs-12.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-money.orange
+    %span.title.font-sz-12 Today's Return
+    %span.value=number_to_currency(get_to_day_return_amount(@current_user.unit_id),unit: @unit_currency,format: "%u %n", precision: 2)
+    .clearfix
+.col-lg-3.col-sm-12.col-xs-12.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-check.green
+    %span.title.font-sz-12 Today's Return Adjustment
+    %span.value=number_to_currency(get_return_adjustment_amount(@current_user.unit_id),unit: @unit_currency,format: "%u %n", precision: 2)
+    .clearfix
+.col-lg-3.col-sm-12.col-xs-12.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-balance-scale.indigo
+    %span.title.font-sz-12 Today's Remaning Balance
+    %span.value=number_to_currency(get_to_day_return_amount(@current_user.unit_id) - get_return_adjustment_amount(@current_user.unit_id),unit: @unit_currency,format: "%u %n", precision: 2)
+    .clearfix
+.col-lg-3.col-sm-12.col-xs-12.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-cart-arrow-down.red
+    %span.title.font-sz-12 Today's Item Count
+    %span.value=get_to_day_distinct_product_count(@current_user.unit_id)
+    .clearfix    
+.clearfix  
+.col-sm-3.padding-5
+  .card
+    .tabbable.tabs-left
+      %ul.nav.nav-tabs.padding-none.width-100
+        %li.active
+          %a{"data-toggle" => "tab", :href => "#a"}
+            %span.float-r.badge= @stocks.count
+            Products and Stocks
+        %li
+          %a{"data-toggle" => "tab", :href => "#d"}
+            %span.float-r.badge=@store.stock_credit_transfers.delivering.count + @store.stock_credit_transfers.return_delivering.count
+            Manage Stock Transfers
+        %li
+          %a{"data-toggle" => "tab", :href => "#e"}
+            %span.float-r.badge=@store.stock_audits.pending_audit.count
+            Stock Audits
+    .clearfix
+    .filter-title.margin-t-b-0
+      %i.mdi-action-open-in-new.left
+      Quick Links
+    .padding-5
+      %a.m-btn.blue.width-100.margin-b-5.text-align-left.waves-effect.waves-light{"data-target" =>"#showTransferOptionModal", "data-toggle" => "modal"}
+        %i.mdi-action-trending-neutral.left
+        Transfer products
+      %a.m-btn.blue.width-100.margin-b-5.text-align-left.waves-effect.waves-light{"data-target" =>"#showAuditOptionModal", "data-toggle" => "modal"}
+        %i.mdi-av-shuffle.left
+        New stock audit
+      
+.col-sm-9.padding-r-none                                       
+  .tab-content
+    #a.tab-pane.active
+      .col-md-2.padding-l-r-none
+        %h3.margin-t-none Products
+      .col-md-10.padding-l-r-none
+        = smart_listing_controls_for(:return_items, {class: "form-inline text-right"}) do
+          .form-group.filter.input-append
+            = select_tag :catrgory, options_from_collection_for_select(Category.all, "id", "name"), class: "search form-control", :prompt => "All categories"
+          .form-group.filter.input-append
+            = text_field_tag :filter, '', class: "search form-control", placeholder: "Search...", autocomplete: :off
+          %button.btn.btn-primary.disabled{type: :submit}
+            %span.glyphicon.glyphicon-search
+      .col-md-12.padding-l-r-none
+        = smart_listing_render :return_items
+
+/ Transfer Option Modal
+#showTransferOptionModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showTransferOptionModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Select transfer option
+      .modal-body
+        .col-md-12
+          .col-md-3
+            %h4 Option A
+          .col-md-9
+            .btn-group{:style=> "width:100%"}
+              %a.btn.btn-default.dropdown-toggle.text-left.btn-social.btn-primary{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button",:style=> "width:100%"}
+                %i.fa.fa-exchange
+                Select business type
+                %span.caret
+              %ul.dropdown-menu.dropdown-menu-right{:role => "menu",:style=> "width:100%"}
+                - @business_types.each do |business_type|
+                  %li
+                    %a{:href => "#{new_store_stock_transfer_path(@store)}?business_type=#{business_type}"}= business_type.humanize
+
+        .clearfix
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+
+/ Audit Option Modal
+#showAuditOptionModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showAuditOptionModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showAuditOptionModalLabel.modal-title Select audit option
+      .modal-body
+        .col-md-12
+          .col-md-3
+            %h4 Option A
+          .col-md-9
+            .btn-group{:style=> "width:100%"}
+              %a.btn.btn-default.dropdown-toggle.text-left.btn-social.btn-primary{"aria-expanded" => "false", "data-toggle" => "dropdown", :type => "button",:style=> "width:100%"}
+                %i.fa.fa-exchange
+                Select business type
+                %span.caret
+              %ul.dropdown-menu.dropdown-menu-right{:role => "menu",:style=> "width:100%"}
+                - @business_types.each do |business_type|
+                  %li
+                    %a{:href => "#{new_store_stock_audit_path(@store)}?business_type=#{business_type}"}= business_type.humanize
+        .clearfix
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+

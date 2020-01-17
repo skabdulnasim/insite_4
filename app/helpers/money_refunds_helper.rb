@@ -1,0 +1,2 @@
+module MoneyRefundsHelper
+end

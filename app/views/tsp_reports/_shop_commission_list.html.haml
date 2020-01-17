@@ -1,0 +1,50 @@
+- unless smart_listing.empty?     
+	%table.data-table
+		%thead
+			%tr
+				%th.col-lg-3 Resource
+				%th Product
+				%th Total Sales
+				%th Total Owner Commission
+				%th Total Csm Commission
+		%tbody
+			- smart_listing.collection.each do |resource|
+				- _products = MenuCard.set_unit(@unit_id).active.first.menu_products.pluck(:product_id)
+				- user_sales = UserSale.by_resource_id(resource.id).by_recorded_at_between(params[:from_date],params[:to_date]).by_product_id_in(_products)
+				- total_sale = user_sales.present? ? user_sales.sum(:quantity) : 0
+				- month = Date.parse(params[:from_date]).strftime("%m/%Y")
+				- owner_commission = 0
+				- csm_commission = 0
+				%tr
+					%td{:style=>"background-color:rgb(255, 210, 26);"}
+						= "#{resource.name} (#{resource.unique_identity_no})"
+					%td= _products.count
+					%td= total_sale
+					%td= get_commission_amount(resource.id,"owner",params[:from_date],params[:to_date])
+					%td= get_commission_amount(resource.id,"csm",params[:from_date],params[:to_date])
+				- _menu_products = MenuCard.set_unit(@unit_id).active.first.menu_products
+				- if _menu_products.present?
+					- _menu_products.each do |mp|
+						- user_sales = UserSale.by_resource_id(resource.id).by_recorded_at_between(params[:from_date],params[:to_date]).by_product_id(mp.product_id)
+						- total_sale = user_sales.present? ? user_sales.sum(:quantity) : 0
+						- owner_commission_on_product = user_sales.sum(:owner_commission)
+						- csm_commission_on_product = user_sales.sum(:thirdparty_commission)
+						%tr
+							%td
+							%td= mp.product.name
+							%td= total_sale
+							%td= owner_commission_on_product
+							%td= csm_commission_on_product
+				- else
+					%tr
+						%td{:style => "padding-left: 12px !important;",:colspan => 3} 
+							No Product Found ....
+
+
+
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+	%br                 
+- else
+	.alert.alert-warning
+		No record found

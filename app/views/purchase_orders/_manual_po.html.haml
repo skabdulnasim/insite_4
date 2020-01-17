@@ -1,0 +1,76 @@
+- manual_load_javascript "stores"
+.col-lg-2.col-sm-2.5.padding-l-r-none
+  .card
+    .padding-10 
+      %b FILTER BY
+    = smart_listing_controls_for(:products, {class: "text-left"}) do
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-search.left
+        Search
+      .padding-10 
+        .form-group.filter.input-append
+          %input.form-control.search{:placeholder => "Search product id...", :type => "text", :name=> "product_id_filter"}
+      .padding-10.margin-t-10
+        .form-group.filter.input-append
+          %input.form-control.search{:placeholder => "Search products...", :type => "text", :name=> "filter"}
+        %br 
+          %input.form-control.search{:value => params[:vendor], :type => "hidden", :name=> "vendor"}
+          %input.form-control.search{:value => params[:business_type], :type => "hidden", :name=> "business_type"}              
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-list.left
+        Categories          
+      .padding-10.height-350{:style => "overflow-y: auto;"} 
+        = render 'products/listing_category'
+
+.col-lg-7.col-sm-7.padding-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Products
+          = smart_listing_render :products
+.col-lg-3.col-sm-3.padding-r-none  
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Purchase Order Details
+          = form_for @purchase_order, :html => { :class => ''} do |po|
+            = po.hidden_field :unit_id, :class => 'form-control', :value => @current_user.unit_id
+            = po.hidden_field :store_id, :class => 'form-control', :value => @store.id
+            = po.hidden_field :vendor_id, :class => 'form-control', :value => @vendor.id
+            = po.hidden_field :business_type, :class => 'form-control', :value => params[:business_type]
+            .padding-10
+              = po.submit 'Save Purchase Order', :class => 'm-btn green width-100' 
+            .filter-title.margin-t-b-0
+              %i.mdi-action-label.left
+              Enter Details Below
+            .data-table-header__label
+              %span.fs-title.padding-20
+                Vendor : #{@vendor.name.upcase}
+            .padding-10
+              .form-group
+                = po.text_field :name, :class => 'form-control', :placeholder => "Enter purchase order title", :required => true, :value=> "#{@vendor.name}-#{Time.now}"
+              .form-group
+                #valid_from_req.input-group.date
+                  = po.text_field :valid_from, :class => "form-control", "format" => "dd-mm-yyyy hh:mm:ss", :placeholder => "valid From", :value=>"#{Time.now}"
+                  %span.input-group-addon
+                    %span.glyphicon.glyphicon-calendar      
+              .form-group
+                #valid_till_req.input-group.date
+                  = po.text_field :valid_till, :class => "form-control", "data-format" => "dd-MM-yyyy hh:mm:ss", :placeholder => "Valid till", :value=>"#{Time.now+7.days}"
+                  %span.input-group-addon
+                    %span.glyphicon.glyphicon-calendar 
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Selected Products
+            .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+              %ul.collection.po-product-list
+                %li.collection-item.no-item-selected
+                  %div
+                    No products selected
+.clearfix

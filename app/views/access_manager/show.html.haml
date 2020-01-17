@@ -1,0 +1,78 @@
+:javascript
+  $(function(){
+    $('.more-action-info').tooltip({
+          placement: "right",
+      });
+  });
+  $(function(){
+    $('.more-controller-info').tooltip({
+          placement: "left",
+      });
+  });  
+- links_arr = [{:title=>"User Roles",:url=>access_manager_index_path,:active_class=>""},{:title=>"Role: #{@role_details.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper    
+= render "layouts/flash"
+= form_tag(access_manager_update_capabilities_path, method: "post") do
+  - role_capabilities = @role_details.capabilities.present? ? @role_details.capabilities : Array.new
+  %ul.tabs.z-depth-1.width-100
+    %li.tab
+      %a.active{:href => "#test1"} Authorize Modules
+    %li.tab
+      %a{:href => "#test2"} Active permissions
+  #test1
+    - if @controllers.present?    
+      .alert.alert-dismissable.alert-info2.margin-t-15
+        %button.close{"data-dismiss" => "alert", :type => "button"} ×
+        %h4 
+          %i.fa.fa-exclamation-triangle
+          Warning!
+        %p
+          Be careful while selecting the checkboxes given below. Each and every selected or checked functionalities of a module will be inaccessible for this user role.
+    - else
+      .alert.alert-dismissable.alert-danger2.margin-t-15
+        %button.close{"data-dismiss" => "alert", :type => "button"} ×
+        %h4 
+          %i.fa.fa-exclamation-triangle
+          Warning!
+        %p
+          No controller found to authorize this user role. Follow this link for
+          %a{:href=>"#{access_manager_settings_path}"}
+            more details.
+      
+    %input{:type=>"hidden", :name=>"role_id", :value=>"#{@role_details.id}"}
+    %ul.collapsible.popout{"data-collapsible" => "accordion"} 
+      - @controllers.each do |cls|
+        - actions = JSON.parse(cls.controller_actions)         
+        %li
+          .collapsible-header
+            %input.check-action-parent{:type => "checkbox", "data-controller" => "#{cls.controller_name}", :id=>"controller_#{cls.controller_alias}"} 
+            %label{:for=>"controller_#{cls.controller_alias}"}
+            = cls.controller_desc
+            
+          .collapsible-body
+            %p
+              - actions.each do |act|
+                - strng = "cannot :"+act[0]+", "+(cls.controller_alias)
+                - check_stat = (role_capabilities.include? strng) ? true : false
+                %input.check{:id=>"#{cls.controller_alias}_action_#{act[0]}",:name => "checked_action[]", :type => "checkbox", :value => "#{act[0]}~~#{cls.controller_alias}~~#{cls.controller_name}", :checked=>check_stat, :class=>"check-action-child-#{cls.controller_name} filled-in"}
+                %label.margin-r-10{:for=>"#{cls.controller_alias}_action_#{act[0]}"}=act[1]['action_desc']            
+ 
+    %br
+    %button.m-btn.green.width-100{:type=>"submit"}  
+      ="confirm and Save authorizations for #{@role_details.name}"
+  #test2
+    .card.black.white-text
+      %h4.white-text 
+        %i.fa.fa-usd
+        show abilities : 
+        =@role_details.name
+      %p
+        %i.fa.fa-angle-right 
+        can :manage, :all
+        
+      - if (@role_details.capabilities).present?
+        %p 
+          - (JSON.parse(role_capabilities)).each do |rc|
+            %i.fa.fa-angle-right
+            =rc
+            %br  

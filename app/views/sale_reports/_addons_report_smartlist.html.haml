@@ -1,0 +1,35 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Section
+        %th Addons Name
+        %th Price
+        %th Total quantity
+        %th Total price
+    %tbody
+      - smart_listing.collection.each do |object|
+        - add_on_sales = add_on_sales(object.unit_id,object.id,@f_date,@t_date)
+        %tr
+          %td= object.name
+          %td
+          %td
+          %td
+          %td
+          -if add_on_sales.present?
+            - add_on_sales.each do |aos|
+              - product = Product.find(aos.product_id)
+              %tr
+                %td
+                %td=aos.product_name
+                %td=aos.product_price
+                %td="#{aos.quantity}" " #{product.basic_unit}"
+                %td=aos.total_price
+          - else
+            %tr.alert.alert-warning
+              %td.center.style{:colspan=>5} No Recoed Found.    
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  .alert.alert-warning
+    No record found

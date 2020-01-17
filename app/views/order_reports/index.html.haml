@@ -1,0 +1,67 @@
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });           
+  });
+
+%ul#task-card.collection.with-header
+  %li.collection-header.cyan
+    %h4.white-text.task-card-title Available Reports
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Home delivery order reports
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(home_delivery_order_reports_order_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"     
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control category-units",prompt: "Select Branch"     
+          
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit", id:"nc-category-submit-button"}
+          View reports          
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      External order reports
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(order_count_reports_order_reports_path, method: "get", :class=>"m-input") do
+        = hidden_field_tag "order_type","external_orders"
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"     
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control category-units",prompt: "Select Branch"     
+          
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit", id:"nc-category-submit-button"}
+          View reports          
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Internal order reports
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(order_count_reports_order_reports_path, method: "get", :class=>"m-input") do
+        = hidden_field_tag "order_type","internal_orders"
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"     
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control category-units",prompt: "Select Branch"     
+          
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit", id:"nc-category-submit-button"}
+          View reports          
+      .clearfix

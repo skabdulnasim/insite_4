@@ -1,0 +1,20 @@
+<div class="col-lg-5">
+  <h5>Select Table</h5>
+</div>
+<div class="col-lg-12">
+
+  <% for(var i=0; i<package_obj.length; i++) {%>
+  <div class="panel panel-warning">
+    <div class="panel-heading"><%=package_obj[i].name%></div>
+    <div class="panel-body">
+      <% for(var j=0; j<package_obj[i].tables.length; j++) {%> 
+        <label class="checkbox-inline<%=package_obj[i].tables[j].id%>" value="<%=package_obj[i].tables[j].id%>">
+          <%=package_obj[i].tables[j].name %>
+          (<%=package_obj[i].tables[j].capacity %>)
+        </label>
+         
+      <% } %> 
+    </div>
+  </div>
+  <% } %>
+</div>

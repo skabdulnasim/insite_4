@@ -1,0 +1,102 @@
+-# manual_load_javascript "Chart.min.js","welcome","jquery.sparkline.min.js"
+:javascript
+  /* $(document).ready(function() {
+    var ctx = document.getElementById("myChart");
+    var data = {
+      labels: [
+        "Red",
+        "Blue",
+        "Yellow"
+      ],
+      datasets: [{
+        data: [300, 50, 100],
+        backgroundColor: [
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56"
+        ],
+        hoverBackgroundColor: [
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56"
+        ]
+      }]
+    };
+    var myPieChart = new Chart(ctx,{
+      type: 'pie',
+      data: data,
+    });
+  }); */  
+:css
+  #feedback { font-size: 1.4em; }
+  #selectable .ui-selecting { background: #008080; }
+  #selectable .ui-selected { background: #008080; color: white; }
+  #selectable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+  #selectable li { margin: 5px; padding: 0.4em; font-size: 1.4em; height: 40px; }
+
+- manual_load_javascript "templates/reservations/show_slots"
+= form_tag(reservations_path, method: "post", :class => 'form-horizontal') do
+  #new-reservation.modal.fade{:role => "dialog", :tabindex => "-1"}
+    .modal-dialog{:role => "document"}
+      .modal-content
+        .modal-header
+          %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} ×
+          %h4.modal-title New Reservation
+        .modal-body
+          = hidden_field_tag(:reservation_date, nil, class: 'form-control', required: 'true')
+          = hidden_field_tag(:resource_id, nil, class: 'form-control', required: 'true')
+          .form-group
+            = label_tag(:customer_mobile, "Search", :class => 'col-sm-2 control-label')
+            .col-sm-10
+              = text_field_tag(:customer_mobile, nil, class: 'form-control allow-numeric-only', required: 'true', autocomplete: 'off', placeholder: "Search customer by mobile number or unique id.....")
+          .add-details
+            - if AppConfiguration.get_config_value('customer_unique_id') == "enabled"  
+              .form-group
+                = label_tag(:customer_unique_id, "Customer Unique Id", :class => 'col-sm-2 control-label')
+                .col-sm-10
+                  = text_field_tag(:customer_unique_id, nil, class: 'form-control', required: 'true')
+            .form-group
+              = label_tag(:customer, "Customer", :class => 'col-sm-2 control-label')
+              .col-sm-10
+                = hidden_field_tag(:customer_id, nil, class: 'form-control', required: 'true')
+                = hidden_field_tag(:profile_id, nil, class: 'form-control', required: 'true')
+                = text_field_tag(:customer, nil, class: 'form-control', required: 'true')
+                = link_to('save','#', html_options = { class: 'update-profile' })
+            = hidden_field_tag(:slot_id, 1, class: 'form-control', required: 'true')
+            / %canvas#myChart{:height => "400", :width => "568"}
+            /.form-group.slot
+            / .form-group
+            /   = label_tag(:pax, "Pax", :class => 'col-sm-2 control-label')
+            /   .col-sm-10
+            /     = number_field_tag(:pax, '1', min: 1, class: 'form-control', required: 'true')
+            / .form-group
+            /   = label_tag(:start_time, "Start Time", :class => 'col-sm-2 control-label')
+            /   .cc
+            /     = text_field_tag(:start_time, "#{Time.now.strftime('%H:%M:%S').to_s}", class: 'form-control timepick', required: 'true')
+            /     %span.input-group-addon
+            /       %span.glyphicon.glyphicon-time
+            / .form-group
+            /   = label_tag(:end_time, "End Time", :class => 'col-sm-2 control-label')
+            /   .col-sm-10.input-group{style: "width: 81%; padding-left: 14px"}
+            /     = text_field_tag(:end_time, "#{Time.now.strftime('%H:%M:%S').to_s}", class: 'form-control timepick', required: 'true')
+            /     %span.input-group-addon
+            /       %span.glyphicon.glyphicon-time
+
+            .form-group
+              = label_tag(:start_date, "From Date", :class => 'col-sm-2 control-label')
+              .col-sm-10.input-group{style: "width: 81%; padding-left: 14px"}
+                = text_field_tag :start_date, '', class: "form-control redate",:id=>"", placeholder: "From Date", autocomplete: :off, :required => true
+                %span.input-group-addon
+                  %span.glyphicon.glyphicon-time
+            .form-group
+              = label_tag(:end_date, "To Date", :class => 'col-sm-2 control-label')
+              .col-sm-10.input-group{style: "width: 81%; padding-left: 14px"}
+                = text_field_tag :end_date, '', class: "form-control redate",:id=>"", placeholder: "To Date", autocomplete: :off, :required => true
+                %span.input-group-addon
+                  %span.glyphicon.glyphicon-time
+              
+            .form-group
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          = submit_tag('Save', :class => 'btn btn-success', :id => 'save-reservation')

@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @report_folder.name
+%p
+  %b Master model:
+  = @report_folder.master_model
+%p
+  %b Related models:
+  = @report_folder.related_models
+
+= link_to 'Edit', edit_report_folder_path(@report_folder)
+\|
+= link_to 'Back', report_folders_path

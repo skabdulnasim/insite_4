@@ -1,0 +1,35 @@
+%h1 Listing customer_profiles
+
+%table
+  %tr
+    %th Firstname
+    %th Lastname
+    %th Contact no
+    %th Customer name
+    %th Address
+    %th Gender
+    %th Age
+    %th Dob
+    %th Anniversary
+    %th
+    %th
+    %th
+
+  - @customer_profiles.each do |customer_profile|
+    %tr
+      %td= customer_profile.firstname
+      %td= customer_profile.lastname
+      %td= customer_profile.contact_no
+      %td= customer_profile.customer_name
+      %td= customer_profile.address
+      %td= customer_profile.gender
+      %td= customer_profile.age
+      %td= customer_profile.dob
+      %td= customer_profile.anniversary
+      %td= link_to 'Show', customer_profile
+      %td= link_to 'Edit', edit_customer_profile_path(customer_profile)
+      %td= link_to 'Destroy', customer_profile, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Customer profile', new_customer_profile_path

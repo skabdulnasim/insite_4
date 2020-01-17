@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @denomination.name
+%p
+  %b Value:
+  = @denomination.value
+%p
+  %b Country:
+  = @denomination.country_id
+
+= link_to 'Edit', edit_denomination_path(@denomination)
+\|
+= link_to 'Back', denominations_path

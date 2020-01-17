@@ -1,0 +1,142 @@
+:javascript
+  $(function(){
+      $(".th_picture").tooltip({
+          placement: "top",
+          title: "Product Image"
+      });
+      $(".th_sku").tooltip({
+          placement: "top",
+          title: "Unique identifier of each product"
+      });
+      $(".th_business_type").tooltip({
+          placement: "top",
+          title: "Business Type"
+      });
+      $(".th_product_type").tooltip({
+          placement: "top",
+          title: "Product Type"
+      });
+      $(".th_date").tooltip({
+          placement: "top",
+          title: "Last updated time"
+      });
+      $(".icon_simple").tooltip({
+          placement: "top",
+          title: "Simple product"
+      });
+      $(".icon_raw").tooltip({
+          placement: "top",
+          title: "Raw product"
+      });
+      $(".icon_grouped").tooltip({
+          placement: "top",
+          title: "Variable product, Click to see al the variance."
+      });
+      $(".icon_check").tooltip({
+          placement: "top",
+          title: "Sellable"
+      });
+      $(".icon_transfarable").tooltip({
+          placement: "top",
+          title: "Transfarable"
+      });
+      $(".icon_uncheck").tooltip({
+          placement: "top",
+          title: "Not sellable"
+      });
+      $(".icon_price").tooltip({
+          placement: "top",
+          title: "Price"
+      });
+  });
+
+.col-sm-9
+  %table.table.table-hover.table-bordered.product_listing
+    %thead
+      %tr.table-header.well
+        %th.col-sm-1
+          %i.icon-picture{:href => "", :class=> "fa fa-picture-o", "data-toggle" => "tooltip"}
+        %th.col-sm-2
+          Name
+        %th.col-sm-2 
+          Category
+        %th.col-sm-1
+          Basic Unit
+        / %th.col-sm-2
+        /   Show in
+        %th.col-sm-1
+          %i.fa.fa-puzzle-piece{:class=> "th_product_type", "data-toggle" => "tooltip"}
+        %th.col-sm-2
+          Date
+    %tbody
+    - @products.each do |product|
+      %tr{:id => product.id, :class => "products_action_list"}
+        %td
+          %img{:src => "#{product.image.url(:thumb)}", :class => "img-thumbnail"}
+          - if product.product_image
+            %img{:src => "/uploads/#{product.product_image}", :class => "img-thumbnail", :width => "80px"} 
+          - else
+            %img{:src => "/uploads/product.png", :class => "img-thumbnail", :width => "80px"}
+        %td
+          = link_to product.name, product
+          = @search
+          %p.products_action_box.margin-t-5{:id => "products_action_box#{product.id}"}
+            - if can? :show, Product  
+              %a.btn.btn-xs.btn-success{:href => "#{product_path(product)}", :title => "View product"}
+                %i.fa.fa-search-plus
+            - if can? :edit, Product  
+              %a.btn.btn-xs.btn-info{:href => "#{edit_product_path(product)}", :title => "Edit product"} 
+                %i.fa.fa-edit
+            - if can? :destroy, Product      
+              %a.btn.btn-xs.btn-danger{:href => "#{product_path(product)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete product"}
+                %i.fa.fa-trash-o
+        %td
+          - if product.category_id
+            = link_to product.category.name, product
+            - if product.category.parent?
+              = render "show_all_cat", {cats: product.category} if product.category.parent.present?
+          - else
+            = "no category"
+        %td
+          - if product.basic_unit.present?
+            = product.basic_unit
+        %td  
+          - if product.product_type == "simple"
+            %i.fa.fa-square{:class=> "icon_simple", "data-toggle" => "tooltip"}
+          - if product.product_type == "variable"
+            %i.fa.fa-sitemap{:class=> "icon_grouped", "data-toggle" => "tooltip", "id" => product.id}
+        %td.font-sz-12
+          =ActiveSupport::Inflector.ordinalize(product.updated_at.strftime("%d").to_i) + product.updated_at.strftime(" %b, %Y %I:%M %p") unless product.updated_at.blank?
+        
+    #search_bar
+      = form_tag "/products/filter", :method => "get" do   
+        .col-sm-8.filter
+          .col-sm-4
+            = select_tag :filter_type, options_for_select({"Simple" => "simple", "Variable" => "variable"}, params[:filter_type]), prompt: "Select product type", class: "form-control" 
+          .col-sm-4
+            = select_tag :filter_category, options_for_select(@categories.map{ |c| [c.name, c.id] }, params[:filter_category]), prompt: "Select category", class: "form-control"
+
+          %button.btn{:type => "submit", :id => "filter_drop"} Filter
+          - if params[:filter_type] || params[:filter_category]
+            %a{:href => products_path}
+              Reset
+      .col-sm-4
+        .search
+          .input-group
+            %input.form-control{:type => "text", :id => "filter_search", "data-url" => "#{request.original_url}"}
+              %span.input-group-addon
+                %i.fa.fa-search
+          .search_box{:style => ""}
+        .digg_pagination
+          .page_info
+            =# page_entries_info @products
+            = paginate @products
+
+.col-sm-3
+  .panel.panel-default
+    .panel-heading
+      Select Category
+    .panel-body{:style => "max-height: 220px !important; overflow: auto !important;"}
+      .row
+        = render 'listing_category'
+  

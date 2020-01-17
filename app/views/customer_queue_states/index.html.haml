@@ -1,0 +1,21 @@
+%h1 Listing customer_queue_states
+
+%table
+  %tr
+    %th Name
+    %th Color code
+    %th
+    %th
+    %th
+
+  - @customer_queue_states.each do |customer_queue_state|
+    %tr
+      %td= customer_queue_state.name
+      %td= customer_queue_state.color_code
+      %td= link_to 'Show', customer_queue_state
+      %td= link_to 'Edit', edit_customer_queue_state_path(customer_queue_state)
+      %td= link_to 'Destroy', customer_queue_state, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Customer queue state', new_customer_queue_state_path

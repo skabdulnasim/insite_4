@@ -1,0 +1,118 @@
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });           
+  });
+
+= smart_listing_controls_for(:menu_card_products, {class: "text-left"}) do
+  .form-group.filter.input-append.col-lg-3.float-r.margin-t-10
+    .input-group
+      %input.form-control{:placeholder => "Search by product name...", :type => "text", :name=> "filter", :style=>"height:40px;"}
+        %span.input-group-btn
+          %button.btn.btn-success.disabled{:type => "submit", :style=>"height:40px;"}
+            %span.glyphicon.glyphicon-search
+  .form-group.filter.input-append.col-lg-4
+    %span.fs-title.left
+    = select_tag "menu_card", options_from_collection_for_select(@menu_cards,"id", "name", @menu_card.id),class: "form-control"
+
+= form_for @sale_rule, :html => { :class => 'form-horizontal bordered-row sale_rule_form_wizard'}  do |f|
+  - if @sale_rule.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@sale_rule.errors.count, "error")} prohibited this sale_rule from being saved:"
+      %ul
+        - @sale_rule.errors.full_messages.each do |msg|
+          %li= msg
+
+  .row
+    .col.m12.s12.col-lg-12
+      .card  
+        .card-content.p10
+          #wizard_vertical
+                      
+            %h3 Basic Details
+            %section.ptb0
+              %h5.header Basic details of sale rule
+              .divider
+              .col-lg-7.p0
+                %table.data-table
+                  %tbody
+                    .form-group.margin-t-15
+                      = f.label :name, :class => 'col-lg-3 control-label'
+                      .col-lg-7
+                        = f.text_field :name, :class => 'form-control'
+                    .form-group
+                      = f.label :status, :class => 'col-lg-3 control-label', :required=> true
+                      .col-lg-7
+                        = f.select :status, options_for_select(SaleRule::STATUS),{ :include_blank=>false }, {:class => "form-control"}
+                       
+                    .form-group
+                      = f.label "Rule type", :class => 'col-lg-3 control-label'
+                      .col-lg-7
+                        = f.select :sale_rule_type, options_for_select(SaleRule::TYPE),{ :include_blank=>false }, {:class => "form-control", :id => "sale-rule-type"}
+                    .form-group
+                      = f.label "Applicable on", :class => 'col-lg-3 control-label', :required=> true
+                      .col-lg-7
+                        = f.select :specific_type, options_for_select(SaleRule::SPECIFICTYPE),{ :include_blank=>false }, {:class => "form-control"}     
+                    .form-group
+                      = f.label :valid_from, :class => 'col-lg-3 control-label'
+                      .col-lg-7
+                        = f.text_field :valid_from, :class => 'form-control datepick', :required=> true 
+                    .form-group
+                      = f.label :valid_till, :class => 'col-lg-3 control-label'
+                      .col-lg-7
+                        = f.text_field :valid_till, :class => 'form-control datepick', :required=> true 
+            
+            %h3 Sale Rule Input
+            %section.ptb0
+              %h5.header Input Details of Sale Rule
+              .divider
+              .margin-t-15
+              .col-lg-7.p0
+                %table.data-table
+                  %tbody
+                    = f.fields_for :sale_rule_input do |builder|
+                      .form-group
+                        = builder.label "Rule input", :class => 'col-lg-3 control-label'
+                        .col-lg-7
+                          = builder.select :sale_rule_input_type, options_for_select(SaleRuleInput::TYPE),{ :include_blank=>false }, {:class => "form-control", :id => "sale-rule-input-type"}
+                      .form-group.amount#sale-rule-input-amount
+                        = builder.label :amount, :class => 'col-lg-3 control-label'
+                        .col-lg-7
+                          = builder.text_field :amount, :class => 'form-control' 
+                      .form-group.buy_qty#sale-rule-input-buy-qty
+                        = builder.label :buy_qty, :class => 'col-lg-3 control-label'
+                        .col-lg-7
+                          = builder.number_field :buy_qty, :class => 'form-control'
+              .col-lg-5.p0
+                .card
+                  .card-content.p10
+                    = hidden_field_tag :selected_menu_card, @menu_card.id
+                    = smart_listing_render :menu_card_products
+
+            %h3 Sale Rule Output
+            %section.ptb0
+              %h5.header Output details of Sale Rule
+              .divider
+              .margin-t-15
+              .col-lg-7.p0
+                %table.data-table
+                  %tbody
+                    = f.fields_for :sale_rule_output do |builder|
+                      .form-group
+                        = builder.label "Rule output", :class => 'col-lg-3 control-label'
+                        .col-lg-7
+                          = builder.select :sale_rule_output_type, options_for_select(SaleRuleOutput::TYPE),{ :include_blank=>false }, {:class => "form-control", :id => "sale-rule-output-type"}
+                      .form-group#sale-rule-output-get-qty
+                        = builder.label :get_qty, :class => 'col-lg-3 control-label'
+                        .col-lg-7
+                          = builder.number_field :get_qty, :class => 'form-control' 
+                      .form-group
+                        = builder.label "Discount by", :class => 'col-lg-3 control-label'
+                        .col-lg-7
+                          = builder.select :amount_type, options_for_select(SaleRuleOutput::AMOUNTTYPE),{ :include_blank=>false }, {:class => "form-control", :id => "sale-rule-output-type"}    
+                      .form-group
+                        = builder.label :amount, :class => 'col-lg-3 control-label'
+                        .col-lg-7
+                          = builder.text_field :amount, :class => 'form-control'

@@ -1,0 +1,4 @@
+.form-group
+  = f.label "#{field.label} #{field.is_required ? '*' : ''}", :class=>"col-sm-3 control-label"
+  .col-sm-6
+    = f.file_field :value

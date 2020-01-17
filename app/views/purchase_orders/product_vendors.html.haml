@@ -1,0 +1,108 @@
+:javascript
+  $(function() {
+    $('#valid_from_req').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+    $('#valid_till_req').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+
+    $('.vendor-product :selected').map(function() {
+      var basic_unit, contentStr, item_quantity, product_id, product_name, vendorStr, vendor_id, vendor_name;
+      vendor_id = $(this).val();
+      vendor_name = $(this).text();
+      product_name = $(this).data("product-name");
+      product_id = $(this).data("product-id");
+      basic_unit = $(this).data("basic-unit");
+      item_quantity = $(this).data("product-quantity");
+      if ($("#vendor_" + vendor_id).length === 0) {
+        vendorStr = "<ul class='collection padding-10'><div id='vendor_" + vendor_id + "' class='vendor'>" + vendor_name + "<input type='hidden' name='vendor_id[]' id='vendor_id_" + vendor_id + "' value='" + vendor_id + "'/></div></ul>";
+        $(".po-product-list").append(vendorStr);
+      }
+      contentStr = "<li class='collection-item' id='product_li_" + product_id + "'><div>";
+      contentStr += "<input type='checkbox' class='filled-in' name='checked_product_" + vendor_id + "[]' value='" + product_id + "'/ id='product_" + product_id + "' checked>";
+      contentStr += "<label for='product_" + product_id + "' class='font-sz-11'>" + product_name + "</label>";
+      contentStr += "<span class='secondary-content font-sz-11'><span id='item_qty_" + product_id + "'>" + item_quantity + "</span> " + basic_unit + "</span>";
+      contentStr += "<input type='hidden' name='quantity" + product_id + "' value='" + item_quantity + "' id='cart_item_" + product_id + "'/>";
+      contentStr += "</div></li>";
+      return $("#vendor_" + vendor_id).append(contentStr);
+    });
+  });
+- manual_load_javascript "store_requisitions"   
+= render "layouts/flash"  
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Add new purchase order",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+.col-lg-8.col-sm-8.padding-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Products
+            / %button.m-btn.blue.float-r.select-product-vendors.waves-effect.waves-light{:type => "button"}
+            /   %i.mdi-content-add.left
+            /     Select Products    
+          %table.data-table
+            %thead
+              %tr.data-table__selectable-row
+                %th Name
+                %th Quantity
+                %th Vendor
+            %tbody
+              - @product_scope.each do |object|
+                - if object.vendors.first.present?
+                  - vendor = object.vendors.first.id
+                - else
+                  - vendor = nil 
+                %tr.data-table__selectable-row
+                  %td=object.name
+                  %td.m-input
+                    .col-lg-6.padding-l-r-none
+                      %input.allow-numeric-only.margin-b-2.requ_quantity{:type => "text", "data-product-id"=>object.id, :value=>"#{params["quantity#{object.id}"]}"}
+                    .col-lg-6.padding-l-r-none  
+                      = select_tag :product_unit_id, options_for_select(object.input_units.map{ |ut| [ut.product_unit_name, "#{ut.product_unit_id}__#{ut.product_unit_name}__#{ut.basic_unit_multiplier}"]}), { prompt: object.basic_unit, :class=>"form-control transfer-input input_quantity unit-input-#{object.id}", "data-product-id"=>object.id,"data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit}
+                  %td= select_tag :product_vendor, options_for_select(@vendors.map{ |v| [v.name.humanize, v.id,{'data-product-name'=>object.name},{'data-product-id'=>object.id},{'data-basic-unit'=>object.basic_unit},{'data-product-quantity'=>params["quantity#{object.id}"]}]},vendor),{:class=>"form-control vendor-product","data-product-name"=>"#{object.name}"} 
+
+.col-lg-4.col-sm-4.padding-r-5 
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Purchase Order Details
+          = form_tag(save_purchase_order_purchase_orders_path, method: "post",multipart: true) do
+            = hidden_field_tag :store_id,'', :value => @store.id
+            .padding-10
+              %button.m-btn.green.float-r.waves-effect.waves-light.width-100{:type => "submit"}
+                Save Purchase Order
+              .clearfix      
+            .padding-10 
+              = text_field_tag :name, '', :class => 'form-control', :placeholder => "Enter purchase order title", :required => true
+              .clearfix  
+            .padding-10  
+              #valid_from_req.input-group.date
+                = text_field_tag :valid_from, '', :class => "form-control", :placeholder => "valid From"
+                %span.input-group-addon
+                  %span.glyphicon.glyphicon-calendar  
+              .clearfix 
+            .padding-10    
+              #valid_till_req.input-group.date
+                = text_field_tag :valid_till, '', :class => "form-control", :placeholder => "Valid till"
+                %span.input-group-addon
+                  %span.glyphicon.glyphicon-calendar
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Selected Products      
+            .padding-10.po-product-list{:style=>"max-height:300px; overflow-y:auto"}         
+            
+              
+
+
+                          
+                  
+
+						
+								
+					

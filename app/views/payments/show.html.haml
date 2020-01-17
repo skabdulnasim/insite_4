@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Settlement:
+  = @payment.settlement_id
+%p
+  %b Paymentmod:
+  = @payment.paymentmod
+
+= link_to 'Edit', edit_payment_path(@payment)
+\|
+= link_to 'Back', payments_path

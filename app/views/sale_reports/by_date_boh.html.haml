@@ -1,0 +1,35 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+
+- links_arr = [{:title=>"BOH Report",:url=>sale_reports_path,:active_class=>""},{:title=>"BOH sale",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="BOH Sales Report Between Date #{params[:from_date]} to #{params[:to_date]}"
+          .data-table-header__actions
+            .form-group
+              = smart_listing_controls_for(:boh_sales_by_date, {class: "form-inline float-l margin-l-30"}) do
+                = hidden_field_tag :from_date, "#{params[:from_date]}"
+                = hidden_field_tag :to_date, "#{params[:to_date]}"
+                = hidden_field_tag :unit_id, "#{params[:unit_id].present? ? params[:unit_id] : current_user.unit_id}"
+                %select#report_type.form-control.user-list{:name => "report_type"}
+                  %option{:value => ""} Select Report Type
+                  %option{:value => "bill"} Bill Wise
+                  %option{:value => "customer"} Customer Wise
+
+                / = select_tag "user_id", options_for_select(@users.collect{ |u| ["#{u.profile.firstname} #{u.profile.lastname}", u.id] },params[:user_id]),class: "form-control user-list", prompt: 'Select Report Type'         
+              %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/sale_reports/by_date_boh.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+                %i.mdi-file-file-download.left
+                CSV
+        = smart_listing_render :boh_sales_by_date

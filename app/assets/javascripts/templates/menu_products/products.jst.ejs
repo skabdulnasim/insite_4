@@ -1,0 +1,27 @@
+<div class="main-section__content p0">
+  <div class="example">
+    <div class="example__content p0">
+      <div aria-multiselectable="true" class="data-table-container" id="accordion" role="tablist">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-lg-5 font-sz-15">Menu Item</th>
+              <th class="col-lg-2 font-sz-15">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+          <% for(var i=0; i<data.products.length; i++) { %>
+            <tr>
+              <td class="col-lg-5">
+                <input type='checkbox' name='menu_products[]' id='menu_item_<%=data.products[i].id%>' value='<%=data.products[i].id%>' class='menu_products'>
+                <label for='menu_item_<%=data.products[i].id%>' class='font-sz-11'><%=data.products[i].product_name%></label>
+              </td>
+              <td class="col-lg-2 font-sz-11"><%= data.products[i].sell_price%></td>
+            </tr>
+          <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>          

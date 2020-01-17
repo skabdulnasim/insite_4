@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Amount:
+  = @cash_out.amount
+
+= link_to 'Edit', edit_cash_out_path(@cash_out)
+\|
+= link_to 'Back', cash_outs_path

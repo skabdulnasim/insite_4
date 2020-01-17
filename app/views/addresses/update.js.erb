@@ -1,0 +1,7 @@
+<% if @address.new_record? %>
+  Materialize.toast("Something went wrong while saving address", 3000,'round');
+<% else %>
+  Materialize.toast("Address was successfully updated", 3000);
+  $('#modal-data-container').html("");
+  $('#modal-data-container').append("<%= j render(:partial => 'customers/customer', :object => @customer.reload, :as => 'customer') %>");
+<% end %>

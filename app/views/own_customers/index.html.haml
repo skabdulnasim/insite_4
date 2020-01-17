@@ -1,0 +1,19 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing all customers
+          .data-table-header__actions
+            - if can? :new, Customer   
+              %a.m-btn.m-btn-teal.waves-effect.waves-light{:href => "#{new_own_customer_path}"}
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs Add new Customer
+
+        = smart_listing_render :own_customer
+        
+    
+
+       

@@ -1,0 +1,38 @@
+= form_for @incentive_rule, :html => { :class => ''} do |f|
+  .padding-10 
+    .form-group.col-lg-12
+      .col-lg-3
+        = f.label :role_id, :class => 'control-label'
+      .col-lg-9
+        = f.select :role_id, options_for_select(@roles.map{ |role| [role.name, role.id] }, @incentive_rule.role_id), { include_blank: "Select role"}, {:class => "form-control"}
+    .form-group.col-lg-12
+      .col-lg-3
+        = f.label :incentive_amount, :class => 'control-label'
+      .col-lg-9
+        = f.text_field :incentive_amount, :class => 'form-control allow-numeric-only', :placeholder => "Incentive amount for each shop."
+    .form-group.col-lg-12
+      .col-lg-3
+        = f.label :avg_incentive_amount, :class => 'control-label'
+      .col-lg-9
+        = f.text_field :avg_incentive_amount, :class => 'form-control allow-numeric-only', :placeholder => "Avg. incentive amount for all shop."
+    .form-group.col-lg-12
+      .col-lg-3
+        = f.label :achivement_range_type, :class => 'control-label'
+      .col-lg-9
+        = f.select :achivement_range_type, options_for_select(IncentiveRule::ACHIVEMENT_TYPE, @incentive_rule.achivement_range_type),{ :include_blank=>"Select achivement range type" }, {:class => "form-control"}
+    .form-group.col-lg-12
+      .col-lg-3
+        = f.label :achivement_lower_range, :class => 'control-label'
+      .col-lg-9
+        = f.text_field :achivement_lower_range, :class => 'form-control allow-numeric-only', :placeholder => "Achivement lower range", :required=>true
+    .form-group.col-lg-12
+      .col-lg-3
+        = f.label :achivement_upper_range, :class => 'control-label'
+      .col-lg-9
+        = f.text_field :achivement_upper_range, :class => 'form-control allow-numeric-only', :placeholder => "Achivement upper range", :required=>true   
+    
+    %br
+    .form-group
+      .col-sm-12
+        = f.submit ' Save Incentive Rule', :class => 'm-btn green width-100' 
+    %br

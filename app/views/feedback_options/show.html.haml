@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Option title:
+  = @feedback_option.option_title
+
+= link_to 'Edit', edit_feedback_option_path(@feedback_option)
+\|
+= link_to 'Back', feedback_options_path

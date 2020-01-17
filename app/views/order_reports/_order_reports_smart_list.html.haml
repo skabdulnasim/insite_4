@@ -1,0 +1,38 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Date
+        %th System order_id
+        %th Source
+        -if params[:order_type] == "external_orders"
+          %th Third party
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td= object.recorded_at
+          %td= object.id
+          %td= object.source
+          -if params[:order_type] == "external_orders"
+            %td= object.third_party_order_id
+          %td
+          %td
+  
+  .main-section__content
+    .example
+      .card
+        .example__content.min-height-100 
+          %span.blue order summary:
+          %table.data-table{:style=>"width:300px;"}
+            %tr.data-table__selectable-row
+              %th Source
+              %th Order Count
+            -@order_source.each do |external_source|
+              %tr
+                %td= external_source.source
+                %td= external_source.total
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  .alert.alert-warning
+    No record found

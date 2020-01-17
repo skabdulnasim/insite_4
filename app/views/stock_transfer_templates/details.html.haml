@@ -1,0 +1,38 @@
+- links_arr = [{:title=>"Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Stock Transfer Templates",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper   
+.col-lg-12
+  = render "layouts/flash"
+  %h4 Template details:
+  = form_tag("/stores/#{@store.id}/stock_transfers/transfer_options", method: "post",multipart: true) do
+    - if @template.template_type == "trans_to_oth"
+      %input{:type => "hidden",:name=>"transfer_type", :value=>"trans_to_oth"}
+    - if @template.template_type == "trans_to_own"
+      %input{:type => "hidden",:name=>"transfer_type", :value=>"trans_to_own"}
+    - if @template.template_type == "transfer_to_kitchen"
+      %input{:type => "hidden",:name=>"transfer_type", :value=>"transfer_to_kitchen"}
+    %table.table.table-striped.table-bordered
+      %thead
+        %th 
+          %input.checkbox-parent-toggle{:type=>"checkbox"}     
+        %th= "Product"
+        %th= "Category"
+        %th Current Stock
+        %th Transfer quantity
+      %tbody
+        - @template.stock_transfer_template_products.each do |object|
+          %tr
+            %td
+              %input.checkbox-child{:value=> "#{object.product_id }",:name=>"checked_raw[]",:type=>"checkbox", "data-po-id" => "#{object.product_id}", :checked => true, :id=>"product_#{object.product_id}"}
+              %label{:for=>"product_#{object.product_id}"}
+            %td="##{object.product_id} #{object.product.name}"
+            %td=object.product.category.name
+            %td
+              =number_with_precision(get_product_current_stock(@store.id, object.product_id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              = object.product.basic_unit 
+            %td.col-md-2
+              .input-group
+                %input.form-control.check-input.numeric-only{:name => "quantity_#{object.product_id}", :type => "text", :value=>"#{object.quantity}",:class=>"check-input-#{object.product_id}"}
+                .input-group-addon= object.product.basic_unit
+    %button.btn.float-r.btn-success{:type=> 'submit'}
+      Use this template and continue             
+ 

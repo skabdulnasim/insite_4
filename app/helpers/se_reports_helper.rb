@@ -1,0 +1,2 @@
+module SeReportsHelper
+end

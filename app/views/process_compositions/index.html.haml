@@ -1,0 +1,21 @@
+%h1 Listing process_compositions
+
+%table
+  %tr
+    %th Product
+    %th Production process
+    %th
+    %th
+    %th
+
+  - @process_compositions.each do |process_composition|
+    %tr
+      %td= process_composition.product_id
+      %td= process_composition.production_process_id
+      %td= link_to 'Show', process_composition
+      %td= link_to 'Edit', edit_process_composition_path(process_composition)
+      %td= link_to 'Destroy', process_composition, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Process composition', new_process_composition_path

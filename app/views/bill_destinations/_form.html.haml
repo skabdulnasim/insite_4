@@ -1,0 +1,19 @@
+= form_for @bill_destination do |f|
+  - if @bill_destination.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@bill_destination.errors.count, "error")} prohibited this bill_destination from being saved:"
+      %ul
+        - @bill_destination.errors.full_messages.each do |msg|
+          %li= msg
+  = f.hidden_field :unit_id, :class => 'form-control', :required=> true, :value => current_user.unit_id
+  .field
+    = f.label :name
+    = f.text_field :name
+  .field
+    = f.label :bill_header
+    = f.text_area :bill_header
+  .field
+    = f.label :bill_footer
+    = f.text_area :bill_footer
+  .actions
+    = f.submit 'Save'

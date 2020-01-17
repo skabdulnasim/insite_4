@@ -1,0 +1,95 @@
+- _child_roles = Role.child_roles(role.id)
+- _child_roles_arr = []
+- _child_roles.map { |e| _child_roles_arr.push e.id }
+
+%h3=role.name.humanize
+%section.ptb0{:style=>"margin-top:-15px;"}
+	.padding-r-none
+		- _child_users_arr = []
+		- users.each do |user|
+			- if user.role.id == role.id
+				/ - _parent_target_details = user.own_targets.by_date(Date.today.next_month).last
+				- _parent_target_details = user.own_targets.last
+				- child_users = user.child_users.set_role(_child_roles_arr)
+				.card.margin-t-15
+					.data-table-container
+						%header.data-table-header
+							.data-table-header__label
+								%span.font-w-400.font-sz-15 #{user.profile.full_name}
+								%span.m-label.green.font-w-400 #{user.role.name.humanize}
+								- if _parent_target_details.present?
+									- _parent_target_id = _parent_target_details.id
+									&nbsp Target: 
+									%span.m-label.blue.font-w-400 #{_parent_target_details.target_amount}&nbsp Btl
+									- due_targets = _parent_target_details.child_targets.present? ? _parent_target_details.target_amount - _parent_target_details.child_targets.sum(:target_amount) : _parent_target_details.target_amount
+									- if _parent_target_details.child_targets.present?
+										- due_targets = _parent_target_details.target_amount - _parent_target_details.child_targets.sum(:target_amount)
+									- else
+										- if _parent_target_details.resource_targets.present?
+											- due_targets = _parent_target_details.target_amount - _parent_target_details.resource_targets.sum(:target_amount)
+									%span.m-label.red.font-w-400{:class=>"parent_due_target_#{user.id}","data-total-target"=>_parent_target_details.target_amount} #{due_targets}&nbsp Btl
+								- else
+									- _parent_target_id = ''
+						- if child_users.present?
+							.data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+								%table.data-table
+									%tbody.panel
+										%tr.data-table__selectable-row
+											%th.col-lg-5.font-bold User Name
+											%th.col-lg-2.font-bold Role
+											%th.col-lg-5.font-bold Target Amount
+										- child_users.each do |cu|
+											- _child_users_arr.push cu
+											%tr.data-table__selectable-row
+												%td
+													= cu.profile.full_name
+												%td
+													= cu.role.name.humanize
+												%td
+													/ - if _parent_target_details.present?
+													/ 	- _child_target_details = _parent_target_details.child_targets.by_child_user(cu.id).last
+													/ 	- _child_target = _child_target_details.present? ? _child_target_details.target_amount : ''
+													/ 	- _child_target_id = _child_target_details.present? ? _child_target_details.id : ''
+													/ - else
+													/ - _child_target_details = user.child_user_targets.by_date(Date.today.next_month).by_child_user(cu.id)
+													- _child_target_details = user.child_user_targets.by_child_user(cu.id)
+													- if _child_target_details.present?
+														- _child_target = _child_target_details.last.target_amount
+														- _child_target_id = _child_target_details.last.id
+													- else
+														- _child_target = ''
+														- _child_target_id = ''
+													%input.form-control.allow-numeric-only.margin-t-5{:name => "target_amount", :type => "text", :placeholder => "Enter here", :value=>_child_target, :class=>"target_amount child_target_#{cu.parent_user_id}", :data => {"child-user-id"=>cu.id, "child-user-name"=>cu.profile.full_name, "parent-user-id"=>cu.parent_user_id, "parent-target-id"=>_parent_target_id, "target-id"=>_child_target_id}}
+						- else
+							- _user_resources = user.user_resources.uniq_by(&:resource_id)
+							- if _user_resources.present?
+								.data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+									%table.data-table
+										%tbody.panel
+											%tr.data-table__selectable-row
+												%th.col-lg-7.font-bold Resource
+												%th.col-lg-2.font-bold Target Amount
+											- _user_resources.each do |user_resource|
+												- if _parent_target_details.present?
+													- _resource_target = _parent_target_details.resource_targets.set_target_by(user_resource.user_id).set_resource(user_resource.resource_id).last
+													- if _resource_target.present?
+														- _resource_target_id = _resource_target.id
+														- _resource_target_amount = _resource_target.target_amount
+													- else
+														- _resource_target_id = ''
+														- _resource_target_amount = ''
+												%tr.data-table__selectable-row
+													%td
+														= user_resource.resource.name
+													%td.m-input
+														- if _parent_target_details.present?
+															%input.form-control.allow-numeric-only.margin-t-5{:name => "resource_target_amount", :type => "text", :placeholder => "Enter here", :value=>_resource_target_amount, :class=>"resource_target_amount resource_target_#{user.id}_#{user_resource.resource_id} resource_target_by_#{user.id}", :data => { "target-by"=>user.id, "resource-id"=>user_resource.resource_id, "user-target-id"=>_parent_target_details.id, "resource-name"=>user_resource.resource.name, "resource-target-id" => _resource_target_id}}
+														- else
+															%input.form-control.margin-t-5{:type => "text", :placeholder => "Enter here", :disabled => "disabled"}
+					.divider
+
+- if !Role.has_parent?(current_user.role)
+	- if _child_roles.present?
+		/ = render :partial => 'user_targets/nested_roles_users', :collection => _child_roles, :as => "role"
+		/ = render partial: 'user_targets/nested_roles_users', collection: {user: _child_users_arr, role: _child_roles}
+		= render partial: 'user_targets/nested_roles_users', :collection => _child_roles, :as => "role", locals: {users: _child_users_arr, :feed => true}

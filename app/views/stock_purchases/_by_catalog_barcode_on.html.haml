@@ -1,0 +1,4 @@
+- if AppConfiguration.get_config_value('smart_receive') == 'enabled'
+	= render "by_catalog_barcode_on_smart_receive_on", :stock_purchase => @stock_purchase, :business_type => business_type
+- else
+	= render "by_catalog_barcode_on_smart_receive_off", :stock_purchase => @stock_purchase, :business_type => business_type

@@ -1,0 +1,113 @@
+- manual_load_javascript "templates/units/select_unit","jquery.geocomplete", "templates/units/select_parent_user_edit"
+%script{:src => "http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyDz0LX0g0LOQAJDit-o4LPGmLLzYHJ07CE"}
+:javascript
+  $( document ).ready(function() {
+    $("#profile_address").geocomplete()
+  });
+  
+.col-sm-6
+  .panel.panel-primary
+    .panel-heading
+      Edit Profile Data 
+    .panel-body
+      = form_for @user,:html => { :class => 'form-horizontal',:multipart => true } do |u|
+        %fieldset
+          - if @parent_info.present?
+            .form-group
+              %label.col-sm-4.control-label
+                Parent User
+              .col-sm-6
+                = form_group_for u, :parent_user_id do
+                  = u.select :parent_user_id, options_for_select(@parent_info.map { |pi| ["#{pi.profile.firstname} #{pi.profile.lastname}", pi.id]}, @user.parent_user_id), {:prompt=>"Select Parent",:required=>true,:include_blank=>false}, {:class => "form-control"}
+          .form-group
+            = u.label :email, :class => 'col-sm-4 control-label'
+            .col-sm-6
+              = form_group_for u, :email do
+                = u.text_field :email,:placeholder=>"Email",:required=>true, :class => 'form-control', :readonly => true
+        
+          = fields_for @profile do |u_p|
+            - if @profile.errors.any?
+              #error_explanation.alert.alert-danger2.alert-dismissible
+                %button.close{"data-dismiss" => "alert", :type => "button"}
+                  %span{"aria-hidden" => "true"} &times;
+                = "#{pluralize(@profile.errors.count, "error")} prohibited this product from being saved:"
+
+            .form-group
+              = u_p.label :firstname, :class => 'col-sm-4 control-label'
+              .col-sm-6
+                = form_group_for u_p, :firstname do
+                  = u_p.text_field :firstname,:placeholder=>"First Name",:required=>true, :class => 'form-control '
+            .form-group
+              = u_p.label :lastname, :class => 'col-sm-4 control-label'
+              .col-sm-6
+                = form_group_for u_p, :lastname do
+                  = u_p.text_field :lastname,:placeholder=>"Last Name", :required=>true, class: "form-control"
+            .form-group
+              = u_p.label :contact_no, :class => 'col-sm-4 control-label'
+              .col-sm-6
+                = form_group_for u_p, :contact_no do
+                  = u_p.text_field :contact_no,:placeholder=>"Contact No",:required=>true, class: "form-control"
+            .form-group
+              = u_p.label :address, :class => 'col-sm-4 control-label'
+              .col-sm-6
+                = form_group_for u_p, :address do
+                  = u_p.text_field :address,:placeholder=>"Street no",:required=>true, class: "form-control"
+            .form-group
+              = u_p.label :city, :class => 'col-sm-4 control-label'
+              .col-sm-6
+                = form_group_for u_p, :city do
+                  = u_p.text_field :city,:placeholder=>"City",:required=>true, class: "form-control"
+            .form-group
+              = u_p.label :zip_code, :class => 'col-sm-4 control-label'
+              .col-sm-6
+                = form_group_for u_p, :zip_code do
+                  = u_p.text_field :zip_code,:placeholder=>"Zip code",:required=>true, class: "form-control"
+            .form-group
+              = u_p.label :state, :class => 'col-sm-4 control-label'
+              .col-sm-6
+                = form_group_for u_p, :state do
+                  = u_p.text_field :state,:placeholder=>"State",:required=>true, class: "form-control"
+            .form-group
+              = u_p.label :country, :class => 'col-sm-4 control-label'
+              .col-sm-6
+                = form_group_for u_p, :country do
+                  = u_p.text_field :country,:value=>"India",:required=>true, class: "form-control"
+            
+            .btn-group.col-sm-offset-6
+              = u.submit 'Update', :class => 'btn btn-primary'
+              %a.btn.btn-primary{:type => "button", :href => users_path} Cancel
+
+
+
+.col-sm-6
+  .panel.panel-success
+    .panel-heading
+      Change Password
+    .panel-body
+      = form_for @user,:html => { :class => 'form-horizontal',:multipart => true } do |u|
+        - if @user.errors.any?
+          #error_explanation.alert.alert-danger2.alert-dismissible
+            %button.close{"data-dismiss" => "alert", :type => "button"}
+              %span{"aria-hidden" => "true"} &times;
+            = "#{pluralize(@user.errors.count, "error")} prohibited this product from being saved:"
+        %fieldset
+          / .form-group
+          /   = u.label :current_password, :class => 'col-sm-4 control-label'
+          /   .col-sm-6
+          /     = form_group_for u, :current_password do
+          /       = u.password_field :current_password, :placeholder=>"Password",:required=>true, class: "form-control"
+          .form-group
+            = u.label :password, :class => 'col-sm-4 control-label'
+            .col-sm-6
+              = form_group_for u, :password do
+                = u.password_field :password, :placeholder=>"Password",:required=>true, class: "form-control"
+          .form-group
+            = u.label :password_confirmation, :class => 'col-sm-4 control-label'
+            .col-sm-6
+              = form_group_for u, :password_confirmation do
+                = u.password_field :password_confirmation,:placeholder=>"Re-enter Password",:required=>true, class: "form-control"
+
+          .btn-group.col-sm-offset-6
+            = u.submit 'Update', :class => 'btn btn-success'
+            %a.btn.btn-success{:type => "button", :href => users_path} Cancel
+      

@@ -1,0 +1,7 @@
+%h5 Related Models of Selected Master Model
+%ul.list-unstyled  
+- @relation_models.each do |model|
+  %li
+    .field
+      = check_box_tag "report_folder[related_models][]", model[:id], false, id: "report_folder_related_models_#{model[:id]}"
+      %label{:for=>"report_folder_related_models_#{model[:id]}"}=model[:name]

@@ -1,0 +1,1167 @@
+<% if(action == 'view_bill') {%>
+  <div class="col-lg-12 padding-5">
+    <div class="card waves-effect waves-light">
+      <div class="card-content p0">
+        <p class="header white-text teal padding-10">
+          BILL DETAILS
+          <b class="white-text">
+          #<%=response.id%>
+          <% if(response.recorded_at) { %>
+            <%
+              var record_date = new Date(response.recorded_at);
+              // var record_date = record_date.format("dd-mm-yyyy hh:MM TT");
+            %>
+            (Recorded at <%=record_date%>)
+          <% } %>
+          </b>
+          <!-- <a class="white-text float-r" href="/bills/<%= response.id %>/generate_bill.pdf" target="_blank">Print Bill</a> -->
+          <span class="float-r">
+          <% if(response.device_id  > 0) { %>
+            Device ID: <%= response.device_id %> | &nbsp;
+          <% } %>
+          </span>
+          <span class="float-r">
+          Billed by <%= response.biller_type %> <%= response.biller_name %> | &nbsp;
+          </span> 
+        </p>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="font-sz-12 col-sm-1">Order ID</th>
+            <th class="font-sz-12 col-sm-1">Status</th>
+            <th class="font-sz-12">Item</th>
+            <th class="font-sz-12">Size</th>
+            <th class="font-sz-12">SKU</th>
+            <th class="font-sz-12">HSN/SAC</th>
+            <th class="font-sz-12">
+              Unit Price
+              <br>
+              (in <%=currency%>)
+            </th>
+            <th class="font-sz-12">QTY</th>
+            <th class="font-sz-12">
+              Discount
+              <br>
+              (in <%=currency%>)
+            </th>
+            <th class="font-sz-12">
+              Total Price
+              <br>
+              (in <%=currency%>)
+            </th>
+            <th class="font-sz-12">
+              Total Tax
+              <br>
+              (in <%=currency%>)
+            </th>
+            <th class="font-sz-12">
+              Subtotal
+              <br>
+              (in <%=currency%>)
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders = response.orders; %>
+          <% for (var i = orders.length - 1; i >= 0; i--) { %>
+            <% for (var j = orders[i].order_items.length - 1; j >= 0; j--) { %>
+              <% trash_status = orders[i].order_items[j].trash %>
+              <% bill_status = orders[i].order_items[j].bill_status %>
+              <% item_status = orders[i].order_items[j].item_status %>
+              <% item_discount_p = orders[i].order_items[j].discount_percentage %>
+              <% if(!item_discount_p) {%>
+                <% item_discount_p = 0 %>
+              <% } %>
+
+              <%
+                row_class=''
+                if( trash_status == 1) {
+                  row_class='border-l-red'
+                }else if( bill_status == 'no_charge' ) {
+                  row_class='border-l-grey'
+                }else{
+                  row_class='border-l-green'
+                }
+              %>
+              <tr class="data-table__selectable-row <%=row_class%>" style="text-align: center;">
+                <td class="font-sz-12">
+                  <a href="/orders/<%=orders[i].id%>" target="_blank"><%=orders[i].id%></a><br>
+                  <% if( trash_status == 1) {%>
+                    <span class="m-label margin-l-none red">Cancled</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (orders[i].order_items[j].is_returned == false) { %>
+                    <span class="m-label margin-l-none teal">NR</span>
+                  <% } else { %>
+                    <span class="m-label margin-l-none red">Returned</span>
+                  <% } %>
+                </td>
+
+                <td>
+                  <% combo=orders[i].order_items[j].customizations; %>
+                  <%= orders[i].order_items[j].product_name %>
+                  | <%= currency %> <%= orders[i].order_items[j].product_price %>
+                  <% if (combo.length > 0) {%>
+                    <br>
+                    <table class="hidden-xs hidden-sm">
+                      <tbody>
+                        <% for (var k = combo.length - 1; k >= 0; k--) { %>
+                          <tr class="font-sz-11">
+                            <td class="green-text text-darken-1 p0">
+                              <i class="mdi-content-add smaller"></i>
+                            </td>
+                            <td class="border-rht-d-1 padding-l-r-5"><%= combo[k].product_name %></td>
+                            <td class="border-rht-d-1 padding-l-r-5">QTY: <%= combo[k].quantity %></td>
+                            <td class="padding-l-r-5"><%= currency %> <%= combo[k].total_price %></td>
+                          </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+                  <% } %>
+                  <% if(bill_status == "no_charge") {%>
+                    <br>
+                    <span class="m-label grey margin-l-none">No Charge</span>
+                    <span class="grey-text"><i>Remarks: <%= orders[i].order_items[j].remarks%></i></span>
+                  <% } %>
+                  <% if(item_status == "item_discount") {%>
+                    <br>
+                    <span class="m-label pink margin-l-none">Discount On Item</span>
+                    <span class="grey-text"><i>Remarks: <%= orders[i].order_items[j].remarks%></i></span>
+                  <% } %>
+                </td>
+                
+                <% if(orders[i].order_items[j].size_name!=null){%>
+                  <td> <%= orders[i].order_items[j].size_name %> </td>
+                <% } else{%>
+                  <td>-</td>
+                <% } %>
+                
+                <td><%= orders[i].order_items[j].product_unique_identity %></td>
+                <td><%= orders[i].order_items[j].hsn_code %></td>
+                <td><%= orders[i].order_items[j].unit_price_without_tax%></td>
+                <td><%= orders[i].order_items[j].quantity %></td>
+                <td>
+                  <% if(bill_status == "no_charge") {%>-<% } else { %>
+                  <%= orders[i].order_items[j].discount %>
+                  <% } %>
+                </td>
+                <td>
+                  <% if(bill_status == "no_charge") {%>-<% } else { %>
+                  <%= (orders[i].order_items[j].quantity * orders[i].order_items[j].unit_price_without_tax)%>
+                  <% } %>
+                </td>
+                <td>
+                  <% if(bill_status == "no_charge") {%>-<% } else { %>
+                  <%= (orders[i].order_items[j].quantity * orders[i].order_items[j].tax_amount) %>
+                  <% } %>
+                </td>
+                <td>
+                  <% if(bill_status == "no_charge") {%>-<% } else { %>
+                  <%= (orders[i].order_items[j].quantity * orders[i].order_items[j].unit_price_with_tax)%>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          <% } %>
+          <tr>
+            <td colspan="9" class="white"><strong>Total</strong></td>
+            <td class="white"><%= response.bill_amount %></td>
+            <td class="white"><%= response.tax_amount %>*</td>
+            <td class="white"><%= (response.bill_amount + response.tax_amount) %></td>
+          </tr>
+          <% if(response.roundoff) { %>
+            <tr class="orange-text">
+              <td colspan="11">Roundoff</td>
+              <td class=""><%= response.roundoff %></td>
+            </tr>
+          <% } %>
+          <% if(response.split_roundoff) { %>
+            <tr class="orange-text">
+              <td colspan="11">Split Bill Roundoff</td>
+              <td class=""><%= response.split_roundoff %></td>
+            </tr>
+          <% } %>
+          <tr class="green-text">
+            <td>Discount</td>
+            <td colspan="10">
+              <% discounts = response.discounts; %>
+              <% if (discounts.length > 0) {%>
+                <% for (var d = discounts.length - 1; d >= 0; d--) { %>
+                  <span class="m-label green"> <%= currency %> <%= discounts[d].discount_amount %> | <%= discounts[d].remarks %></span>
+                <% } %>
+              <% } %>
+            </td>
+            <td class="">(-) <%= response.discount %></td>
+          </tr>
+          <tr class="green-text">
+            <td colspan="3">Delivery Charges</td>
+            <td colspan="8">
+      
+            </td>
+            <td class="">(+) <%= response.delivery_charges %></td>
+          </tr>
+          <tr>
+            <td colspan="11" class="white font-sz-18">
+              <strong>Grand Total</strong>
+            </td>
+            <td class="white font-sz-18">
+              <strong><%= response.grand_total %></strong>
+            </td>
+          </tr>
+          <% if(response.remarks) {%>
+            <tr>
+              <td colspan="1" class="teal lighten-5">
+                <strong>Remarks</strong>
+              </td>
+              <td colspan="6" class="teal lighten-5">
+                <%= response.remarks %>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <% taxes=response.taxes; %>
+  <p class='grey-text text-darken-1 margin-l-15'>*
+    <i><% if (taxes.length > 0) {%>
+      Applied taxes are
+      <% for (var t = taxes.length - 1; t >= 0; t--) { %>
+        <%= currency %> <%= taxes[t].tax_amount %> (<%= taxes[t].tax_class_name %> @<%= taxes[t].tax_class_amount %>%),
+      <% } %>
+    <% } else if(response.status == 'void' || response.status == 'no_charge' ) {%>
+      Tax amount is set to 0 as current bill status is <%= response.status %>.
+    <% } %>
+  </i></p>
+
+  <% if(typeof(response.customer) !== 'undefined'){%>
+    <div class="col-lg-12 padding-5">
+      <div class="card waves-effect waves-light">
+        <div class="card-content p0">
+          <p class="header white-text slateblue padding-10">
+            CUSTOMER DETAILS
+          </p>  
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="font-sz-12 col-sm-1">Id</th>
+                <th class="font-sz-12">Name</th>
+                <th class="font-sz-12">Mobile</th>            
+              </tr>
+            <thead>
+            <tbody>
+              <tr>
+                <td class="font-sz-12 col-sm-1"><%=response.customer['id'] %></td>
+                <td class="font-sz-12"><%=response.customer['customer_name'] %></td>
+                <td class="font-sz-12"><%= response.customer['mobile_no']%></td>            
+              </tr>
+            </tbody>  
+          </table>    
+        </div>
+      </div>  
+    </div>
+  <%}%>  
+
+  <% bill_splits = response.bill_splits; %>
+  <% if(typeof(bill_splits) !== 'undefined'){%>
+    <div class="col-lg-12 padding-5">
+      <div class="card waves-effect waves-light">
+        <div class="card-content p0">
+          <p class="green header blue-text text-lighten-5 padding-10">
+            BOH DETAILS (Remarks:<%=bill_splits[0].remarks %>)
+            <span class="float-r hidden-sm hidden-xs">BOH By: <%= bill_splits[0].bill_boher_name%> </span>
+          </p> 
+        </div>
+        <% for (var i = bill_splits.length - 1; i >= 0; i--) { %>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="font-sz-12">Split Bill ID</th>
+                <th class="font-sz-12">
+                  Amount 
+                  <br>
+                  (in <%=currency%>)
+                </th>
+                <th class="font-sz-12">Status</th>
+                <th class="font-sz-12">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class ="white">
+                <td>
+                  <%= bill_splits[i].id %>
+                </td>
+                <td>
+                  <%= bill_splits[i].grand_total %>
+                </td>
+                <td>
+                  <% if(bill_splits[i].status == 'unpaid') {%> 
+                    <span class='m-label orange'>Unpaid</span>
+                  <% }else{ %>
+                    <span class='m-label green'>Paid</span>
+                  <%} %>  
+                </td>
+                <td>
+                  <%= formatDateTime(bill_splits[i].recorded_at) %>
+                </td>
+                <% if(bill_splits[i].status == 'unpaid') {%>
+                  <td>
+                    <div class="col-sm-12">
+                      <button class="m-btn teal split-bill-settlement-link width-100 waves-effect waves-light" data-action="split_settlement" data-bill-id="<%= response.id %>" data-bill-split-id="<%= bill_splits[i].id %>" data-currency="<%= currency %>" data-split-bill-amount="<%=bill_splits[i].grand_total %>" >
+                        <i class="mdi-action-credit-card left"></i>
+                          Make Settlement
+                      </button>      
+                    </div>
+                  </td>  
+                <% } %>
+              </tr>
+            </tbody>
+          </table> 
+          <% if (typeof(bill_splits[i].payments)!=='undefined') {%>
+            <div class="card-content p0">
+              <p class="blue header blue-text text-lighten-5 padding-10">
+                SETTLEMENT DETAILS
+                <span class="float-r hidden-sm hidden-xs">Bill Settlement BY <%= response.settlement.client_type %> <%= response.settlement.client_name %></span>
+              </p> 
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th class="font-sz-12">Transaction ID</th>
+                  <th class="font-sz-12">Payment Mode ID</th>
+                  <th class="font-sz-12">Payment Type</th>
+                  <th class="font-sz-12">Amount Paid
+                    <br>
+                    (in <%=currency%>)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <% split_payments = bill_splits[i].payments %>
+                <% for(var j = split_payments.length - 1; j >= 0; j--) {%>
+                  <tr>
+                    <td>
+                      <%= split_payments[j].id %>
+                    </td>
+                    <td>
+                      <%= split_payments[j].paymentmode_id %>
+                    </td>
+                    <td>
+                      <%= split_payments[j].paymentmode_type %>
+                    </td>
+                    <td>
+                      <%= split_payments[j].paid_amount %>
+                    </td>
+                  </tr>
+                  <% if(split_payments[j].paymentmode_type.localeCompare('Cash')==0) {%>
+                    <% for (var cd = split_payments[j].transaction_currency_details.length - 1; cd >= 0; cd--) { %>
+                    <tr>
+                      <td>
+                        
+                      </td>
+                      <td>
+                        <%= split_payments[j].transaction_currency_details[cd].currency_code %> ( <%= split_payments[j].transaction_currency_details[cd].currency_symbol %> )
+                      </td>
+                      <td>
+                        <%= split_payments[j].transaction_currency_details[cd].amount %>
+                      </td>
+                      <td>
+                        <%= split_payments[j].transaction_currency_details[cd].conversion_amount %>
+                      </td>
+                    </tr>
+                    <% } %>
+                  <% } %>
+                <% } %>
+              </tbody>
+            </table>  
+          <% }%>
+
+        <% } %>      
+      </div>
+    </div>
+    
+    <% } %>
+
+  <% if(response.status == 'paid' && typeof(response.settlement.payments) !== 'undefined') {%>
+    <%
+      var settle_date = formatDateTime(response.settlement.created_at);
+    %>
+    <% settle = response.settlement %>
+    <div class="col-lg-12 padding-5">
+      <div class="card waves-effect waves-light">
+        <div class="card-content p0">
+          <p class="blue header blue-text text-lighten-5 padding-10">
+            SETTLEMENT DETAILS
+            <b class="blue-text text-lighten-4">
+            #<%=settle.id%>
+            <% if(settle.recorded_at) { %>
+              <%
+                var settlement_record_date = formatDateTime(settle.recorded_at);
+              %>
+              (Recorded at <%=settlement_record_date%>)
+            <% } %>
+            </b>
+            <span class="float-r hidden-sm hidden-xs">Bill settled by <%= response.settlement.client_type %> <%= response.settlement.client_name %> at <%=settle_date %></span>
+          </p> 
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="font-sz-12">Transaction ID</th>
+              <th class="font-sz-12">Payment Mode ID</th>
+              <th class="font-sz-12">Payment Type</th>
+              <th class="font-sz-12">Amount Paid 
+              <br>(in <%=currency%>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <input type="hidden" class="form-control" id="bill_payment_<%= response.id%>" value="<%= settle.payments.length %>">
+            <% for (var p = settle.payments.length - 1; p >= 0; p--) { %>            
+              <tr>
+                <td><%= settle.payments[p].id %></td>                  
+                <td><%= settle.payments[p].paymentmode_id %></td>                  
+                <td>
+                  <%= settle.payments[p].paymentmode_type %>
+                  <br>
+                  <i><%= settle.payments[p].paymentmode_details %></i> 
+                </td>                  
+                <td><%= settle.payments[p].paid_amount %></td>                  
+              </tr>
+              <% if(settle.payments[p].paymentmode_type.localeCompare('Cash')==0) {%>
+                <% for (var cd = settle.payments[p].transaction_currency_details.length - 1; cd >= 0; cd--) { %>
+                <tr style="color:rgb(26, 75, 255) !important;">
+                  <td>
+                    
+                  </td>
+                  <td>
+                    <i class="fa fa-plus" style="color:green;"></i>
+                    <%= settle.payments[p].transaction_currency_details[cd].currency_code %> ( <%= settle.payments[p].transaction_currency_details[cd].currency_symbol %> )
+                  </td>
+                  <td>
+                    <%= settle.payments[p].transaction_currency_details[cd].amount %>
+                  </td>
+                  <td>
+                    <%= settle.payments[p].transaction_currency_details[cd].conversion_amount %>
+                  </td>
+                </tr>
+                <% } %>
+              <% } %>
+            <% } %>
+            <tr>
+              <td colspan="3" class="">
+                <strong>Tips</strong>
+              </td>
+              <td class="">
+                <strong><%= settle.tips %></strong>
+              </td>
+            </tr>             
+            <tr>
+              <td colspan="3" class="white font-14">
+                <strong>Payment Received</strong>
+              </td>
+              <td class="white font-14">
+                <strong><%= settle.bill_amount %></strong>
+              </td>
+            </tr>            
+          </tbody>
+        </table>        
+      </div>
+    </div>  
+  <% } %>
+
+  <div class="col-lg-12">
+    <% if(response.status != "paid" && response.status != "void" && response.status != "no_charge"){ %>
+     <% if (response.status == "boh" && typeof(response.bill_splits) != 'undefined') { %>
+        
+        <br>
+      <% } else{ %>  
+        <div class="col-sm-4">
+          <button class="m-btn blue edit-bill-link width-100 waves-effect waves-light" data-action="edit_bill" data-bill-id="<%= response.id %>" data-currency="<%= currency %>">
+          <i class="mdi-editor-mode-edit left"></i>
+          Edit Bill
+          </button>        
+        </div>
+        <div class="col-sm-4">    
+          <button class="m-btn amber add-discount-link width-100 waves-effect waves-light" data-action="add_bill_discount" data-bill-id="<%= response.id %>" data-currency="<%= currency %>">
+            <i class="mdi-maps-local-offer left"></i>
+            Add Discount
+          </button>      
+        </div>
+        <div class="col-sm-4">
+          <button class="m-btn teal bill-settlement-link width-100 waves-effect waves-light" data-action="settle_bill" data-bill-id="<%= response.id %>" data-currency="<%= currency %>">
+            <i class="mdi-action-credit-card left"></i>
+            Make Settlement
+          </button>      
+        </div>
+        <div class="clearfix"></div>
+        <br>
+      <% } %>
+    <% } %>
+  </div>
+  <div class="clearfix"></div>
+
+    <div class="col-sm-4">
+      <a class="m-btn green white-text width-100 generate-invoice" target="_blank" data-toggle="modal" data-target="#invoiceModal" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-page-type="a4" data-invoice-type="simple"> Print Bill (in A4) </a>
+    </div>
+    <div class="col-sm-4">
+      <a class="m-btn green white-text width-100 generate-invoice" target="_blank" data-toggle="modal" data-target="#invoiceModal" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-page-type="a5" data-invoice-type="simple">Print Bill (in A5)</a>
+    </div>
+    <div class="col-sm-4">
+      <a class="m-btn green white-text width-100 generate-invoice" target="_blank" data-toggle="modal" data-target="#waybillinvoiceModal" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-page-type="a4" data-invoice-type="way">Print Invoice</a>
+    </div>
+    <div class="clearfix"></div>
+    <br>
+    <% if(response.status == "paid") { %>
+      <div class="clearfix"></div>
+       <br>
+      <div class="col-sm-4">
+        <button class="m-btn blue return-item-link width-100 waves-effect waves-light" data-toggle="modal" data-target="#returnStoresModal" data-action="return_item" data-bill-id="<%= response.id %>" data-currency="<%= currency %>">
+          <!-- <i class="mdi-editor-mode-edit left"></i> -->
+          Return Item
+        </button>
+      </div>
+       
+    <% } %>
+  </div>
+  <div class="clearfix"></div>
+<%  } else if(action == 'edit_bill') {%>
+  <!-- Edit bill Loop-->
+  <div class="col-lg-4 m-input padding-5">
+    <div class="card">
+      <div class="card-content p0">
+        <p class="header teal-text text-lighten-5 teal padding-10">
+          UPDATE BILL
+          <small class="teal-text text-lighten-4">#<%=response.id%></small>
+        </p> 
+        <form action="" class="form-horizontal bordered-row m-input">
+          <input type="hidden" class="form-control" id="bill_amount_<%= response.id%>" placeholder="Bill amount" value="<%= response.bill_amount%>">
+          <input type="hidden" class="form-control" id="tax_amount_<%= response.id%>" placeholder="Total tax" value="<%= response.tax_amount %>" disabled="">
+          <div class="form-group p0">
+            <label for="total_tax" class="col-sm-5 control-label">Grand Total</label>
+            <div class="col-sm-7 input-field">
+              <input type="text" class="form-control validate margin-t-b-2 p0 grand_total_<%= response.id %>" id="grand_total" placeholder="Grand total" value="<%= response.grand_total %>" disabled>
+            </div>
+          </div>    
+          <div class="form-group p0">
+            <label for="total_tax" class="col-sm-5 control-label">Status</label>
+            <div class="col-sm-7 input-field">
+              <select class="form-control bill_status_change bill_status_edt_frm_<%= response.id%>" id="<%= response.id %>" "data-bill-id"="<%= response.id %>">
+                <option value="unpaid" <% if(response.status == 'unpaid') {%> selected <% } %>>Unpaid</option>
+                <option value="void" <% if(response.status == 'void') {%> selected <% } %>>Void</option>
+                <option value="no_charge" <% if(response.status == 'no_charge') {%> selected <% } %>>No Charge</option>
+                <option value="cod" <% if(response.status == 'cod') {%> selected <% } %>>COD</option>
+                <option value="boh" <% if(response.status == 'boh') {%> selected <% } %>>BOH</option>
+              </select> 
+            </div>
+          </div>    
+          <div class="form-group p0 bill_remarks bill_remarks_<%= response.id%>">
+            <label for="total_tax" class="col-sm-5 control-label">Remarks</label>
+            <div class="col-sm-7 input-field">
+              <input type="text" class="form-control validate margin-t-b-2 p0 bill_remarks_edt_frm_<%= response.id%>" id="grand_total" placeholder="Enter remarks">
+            </div>
+          </div> 
+
+          <div class="form-group p0 bill_split bill_split_<%= response.id%>">
+            <label for="total_tax" class="col-sm-5 control-label">Remarks</label>
+            <div class="col-sm-7 input-field">
+              <input type="text" class="form-control validate margin-t-b-2 p0 bill_split_remarks_<%= response.id%>" id="grand_total" placeholder="Enter remarks">
+            </div>
+            <label for="total_tax" class="col-sm-5 control-label">Paid Amount</label>
+            <div class="col-sm-7 input-field">
+              <input type="text" class="allow-numeric-only form-control validate margin-t-b-2 p0 bill_paid_amount bill_paid_amount_<%= response.id%>" id="grand_total" placeholder="Enter Paid Amount" data-bill-id="<%= response.id%>" value=0>
+            </div>
+            <label for="total_tax" class="col-sm-5 control-label">Boh Amount</label>
+            <div class="col-sm-7 input-field">
+              <input type="text" class="form-control validate margin-t-b-2 p0 bill_unpaid_amount_<%= response.id%>" id="grand_total" value="<%= response.grand_total %>" readonly>
+            </div>
+          </div> 
+
+        </form> 
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-8 m-input padding-5 user_details_<%= response.id %>">
+    <div class="card padding-bottom-10">
+      <div class="card-content p0">
+        <p class="header orange-text text-lighten-5 green padding-10">
+          USER DETAILS
+        </p>
+        <div class="padding-10 margin-r-10 margin-l-10 customer_mobile_<%= response.id%>">
+          <div class="padding-0 input-field">
+            <input autocomplete="off" class="allow-numeric-only form-control validate margin-t-b-2 p0 customer-mobile-no" name="login" placeholder="Search customer by contact number..." type="text" data-bill-id="<%= response.id %>">
+          </div>
+        </div>  
+        <div class="padding-10 margin-r-10 margin-l-10 customer_details_<%= response.id%>">
+          <div class="padding-5 input-field">
+            <input autocomplete="off" class="form-control validate margin-t-b-2 p0 customer_name_<%= response.id %>" name="name" placeholder="Enter customer name" type="text">
+          </div>
+          <div class="padding-5 input-field">
+            <input autocomplete="off" class="form-control validate margin-t-b-2 p0 customer_email_<%= response.id %>" name="email" placeholder="Enter customer email" type="email">
+          </div>
+          <div class="padding-5">
+            <input autocomplete="off" class="form-control validate margin-t-b-2 p0 customer_id_<%= response.id %>" name="customer_id" type="hidden">
+            <input autocomplete="off" class="form-control validate margin-t-b-2 p0 profile_id_<%= response.id %>" name="profile_id" type="hidden">          
+          </div>
+          <div class="padding-10">
+            <button class="m-btn m-btn-green create_customer waves-effect waves-light right" type="button" data-bill-id="<%= response.id %>" id="create_customer_<%= response.id %>">Create customer</button>
+            <button class="m-btn m-btn-green update_customer waves-effect waves-light right" type="button" data-bill-id="<%= response.id %>" id="update_customer_<%= response.id %>">Update customer</button>
+          </div>
+        </div>  
+      </div>
+    </div>
+  </div>      
+  <div class="col-lg-8 padding-5 update_order_item_<%= response.id %>">
+    <div class="card">
+      <div class="card-content p0">
+        <p class="header orange-text text-lighten-5 orange padding-10">
+          UPDATE ORDER ITEMS
+        </p>      
+        <table class="data-table margin-b-2">
+          <thead>
+            <tr class="data-table__selectable-row">
+              <th >Order ID</th>
+              <th class="col-lg-2">Product(s)</th>
+              <th class="col-lg-1">QTY</th>
+              <th class="col-lg-8">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% orders = response.orders; %>
+            <% for (var i = orders.length - 1; i >= 0; i--) { %>
+              <% for (var j = orders[i].order_items.length - 1; j >= 0; j--) { %>
+                <tr class="data-table__selectable-row">
+                    <td>
+                      <%= orders[i].id %>
+                    </td>
+                    <td class="col-lg-2 padding-5"><%= orders[i].order_items[j].product_name %></td>
+                    <td class="col-lg-1 padding-5"><%=orders[i].order_items[j].quantity%></td>
+                    <td class=" padding-r-none col-lg-8 padding-5 nc_success_<%=orders[i].order_items[j].id%>">
+                      <% if(orders[i].order_items[j].bill_status == 'no_charge') { %>
+                        <span class="m-label margin-l-none red">No charge</span> 
+                        <span class="grey-text"><%= orders[i].order_items[j].remarks %></span>                         
+                      <% } else { %>
+                      <div class="col-lg-4 p0">
+                        <input class="change_order_item_status filled-in" id="status_<%= orders[i].order_items[j].id %>" name="status_<%= orders[i].order_items[j].id %>" type="checkbox" value="no_charge" data-id="<%= orders[i].order_items[j].id %>">
+                        <label class="checkbox inline margin-l-5 font-sz-9" for="status_<%= orders[i].order_items[j].id %>" style="padding-left:22px;">No Charge</label>
+                      </div>
+                      <div class="col-lg-5 padding-5 m-input nc-actions nc-actions-<%= orders[i].order_items[j].id %>">
+                        <input type="text" class="form-control validate margin-t-b-2 p0" id="nc_remarks_<%= orders[i].order_items[j].id %>" placeholder="Enter remarks">
+                      </div>
+                      <div class="col-lg-3 p0 margin-t-10 nc-actions nc-actions-<%= orders[i].order_items[j].id %>">
+                        <button class="m-btn red m-btn-small update_order_item" data-order-detail-id="<%= orders[i].order_items[j].id %>" data-menu-product-id="<%= orders[i].order_items[j].menu_product_id %>" data-product-name="<%= orders[i].order_items[j].product_name %>">Apply</button>
+                      </div>
+                      <% } %>        
+                    </td>
+                </tr>          
+              <% }; %>        
+            <% }; %>
+          </tbody>
+        </table>        
+      </div>
+    </div>
+  </div>  
+  <div class="clearfix"></div>
+  <div class="modal-footer">
+      <button class="m-btn white cancel_update_bill grey-text text-darken-3 margin-r-10 waves-effect waves-red" type="button" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-action='view_bill'>Cancel</button>
+      <button class="m-btn m-btn-teal update_bill waves-effect waves-light" type="button" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-action='view_bill' id="bill_update_<%= response.id %>">Confirm and Update bill</button>
+  </div>
+<% } else if(action == 'add_bill_discount') {%>
+  <!-- Edit bill Loop-->
+  <div class="col-lg-6 m-input padding-5">
+    <div class="card">
+      <div class="card-content p0">
+        <p class="header teal-text text-lighten-5 teal darken-3 padding-10">
+          ADD DISCOUNT IN BILL
+          <small class="teal-text text-lighten-4">#<%=response.id%></small>
+        </p> 
+        <form action="" class="form-horizontal bordered-row m-input">
+          <div class="form-group p0">
+            <label for="bill_discount" class="col-sm-4 control-label">Add discount</label>
+            <div class="col-sm-8 input-field">
+              <input type="text" class="form-control validate margin-t-b-2 p0 allow-numeric-only" id="add_discount_<%= response.id%>" placeholder="Enter discount amount">
+            </div>
+          </div>
+          <div class="form-group p0">
+            <label for="bill_discount" class="col-sm-4 control-label">Discount Remarks</label>
+            <div class="col-sm-8 input-field">
+              <input type="text" class="form-control validate margin-t-b-2 p0" id="discount_remarks_<%= response.id%>" placeholder="Please provide remarks for this discount">
+            </div>
+          </div>   
+          <div class="form-group padding-5">
+            <button class="m-btn teal add_bill_discount waves-effect waves-light width-100" type="button" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-action='view_bill'>Confirm and apply discount</button>                                    
+          </div>   
+        </form> 
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-6 m-input padding-5">
+    <div class="card">
+      <div class="card-content p0">
+        <p class="header orange-text text-lighten-5 orange darken-3 padding-10">
+          APPLY PROMO CODE
+          <small class="orange-text text-lighten-4">#<%=response.id%></small>
+        </p> 
+        <form action="" class="form-horizontal bordered-row m-input">
+          <div class="form-group p0">
+            <label for="bill_discount" class="col-sm-4 control-label">Promo Code</label>
+            <div class="col-sm-5 input-field">
+              <input type="text" class="form-control margin-t-b-2 p0" id="promo_code_<%= response.id%>" placeholder="Enter promo code">
+            </div>
+            <div class="col-sm-3">
+              <a class="m-btn red m-btn-small check_promo_code margin-t-15" data-bill-id="<%= response.id %>" data-bill-amount="<%= response.grand_total %>" data-currency="<%= currency %>">Check</a>
+            </div>            
+          </div>  
+          <div class="form-group p0">
+            <label for="bill_discount" class="col-sm-4 control-label">Discount Amount</label>
+            <div class="col-sm-6 input-field">
+              <input type="text" class="form-control validate margin-t-b-2 p0 allow-numeric-only" id="promo_value_<%= response.id%>">
+            </div>
+          </div>            
+          <div class="form-group padding-5">
+            <button class="m-btn orange apply_promo_code waves-effect waves-light width-100" type="button" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-action='view_bill'>Confirm and apply promo code</button>                                    
+          </div>                                        
+        </form> 
+      </div>
+    </div>
+  </div>  
+  <div class="clearfix"></div>
+  <div class="modal-footer">
+      <button class="m-btn white cancel_update_bill grey-text text-darken-3 margin-r-10 waves-effect waves-red" type="button" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-action='view_bill'>Cancel</button>
+  </div>  
+
+<% } else if(action == 'settle_bill') {%>
+  <div class="col-lg-8 m-input padding-5">
+    <div class="card">
+      <div class="card-content p0">
+        <p class="header green-text text-lighten-5 green padding-10">
+          BILL SETTLEMENT
+          <small class="teal-text text-lighten-4">#<%=response.id%></small>
+        </p>
+        <form action="" class="form-horizontal bordered-row m-input">
+          <div class="form-group">
+            <div class="col-sm-3">
+              <input type="checkbox" name="settlement_mode_<%=response.id%>" class="filled-in settlement_mode_<%=response.id%>" id="filled-in-box-cash-<%=response.id%>" value="cash"/>
+              <label for="filled-in-box-cash-<%=response.id%>">Cash</label>
+            </div>
+            <div class="col-sm-9">
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Amount</label></div>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control validate margin-t-b-2 p0 amount_cash_<%= response.id%>" id="<%= response.id%>" placeholder="in <%=currency%>" value="<%= response.grand_total %>">              
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-3">
+              <input type="checkbox" name="settlement_mode_<%=response.id%>" class="filled-in settlement_mode_<%=response.id%>" id="filled-in-box-card-<%=response.id%>" value="card"/>
+              <label for="filled-in-box-card-<%=response.id%>">Card</label>
+            </div>
+            <div class="col-sm-9">
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Amount</label></div>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control validate margin-t-b-2 p0 amount_card_<%= response.id%>" id="<%= response.id%>" placeholder="Amount" value="0">              
+                </div>              
+              </div>             
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Card No. (Last 4 digit)</label></div>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control validate margin-t-b-2 p0 card_no_<%= response.id%>" id="<%= response.id%>" placeholder="Last 4 digit">              
+                </div>              
+              </div>
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Card Type</label></div>
+                <div class="col-sm-6">
+                  <select class="form-control card_type_<%= response.id%>" id="<%= response.id %>">
+                    <option value="debit">Debit Card</option>
+                    <option value="credit" >Credit Card</option>
+                  </select>                             
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Merchandiser</label></div>
+                <div class="col-sm-6">
+                  <select class="form-control merchandiser_<%= response.id%>" id="<%= response.id %>">
+                    <option value="visa">VISA</option>
+                    <option value="mastercard" >MasterCard</option>
+                    <option value="mastercard" >Other</option>
+                  </select>                             
+                </div>                              
+              </div>             
+            </div>
+          </div>          
+        </form>        
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <br>
+    <br>
+    <h3 class="header txt-align-center"><%= currency %> <%= response.grand_total %></h3>
+    <hr>
+    <div class="txt-align-center font-13">
+      <span class="grey-text">Rs <%= response.grand_total %> is total payable amount.</span>
+    </div>
+    <hr>
+    <br>    
+    <button class="m-btn indigo width-100 waves-effect waves-light margin-t-15 bill_settlement" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-bill-amount="<%=response.grand_total%>">
+      <i class="mdi-action-credit-card left"></i>
+      Confirm and save
+    </button>
+
+    <button class="m-btn white cancel_update_bill width-100 grey-text text-darken-3 margin-t-15 waves-effect waves-red" type="button" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-action='view_bill'>Cancel</button>
+  </div>
+  <div class="clearfix"></div>  
+<% } else if(action == 'split_settlement') {%>
+  <div class="col-lg-8 m-input padding-5">
+    <div class="card">
+      <div class="card-content p0">
+        <p class="header green-text text-lighten-5 green padding-10">
+          SPLIT BILL SETTLEMENT
+          <small class="teal-text text-lighten-4">#<%=split_bill_id%></small>
+        </p>
+        <form action="" class="form-horizontal bordered-row m-input">
+          <div class="form-group">
+            <div class="col-sm-3">
+              <input type="checkbox" name="split_settlement_mode_<%=split_bill_id%>" class="filled-in split_settlement_mode_<%=split_bill_id%>" id="filled-in-box-cash-<%=split_bill_id%>" value="cash"/>
+              <label for="filled-in-box-cash-<%=split_bill_id%>">Cash</label>
+            </div>
+            <div class="col-sm-9">
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Amount</label></div>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control validate margin-t-b-2 p0 amount_cash_<%= split_bill_id%>" id="<%= split_bill_id%>" placeholder="in <%=currency%>" value="<%= split_bill_amount %>">              
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-3">
+              <input type="checkbox" name="split_settlement_mode_<%=split_bill_id%>" class="filled-in split_settlement_mode_<%=split_bill_id%>" id="filled-in-box-card-<%=split_bill_id%>" value="card"/>
+              <label for="filled-in-box-card-<%=split_bill_id%>">Card</label>
+            </div>
+            <div class="col-sm-9">
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Amount</label></div>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control validate margin-t-b-2 p0 amount_card_<%= split_bill_id%>" id="<%= split_bill_id%>" placeholder="Amount" value="0">              
+                </div>              
+              </div>             
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Card No. (Last 4 digit)</label></div>
+                <div class="col-sm-6">
+                  <input type="text" class="form-control validate margin-t-b-2 p0 card_no_<%= split_bill_id%>" id="<%= split_bill_id%>" placeholder="Last 4 digit">              
+                </div>              
+              </div>
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Card Type</label></div>
+                <div class="col-sm-6">
+                  <select class="form-control card_type_<%= split_bill_id%>" id="<%= split_bill_id %>">
+                    <option value="debit">Debit Card</option>
+                    <option value="credit" >Credit Card</option>
+                  </select>                             
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-5"><label for="">Merchandiser</label></div>
+                <div class="col-sm-6">
+                  <select class="form-control merchandiser_<%= split_bill_id%>" id="<%= split_bill_id %>">
+                    <option value="visa">VISA</option>
+                    <option value="mastercard" >MasterCard</option>
+                    <option value="mastercard" >Other</option>
+                  </select>                             
+                </div>                              
+              </div>             
+            </div>
+          </div>          
+        </form>        
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <br>
+    <br>
+    <h3 class="header txt-align-center"><%= currency %> <%= split_bill_amount %></h3>
+    <hr>
+    <div class="txt-align-center font-13">
+      <span class="grey-text">Rs <%= split_bill_amount %> is total payable amount.</span>
+    </div>
+    <hr>
+    <br>    
+    <button class="m-btn indigo width-100 waves-effect waves-light margin-t-15 split_bill_settlement" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-bill-split-id="<%= split_bill_id %>" data-split-bill-amount="<%=split_bill_amount %>">
+      <i class="mdi-action-credit-card left"></i>
+      Confirm and save
+    </button>
+
+    <button class="m-btn white cancel_update_bill width-100 grey-text text-darken-3 margin-t-15 waves-effect waves-red" type="button" data-bill-id="<%= response.id %>" data-currency="<%= currency %>" data-action='view_bill'>Cancel</button>
+  </div>
+  <div class="clearfix"></div>  
+<% } else if(action == 'return_goods') {%>
+  <div class="col-lg-12 padding-5">
+    <div class="card waves-effect waves-light">
+      <div class="card-content p0">
+        <p class="header white-text teal padding-10">
+          BILL DETAILS
+          <b class="white-text">
+          #<%=response.id%>
+          <% if(response.recorded_at) { %>
+            <%
+              var record_date = new Date(response.recorded_at);
+              var record_date = record_date.format("dd-mm-yyyy hh:MM TT");
+            %>
+            (Recorded at <%=record_date%>)
+          <% } %>
+          </b>
+          <a class="white-text float-r" href="/bills/<%= response.id %>/generate_bill.pdf" target="_blank">Print Bill</a>
+          <span class="float-r">
+          <% if(response.device_id  > 0) { %>
+            Device ID: <%= response.device_id %> | &nbsp;
+          <% } %>
+          </span>
+          <span class="float-r">
+          Billed by <%= response.biller_type %> <%= response.biller_name %> | &nbsp;
+          </span>
+        </p>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="font-sz-12 col-sm-1">Order ID</th>
+            <th class="font-sz-12 col-sm-1">Status</th>
+            <th class="font-sz-12">Item</th>
+            <th class="font-sz-12">
+              Unit Price
+              <br>
+              (in <%=currency%>)
+            </th>
+            <th class="font-sz-12">QTY</th>
+            <th class="font-sz-12">
+              Total Price
+              <br>
+              (in <%=currency%>)
+            </th>
+            <th class="font-sz-12">
+              Total Tax
+              <br>
+              (in <%=currency%>)
+            </th>
+            <th class="font-sz-12">
+              Subtotal
+              <br>
+              (in <%=currency%>)
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders = response.orders; %>
+          <% for (var i = orders.length - 1; i >= 0; i--) { %>
+            <% for (var j = orders[i].order_items.length - 1; j >= 0; j--) { %>
+              <% trash_status = orders[i].order_items[j].trash %>
+              <% bill_status = orders[i].order_items[j].bill_status %>
+              <%
+                row_class=''
+                if( trash_status == 1) {
+                  row_class='border-l-red'
+                }else if( bill_status == 'no_charge' ) {
+                  row_class='border-l-grey'
+                }else{
+                  row_class='border-l-green'
+                }
+              %>
+              <tr class="data-table__selectable-row <%=row_class%>">
+                <td>
+                  <% if (orders[i].order_items[j].is_returned == false) { %>
+                    <input id="product_<%= orders[i].order_items[j].id %>"
+                          type="checkbox"
+                          name="return-product"
+                          data-bill-id="<%= response.id %>"
+                          data-order-details-id="<%= orders[i].order_items[j].id %>"
+                          data-product-id="<%= orders[i].order_items[j].product_id %>"
+                          data-price="<%= orders[i].order_items[j].unit_price_without_tax %>"
+                          data-quantity="<%= orders[i].order_items[j].quantity %>"
+                          data-unit-id="<%= response.unit_id %>"
+                          data-sku="<%= orders[i].order_items[j].product_unique_identity %>"
+                          data-store-id="<%= orders[i].order_items[j].store_id %>"
+                          data-sell-price="<%= orders[i].order_items[j].unit_price_with_tax %>"
+                          data-weight="<%= orders[i].order_items[j].weight %>"
+                          data-product-unit="<%= orders[i].order_items[j].product_unit %>"
+                          data-return-store-id="<%= return_store_id %>"
+                          data-deliverable-id="<%= response.deliverable_id %>"
+                          data-deliverable-type="<%= response.deliverable_type %>"
+                          data-discount="<%= response.discount %>"
+                          data-no-of-items="<%= orders[i].order_items.length %>" >
+                    <label class="checkbox inline margin-l-5" style="padding-left:30px;" for="product_<%= orders[i].order_items[j].id %>"><a href="/orders/<%=orders[i].id%>" target="_blank"><%=orders[i].id%></a></label><br>
+                  <% } else { %>
+                    <a href="/orders/<%=orders[i].id%>" target="_blank"><%=orders[i].id%></a><br>
+                  <% } %>
+                  <% if( trash_status == 1) {%>
+                    <span class="m-label margin-l-none red">Cancled</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% if (orders[i].order_items[j].is_returned == false) { %>
+                    <span class="m-label margin-l-none teal">Not Returned</span>
+                  <% } else { %>
+                    <span class="m-label margin-l-none red">Returned</span>
+                  <% } %>
+                </td>
+                <td>
+                  <% combo=orders[i].order_items[j].customizations; %>
+                  <%= orders[i].order_items[j].product_name %>
+                  | <%= currency %> <%= orders[i].order_items[j].product_price %>
+                  <% if (combo.length > 0) {%>
+                    <br>
+                    <table class="hidden-xs hidden-sm">
+                      <tbody>
+                        <% for (var k = combo.length - 1; k >= 0; k--) { %>
+                          <tr class="font-sz-11">
+                            <td class="green-text text-darken-1 p0">
+                              <i class="mdi-content-add smaller"></i>
+                            </td>
+                            <td class="border-rht-d-1 padding-l-r-5"><%= combo[k].product_name %></td>
+                            <td class="border-rht-d-1 padding-l-r-5">QTY: <%= combo[k].quantity %></td>
+                            <td class="padding-l-r-5"><%= currency %> <%= combo[k].total_price %></td>
+                          </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+                  <% } %>
+                  <% if(bill_status == "no_charge") {%>
+                    <br>
+                    <span class="m-label grey margin-l-none">No Charge</span>
+                    <span class="grey-text"><i>Remarks: <%= orders[i].order_items[j].remarks%></i></span>
+                  <% } %>
+                </td>
+                <td><%= orders[i].order_items[j].product_price + orders[i].order_items[j].customization_price %></td>
+                <td><%= orders[i].order_items[j].quantity %></td>
+                <td>
+                  <% if(bill_status == "no_charge") {%>-<% } else { %>
+                  <%= (orders[i].order_items[j].quantity * orders[i].order_items[j].unit_price_without_tax).toFixed(2) %>
+                  <% } %>
+                </td>
+                <td>
+                  <% if(bill_status == "no_charge") {%>-<% } else { %>
+                  <%= (orders[i].order_items[j].quantity * orders[i].order_items[j].tax_amount).toFixed(2) %>
+                  <% } %>
+                </td>
+                <td>
+                  <% if(bill_status == "no_charge") {%>-<% } else { %>
+                  <%= (orders[i].order_items[j].quantity * orders[i].order_items[j].unit_price_with_tax).toFixed(2) %>
+                  <% } %>
+                </td>
+              </tr>
+            <% } %>
+          <% } %>
+          <tr>
+            <td colspan="5" class="white"><strong>Total</strong></td>
+            <td class="white"><%= response.bill_amount.toFixed(2) %></td>
+            <td class="white"><%= response.tax_amount.toFixed(2) %>*</td>
+            <td class="white"><%= (response.bill_amount + response.tax_amount).toFixed(2) %></td>
+          </tr>
+          <% if(response.roundoff) { %>
+            <tr class="orange-text">
+              <td colspan="11">Roundoff</td>
+              <td class=""><%= response.roundoff %></td>
+            </tr>
+          <% } %>
+          <% if(response.split_roundoff) { %>
+            <tr class="orange-text">
+              <td colspan="11">Split Bill Roundoff</td>
+              <td class=""><%= response.split_roundoff %></td>
+            </tr>
+          <% } %>
+          <tr class="green-text">
+            <td>Discount</td>
+            <td colspan="6">
+              <% discounts = response.discounts; %>
+              <% if (discounts.length > 0) {%>
+                <% for (var d = discounts.length - 1; d >= 0; d--) { %>
+                  <span class="m-label green"> <%= currency %> <%= discounts[d].discount_amount %> | <%= discounts[d].remarks %></span>
+                <% } %>
+              <% } %>
+            </td>
+            <td class="">(-) <%= response.discount %></td>
+          </tr>
+          <tr>
+            <td colspan="7" class="white font-sz-18">
+              <strong>Grand Total</strong>
+            </td>
+            <td class="white font-sz-18">
+              <strong><%= response.grand_total %></strong>
+            </td>
+          </tr>
+          <% if(response.remarks) {%>
+            <tr>
+              <td colspan="1" class="teal lighten-5">
+                <strong>Remarks</strong>
+              </td>
+              <td colspan="6" class="teal lighten-5">
+                <%= response.remarks %>
+              </td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+
+      <div class="return_items_status margin-t-15"></div>
+
+      <div class="col-lg-12">
+        <div class="col-sm-4">
+          <input id="return-remarks" type="text" required="" placeholder="Enter Remarks" name="remarks">
+        </div>
+
+        <div class="col-sm-4 float-r">
+          <button class="m-btn blue confirm-item width-100 waves-effect waves-light" data-action="return_item" data-bill-id="<%= response.id %>" data-currency="<%= currency %>">
+          Confirm Item
+          </button>
+        </div>
+
+        <div class="clearfix"></div>
+        <br>
+      </div>
+    </div>
+  </div>
+<% }%>
+
+<%if(action=="bill_reprint_details"){%>
+  
+  <div class="col-lg-12 padding-5">
+    <div class="card waves-effect waves-light">
+      <div class="card-content p0  blue ">
+        <p class="header font-sz-18 white-text teal padding-10 blue ">
+          Bill Reprint Details
+          <b class="white-text">
+          #<%=response.id%>
+          </b>
+          <!-- <a class="white-text float-r" href="/bills/<%= response.id %>/generate_bill.pdf" target="_blank">Print Bill</a> -->
+          <span class="float-r">
+          <% if(response.device_id  > 0) { %>
+            Device ID: <%= response.device_id %> | &nbsp;
+          <% } %>
+          </span>
+        </p>
+      </div>
+      <table style="width:800px;table-layout:fixed;">
+        <thead>
+          <tr>
+            <th class="font-sz-16 col-lg-4"><b>User Email</b></th>
+            <th class="font-sz-16 col-lg-4"><b>Reason</b></th>
+            <th class="font-sz-16 col-lg-4"><b>Recorded At</b></th>
+          </tr>
+        </thead>
+        <tbody
+        <% for(var i=0;i<response.length;i++){ %>
+          <tr>
+            <td class="col-lg-4" ><%=response[i].user_email%></td>
+            <td class="col-lg-4" style='font-size: 14px; max-width: 200px; width:200px;' ><%=response[i].reprint_reason%></td>
+            <td class="col-lg-4" ><%=response[i].recorded_at%></td>
+          </tr>
+        <%}%>
+        </tbody>
+      </table>
+    </div>
+  </div>
+<%}%>

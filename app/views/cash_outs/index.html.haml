@@ -1,0 +1,36 @@
+= link_to 'New Cash out', new_cash_out_path
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Cash out
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_cash_out_path}"}
+              %i.mdi-content-add.left
+              Add new Cash Out              
+        %table.data-table    
+          %tr
+            %th User Id
+            %th Unit Id
+            %th Amount
+            %th Reason
+            
+            %th Actions
+
+          - @cash_outs.each do |cash_out|
+            %tr
+              %td= cash_out.user_id
+              %td= cash_out.unit_id
+              %td= cash_out.amount
+              %td= cash_out.reason
+              
+              %td
+                %a.m-btn.green.m-btn-low-padding{:href => "#{cash_out_path(cash_out)}", :title => "View Cash Out"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_cash_out_path(cash_out)}", :title => "Edit Cash Out"} 
+                  %i.mdi-editor-border-color
+                %a.m-btn.red.m-btn-low-padding{:href => "#{cash_out_path(cash_out)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete Cash Out"}
+                  %i.mdi-action-delete

@@ -1,0 +1,10 @@
+#page-wrapper
+  - if user_signed_in?
+    %h3 You have succesfully sugned in
+    = link_to "Sign Out", destroy_user_session_path, :method => :delete
+  - else
+    %h2 Welcome to Stewot
+    = link_to "Sign In", new_user_session_path, :method => :get
+    = link_to "Sign Up", new_user_registration_path, :method => :get
+
+= debug @id

@@ -1,0 +1,18 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-5= smart_listing.sortable "Process", "name"
+        %th.col-lg-2
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.name
+          %td{:style=>"text-align:right"}
+            %button.add-processes-as-composition.m-btn.green.m-btn-low-padding{"data-process-id"=>object.id,"data-process-name"=>object.name}
+              %i.mdi-content-add
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No process found

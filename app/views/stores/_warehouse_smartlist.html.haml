@@ -1,0 +1,32 @@
+ 
+- unless smart_listing.empty?
+	- i=1
+	%table.table
+		%tbody
+			-smart_listing.collection.each do |row|
+				%tr
+					%td
+						.col-md-3
+							%a.m-btn.red.m-btn.m-btn-low-padding{:title => "Remove",:href =>store_warehouse_metum_path(@store,row), :method => :delete, :method=> :delete, :data=>{:confirm=>"are you sure ?"}}
+								%i.mdi-action-delete
+					- row.warehouse_racks.each do |rack|
+						%td.warehouse-rack{"data-rack-id"=>rack.id, "data-rack-uid"=>rack.rack_unique_id} 
+							.grid-wrapper
+								-rack.bins.each do |bin|
+									- if bin.status == "available" 
+										.grid-box-available
+											=bin.bin_unique_id
+									- if bin.status == "allocated"
+										.grid-box-allocated
+											.col-sm-6
+												= get_product_name(bin.id)
+											.col-sm-3
+												%span.badge{:style=>"margin-top:5px;"}
+													= get_product_quantity(bin.id)
+									- if bin.status == "damaged"
+										.grid-box-damaged
+											=bin.bin_unique_id
+				- i=i+1
+	=smart_listing.paginate
+- else
+	%p.warning No record found

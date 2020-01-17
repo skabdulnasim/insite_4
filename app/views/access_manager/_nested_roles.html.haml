@@ -1,0 +1,38 @@
+%link{:href => "http://fonts.googleapis.com/icon?family=Material+Icons", :rel => "stylesheet"}
+/ = stylesheet_link_tag "style"
+= stylesheet_link_tag "access_manager_timeline"
+
+%li.timeline-inverted
+  .timeline-circ.circ-xl.blue
+    %i.fa.fa-user
+  .row.m0.timeline-entry.mt15
+    .card.m0.col.pointer
+      .card-content.p10
+        %h6.m0
+          %span.label.font-13.teal="#{role.name}"
+          %a.m-btn.m-btn-small.new_unit_link.orange.float-r{"data-target" => "#editRoleModal#{role.id}", "data-toggle" => "modal"} 
+            %i.mdi-editor-border-color
+          %span.margin-l-15.font-13
+            %span
+              %b Number of users:
+              = " #{AccessManagement::get_number_of_role_users(role.id).count}"
+          .margin-t-15
+            .grey-text
+              %span.font-13
+                %b Capabilities available?
+                -if (role.capabilities).present?
+                  %span.label.label-success Yes 
+                  %small
+                    ="(Last modified on: "+(role.updated_at).to_s+")"
+                -else
+                  %span.label.label-danger No
+          
+  - _child_roles = Role.child_roles(role.id)
+  - _css_class = _child_roles.present? ? "visible" : "invisible"
+  %ul.timeline.collapse-lg.timeline-hairline{:class=>"nested-content-of-unit-#{role.id} #{_css_class}"}
+    - if _child_roles.present?
+      = render :partial => 'access_manager/nested_roles', :collection => _child_roles, :as => "role"
+
+/ edit role Modal
+.modal.fade{"id" => "editRoleModal#{role.id}", "aria-hidden" => "true", "aria-labelledby" => "addRoleModalLabel", :role => "dialog", :tabindex => "-1"}
+  = render partial:'edit_role_form', locals: {role: role}

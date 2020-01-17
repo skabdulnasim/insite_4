@@ -1,0 +1,44 @@
+:javascript
+  $(function() {
+    var dateToday = new Date();
+    $('.datepick').datetimepicker({
+      pickTime: false,
+      format: 'YYYY-MM-DD',
+      useCurrent: true
+    });
+  });  
+- manual_load_javascript "jquery.geocomplete"
+%script{:src => "http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBq5JlSzFQkPFTx5kT7w-d2gRzwZzeO8Y8"}
+:javascript
+  $( document ).ready(function() {
+    $(".delivery_address").geocomplete()
+  });  
+= form_for @delivery_address, :html => { :class => 'form-horizontal' } do |f|
+  .form-horizontal.bordered-row.m-input.col-sm-8
+    .form-group
+      = f.label :address, "Delivery Address",:class => 'col-sm-4 control-label'
+      .col-sm-6.input-field
+        = f.text_field :address, :required => true, :autofocus => true, :placeholder => "Enter Delivery Location", :class => 'form-control validate delivery_address', autocomplete: 'off'
+    .form-group
+      = f.label :pincode, "Pincode",:class => 'col-sm-4 control-label'
+      .col-sm-6.input-field
+        = f.text_field :pincode, :class => 'form-control validate'
+  .col-sm-4
+    .panel.panel-default
+      .panel-heading{:style => "background-color:#4285f4; color:#fff"}
+        Select Branch
+      .panel-body{:style => "max-height: 300px !important; overflow: auto !important; position: relative !important"}
+        = hidden_field_tag "unit.ids[]", nil
+        - Unit.all.each do |unit|
+          .checkbox  
+            = check_box_tag "unit_ids[]", unit.id, @delivery_address.unit_ids.include?(unit.id), :id=>"unit_#{unit.id}"
+            %label{:for=>"unit_#{unit.id}"}= unit.unit_name      
+  .form-group
+    .col-sm-offset-2.col-sm-15
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'
+      %a.btn.btn-primary.btn-lg{:href => delivery_addresses_path}
+        Cancel
+
+
+
+      

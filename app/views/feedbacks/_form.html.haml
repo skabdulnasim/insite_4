@@ -1,0 +1,35 @@
+= form_for @feedback do |f|
+  - if @feedback.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+      = "#{pluralize(@feedback.errors.count, "error")} prohibited this feedback from being saved:"
+      %ul
+        - @feedback.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-horizontal.bordered-row.m-input.col-sm-8
+    .form-group
+      = f.label :title, :class => 'col-sm-2 control-label'
+      .col-sm-8
+        = f.text_field :title, :class => 'form-control', :required => true,placeholder: "Enter Feedback Title"
+    
+    = f.fields_for :feedback_options do |builder|
+      = render 'feedback_option_fields', f:builder
+    = link_to_add_fields "Add Field", f, :feedback_options, {}, 'm-btn green margin-l-15'
+  .col-sm-4
+    .panel.panel-default
+      .panel-heading
+        Select Branch
+      .panel-body{:style => "max-height: 220px !important; overflow: auto !important;"}
+        - Unit.all.each do |unit|
+          .checkbox
+            
+            = check_box_tag "unit_ids[]", unit.id, @feedback.unit_feedbacks.map(&:unit_id).include?(unit.id), :id=>"unit_#{unit.id}"
+            %label{:for=>"unit_#{unit.id}"}= unit.unit_name
+              
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'
+      %a.btn.btn-primary.btn-lg{:href => feedbacks_path}
+        Cancel

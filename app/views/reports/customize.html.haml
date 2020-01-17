@@ -1,0 +1,18 @@
+
+.page-header
+  - if notice.nil? == false
+    #notice.alert.alert-info
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-info.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"} ×
+      = notice
+  %h2
+    %i.fa.fa-tags
+    Report Customization
+.page-container  
+  = render @partial_view
+     
+
+
+

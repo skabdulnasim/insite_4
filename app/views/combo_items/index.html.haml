@@ -1,0 +1,33 @@
+%h1 Listing combo_items
+
+%table
+  %tr
+    %th Menu product
+    %th Combo item
+    %th Tax group
+    %th Sell price
+    %th Sell price without tax
+    %th Mode
+    %th Size
+    %th Color
+    %th
+    %th
+    %th
+
+  - @combo_items.each do |combo_item|
+    %tr
+      %td= combo_item.menu_product_id
+      %td= combo_item.item_id
+      %td= combo_item.tax_group_id
+      %td= combo_item.sell_price
+      %td= combo_item.sell_price_without_tax
+      %td= combo_item.mode
+      %td= combo_item.size_id
+      %td= combo_item.color_id
+      %td= link_to 'Show', combo_item
+      %td= link_to 'Edit', edit_combo_item_path(combo_item)
+      %td= link_to 'Destroy', combo_item, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Combo item', new_combo_item_path

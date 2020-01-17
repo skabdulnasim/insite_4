@@ -1,0 +1,25 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+
+- links_arr = [{:title=>"Customers Report",:url=>customer_reports_path,:active_class=>""},{:title=>"Day by day customer details reports",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title.left Filter data between #{params[:from_date]} to #{params[:to_date]}
+          .data-table-header__actions         
+            %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/customer_reports/by_date_customer_details.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+
+        = smart_listing_render :by_date_customer_details

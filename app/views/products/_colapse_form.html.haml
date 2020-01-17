@@ -1,0 +1,307 @@
+- manual_load_javascript "product_meta", "templates/product_meta/add_info", "templates/products/attrs_box", "templates/products/attribute","templates/products/transaction_unit","templates/products/store"
+= form_for @product, :html => { :class => '', :multipart => true} do |p|
+  - if @product.errors.any?
+    .alert.alert-danger{:role => "alert"}
+      #error_explanation
+        %h2= "#{pluralize(@product.errors.count, "error")} prohibited this product from being saved:"
+        %ul
+          - @product.errors.full_messages.each do |msg|
+            %li= msg      
+  .col-sm-3.padding-l-r-none
+    .card
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-open-in-new.left
+        Product Information  
+      .tabbable.tabs-left
+        %ul.nav.nav-tabs.padding-none
+          %li.active
+            %a.check-new-product-tab{"data-toggle" => "tab", :href => "#a", "data-link-type" => 'a'} 
+              General
+          %li
+            %a.check-new-product-tab{"data-toggle" => "tab", :href => "#b", "data-link-type" => 'b'} 
+              Categories
+          %li#product_attributes
+            %a.check-new-product-tab{"data-toggle" => "tab", :href => "#c", "data-link-type" => 'c'} 
+              Attributes 
+          %li#product_linked
+            %a.check-new-product-tab{"data-toggle" => "tab", :href => "#d", "data-link-type" => 'd'}
+              Varients
+          %li#product_raws
+            %a.check-new-product-tab{"data-toggle" => "tab", :href => ".e", "data-link-type" => 'raw'}
+              %span.float-r.badge
+              Ingredients
+          %li#product_info
+            %a.check-new-product-tab{"data-toggle" => "tab", :href => "#f", "data-link-type" => 'e'}
+              %span.float-r.badge
+              Description
+          %li#product_info
+            %a.check-new-product-tab{"data-toggle" => "tab", :href => ".g", "data-link-type" => 'g'}
+              %span.float-r.badge
+              Allocation    
+      .clearfix 
+      .padding-5                         
+        = p.submit 'Save Product', :class => 'm-btn green width-100'  
+                               
+  .tab-content
+    #a.tab-pane.col-sm-9.padding-r-none.active
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title General Information 
+              .form-horizontal.bordered-row.m-input
+                .form-group
+                  = p.label :product_type, :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.select :product_type, options_for_select({"Simple" => "simple", "Variable" => "variable", "Combo" => "combo"}, @product.product_type), { :include_blank=>false }, {:class => "form-control"}
+                .form-group
+                  = p.label :name, :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.text_field :name, :class => 'form-control', :required => true
+                .form-group
+                  = p.label :short_name, :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.text_field :short_name, :class => 'form-control'      
+                .form-group
+                  = p.label :sku, :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.text_field :sku, :class => 'form-control'                    
+                .form-group
+                  = p.label :hsn_code, :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.text_field :hsn_code, :class => 'form-control'
+                .form-group
+                  = p.label :item_code, :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.text_field :item_code, :class => 'form-control'
+                .form-group
+                  = p.label :brand_name, :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.text_field :brand_name, :class => 'form-control'
+                .form-group
+                  = p.label :mfr_name, :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.text_field :mfr_name, :class => 'form-control'          
+                .form-group
+                  = p.label :product_image, :class => 'col-sm-3 control-label', :required => false
+                  .col-sm-5
+                    = p.file_field :product_image, :class => 'file_field'
+                .form-group
+                  = p.label "Physical Type", :class => 'col-sm-3 control-label'
+                  .col-sm-4
+                    = p.select :physical_type_id, options_for_select(@physical_types.map{ |pt| [pt.name, pt.id] }, @product.physical_type_id), { include_blank: "Select Physical Type"}, {:class => "form-control", :required => true}
+                .form-group
+                  = p.label :stack_level, :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.number_field :stack_level, :class => 'form-control', :value=>1
+                    %small.text-muted 
+                      %i Note: Stack level represents the depth, upto which system will check stock of raw products while processing an order. Make it 1 for simple product and 2 for combo product.
+                .form-group   
+                  = p.label "Conjugated_unit", :class => 'col-sm-3 control-label'   
+                  .col-sm-3   
+                    = p.select :conjugated_unit_id, options_for_select(@conjugated_units.map{ |u| ["#{u.conjugated_name}", u.id]}, @product.conjugated_unit_id), { include_blank: "Select Conjugated Unit"},  {:class => "form-control"}                          
+                .form-group
+                  = p.label "Basic inventory unit", :class => 'col-sm-3 control-label'
+                  .col-sm-3
+                    = p.select :basic_unit_id, options_for_select(@basic_units.map{ |u| ["#{u.short_name} (#{u.name})", u.id]}, @product.basic_unit_id), { include_blank: "Select Basic Unit"},  {:class => "form-control",:required => true}
+                  #product_unit_container.col-sm-6
+                    - transaction_units = @product_units.by_basic_unit(@product.basic_unit_id)
+                    - if transaction_units.present?
+                      %table.data-table
+                        %thead
+                          %tr
+                            %th Unit
+                            %th Use unit as
+                        %tbody
+                          - transaction_units.each do |tu|
+                            %tr
+                              %td="#{tu.short_name} #{tu.name}"
+                              %td
+                                =check_box_tag "input_units[]", tu.id, @product.input_units.by_unit_id(tu.id).present?, :id=>"unit_input_#{tu.id}"
+                                %label{:for=>"unit_input_#{tu.id}"} Input
+                                %br
+                                =check_box_tag "output_units[]", tu.id, @product.output_units.by_unit_id(tu.id).present?, :id=>"unit_output_#{tu.id}"
+                                %label{:for=>"unit_output_#{tu.id}"} Output
+    #b.tab-pane.col-sm-9.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Select Categories  
+              .form-horizontal.bordered-row
+                .form-group
+                  = render 'form1'
+    #c.tab-pane.col-sm-9.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Product Attributes  
+              .col-sm-12  
+                .form-horizontal.bordered-row
+                  .form-group
+                    %label.col-sm-3.control-label Select custom ptoduct attribute
+                    .col-sm-5
+                      = select_tag "attribute_id", options_for_select(@attributes.map{ |a| [a.name.humanize, a.id] }), prompt: "Select product attribute", class: "form-control"                                              
+              .col-sm-12                    
+                .form-horizontal.bordered-row#attr_set
+                  - if @attribute_arr
+                    - @attribute_arr.each do |aa|  
+                      - attr_name = Attribute.get_attribute_name(aa)[0][:name]
+                      / .form-group#each_attr{:class => "#{attr_name} term_container_#{term[:id]}"}              
+                      .form-group#each_attr{:class => "#{attr_name}"}
+                        %label.col-sm-3.control-label= attr_name.humanize
+                        .col-sm-7
+                          - terms = TermAttribute.get_terms(aa)
+                          = text_field_tag "attribute[]", nil, :value => terms[0].attribute_id, :type => "hidden"
+                          - terms.each do |term|
+                            %input.filled-in{:name => "term_attribute[]", :type => "checkbox", :value => term['id'], :checked => (@attributes_details.include?("#{term[:id]}")), :id=>"attr_#{term[:id]}"}
+                            %label{:for=>"attr_#{term[:id]}"}= term['name'].humanize
+                            %br
+                        .col-sm-2  
+                          / %a{:class => "m-btn red m-btn-low-padding attr_rm", :id => "#{attr_name}", "data-term-id"=>"#{term[:id]}"}
+                          %a{:class => "m-btn red m-btn-low-padding attr_rm", :id => "#{attr_name}"}
+                            %i.mdi-action-delete        
+
+    #d.tab-pane.col-sm-9.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Product Varients  
+              .form-horizontal.bordered-row
+                .form-group
+                  = p.label "Grouped product", :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = p.select :parent, options_for_select(@variable_products.map{ |vp| [vp.name, vp.id] }, @product.parent), { include_blank: "Select a variable product"}, {:class => "form-control"}
+                  - @product.product_attributes.each do |p_a|
+                    - if p_a.term_attribute.present?
+                      = "#{p_a.p_attribute.name} : #{p_a.term_attribute.name}"
+                #variants_box
+                #product_variation
+                  - if @product.product_attrs.present? && @product.parent.present?
+                    - @product.product_attrs.each do |qqq|
+                      .form-group
+                        %label.col-sm-3.control-label= qqq.name
+                        .col-sm-5
+                          %input{:name => "attribute[]", :type => "text", :value => qqq.id, :type => "hidden"}
+                          %select.form-control{:name => "variant[]"}
+                            - qqq.term_attributes.each do |ff|
+                              %option{:value => ff.id}= ff.name                               
+    #f.tab-pane.col-sm-9.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Product Description  
+              .form-horizontal.bordered-row
+                - if !@product_info.nil?
+                  - @product_info.each do |info_key, info_value|
+                    .form-group.info_box
+                      .col-sm-3
+                        = text_field_tag 'key[]', info_key, :class => 'form-control'
+                      .col-sm-3
+                        = text_field_tag 'value[]', info_value, :class => 'form-control'
+                      .col-sm-1
+                        = button_tag "Remove",:class => 'btn btn-danger remove_info', :type => 'button'
+                %div.add_more_info        
+                .form-group
+                  .col-sm-3
+                    = text_field_tag 'key[]', nil, placeholder: 'Information header', :class => 'form-control'
+                  .col-sm-3
+                    = text_field_tag 'value[]', nil, placeholder: 'Information details', :class => 'form-control'
+                  .col-sm-1
+                    = button_tag "Add More",:class => 'add_info btn btn-success', :type => 'button'
+
+    .g.tab-pane.col-sm-5.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Allocate to Branch 
+              .col-sm-12 
+                %table
+                  %thead
+                  %tbody 
+                    - @branchs.each do |branch|
+                      - branch_product = branch.unit_products.by_product(@product.id)
+                      - if branch_product.present?
+                        - input_tax_group_id = branch_product[0][:input_tax_group_id]
+                      %tr
+                        %td
+                          = check_box_tag 'branch_id[]', branch.id, branch_product.present?,{ :id => "branch_#{branch.id}", :class=>" branch_check", "data-input-id" => "#{branch.id}"}
+                          %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"branch_#{branch.id}", :style=>"padding-left:30px;"}= branch.unit_name.humanize 
+                        %td 
+                          = select_tag "taxgroup_id_#{branch.id}", options_for_select(@tax_groups.map{ |a| [a.name.humanize, a.id]},input_tax_group_id), prompt: "Select tax group", class: "form-control", id: "tax#{branch.id}"
+                      
+    .g.tab-pane.col-sm-4.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Allocate to Store 
+              .col-sm-12  
+                #unit_store_container
+                - if params[:action] == "edit" && @unit_products.present?
+                  - @unit_products.each do |unit_product| 
+                    - units = Unit.find(unit_product[:unit_id])
+                    .col-sm-12.filter-title{:id => "unit_#{unit_product[:unit_id]}"}
+                      = units.unit_name
+                      - units.stores.each do |store|
+                        .col-sm-12.margin-l-5 
+                          = check_box_tag 'store_id[]', store.id, store.store_products.by_product(@product.id).present?, { :id => "store_#{store.id}", :class=>"filled-in font-sz-12", "data-input-id" => "#{store.id}"}
+                          %label{:for=>"store_#{store.id}"}= store.name.humanize 
+                                             
+    .e.tab-pane.col-sm-5.padding-r-none
+      .main-section__content.padding-r-none
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Selected Ingredients/Compositions
+              .form-horizontal.bordered-row  
+                = form_for @product_metum do |f|
+                  %table.table    
+                    %tbody.raw-product-list
+                      - get_product_composition_if_exist(@product) #Raw product composition for edit action only -ProductsHelper
+
+.tab-content
+  .e.tab-pane#raw_product_filter.col-lg-4.padding-r-none
+    .main-section__content.p0
+      .example
+        .example__content.p0.min-height-300
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label.col-lg-6.padding-l-r-none
+                %span.fs-title Available Items
+            .filter-title.margin-t-b-0 Filters
+            .padding-5               
+              = smart_listing_controls_for(:raw_products, {class: ""}) do
+                .form-group.filter.input-append.col-lg-6.padding-l-none
+                  = select_tag :category_id, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control", :prompt => "All categories"            
+                .form-group.filter.input-append.col-lg-6.padding-l-r-none
+                  .input-group
+                    %input.form-control.search{:placeholder => "Search ...", :type => "text", :name=> "filter"}
+                      %span.input-group-btn
+                        %button.btn.btn-default.disabled{:type => "submit" }
+                          %span.glyphicon.glyphicon-search 
+                .clearfix    
+            .filter-title.margin-t-b-0 Products               
+            = smart_listing_render :raw_products
+                
+.clearfix 

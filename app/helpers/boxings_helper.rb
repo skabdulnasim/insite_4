@@ -1,0 +1,2 @@
+module BoxingsHelper
+end

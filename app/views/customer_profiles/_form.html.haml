@@ -1,0 +1,37 @@
+= form_for @customer_profile do |f|
+  - if @customer_profile.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@customer_profile.errors.count, "error")} prohibited this customer_profile from being saved:"
+      %ul
+        - @customer_profile.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :firstname
+    = f.text_field :firstname
+  .field
+    = f.label :lastname
+    = f.text_field :lastname
+  .field
+    = f.label :contact_no
+    = f.text_field :contact_no
+  .field
+    = f.label :customer_name
+    = f.text_field :customer_name
+  .field
+    = f.label :address
+    = f.text_area :address
+  .field
+    = f.label :gender
+    = f.text_field :gender
+  .field
+    = f.label :age
+    = f.text_field :age
+  .field
+    = f.label :dob
+    = f.text_field :dob
+  .field
+    = f.label :anniversary
+    = f.text_field :anniversary
+  .actions
+    = f.submit 'Save'

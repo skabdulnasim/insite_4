@@ -1,0 +1,36 @@
+!!!
+%html
+  %head
+    %meta{:charset => "utf-8"}
+      %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}
+        %title 
+          = "#{I18n.t('brand.name')} - POS Terminal"
+        / Core CSS - Include with every page
+        = stylesheet_link_tag "ghpages-materialize","material","admin_panel","query-builder", :media => "all"
+        %link{:href => "http://fonts.googleapis.com/css?family=Roboto:900,500,300,700,400", :rel => "stylesheet", :type => "text/css"}
+        // Loading Essential JS files in header
+        = javascript_include_tag "application"
+        = csrf_meta_tags
+  %body
+    #wrapper
+      %nav.navbar.navbar-fixed-top.navbar-material{:role => "navigation", :style => "margin-bottom: 0"}
+        .col-lg-3.module-name
+          - get_module_name(@module_id,@module_title) #Application Helper
+        = render 'layouts/material_navbar'
+      #material-pos-page-wrapper
+        .clearfix
+        %br
+        %br
+        = yield
+  %footer
+    // Loading Other JS files in footer
+    = yield(:head)
+    = javascript_include_tag "jquery.metisMenu","bootstrap.min","sb-admin"
+    = javascript_include_tag params[:controller] if Inventory::Application.assets.find_asset("#{params[:controller]}.js")
+    = javascript_include_tag "#{FAYE_SERVER_URL}.js"
+
+    - unit_details= current_user.unit
+    .pull-left
+      %b &copy;Yottolabs 2015
+    .pull-right
+      %b= "#{unit_details.unittype.unit_type_name} : #{unit_details.unit_name}"

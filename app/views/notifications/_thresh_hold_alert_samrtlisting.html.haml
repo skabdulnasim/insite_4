@@ -1,0 +1,36 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %tr.data-table__selectable-row
+        / %td{:align => "center",:colspan => 3, :style => "border-right: 1px solid #ccc"} Product Details
+        / - @stores.each do |store|
+        /   %td{:colspan => 2, :style => "border-right: 1px solid #ccc",:align => "center"}
+        /     #{store.name}
+      %tr.data-table__selectable-row
+        %td{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"} Product
+        %td{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"} Store
+        %td{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"} Category
+        %td{:style => "border-right: 1px solid #ccc"}
+          Thresh hold 
+          %br
+          limit
+        %td{:style => "border-right: 1px solid #ccc"}
+          Current
+          %br
+          stock
+    %tbody
+      - smart_listing.collection.each do |object|
+        - @stores.each do |store|
+          -_curr_stck = StockUpdate.current_stock(store.id, object.id).to_f
+          - if _curr_stck < object.thresh_hold.to_f
+            %tr.data-table__selectable-row
+              %td{:style => "border-right: 1px solid #ccc"}="#{object.name}"
+              %td{:style => "border-right: 1px solid #ccc"}="#{store.name}"
+              %td{:style => "border-right: 1px solid #ccc"}="#{object.category.name}"
+              %td{:style => "border-right: 1px solid #ccc"}="#{object.thresh_hold}" "(#{object.basic_unit})"
+              %td{:style => "border-right: 1px solid #ccc; color: #a20000;"}="#{_curr_stck}" "(#{object.basic_unit})"
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No records found!.          

@@ -1,0 +1,6 @@
+$('#tax_group_edit_modal').closeModal();
+<% if @error.present? %>
+  Materialize.toast("<%= @error.message %>", 3000,'red');  
+<% else %>
+  $("#taxgrouptable").find(".taxgroup_of_<%= @tax_group.id %>").remove();
+<% end %>

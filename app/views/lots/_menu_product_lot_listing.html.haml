@@ -1,0 +1,28 @@
+- unless smart_listing.empty?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Listing Lots
+          %table.data-table#accordion
+            %thead
+              %tr.data-table__selectable-row
+                %th= smart_listing.sortable "ID", "id"
+                %th Product    
+                %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Updated Date", "recorded_at"
+                %th.hidden-sm.hidden-md.hidden-xs= smart_listing.sortable "Created Date", "created_at"
+            %tbody.panel
+              - smart_listing.collection.each do |object|
+                %tr.data-table__selectable-row
+                  %td=object.id
+                  %td=object.product.name
+                  %td.hidden-sm.hidden-md.hidden-xs=object.updated_at.strftime("%d-%m-%Y, %I:%M %p")  
+                  %td.hidden-sm.hidden-md.hidden-xs=object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links
+          %br
+- else
+  .alert.alert-warning
+    No Lots found

@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Product:
+  = @process_composition.product_id
+%p
+  %b Production process:
+  = @process_composition.production_process_id
+
+= link_to 'Edit', edit_process_composition_path(@process_composition)
+\|
+= link_to 'Back', process_compositions_path

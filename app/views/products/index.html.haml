@@ -1,0 +1,27 @@
+- links_arr = [{:title=>"All Products",:url=>"#",:active_class=>"col-breadcrumb-selected"},] 
+= render "layouts/flash"
+.col-sm-3.padding-5
+  = render :partial => 'material_product_filter'
+.col-sm-9.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Product Master
+            .data-table-header__actions
+              - if can? :new, Product    
+                %a.m-btn.blue{:href=>new_size_image_import_products_path} 
+                  %i.mdi-file-cloud-upload.left
+                  %span.hidden-sm.hidden-xs Size Image Bulk Upload       
+                %a.m-btn.blue{:href=>new_import_products_path} 
+                  %i.mdi-file-cloud-upload.left
+                  %span.hidden-sm.hidden-xs Bulk upload       
+                %a.m-btn.blue.margin-l-5{"data-target" => "#newProductModal", "data-toggle" => "modal"}
+                  %i.mdi-content-add.left
+                  %span.hidden-sm.hidden-xs Add new product       
+                                                               
+          = smart_listing_render :products
+= render "new_product_pre_form"          
+.clearfix          

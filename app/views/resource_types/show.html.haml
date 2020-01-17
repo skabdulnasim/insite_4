@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @resource_type.name
+
+= link_to 'Edit', edit_resource_type_path(@resource_type)
+\|
+= link_to 'Back', resource_types_path

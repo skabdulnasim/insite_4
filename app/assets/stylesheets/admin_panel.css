@@ -1,0 +1,7 @@
+/*!
+ *= require font-awesome
+ *= require sb-admin
+ */
+
+@import "bootstrap-sprockets";
+@import "bootstrap";

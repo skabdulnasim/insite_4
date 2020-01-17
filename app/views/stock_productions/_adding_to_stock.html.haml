@@ -1,0 +1,49 @@
+= form_tag(store_stock_production_path(@store,@stock_production), method: "put",multipart: true) do
+  - @stock_production.stock_production_metas.each do |object|
+    - product_sizes = ProductSize.by_product_id(object.product_id)
+    - product_colors = ColorProduct.by_product_id(object.product_id)
+    %tr.m-input.data-table__selectable-row
+      / ##{object.product_id} 
+      %td.padding-r-5.col-lg-2
+        = check_box_tag "selected_products[]", "#{object.product_id}", false, :class=>"checkbox-child filled-in checked_products",:id=>"checked_products_#{object.product_id}"
+        %label.font-sz-11{:for=>"checked_products_#{object.product_id}"}
+        - _product = Product.find(object.product_id)
+        - _product_name = _product.package_component.present? ?  _product.product_name(_product) : object.product.name           
+        = _product_name.humanize
+      %td.padding-r-5.col-lg-1
+        = "#{object.production_quantity} #{object.product.basic_unit}"
+        %input{:type=>"hidden", :name=>"production_quantity_#{object.product_id}", :value=>object.production_quantity}
+      - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+        %td.padding-r-5.col-lg-1
+          %input.validate.form-control.margin-b-2{:name => "sku_#{object.product_id}", :type => "text"}
+        %td.padding-r-5.col-lg-1
+          %input.validate.form-control.margin-b-2{:name => "model_number_#{object.product_id}", :type => "text"}
+        - if product_sizes.empty?
+          %td.padding-r-5
+            = select_tag "size_#{object.product_id}", options_for_select(Size.all.map{ |sz| [sz.name] }), { prompt: "Select Size", class: "map form-control" }
+        - else
+          %td.padding-r-5
+            = select_tag "size_#{object.product_id}", options_for_select(product_sizes.map{ |ps| [ps.size_name] }), { prompt: "Select Size", class: "map form-control" }
+        - if product_colors.empty?
+          %td.padding-r-5
+            = select_tag "color_#{object.product_id}", options_for_select(Color.all.map{ |cl| [cl.name] }), { prompt: "Select Color", class: "map form-control" }
+        - else
+          %td.padding-r-5
+            = select_tag "color_#{object.product_id}", options_for_select(product_colors.map{ |pc| [pc.color_name] }), { prompt: "Select Color", class: "map form-control" }  
+        %td.padding-r-5.col-lg-1
+          %input.validate.form-control.margin-b-2{:name => "batch_no_#{object.product_id}", :type => "text"}
+      - if AppConfiguration.get_config_value('retail_menu') == 'enabled'
+        %td.padding-r-5
+          %input.validate.form-control.check-input.allow-numeric-only.margin-b-2{:value=> "0",:name => "mrp_#{object.product_id}", :type => "text" }
+          ="per"
+          %b=object.product.basic_unit
+      - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+        %td.padding-r-5
+          %input.validate.form-control.datepick{:name => "mfg_date_#{object.product_id}", :type => "text",:placeholder=>"Manufacturing Date",:required=> true, :value => "#{Date.today}"}
+        - if AppConfiguration.get_config_value('stock_expiry_date') == 'enabled'   
+          %td.padding-r-5
+            %input.validate.form-control.datepick{:name => "expiry_date_#{object.product_id}", :type => "text",:placeholder=>"Expiry Date",:required=> true, :value => "#{Date.today+2.years}"}
+
+  / = get_production_button(@stock_production.isStockAdded)
+  .float-r.margin-r-20
+    = get_production_button_tag(@stock_production.status)

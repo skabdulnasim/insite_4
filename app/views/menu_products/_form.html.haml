@@ -1,0 +1,205 @@
+
+:css
+  .container_chkbox { border:2px solid #ccc; background:#FFFFFF; width:100%; height: 100px; overflow-y: scroll; }
+- manual_load_javascript "templates/menu_products/tax_group", "menu_cards"
+= form_for @menu_product,:html => { :class => 'form-horizontal' } do |f|
+  - if @menu_product.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@menu_product.errors.count, "error")} prohibited this menu_product from being saved:"
+      %ul
+        - @menu_product.errors.full_messages.each do |msg|
+          %li= msg
+  %h2
+    %b
+      %u
+        = @menu_product.product.name
+  .col-sm-8
+    .form-group
+      = label_tag :simple_tax, nil, :class => 'col-xs-3 control-label'
+      .col-xs-6
+        = text_field_tag :ii, nil, :class => 'form-control', :id => "simple_tax_amnt_field", :readonly => true, :value => @menu_product.tax_group.total_amnt
+
+      .col-xs-2
+        %b
+          = "%"
+          
+    .ff{:style => "clear:both;"}
+    .form-group
+      = label_tag :cess_tax, nil, :class => 'col-xs-3 control-label'
+      .col-xs-6
+        = text_field_tag :ii, nil, :class => 'form-control', :id => "cess_tax_amnt_field", :readonly => true, :value => 0
+
+      .col-xs-2
+        %b
+          = "%"
+    .ff{:style => "clear:both;"}
+    .form-group
+      .col-xs-6
+        = hidden_field_tag :ii, nil, :class => 'form-control', :id => "cess_tax_on_amnt_field", :readonly => true, :value => 0
+
+
+    .form-group
+      .col-sm-4.control-label
+        = label_tag "If you want to change tax group"
+      .col-sm-5
+        .controls
+          - if @owner_will_crud_menu == '0'
+            - @menu_card = MenuCard.find(@menu_product[:menu_card_id])
+            = f.select :tax_group_id, options_for_select(@menu_card.section.tax_groups.map{ |mt| [mt.name, mt.id , {'data-tax'=>mt.total_amnt}] }, @menu_product[:tax_group_id]), { include_blank: "Select a Tax Group"}, {:class => "form-control", :required => true}
+          - else
+            = select_tag "mp_unit", option_groups_from_collection_for_select(Unittype.all, :units, :unit_type_name, :id, :unit_name), prompt: "Select a unit", class: 'form-control'
+
+            #tax-selector.col-sm-12
+              - if @menu_product.tax_group_id.present?
+                .col-sm-5
+                  = label_tag "tax group"
+                .col-sm-7
+                  = @menu_product.tax_group.name
+
+    .form-group
+      .col-sm-4
+      .col-sm-5
+        %button.btn.btn-primary.btn-lg.btn-block.set_tax{:type => "button"} Click here to set this tax
+
+    .form-group
+      = f.label :sort_id, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        = f.select :sort_id, options_for_select(Sort.all.map { |s| ["#{s.name} (#{s.unit.unit_name})", s.id] }, @menu_product[:sort_id]), { include_blank: "Select SORT"}, {:class => "form-control"}
+
+    .form-group
+      = f.label :procured_price, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        = f.text_field :procured_price, :placeholder => "Procured price", :class => 'form-control'
+    .form-group
+      = f.label :sell_price_without_tax, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        = f.text_field :sell_price_without_tax, :placeholder => "Sell price(Without tax)", :class => 'form-control'
+    .form-group
+      = f.label :sell_price, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        = f.text_field :sell_price, :placeholder => "Procured price", :class => 'form-control'
+    .form-group
+      = f.label :mode, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        .controls
+          = f.select :mode, options_for_select({"Show in menu" => "1", "Hide from menu" => "0" }, @menu_product.mode), { include_blank: false}, {:class => 'form-control'}
+    .form-group
+      = f.label :stock_qty, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        .controls
+          = f.number_field :stock_qty, :placeholder => "Stock Qty", :class => 'form-control'
+    .form-group
+      = f.label :stock_status, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        .controls
+          = f.select :stock_status, options_for_select({"In stock" => "1", "Out of stock" => "0"}), { include_blank: false}, {:class => 'form-control'}
+    .form-group
+      = f.label :variable_id, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        .controls
+          = f.select :variable_id, options_for_select(@variable_menu_products.map{ |vp| [vp.product.name, vp.id] },@menu_product.variable_id), { include_blank: "Select a variable product"}, {:class => "form-control"}
+    .form-group
+      = f.label :combo_id, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        .controls
+          = f.select :combo_id, options_for_select(@combo_menu_products.map{ |vp| [vp.product.name, vp.id] },@menu_product.combo_id), { include_blank: "Select a combo product"}, {:class => "form-control"}
+
+    .form-group
+      = f.label :store_id, :class => 'col-sm-4 control-label'
+      .col-sm-5
+        .controls
+          - if @owner_will_crud_menu == '0'
+            = f.select :store_id, options_for_select(current_user.unit.stores.map{ |vp| [vp.name, vp.id] }, @menu_product.store_id), { include_blank: "Select a Store"}, {:class => "form-control"}
+          - else
+            = f.select :store_id, option_groups_from_collection_for_select(@units, :stores, :unit_name, :id, :name, @menu_product.store_id), { include_blank: "Select a store"}, :class => 'form-control'
+
+    .form-group
+      %label.col-sm-5.control-label="Tags"
+      .col-sm-7.input-field
+        .container_chkbox
+          - for tag in Tag.all
+            = check_box_tag "menu_product[tag_ids][]", tag.id, @menu_product.tags.include?(tag), { :id => "#{@menu_product.id}_tag_#{tag.id}"}
+            %label{:for=>"#{@menu_product.id}_tag_#{tag.id}"}= tag.name.humanize
+            %br
+
+
+    .form-group
+      .checkbox
+        .col-xs-3
+        %label.col-sm-6
+          = "Make as default product"
+          = f.check_box :isdefault, :checked => (@menu_product[:isdefault] == 1)
+
+    .form-group
+      .checkbox
+        .col-xs-3
+        %label.col-sm-6
+          = "Is a buffet product?"
+          = f.check_box :is_buffet_product, :checked => (@menu_product[:is_buffet_product] == true)
+              
+  .col-sm-4
+    .panel.panel-default
+      .panel-heading
+        Select Menu Category
+      .panel-body
+        .row
+          = render "menu_category"
+  %br
+  #accordion.panel-group{:style => "clear:both;"}
+    - @combination_types.each do |ct|
+      
+      .panel.panel-default
+        .panel-heading
+          %h4.panel-title
+            %input{:type => "checkbox", :name => "checked_comb[]", :value => ct.id, :id => "combination_#{ct.id}", :checked => (@menu_product_combinations_type_arr.include?(ct.id))}
+            %label{:for=>"combination_#{ct.id}"}
+              %a{"data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#menuCollapse#{ct.id}"}
+                = ct.name
+            - menu_product_combinations_rule_id = MenuManagement::get_combination_rule_by_combination_type(@menu_product, ct.id)
+            - if menu_product_combinations_rule_id
+              = select_tag "rule_#{ct.id}", options_from_collection_for_select(@combination_rules, "id", "name", menu_product_combinations_rule_id[:combinations_rule_id])
+            - else
+              = select_tag "rule_#{ct.id}", options_from_collection_for_select(@combination_rules, "id", "name")
+        .panel-collapse.collapse{:id => "menuCollapse#{ct.id}"}
+          .panel-body
+            - menu_product_combinations = MenuProductCombination.where("menu_product_id =? AND combination_type_id =? AND addons_group_id IS NULL", @menu_product.id, ct.id)
+            - menu_product_combinations.each do |mp_c|
+              - c_product = Product.find(mp_c.product_id)
+              .panel.panel-default
+                .form-control
+                  .col-sm-4
+                    = c_product.name
+                  .col-sm-4
+                    = "Quantity: #{mp_c.ammount} #{ProductUnit.find(mp_c.product_unit_id).short_name}"
+                  .col-sm-4
+                    = "Price: #{mp_c.price} #{currency}"
+
+
+            #accordion_addons_groups.panel-group{:style => "clear:both;"}
+              / - addons_groups = current_user.unit.addons_groups
+              - addons_groups = AddonsGroup.set_section(@menu_product.menu_card.section_id)
+              - if addons_groups.present?
+                - addons_groups.each do |addons_group|
+                  .panel.panel-default
+                    .panel-heading
+                      %h4.panel-title
+                        %input{:type => "checkbox", :name => "ct#{ct.id}ag[]", :value => addons_group.id, :id => "combination_#{ct.id}_addons_group_#{addons_group.id}", :checked => @menu_product.menu_product_combinations.pluck(:addons_group_id).uniq.include?(addons_group.id)}
+                        %label{:for=>"combination_#{ct.id}_addons_group_#{addons_group.id}"}
+                          %a{"data-parent" => "#accordion_addons_groups", "data-toggle" => "collapse", :href => "#addonGroupCollapse#{addons_group.id}"}
+                            = addons_group.title
+                    - _addons_group_products = addons_group.addons_group_products
+                    - if _addons_group_products.present?
+                      .panel-collapse.collapse{:id => "addonGroupCollapse#{addons_group.id}"}
+                        .panel-body
+                          - _addons_group_products.each do |ag_product|
+                            .panel.panel-default
+                              .panel-heading
+                                %h4.panel-title
+                                  = ag_product.product.name
+                                  = "- #{ag_product.ammount}#{ag_product.product_unit.short_name}"
+                                  = "- #{ag_product.price} #{currency}"
+               
+                             
+  .btn-group
+    = f.submit 'Save', :class => 'btn btn-success'
+    %a.btn.btn-success{:type => "button", :href => "#{new_menu_product_path+"?menu_card_id=#{@menu_product[:menu_card_id]}"}"} Back

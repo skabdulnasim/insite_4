@@ -1,0 +1,36 @@
+%p#notice= notice
+
+%p
+  %b User:
+  = @visiting_history.user_id
+%p
+  %b Day:
+  = @visiting_history.day
+%p
+  %b Recorded at:
+  = @visiting_history.recorded_at
+%p
+  %b Resource:
+  = @visiting_history.resource_id
+%p
+  %b In time:
+  = @visiting_history.in_time
+%p
+  %b Out time:
+  = @visiting_history.out_time
+%p
+  %b Latitude:
+  = @visiting_history.latitude
+%p
+  %b Longitude:
+  = @visiting_history.longitude
+%p
+  %b Visiting type:
+  = @visiting_history.visiting_type
+%p
+  %b Visting reason:
+  = @visiting_history.visting_reason
+
+= link_to 'Edit', edit_visiting_history_path(@visiting_history)
+\|
+= link_to 'Back', visiting_histories_path

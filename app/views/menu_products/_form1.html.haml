@@ -1,0 +1,120 @@
+- manual_load_javascript "templates/menu_products/tax_group", "menu_cards"
+= form_for @menu_product do |mp|
+  - if @menu_product.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@menu_product.errors.count, "error")} prohibited this menu_product from being saved:"
+      %ul
+        - @menu_product.errors.full_messages.each do |msg|
+          %li= msg
+  %br
+  .col-sm-3.form-group.controls
+    %select{ :id => "product_type", :class => "form-control", :name => "product_type"}
+      %option{:value => "simple"}= "Simple"
+      %option{:value => "variable"}= "Variable"
+      %option{:value => "combo"}= "Combo"
+  .col-sm-12
+    .col-sm-8
+      .panel.panel-default
+        .panel-heading
+          Select Product to add to menu
+        .panel-body
+          .row
+            / To show products under a category
+            = render "mp_category"
+    .col-sm-4
+      .panel.panel-default
+        .panel-heading
+          Select Menu Category
+        .panel-body
+          .row
+            = render "menu_category"
+      
+      .panel.panel-default
+        .panel-heading
+          Menu product details
+        .panel-body
+          .form-group
+            = label_tag :simple_tax, nil, :class => 'col-xs-3 control-label'
+            .col-xs-6
+              = text_field_tag :ii, nil, :class => 'form-control', :id => "simple_tax_amnt_field", :readonly => true
+            .col-xs-2
+              %b
+                = "%"
+                
+          .ff{:style => "clear:both;"}
+          .form-group
+            = label_tag :cess_tax, nil, :class => 'col-xs-3 control-label'
+            .col-xs-6
+              = text_field_tag :ii, nil, :class => 'form-control', :id => "cess_tax_amnt_field", :readonly => true
+            .col-xs-2
+              %b
+                = "%"
+          .ff{:style => "clear : both;"}
+          .form-group
+            .controls
+
+              - if @owner_will_crud_menu == '0'
+                = mp.select :tax_group_id, options_for_select(@menu_card.section.tax_groups.map{ |mt| [mt.name, mt.id , {'data-tax'=>mt.total_amnt}]}), { include_blank: "Select a Tax Group"}, {:class => "form-control", :required => true}
+              - else
+                = select_tag "mp_unit", option_groups_from_collection_for_select(Unittype.all, :units, :unit_type_name, :id, :unit_name), prompt: "Select a unit", class: 'form-control',required: true
+
+                .form-group
+                  .controls
+                    #tax-selector
+
+          .form-group
+            .controls
+              %button.btn.btn-primary.btn-lg.btn-block.set_tax{:type => "button"} Click here to set this tax
+
+          .form-group
+            .controls
+              = mp.select :sort_id, options_for_select(Sort.all.map { |s| ["#{s.name} (#{s.unit.unit_name})", s.id]  }), { include_blank: "Select a SORT"}, {:class => "form-control"}
+
+          .form-group
+            .controls
+              = mp.number_field :procured_price, :placeholder => "Procured price", :class => 'form-control', step: "any", :autocomplete => "off"
+          .form-group
+            .controls
+              = mp.number_field :sell_price_without_tax, :placeholder => "Sell price(Without tax)", :class => 'form-control', step: "any", :autocomplete => "off"
+          .form-group
+            .controls
+              = mp.number_field :sell_price, :placeholder => "Sell price", :class => 'form-control', step: "any", :autocomplete => "off"
+          .form-group
+            .controls
+              = mp.number_field :menu_card_id, :value => @menu_card_id, :type => "hidden"
+          .form-group
+            .controls
+              = mp.select :mode, options_for_select({"Show in menu" => "1", "Hide from menu" => "0" }), { include_blank: false}, {:class => 'form-control'}
+          .form-group
+            .controls
+              = mp.number_field :stock_qty, :placeholder => "Stock Qty", :class => 'form-control', :type => "hidden"
+          .form-group
+            .controls
+              = mp.select :stock_status, options_for_select({"In stock" => "1", "Out of stock" => "0"}), { include_blank: false}, {:class => 'form-control'}
+          .form-group
+            .controls
+              = mp.select :variable_id, options_for_select(@variable_menu_products.map{ |vp| [vp.product.name, vp.id] }), { include_blank: "Select a variable product"}, {:class => "form-control"}
+          .form-group
+            .controls
+              = mp.select :combo_id, options_for_select(@combo_menu_products.map{ |vp| [vp.product.name, vp.id] }), { include_blank: "Select a combo product"}, {:class => "form-control"}
+          .form-group
+            .controls
+              - if @owner_will_crud_menu == '0'
+                = mp.select :store_id, options_for_select(current_user.unit.stores.map{ |vp| [vp.name, vp.id] }), { include_blank: "Select a Store"}, {:class => "form-control"}
+              - else
+                = mp.select :store_id, option_groups_from_collection_for_select(@units, :stores, :unit_name, :id, :name), { include_blank: "Select a store"}, :class => 'form-control'
+          .form-group
+            .controls
+              = mp.check_box :isdefault
+              = mp.label :isdefault, "Make as default product"
+              %br
+              = mp.check_box :is_buffet_product
+              = mp.label :is_buffet_product, "Is a buffet product?"
+          
+  %br
+  / For all combination type and combination rules
+  = render "combinations"
+  
+  .btn-group.col-sm-offset-2
+    = mp.submit 'Add to menu', :class => 'btn btn-success'
+    %a.btn.btn-success{:type => "button", :href => "#{menu_cards_path}"} Back

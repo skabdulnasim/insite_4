@@ -1,0 +1,26 @@
+= render "layouts/flash"
+.main-section__content
+	.example
+		.example__content.p0
+			.data-table-container
+				%header.data-table-header
+					.data-table-header__label
+						%span.fs-title Listing Stock Expiry Alerts
+				- if @expiry_alerts.present?         
+					%table.data-table
+						%tr.bg-gray
+							%th Title
+							%th Description
+							%th Available Stock
+							%th Stock Created At
+							%th Expires on
+						- @expiry_alerts.each do |expiry_alert|
+							%tr
+								%td= expiry_alert.title
+								%td= expiry_alert.description
+								%td= "#{expiry_alert.notification_source.available_stock} #{expiry_alert.notification_source.product.basic_unit}"
+								%td= expiry_alert.notification_source.created_at
+								%td= expiry_alert.notification_source.expiry_date
+				- else
+					.alert.alert-warning
+						No stock expiry alerts found

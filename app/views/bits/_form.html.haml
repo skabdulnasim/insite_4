@@ -1,0 +1,46 @@
+=form_for(@bit) do |f|
+	.col-sm-6
+		.form-group
+			= f.label "Beat Name", :class => 'col-sm-4 control-label'
+			.col-sm-7
+				= f.text_field :name, :class => 'form-control', :required => true
+				= f.hidden_field :unit_id, :value => current_user.unit_id
+		%br  
+		.form-group
+			= f.label "Parent Beat", :class => 'col-sm-4 control-label'
+			.col-sm-7
+				= f.text_field :parent_bit, :class => 'form-control', :required => true
+		%br  
+		.form-group
+			= f.label :area_descriptions, :class => 'col-sm-4 control-label'
+			.col-sm-7
+				= f.text_field :area_descriptions, :class => 'form-control', :required=> false
+		%br
+			= hidden_field_tag 'resource_ids', ''	
+		.form-group{:style=>"margin-top:10px;"}
+			%ul.token-input-list-facebook.resource_list{:style=>"width:250px !important ;margin-left:175px;max-height:150px !important;overflow: auto !important;"}
+		%br   
+		.form-group{:style=>"margin-top:20px;margin-left:150px;"}
+			.col-sm-4
+				= link_to 'Back', bits_path , :class=>'btn btn-primary btn-lg' 
+			.col-sm-4
+				= f.submit 'Save', :class => 'btn btn-success btn-lg' 
+		%br
+			- @resources.each do |resource|
+				-if is_allocated_to_bit(resource.id) == true
+					.pre_allocated_resources{"data-resource-id"=>resource.id, "data-resource-name"=>resource.name}
+		
+.col-sm-6
+	.card
+		.panel.panel-default
+			.panel-heading{:style=>"background-color:#4285f4; color:#fff;"}
+				Select Resources
+				%br 			
+				= smart_listing_controls_for(:resources, {class: "text-left"}) do
+					.form-group.filter.input-append
+						.input-group
+							%input.form-control.search{:placeholder => "Search Resource...", :type => "text", :name=> "resource_name", :style=>"width:250px; float:right;"}
+							%span.input-group-btn
+								%button.btn.orange.disabled{:type => "submit"}
+									%span.glyphicon.glyphicon-search
+		= smart_listing_render :resources

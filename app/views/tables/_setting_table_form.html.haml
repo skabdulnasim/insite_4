@@ -1,0 +1,79 @@
+.panel.panel-default
+  .panel-heading
+    Table States 
+    %button.btn.btn-primary.btn-xs.float-r{"data-target" => "#tableStateAddmodal", "data-toggle" => "modal"} 
+      %i.fa.fa-plus-square
+      Add new Table States 
+  .panel-body
+    .row.col-sm-10
+      %table.table.table-bordered
+        %tr.well
+          %th Type          
+          %th State priority
+          %th State color
+          %th Action
+          
+        - @table_states.each do |table_state|
+          %tr
+            %td= table_state.name
+            %td= table_state.state_priority
+            %td 
+              %span.status{:title => "#{table_state.name}", :style=>"background: #{table_state.color_code};"}
+              &nbsp;&nbsp;&nbsp;
+              =table_state.color_code
+            %td              
+              %a.btn.btn-sm.btn-info.edit-product{:href => "#{edit_table_state_path(table_state)}", :title => "Edit Table States"} 
+                %i.fa.fa-edit.fa-lg
+            
+              %a.btn.btn-sm.btn-danger{:href => "#{table_state_path(table_state)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete Physical Type"}
+                %i.fa.fa-trash-o.fa-lg 
+  #tableStateAddmodal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+    .modal-dialog
+      .modal-content        
+        .modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#myModalLabel.modal-title Add new table state
+        .modal-body{:style => "min-height: 200px;"}                
+          = render 'table_states/form'                                   
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          
+/////////////////  Table Types //////////////////////////////////////
+
+
+.panel.panel-default
+  .panel-heading
+    Table Types 
+    %button.btn.btn-primary.btn-xs.float-r{"data-target" => "#tableTypeAddmodal", "data-toggle" => "modal"} 
+      %i.fa.fa-plus-square
+      Add new Table Types
+  .panel-body
+    .row.col-sm-10
+      %table.table.table-bordered
+        %tr.well
+          %th Type          
+          %th Action
+        - @table_types.each do |table_type|
+          %tr
+            %td= table_type.type_name
+            %td              
+              %a.btn.btn-sm.btn-info.edit-product{:href => "#{edit_table_type_path(table_type)}",  :title => "Edit Table Types"} 
+                %i.fa.fa-edit.fa-lg
+            
+              %a.btn.btn-sm.btn-danger{:href => "#{table_type_path(table_type)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete Table Types"}
+                %i.fa.fa-trash-o.fa-lg 
+     
+  #tableTypeAddmodal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+    .modal-dialog
+      .modal-content        
+        .modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#myModalLabel.modal-title Add new table type
+        .modal-body{:style => "min-height: 200px;"}                   
+          = render 'table_types/form'                                   
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close          

@@ -1,0 +1,13 @@
+<div id = "each_attr" class = "form-group term_container_<%= attrs[0].attribute_id %>">
+    <label for="" class="col-sm-3 control-label"><%= text %></label>
+		<div class="col-sm-7">
+      <% for(var i=0; i<attrs.length; i++) { %>
+        <input type="checkbox" name="term_attribute[]" value="<%= attrs[i].id %>" id="attr_<%= attrs[i].id %>" class="filled-in">
+        <label for="attr_<%= attrs[i].id %>"><%= attrs[i].name %></label><br>
+      <%}%>
+    </div>
+    <div class="col-sm-2">
+      <input type="hidden" name="attribute[]" value="<%= attrs[0].attribute_id %>" >
+      <a class ="m-btn red m-btn-low-padding attr_rm" id ="<%= text %>" data-term-id="<%= attrs[0].attribute_id %>"><i class="mdi-action-delete"></i></a>
+    </div>
+</div>

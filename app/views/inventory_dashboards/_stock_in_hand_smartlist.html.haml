@@ -1,0 +1,36 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+    %tr.data-table__selectable-row
+      %td
+      %td
+      - @store_details.each do |store|
+        %td{:colspan=>1, :style => "border-right: 1px solid #ccc; border-left: 1px solid #ccc; color: blue"}= store.name
+    %tr.data-table__selectable-row
+      %td{:style => "border-right: 1px solid #ccc"} Products
+      %td{:style => "border-right: 1px solid #ccc"} Total Stock 
+      - @store_details.each do |store| 
+        %td{:style => "border-right: 1px solid #ccc"}
+          Current
+          %br
+          stock
+    %tbody
+      - smart_listing.collection.each do |object|
+        - total_stock_data = 0
+        - @store_details.each do |store|
+          - total_stock_data += get_store_product_data(object.product.id,store.id)
+        %tr.data-table__selectable-row
+          %td{:style => "border-right: 1px solid #ccc"}="#{object.product.name}"
+          %td{:style => "border-right: 1px solid #ccc"}="#{total_stock_data}".to_f
+
+          - @store_details.each do |store|
+            - stock_data = get_store_product_data(object.product.id,store.id)
+            %td{:style => "border-right: 1px solid #ccc"}= "#{stock_data}"
+
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    Stock not found
+

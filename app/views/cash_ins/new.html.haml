@@ -1,0 +1,26 @@
+- links_arr = [{:title=>"Cash Handling", :url=>cash_handlings_path,:active_class=>""},{:title=>"Cash In",:url=>cash_ins_path(@cash_ins),:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+-cash_data = get_unit_current_cash(@current_user.unit_id,@from_datetime,@to_datetime)
+.row.white.padding-5
+  .col-lg-4.padding-5
+    .row.white.padding-5.smallstat.box
+      %img.float-l{:src => "/assets/icons/ic_cash.png", :class => "img-thumbnail", :width => "50px"} 
+      %span.title.font-sz-12  Current Cash
+      %span.value=number_to_currency(cash_data[:current_cash],unit: currency,format: "%u %n", precision: 2)
+    .clearfix  
+
+  .col-lg-4.padding-5
+    .row.white.padding-5.smallstat.box
+      %img.float-l{:src => "/assets/icons/ic_cash_in.png", :class => "img-thumbnail", :width => "50px"}
+      %span.title.font-sz-12 Today's Total Cash Ins
+      %span.value=number_to_currency(cash_data[:cash_in],unit: currency,format: "%u %n", precision: 2)
+    .clearfix 
+
+  .col-lg-4.padding-5
+    .row.white.padding-5.smallstat.box
+      %img.float-l{:src => "/assets/icons/ic_cash_out.png", :class => "img-thumbnail", :width => "50px"}
+      %span.title.font-sz-12 Today's Total Cash Outs
+      %span.value=number_to_currency(cash_data[:cash_out],unit: currency,format: "%u %n", precision: 2)
+    .clearfix
+.card.width-80
+  = render 'form'

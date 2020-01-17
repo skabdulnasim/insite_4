@@ -1,0 +1,12 @@
+.product-card.col-lg-2.col-xs-12.col-sm-12.padding-5
+  .card.waves-effect.waves-light.margin-t-b-0{:class=>"table-card-#{table.id} #{get_table_color(table.table_state_id)}"}
+    .card-content.white-text.height-110
+      %h4.sm-header.margin-t-none.text-lighten-5
+        %small.text-lighten-3.font-sz-11{:class=>"table-card-text-#{table.id} #{get_table_color(table.table_state_id)}-text"}
+          ="##{table.id}"
+        =link_to table.name, edit_table_path(table), :class=>"white-text"
+      .text-lighten-4.font-sz-12{:class=>"table-card-text-#{table.id} #{get_table_color(table.table_state_id)}-text"}
+        ="#{table.table_shape.humanize} table of capacity #{table.capacity}."
+    .card-action.darken-1.white-text{:class=>"table-card-#{table.id} #{get_table_color(table.table_state_id)}"}
+      %span.font-sz-12{:class=>"table-status-#{table.id}"}=table.table_state.name.upcase
+      %i.mdi-content-send.smaller.float-r

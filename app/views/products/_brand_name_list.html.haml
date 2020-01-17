@@ -1,0 +1,6 @@
+- @brands.each do |brand|
+  %ul{:style => "list-style:none; padding:0px;"}
+    %li
+      .checkbox.margin-t-b-2
+        = check_box_tag 'product_brands[]', brand, false,{ :id => "brand_#{brand}", :class=>"filled-in"}
+        %label.checkbox.inline.margin-l-5.margin-t-2{:for=>"brand_#{brand}", :style=>"padding-left:30px;"}=brand

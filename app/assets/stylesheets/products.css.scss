@@ -1,0 +1,78 @@
+// Place all the styles related to the Products controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+#select_div{
+  height:235px;
+  overflow-y:scroll;
+  background-color:#fff;
+  padding:10px;
+}
+.search{
+  float: right;
+}
+.digg_pagination{
+  float: right;
+}
+.thumb{
+  width: 50px;
+  height: 50px;
+}
+.product_listing a{
+  color: #009933 !important;
+  font-weight: bold;
+}
+.product_listing a:hover{
+  color: #FF3300 !important;
+  font-weight: bold;
+  text-decoration: none;
+}
+.cut_line{
+  text-decoration:line-through;
+}
+#box{
+  width: 300px;
+  max-height:150px;
+  overflow-y: scroll;
+  border-radius: 10px;
+  box-shadow: 0px 0px 5px 2px #888888;
+  margin-left: -329px;
+  margin-top: 30px;
+  position: absolute;
+  background: aliceblue;
+}
+.each_box{
+  height:65px;
+}
+.each_box :hover{
+  background-color: #0066FF;
+}
+.sub_heading{
+  background-color: rgba(123, 51, 146, 1);
+  color: #fff;
+  padding: 5px;
+}
+/*#each_attr{
+  background-color: #ffffff;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+#attr_head{
+  background-color: rgba(243, 220, 246, 1);
+  padding: 10px;
+  font-weight: bold;
+}
+.attr_rm{
+  float:right;
+}*/
+
+
+
+.search_box{
+  max-height:200px !important; 
+  position: absolute; 
+  background-color: white; 
+  width: 295px; 
+  overflow-x: auto; 
+  box-shadow: 0px 0px 5px 2px #888888 !important;
+}

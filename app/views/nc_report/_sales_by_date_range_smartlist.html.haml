@@ -1,0 +1,19 @@
+- unless smart_listing.empty?
+  =# debug smart_listing.collection
+  / %table.data-table
+  /   %thead
+  /     %tr.data-table__selectable-row
+  /       %th Date
+  /       %th Total Sales
+  /       / %th Card
+  /   %tbody
+  /     - smart_listing.collection.each do |object|
+  /       %tr.data-table__selectable-row
+  /         %td= debug object
+  /         %td=object.total_sale
+            
+  / = smart_listing.paginate
+  / = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

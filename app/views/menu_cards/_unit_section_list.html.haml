@@ -1,0 +1,21 @@
+= hidden_field_tag :from_menu_id
+
+- @all_units_types.each do |all_units_type|
+  .panel-group{"aria-multiselectable" => "true", :role => "tablist", :id => "accordion#{all_units_type[:id]}"}
+    .panel.panel-default
+      #headingOne.panel-heading{:role => "tab"}
+        %h4.panel-title
+          %a{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "accordion#{all_units_type[:id]}", "data-toggle" => "collapse", :href => "#collapseOne#{all_units_type[:id]}"}
+            = all_units_type[:unit_type_name]
+      .panel-collapse.collapse{"aria-labelledby" => "headingOne", :role => "tabpanel", :id => "collapseOne#{all_units_type[:id]}"}
+        .panel-body
+          %ul{:style => "list-style:none"}
+            - all_units_type.units.each do |all_unit|
+              %li
+                %b= all_unit[:unit_name]
+                -  all_unit.sections.each do |section|
+                  %ul{:style => "list-style:none"}
+                    %li  
+                      %input.filled-in{:type => "checkbox", :name => "section_id[]", :value => section.id, :id => "sec_#{section.id}"}
+                      %label{:for=>"sec_#{section.id}"}
+                        = section[:name]                        

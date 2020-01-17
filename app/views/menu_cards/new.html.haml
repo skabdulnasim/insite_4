@@ -1,0 +1,17 @@
+:javascript
+  $(function() {
+    $('#valid_from').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+    $('#valid_till').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+  });
+
+- links_arr = [{:title=>I18n.t(:manage_calatog), :url=>menu_cards_path,:active_class=>""},{:title=>"#{I18n.t(:label_add_new)}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+= render "form"
+
+
+

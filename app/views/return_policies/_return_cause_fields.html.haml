@@ -1,0 +1,7 @@
+.form-group.col-sm-12
+  = f.label 'return_cause', :class => 'col-sm-2 control-label'
+  .col-sm-8
+    = f.text_field :title, :required => true, :autofocus => true, :placeholder => "Enter return cause", :class => 'form-control', autocomplete: 'off'
+  
+  .col-sm-2
+    %a.btn.btn-xs.btn-danger.remove_return_causes{:href => "#", :title => "Delete", 'data-return-cause-id'=>f.object.id}

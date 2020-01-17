@@ -1,0 +1,27 @@
+%p#notice= notice
+
+%p
+  %b Menu product:
+  = @resource_order_history_detail.menu_product_id
+%p
+  %b Product:
+  = @resource_order_history_detail.product_id
+%p
+  %b Product name:
+  = @resource_order_history_detail.product_name
+%p
+  %b User:
+  = @resource_order_history_detail.user_id
+%p
+  %b Unit:
+  = @resource_order_history_detail.unit_id
+%p
+  %b Recorded at:
+  = @resource_order_history_detail.recorded_at
+%p
+  %b Remrks:
+  = @resource_order_history_detail.remrks
+
+= link_to 'Edit', edit_resource_order_history_detail_path(@resource_order_history_detail)
+\|
+= link_to 'Back', resource_order_history_details_path

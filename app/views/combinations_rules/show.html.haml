@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @combinations_rule.name
+%p
+  %b Max qty:
+  = @combinations_rule.max_qty
+%p
+  %b Min qty:
+  = @combinations_rule.min_qty
+
+= link_to 'Edit', edit_combinations_rule_path(@combinations_rule)
+\|
+= link_to 'Back', combinations_rules_path

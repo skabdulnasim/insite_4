@@ -1,0 +1,133 @@
+= javascript_include_tag "/js/query-builder.min.js"
+= javascript_include_tag "/js/query-builder-sql-support.js"
+
+
+= form_for @report, method: "post", url: customize_step_report_folder_report_path(@report_folder,@report,3) do |f| 
+  - _celrctor_collection = @form_data[:report_selectors]
+  - @form_data[:report_selectors].each do |filter_col|
+    %input{:type =>"hidden",:name=>"report_selectors[]",:value=>filter_col}
+    %br
+
+  = f.text_area :report_criteria, :rows=>2, :html=>{:style=>"overflow:auto"}  
+  = f.submit "Next", :class=>"m-btn teal"
+.col-md-12.col-lg-10.col-lg-offset-1
+  #builder
+  .btn-group
+    %button.btn.btn-warning.reset Reset
+    /%button.btn.btn-success.set Set rules
+  .btn-group
+    /%button.btn.btn-primary.parse-json JSON
+    /%button.btn.btn-primary.parse-sql{"data-stmt" => "question_mark"} SQL (question mark)
+    /%button.btn.btn-primary.parse-sql{"data-stmt" => "numbered"} SQL (numbered)
+    %button.btn.btn-primary.parse-sql{"data-stmt" => "false"} SQL
+    /%button.btn.btn-primary.parse-mongo MongoDB
+
+    
+- @filters = Array.new
+
+- @form_data[:report_selectors].each do |filter_col|
+  - data_type = get_data_type(filter_col)
+  - unless data_type =="text"
+    - data_type = "double" if data_type == "float"
+    - id= label = filter_col
+    - id= "date(#{filter_col})" if data_type == "datetime"
+    
+    - tmp         = Hash.new
+    - tmp[:id]    = id
+    - tmp[:label] = label
+    - tmp[:type]  = data_type
+    - @filters << tmp
+- @filter_json = @filters.to_json
+
+.row
+  =# debug @filters.to_json
+  = #debug (@filters)
+
+:javascript
+  // define filters
+  var tmp_data = "#{j @filter_json}";
+  tmp_data = JSON.parse(tmp_data);
+  $('#builder').queryBuilder({
+    sortable: true,
+    
+    onValidationError: function($target, err) {
+        console.error(err, $target);
+    },
+    
+    filters: tmp_data
+  });
+  
+  $('.set').on('click', function() {
+    $('#builder').queryBuilder('setRules', {
+      condition: 'AND',
+      rules: [{
+        id: 'price',
+        operator: 'between',
+        value: [10.25, 15.52],
+        flags: {
+          no_delete: true,
+          filter_readonly: true
+        }
+      }, {
+        condition: 'OR',
+        rules: [{
+          id: 'category',
+          operator: 'equal',
+          value: 2
+        }, {
+          id: 'coord',
+          operator: 'equal',
+          value: 'B.3'
+        }]
+      }]
+      
+    });
+  
+    $('.parse-json').trigger('click');
+  })
+  //.trigger('click');
+  
+  // reset builder
+  $('.reset').on('click', function() {
+    $('#builder').queryBuilder('reset');
+    $('#result').addClass('hide').find('pre').empty();
+  });
+  
+  // get rules
+  $('.parse-json').on('click', function() {
+    $('#result').removeClass('hide')
+      .find('pre').html(JSON.stringify(
+        $('#builder').queryBuilder('getRules'),
+        undefined, 2
+      ));
+  });
+  
+  $('.parse-sql').on('click', function() {
+    var res = $('#builder').queryBuilder('getSQL', $(this).data('stmt'), false);
+    $('#report_report_criteria').val(res.sql + (res.params ? '\n\n' + JSON.stringify(res.params, undefined, 2) : '')
+      );
+  });
+  
+  $('.parse-mongo').on('click', function() {
+    $('#result').removeClass('hide')
+      .find('pre').html(JSON.stringify(
+        $('#builder').queryBuilder('getMongo'),
+        undefined, 2
+      ));
+  });
+
+
+= javascript_include_tag "http://mistic100.github.io/jQuery-QueryBuilder/dist/bootstrap-datepicker/js/bootstrap-datepicker.js"
+%link{:href => "http://mistic100.github.io/jQuery-QueryBuilder/dist/bootstrap-datepicker/css/datepicker3.css", :rel => "stylesheet", :type => "text/css"}
+
+
+
+
+
+
+
+
+
+
+
+  

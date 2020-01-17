@@ -1,0 +1,16 @@
+= form_for [@report_folder,@report],:html => {:class => "form-horizontal"} do |f|
+  - if @report.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@report.errors.count, "error")} prohibited this report from being saved:"
+      %ul
+        - @report.errors.full_messages.each do |msg|
+          %li= msg
+  %fieldset
+    .form-group
+      = f.label :name,{:class => "col-md-2 control-label"},{:for => "textinput"}
+      .col-md-4
+        = f.text_field :name,{:class => "form-control input-md" ,:placeholder => "Report Name" ,:required => true}
+    .form-group
+      %label.col-md-2.control-label{:for => "singlebutton"}
+      .col-md-4
+        = f.submit 'Save & Customize',{:class => "singlebutton btn btn-success"}

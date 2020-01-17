@@ -1,0 +1,12 @@
+<tr class='data-table__selectable-row' id="cart_item_tag_<%= tag_id %>">
+  <td>
+    <%=tag_name%>
+    <input type="hidden" name="product[product_tags_attributes][<%=key%>][tag_id]" value="<%=tag_id%>">
+    <input type="hidden" name="product[product_tags_attributes][<%=key%>][status]" value=0>
+  </td>
+  
+  <td>
+    <input id="product_tags_attributes_<%=key%>__destroy" name="product[product_tags_attributes][<%=key%>][_destroy]" type="hidden" value="false">
+    <a href="#" class="remove_product_tags" data-tag-id="<%= tag_id %>">Remove</a>
+  </td>
+</tr>

@@ -1,0 +1,53 @@
+<div class="col-lg-12 padding-5">
+	<div class="card waves-effect waves-light">
+		<div class="card-content p0">
+			<p class="header white-text teal padding-10">
+				Store Details
+				<b class="white-text">
+				#<%=response.id%>
+				<% if(response.recorded_at) { %>
+					<%
+						var record_date = new Date(response.recorded_at);
+						var record_date = record_date.format("dd-mm-yyyy hh:MM TT"); 
+					%>
+					(Recorded at <%=record_date%>)
+				<% } %>
+				</b>
+			</p> 
+		</div>
+		<div class="main-section__content">
+			<div class="example">
+				<div class="example__content p0">
+					<div class="data-table-container">
+						<% if (response.length != 0) { %>
+							<div class="padding-5">
+								<div class="form-group">
+									<label for="bill_discount" class="col-sm-3 control-label">Select Return Store</label>
+									<div class="col-sm-9">
+										<div class="input-group">
+											<select class="form-control" id="return_store">
+												<% for (var i = response.length - 1; i >= 0; i--) { %>
+													<option value="<%= response[i].id %>"><%= response[i].name %>(<%= response[i].unit_type %> : <%= response[i].unit_name %>)</option>
+												<% } %>
+											</select>
+										</div>
+									</div>
+								</div>
+							</div>	
+							<div class="padding-5 float-r">
+								<div class="form-group">
+									<a class="m-btn m-btn-green float-r margin-r-5 return-item modal-close" data-toggle="modal" data-bill-id="<%= bill_id %>" data-currency="<%= currency %>" data-action='return_goods'><i class="fa fa-check left"></i>Confirm Store</a>
+								</div>
+							</div>
+						<% } else { %>
+							<div class="jumbotron">
+								<h2>No Return Store Found</h2>
+								<p>Please Create a Return Store first.</p>
+							</div>
+						<% } %>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

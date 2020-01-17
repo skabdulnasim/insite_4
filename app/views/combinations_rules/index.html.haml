@@ -1,0 +1,23 @@
+%h1 Listing combinations_rules
+
+%table
+  %tr
+    %th Name
+    %th Max qty
+    %th Min qty
+    %th
+    %th
+    %th
+
+  - @combinations_rules.each do |combinations_rule|
+    %tr
+      %td= combinations_rule.name
+      %td= combinations_rule.max_qty
+      %td= combinations_rule.min_qty
+      %td= link_to 'Show', combinations_rule
+      %td= link_to 'Edit', edit_combinations_rule_path(combinations_rule)
+      %td= link_to 'Destroy', combinations_rule, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Combinations rule', new_combinations_rule_path

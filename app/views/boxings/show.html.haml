@@ -1,0 +1,102 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Boxings",:url=>boxings_path,:active_class=>""},{:title=>"boxing : #{@boxing.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+
+%link{:href => "http://fonts.googleapis.com/icon?family=Material+Icons", :rel => "stylesheet"}
+= stylesheet_link_tag "timeline"
+
+:css
+  .side-link::after{
+    content: '';
+    position: absolute;
+    width: 31px;
+    height: 2px;
+    background: #cccccc;
+    left: 9px;
+    top: 50%;
+  }
+  .timeline-entry.card:after{
+    content: "";
+    position: absolute;
+    top: 0px;
+    right: -9px;
+    width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 12px 0px 0px 9px;
+    border-color: transparent transparent transparent #ffffff;
+  }
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container.padding-10
+        %h4 Boxing Details
+        .divider
+        .margin-t-15
+        %span
+          %label.margin-r-10 Boxing Name:
+          = @boxing.name
+        .margin-t-15
+        .divider
+        .margin-t-15
+
+        %h4.margin-t-25 Box Details
+        .card.card-panel.padding-10
+          .row
+            - boxes = @boxing.boxes
+            - unless boxes.present?
+              .margin-l-15
+                No box is present there
+            - else
+              - boxes.each do |box|
+                %ul.timeline.collapse-lg.timeline-hairline.timeline-parent
+                  %li.timeline-inverted
+                    .timeline-circ.circ-xl.blue
+                      %i.fa.fa-cube.font-sz-22.margin-l-2
+                    .row.m0.timeline-entry.mt30.side-link
+                      .card.m0.col.width-40-p.pointer.padding-10
+                        .p5.margin-l-15
+                          %h5.m0
+                            .left
+                              .font-w-400.font-sz-15
+                                %i.fa.fa-arrow-circle-right
+                                - _product = Product.find(box.product_id)
+                                - _product_name = _product.package_component.present? ?  _product.product_name(_product) : _product.name            
+                                = _product_name.humanize
+                              .margin-t-10
+                                %i.fa.fa-barcode
+                                = box.sku
+                              .margin-t-10
+                                %i.fa.fa-calendar
+                                = box.created_at.strftime("%Y-%m-%d  %I:%M %p")
+
+                  - box_items = box.box_items
+                  - if box_items.present?
+                    - box_items.each do |box_item|
+                      %ul.timeline.collapse-lg.timeline-hairline.timeline-parent.margin-l-150
+                        %li.timeline-inverted
+                          .timeline-circ.circ-xl.blue
+                            %i.material-icons local_parking
+                          .row.m0.timeline-entry.mt30.side-link
+                            .card.m0.col.width-40-p.pointer.padding-10
+                              .p5.margin-l-15
+                                %h5.m0
+                                  .left
+                                    .font-w-400.font-sz-15
+                                      %i.fa.fa-arrow-circle-right
+                                      - _product = Product.find(box_item.product_id)
+                                      - _product_name = _product.package_component.present? ?  _product.product_name(_product) : box_item.product.name.humanize.name            
+                                      = _product_name.humanize
+                                    .margin-t-10
+                                      %i.fa.fa-barcode
+                                      = box_item.sku
+                                    .margin-t-10
+                                      %i.fa.fa-calendar
+                                      = box_item.created_at.strftime("%Y-%m-%d  %I:%M %p")
+
+
+
+
+
+

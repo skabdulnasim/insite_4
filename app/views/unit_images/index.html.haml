@@ -1,0 +1,21 @@
+%h1 Listing unit_images
+
+%table
+  %tr
+    %th Unit
+    %th Image
+    %th
+    %th
+    %th
+
+  - @unit_images.each do |unit_image|
+    %tr
+      %td= unit_image.unit_id
+      %td= unit_image.image
+      %td= link_to 'Show', unit_image
+      %td= link_to 'Edit', edit_unit_image_path(unit_image)
+      %td= link_to 'Destroy', unit_image, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Unit image', new_unit_image_path

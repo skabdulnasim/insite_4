@@ -1,0 +1,17 @@
+%h2 Listing unit_details
+
+%table
+  %tr
+    %th
+    %th
+    %th
+
+  - @unit_details.each do |unit_detail|
+    %tr
+      %td= link_to 'Show', unit_detail
+      %td= link_to 'Edit', edit_unit_detail_path(unit_detail)
+      %td= link_to 'Destroy', unit_detail, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Unit detail', new_unit_detail_path

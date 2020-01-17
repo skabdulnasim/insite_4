@@ -1,0 +1,12 @@
+%ul.col-lg-12
+  - submenucategories.each do |sub|    
+    %li.col-lg-4.margin-b-5.menu_categories_action_list{:id => "#{sub.id}"}
+      = link_to sub.name, menu_category_path(sub), :class => 'btn btn-primary btn-mini active view', "data-toggle" => "tooltip"
+    .form-group.col-lg-2
+      = text_field_tag 'increase_by_sp', '', class: "form-control allow-numeric-only increase_by_sp increase_by_sp_#{sub.id}", placeholder: "Increase By", 'data-menu-category-id' => sub.id
+    .form-group.col-lg-2
+      = text_field_tag 'decrease_by_sp', '', class: "form-control allow-numeric-only decrease_by_sp decrease_by_sp_#{sub.id}", placeholder: "Decrease By", 'data-menu-category-id' => sub.id
+    .form-group.col-lg-2
+      = text_field_tag 'decrease_by_mrp', '', class: "form-control allow-numeric-only decrease_by_mrp decrease_by_mrp_#{sub.id}", placeholder: "Decrease By", 'data-menu-category-id' => sub.id
+    .col-lg-2
+      = button_tag "Save", :class => 'btn btn-success category_sale_price_btn', :type => 'button', 'data-menu-category-id' => sub.id

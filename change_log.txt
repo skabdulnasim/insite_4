@@ -1,0 +1,600 @@
+
+Touchventory ChangeLog
+...........................................................................................
+-------------------------------------------------------------------------------------------
+Version 1.4.15
+...........................................................................................
+
+  11 April 2016
+
+  * Bug fixed in section wise bill filter.
+-------------------------------------------------------------------------------------------
+Version 1.4.14
+...........................................................................................
+
+  5 April 2016
+
+  * Sales summery report bug fixed.
+  * Loyalty card and third party added in sales summery report.
+  * Loyalty card reward and redeem report implemented.
+-------------------------------------------------------------------------------------------
+Version 1.4.11
+...........................................................................................
+
+  24 March 2016
+  
+  * Pdf and csv download bug fix.
+  * Fromat.js add in by_date method.
+  * Product wise sales report for android client optimized.
+-------------------------------------------------------------------------------------------
+Version 1.4.10
+...........................................................................................
+
+  12 March 2016
+  
+  * Timezone for individual subdomain implemented.
+
+-------------------------------------------------------------------------------------------
+Version 1.4.9
+...........................................................................................
+
+  12 March 2016
+  
+  * Stock purchase bug fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.4.8
+...........................................................................................
+
+  8 March 2016
+  
+  * Secondary unit support made available in Stock Purchase.
+  * Outlet wise bill and order filtering implemented.
+
+-------------------------------------------------------------------------------------------
+Version 1.4.7
+...........................................................................................
+
+  4 March 2016
+  
+  * Branch wise filter added for bill and order page. 
+  * Bulk stock transfer using secondery product unit, implemented.
+
+-------------------------------------------------------------------------------------------
+Version 1.4.6
+...........................................................................................
+
+  24 February 2016
+  
+  * Bug fixes for Details NC report view and CSV download.
+
+-------------------------------------------------------------------------------------------
+Version 1.4.5
+...........................................................................................
+
+  24 February 2016
+  
+  * Point calculation done on Loyalty point purchase(Recharge/ Enroll)
+
+-------------------------------------------------------------------------------------------
+Version 1.4.4
+...........................................................................................
+
+  24 February 2016
+  
+  * Bug fixes for new order V2 API.
+
+-------------------------------------------------------------------------------------------
+Version 1.4.3
+...........................................................................................
+
+  24 February 2016
+  
+  * New order V2 API implemented with offline support.
+  * Few upgradation in reports.
+
+-------------------------------------------------------------------------------------------
+Version 1.4.2
+...........................................................................................
+
+  20 February 2016
+  
+  * Bug fixes for report api (for FOS,PRO).
+  * Settlement Report (Card Wise) Added.
+
+-------------------------------------------------------------------------------------------
+Version 1.4.1
+...........................................................................................
+
+  17 February 2016
+  
+  * Bug fixes for stock purchase.
+  * Rscratch Gem version updated.
+
+-------------------------------------------------------------------------------------------
+Version 1.4.0
+...........................................................................................
+
+  17 February 2016
+  
+  * Token authentication implemented with Devise.
+  * CanCan authorizations for namespaced controllers implemented.
+  * Few API V2 Orders resources implemented.
+  * Input and output product unit support implemented.
+  * Product base unit can be added dynamically.
+  * Product transaction units implemented.
+  * Secondary stocks purchase in inventory implemented.
+  * From date and to date filter added in Reports API.
+  * OrderDetail added as a stock stock_transaction_type instead of order for proper raw material accounting.
+  * Few more columns added in bills list.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.14
+...........................................................................................
+
+  16 February 2016
+  
+  * API fro Stewot PRO report both item wise and sell wise
+
+-------------------------------------------------------------------------------------------
+Version 1.3.13
+...........................................................................................
+
+  12 February 2016
+
+  * In NC and Sells Report Category wise report category filter added.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.12
+...........................................................................................
+
+  09 February 2016
+  
+  * NC Report to date added for by_date report.
+  * NC Report for by_date bill_amount_without_tax,total,discount,payment_options,
+    total_tax column preferances are removed.
+  * Column Preferances for category_wise_nc_report added.
+  * NC Report procurement_cost,sales_price added for both by_date and category_wise report.
+  * Old side bar synced with material side bar
+  * Inactive menu product bug fixed
+
+-------------------------------------------------------------------------------------------
+Version 1.3.11
+...........................................................................................
+
+  29 January 2016
+  
+  * Bill edit(from Admin) routing error bug fixed.
+  * Bill edit(from Admin) UI changed.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.10
+...........................................................................................
+
+  29 January 2016
+  
+  * In sales report by date, from_date and to_date filtering implemented.
+  * User login API implemenetd in API V2.
+  * Units show API implemented in API V2.
+  * Few bug fixed in loyalty card.
+  * Edit UI for paid bills given with http basic authentication.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.9
+...........................................................................................
+
+  26 January 2016
+  
+  * Discount amount implemented in stock purchase.
+  * Rscratch gem integrated for exception logging.
+  * After settlement from server side table state is updated to empty.
+  * Multiple active menu card bug for a section is solved.
+  * Material views implemented for Sort, Section and Tax group.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.8
+...........................................................................................
+
+  24 January 2016
+  
+  * Bill amount roundoff implemented in bill quickview.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.7
+...........................................................................................
+
+  24 January 2016
+  
+  * New UI for Bill details along with details of applied discounts and tax details.
+  * Biller details added in bill.
+  * Settlement details added in bill quickview.
+  * Settlement information deleted for paid NC and void billes.
+  * Bill details API V2 implemented.
+  * Roundoff value calculation implemented in bills.
+  * Export to PDF option added in reports.
+  * Discount price added in stock purchase.
+  * Shipping module dependency in interstore stock transfer removed.
+  * Stock transfer template bug fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.6
+...........................................................................................
+
+  17 January 2016
+  
+  * Bill wise NC report
+  * Category wise NC Report
+  * Detail NC Report  Group By Date and Table
+  * Bill wise sale report with valid bill only  
+
+-------------------------------------------------------------------------------------------
+Version 1.3.5
+...........................................................................................
+
+  13 January 2016
+
+  * Quantity, Price and Sales data consolidated in category wise sales report fro date range.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.4
+...........................................................................................
+
+  11 January 2016
+
+  * Item receiving UI of stock purchase updated and few new fields added.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.3
+...........................................................................................
+
+  8 January 2016
+
+  * Item receiving UI of stock purchase updated and few new fields added.
+  * Few columns added in sales by date report.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.2
+...........................................................................................
+
+  6 January 2016
+
+  * Order source filter added in bills page
+  * Order source information added in sales by date report.
+  * API to Pull latest orders after certail order ID is complete.
+  * Inclusive and exclusive input tax handling during stock purchase implemented.
+  * Few changes in category wise sales report
+
+-------------------------------------------------------------------------------------------
+Version 1.3.1
+...........................................................................................
+
+  30 December 2015
+
+  * Stock consumption report implemented in inventory report.
+  * Store Indent Report implemented in inventory report.
+  * Stock issue report from a store implemented in inventory report.
+
+-------------------------------------------------------------------------------------------
+Version 1.3.0
+...........................................................................................
+
+  29 December 2015  
+  
+  * API version 2 initial setup implemented.
+  * Units API v2 implemented.
+  * Category wise sales report added.
+  * Stock purchase report added.
+
+-------------------------------------------------------------------------------------------
+Version 1.2.1
+...........................................................................................
+
+  24 December 2015  
+    
+  * Duplicate settlement of a bill prevented.
+  * Tally data export in XML format implemented.
+
+-------------------------------------------------------------------------------------------
+Version 1.2.0
+...........................................................................................
+
+  23 December 2015  
+        
+  * Column preferences in reports added.
+  * In bill void and NC, remarks added.
+  * Third party payment option support implemented.
+
+-------------------------------------------------------------------------------------------
+Version 1.1.3
+...........................................................................................
+
+  18 December 2015  
+    
+  * Inventory report added.
+  * Menu category image added.
+  * Section edit bug fixed.
+  * User edit bug fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.1.2
+...........................................................................................
+
+  17 December 2015  
+    
+  * Sales report module added.
+  * Remarks added in order item NC.
+
+-------------------------------------------------------------------------------------------
+Version 1.1.1
+...........................................................................................
+
+  12 December 2015  
+  
+  * Tables UI modified.
+  * Table state update PUSH channel added.
+  * Trash status added in multiple table.
+
+-------------------------------------------------------------------------------------------
+Version 1.1.0
+...........................................................................................
+
+  10 December 2015  
+
+  * Room module introduced.
+  * Support Third party payment options like Foodpanda, Zomato, Swiggy added.
+  * Support for payment through user account added.
+  * Table swapping api introduced.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.30
+...........................................................................................
+
+  8 December 2015  
+
+  * Settlement option is available from portal.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.29
+...........................................................................................
+
+  2 December 2015  
+
+  * Input tax class selection bug fixed in stock purchase.
+  * Order listing new material UI implemented.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.28
+...........................................................................................
+
+  26 November 2015  
+  
+  * Barcode generation for product SKU implemented.
+  * Cancel KOT implemented.
+  * Order item No-charge implemented.
+  * In bill details payment info added.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.27
+...........................................................................................
+
+  20 November 2015  
+
+  * Bill generation bug fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.26
+...........................................................................................
+
+  20 November 2015  
+
+  * Bill serial no. bug fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.25
+...........................................................................................
+
+  19 November 2015  
+  
+  * Printer assignment to SORT enabled.
+  * Requisition product selection bug fixed.
+  * Store edit bug fixed.
+  * Stock transfer to secondary store enabled through configuration.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.24
+...........................................................................................
+
+  17 November 2015  
+
+  * Menu copy reverted to old UI.
+  * Access manager role capabilities bug fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.23
+...........................................................................................
+
+  16 November 2015  
+
+  * Unit specific products.
+  * Product master implemented.
+  * Stock input tax implemented.
+  * Last bill serial no added in user login API.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.22
+...........................................................................................
+
+  6 November 2015  
+  
+  * Todays bills report synced with unit closing time
+  * New UI for adding items to menu card.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.21
+...........................................................................................
+
+  29 October 2015  
+  
+  * Product unit multiplier bug fixed while ordering.
+  * Bill amount roundoff in grand total.
+  
+-------------------------------------------------------------------------------------------
+Version 1.0.20
+...........................................................................................
+
+  29 October 2015  
+
+  * Notification UI changed.
+  * Stock audit notification added.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.19
+...........................................................................................
+
+  27 October 2015  
+
+  * Stock report export option added.
+  * Stock audit report bug fixed.
+    
+-------------------------------------------------------------------------------------------
+Version 1.0.18
+...........................................................................................
+
+  18 October 2015  
+
+  * Stock report bug fixed.
+  * Product composition moved to separate model and bug fixed.
+  * Product composition migration script is complete.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.17
+...........................................................................................
+
+  15 October 2015  
+
+  * Current stock precision bug fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.16
+...........................................................................................
+
+  15 October 2015  
+  
+  * Date filter bug in bills and orders indexing API fixed
+  * Combo product  now configured to handle recipe items. 
+  * Material UI implemented for branch details module.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.15
+...........................................................................................
+
+  13 October 2015  
+
+  * Stock audit updated and from now any stock update after stock audit will not be accepted for approval.
+  * Combo product bug fixed.
+  * Material UI implemented for users module.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.14
+...........................................................................................
+
+  8 October 2015  
+
+  * Stock audit updated to accept over stock.
+  * Date range filter updated with day closure.
+  * Day closure support for JSON API added.
+  * Un-necessary code removed.
+    
+-------------------------------------------------------------------------------------------
+Version 1.0.13
+...........................................................................................
+
+  7 October 2015  
+
+  * New stock calculation bug fixed.
+  * Stock report added in inventory.
+  * Day closure feature added in units.
+  * Dashboard, Orders, Bills modules updated with day closure times.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.12
+...........................................................................................
+
+  25 September 2015  
+
+  * Stock audit bug fixed.
+  * Stock audit UI changed.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.11
+...........................................................................................
+
+  22 September 2015  
+
+  * Stock audit material UI implemented.
+  * In stock product count bug fixed.
+  * Combo product another lavel stock check enabled through its stack level.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.10
+...........................................................................................
+
+  14 September 2015  
+
+  * Menu edit option enabled and configuration parameter added.
+  * Menu list UI changes.
+  * Custom report template builder added.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.9
+...........................................................................................
+
+  9 September 2015  
+
+  * Notification module enabled with push notification
+  * Low stock alert generated.
+  * Material UI responsiveness bug fixed.
+  * Bill edit bug fixed.
+  * Stock transfer price added.
+  * POS Terminal bugs fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.8.1
+...........................................................................................
+
+  28 August 2015  
+
+  * Bug fix for order generic message.
+  * Dashboard2 cost data bug fixed.
+  * Bill and Order date filter bug fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.8
+...........................................................................................
+
+  27 August 2015  
+
+  * Bug fix in product composition.
+  * Single and generic message added in new order if stock is insufficient.
+  * Material UI for Vendors. 
+  * DealMaker Initial code added (Under development)
+
+-------------------------------------------------------------------------------------------
+Version 1.0.7
+...........................................................................................
+
+  18 August 2015  
+  
+  * Bug fix for new order with customization. Previously stock was not deducting from inventory for customization item of an order.
+  * Toast added to show quick notification.
+  * Bill details UI bug fixed.
+
+-------------------------------------------------------------------------------------------
+Version 1.0.6
+...........................................................................................
+
+  14 August 2015  
+
+  * Bug fix for new order which contains products without any composition.
+  * Material layout added in Products, Purchase Order, Requisition.
+  * More controls added in application configurations.    

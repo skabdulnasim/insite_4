@@ -1,0 +1,32 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Transfer ID", "id" 
+        %th Reference
+        %th Products
+        %th Total Amount
+        %th To Store
+        %th= smart_listing.sortable "Date", "created_at"
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.id
+          %td
+            ="Requisition ID: #{object.store_requisition_log_id}" if object.store_requisition_log_id.present?
+          %td="#{object.stocks.type_debit.map{|stock| stock.product.name + stock.stock_debit.to_s + stock.product.basic_unit}.join(" | ")}"  
+          %td= "#{number_to_currency(object.stocks.set_store(object.primary_store_id).sum(:price), unit: "#{currency}", format: "%u %n")}"
+          %td
+            = "#{object.to_store.name}"
+            %br
+            ="Branch: #{object.to_store.unit.unit_name}"
+
+          %td.font-sz-12=object.created_at.strftime("%d %b %Y, %I:%M %p")             
+      
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No records found!.
+

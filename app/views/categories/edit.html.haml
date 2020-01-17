@@ -1,0 +1,9 @@
+= render "layouts/flash"
+= render 'form'
+
+%a{:href => "#{category_path(@category)}", :class => 'btn btn-primary btn-mini active'}
+  %i.icon-edit
+  Show
+%a{:href => "#{new_category_path}", :class => 'btn btn-primary btn-mini active'}
+  %i.icon-backward
+  Cancel

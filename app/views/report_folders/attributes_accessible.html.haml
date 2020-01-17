@@ -1,0 +1,32 @@
+
+.page-header
+  - if notice.nil? == false
+    #notice.alert.alert-info
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-info.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"} ×
+      = notice
+  %h2
+    %i.fa.fa-tags
+    Report Folder Customization
+    %small Accessible Attributes
+.page-container  
+  = form_for @report_folder, method: "post", url: attributes_accessible_path(@report_folder), :html => { :id => "check_box_validate" } do |f|
+    .col-lg-10
+      - @data_tables.each do |data_table|
+        %ul.collection.with-header
+          %li.collection-header
+            %h5
+              - _model_name = data_table.first.to_s.classify.constantize
+              = data_table.first.humanize          
+          %li.collection-item
+            - data_table.second.each do |rel_tbl_column|
+              - _field_value = "#{data_table.first}.#{rel_tbl_column[:name]}"
+              - _attribute_validation = check_field(_model_name,_field_value)
+              .col-lg-4
+                %input{:type =>"checkbox",:name=>"attributes_accessible[]",:class=>"check",:id =>"select_#{data_table.first}_#{rel_tbl_column[:name]}",:value=>_field_value,:checked=>((@report_folder.attributes_accessible || '').include?_field_value)}
+                %label{:for=>"select_#{data_table.first}_#{rel_tbl_column[:name]}"}= rel_tbl_column[:name].humanize 
+            .clearfix
+    .col-lg-2
+      = f.submit "Finish", :class=>"m-btn teal"

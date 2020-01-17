@@ -1,0 +1,9 @@
+%tr{:id=>"cart_item_vendor_#{f.object.vendor_id}"}
+	%td
+		= text_field_tag "#{f.object.vendor.name}", "#{f.object.vendor.name}", :style=>"color:#000; border-bottom:none;"
+		= f.hidden_field :vendor_id
+	%td
+		= f.text_field :price, placeholder: "Enter vendor price"
+	%td
+		= f.hidden_field :_destroy
+		= link_to "Remove", "#", class: "remove_vendor_products", data:{"vendor-id"=>"#{f.object.vendor_id}","vendor-product-id"=>"#{f.object.id}"}

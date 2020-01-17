@@ -1,0 +1,19 @@
+%h1 Listing table_states
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @table_states.each do |table_state|
+    %tr
+      %td= table_state.name
+      %td= link_to 'Show', table_state
+      %td= link_to 'Edit', edit_table_state_path(table_state)
+      %td= link_to 'Destroy', table_state, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Table state', new_table_state_path

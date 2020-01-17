@@ -1,0 +1,25 @@
+= form_for @tax_class, remote: true do |f|
+  - if @tax_class.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+      = "#{pluralize(@tax_class.errors.count, "error")} prohibited this vendor from being saved."
+  .input-field
+    = f.select :tax_type, options_for_select({"Simple" => "simple", "Cess" => "cess", "Variable" => "variable", "Service" => "service", "Tax on service" => "tax_on_service", "Tax On item" => "tax_on_item_price","Parcel Charges" => "parcel_charge"},@tax_class.tax_type), { :include_blank=>"Select a tax type" }, {:class => "browser-default",:required => true}
+  .input-field
+    = f.select :operation_type, options_for_select(TaxClass::OPERTAION_TYPE,@tax_class.operation_type), { :include_blank=>"Select a operation type" }, {:class => "browser-default"}
+  .input-field
+    = f.text_field :name, :placeholder=>"Enter tax class name",:required=>true, :class => 'form-control validate'
+  .input-field
+    = f.text_field :lower_limit, :placeholder=>"Enter lower limit", :required=>true, :class => 'form-control validate'   
+  .input-field
+    = f.text_field :upper_limit, :placeholder=>"Enter upper limit", :required=>true, :class => 'form-control validate'  
+  .input-field
+    = f.select :amount_type, options_for_select(TaxClass::AMOUNT_TYPES,@tax_class.amount_type), { :include_blank=>"Select a tax type" }, {:class => "browser-default",:required => true} 
+  .input-field
+    = f.text_field :ammount, :placeholder=>"Enter tax class amount",:required=>true, :class => 'form-control validate'    
+  .input-field
+    %button.btn.p0-10.green.green-text.text-lighten-5.waves-effect.waves-light{:type=>"submit"}
+      Save
+    %button.btn-flat.close-taxclass-form
+      Cancel

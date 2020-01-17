@@ -1,0 +1,23 @@
+%h1 Listing commission_rules
+
+%table
+  %tr
+    %th Resource
+    %th Set by
+    %th Month
+    %th
+    %th
+    %th
+
+  - @commission_rules.each do |commission_rule|
+    %tr
+      %td= commission_rule.resource_id
+      %td= commission_rule.set_by
+      %td= commission_rule.month
+      %td= link_to 'Show', commission_rule
+      %td= link_to 'Edit', edit_commission_rule_path(commission_rule)
+      %td= link_to 'Destroy', commission_rule, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Commission rule', new_commission_rule_path

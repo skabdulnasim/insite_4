@@ -1,0 +1,42 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr
+        %th TsE
+        %th 
+          Total Allocated Shop
+        %th 
+          Completed
+        %th 
+          Completion Percentage
+        %th 
+          Total Allocated Visit
+        %th 
+          Completed(As per PJP)
+        %th 
+          Completion Percentage
+        %th 
+          Visit(without PJP)
+    
+    %tbody
+      - smart_listing.collection.each do |object|
+        /- alloted_details  = get_alloted_details_of_tse(object,@from_datetime,@to_datetime)
+        - alloted_details = get_unique_alloted_details_of_tse(object,@from_date,@to_date,@from_datetime,@to_datetime)
+        /=debug alloted_details
+        %tr
+          %td="#{object.profile.firstname}" " #{object.profile.lastname}"
+          %td= alloted_details[:total_uniq_alloted_shop]
+          %td= alloted_details[:total_uniq_alloted_shop_completed]
+          %td= alloted_details[:total_uniq_alloted_shop_completed_percentage]
+          %td= alloted_details[:pjp_allocation]
+          %td= alloted_details[:pjp_allocation_wise_completed]
+          %td= alloted_details[:pjp_allocation_percentage]
+          %td= alloted_details[:visit_without_pjp]
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    %td
+      No record found
+  

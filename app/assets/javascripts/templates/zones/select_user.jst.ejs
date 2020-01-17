@@ -1,0 +1,21 @@
+<div class="filter-title margin-t-b-0">
+	<i class="mdi-action-label left"></i>
+		All users
+</div>
+<div class="padding-5">
+	<select class="form-control" class="select optional form-control" id="users" name="user_id" required="required>
+		<option value="">Select User</option>
+		<option value="">Select User</option>
+		<% for (var obj=0 ;obj<type_info.length ; obj++){ %>
+			<% if (type_info[obj].id != present_user_id) { %>
+		 		<option class="user_name" value=" <%= type_info[obj].id %> ">
+		 			<%= type_info[obj].name %>
+		 		</option>
+		 	<% } else { %>
+		 		<option class="user_name" value=" <%= type_info[obj].id %> " selected style="color:red;">
+		 			<%= type_info[obj].name %>
+		 		</option>
+		 	<%}%>
+		<%}%>
+	</select>
+</div>

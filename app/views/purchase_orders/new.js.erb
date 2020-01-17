@@ -1,0 +1,7 @@
+<%= smart_listing_update :products %>
+<% if AppConfiguration.get_config_value('smart_po') == 'enabled' && AppConfiguration.get_config_value('on_behalf_po') == 'enabled' %>
+	<% if @current_user.unit.unittype.unit_type_name.humanize == "Distribution center" %>
+		<%= smart_listing_update :child_outlets %>
+	<% end %>
+	<%= smart_listing_update :on_behalf_smart_po_products %>
+<% end %>

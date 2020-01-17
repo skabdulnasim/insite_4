@@ -1,0 +1,391 @@
+:javascript
+  $(function () {
+    $('#open_from').datetimepicker({
+      pickDate: false
+    });
+    $('#open_to').datetimepicker({
+      pickDate: false
+    });
+  });
+= form_for @unit_detail,:html => { :class => 'form-horizontal' } do |u|
+  - if @unit_detail.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@unit_detail.errors.count, "error")} prohibited this unit_detail from being saved:"
+      %ul
+        - @unit_detail.errors.full_messages.each do |msg|
+          %li= msg
+
+  .col-sm-3.padding-l-r-none
+    .card
+      .filter-title.margin-t-b-0
+        %i.mdi-action-open-in-new.left
+        Branch details
+      .tabbable.tabs-left
+        %ul.nav.nav-tabs.padding-none
+          %li.active
+            %a{"data-toggle" => "tab", :href => "#a"}
+              General
+          %li
+            %a{"data-toggle" => "tab", :href => "#d"}
+              RRM
+          %li
+            %a{"data-toggle" => "tab", :href => "#b"}
+              Advanced
+          %li#product_attributes
+            %a{"data-toggle" => "tab", :href => "#c"}
+              Settings
+          %li
+            %a{"data-toggle" => "tab", :href => "#p"}
+              Paypal
+      .clearfix
+      .padding-5
+        %button.m-btn.green.width-100{:type=>"submit"} Save and continue
+  .tab-content
+    #a.tab-pane.col-sm-9.padding-r-none.active
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title General Information
+              .form-horizontal.bordered-row
+                = u.hidden_field  :unit_id, :class => 'form-control ', :value => current_user.unit_id
+                .form-group
+                  %label{:for => "min_order_amount", :class => "col-sm-4 control-label"} Minimum order amount
+                  .col-sm-5
+                    .input-group
+                      .input-group-addon= "#{currency}."
+                      %input#exampleInputAmount.form-control{:name => "min_order_amount", :type => "number", :value => unit_details[:min_order_amount]}
+                .form-group
+                  %label{:for => "daily_sales_target", :class => "col-sm-4 control-label"}Daily Sales Target
+                  .col-sm-5
+                    .input-group
+                      .input-group-addon= "#{currency}."
+                      %input#exampleInputAmount.form-control{:name => "daily_sales_target", :type => "number", :value => unit_details[:daily_sales_target]}
+
+                .form-group
+                  %label{:for => "day_allow_for_future_order", :class => "col-sm-4 control-label"}Day Allow for Future Order
+                  .col-sm-5
+                    .input-group
+                      .input-group-addon Day
+                      %input#exampleInputAmount.form-control{:name => "day_allow_for_future_order", :type => "number", :value => unit_details[:day_allow_for_future_order]}
+
+                .form-group
+                  %label{:for => "day_allow_for_order_slot", :class => "col-sm-4 control-label"}Day Allow for Order Slot
+                  .col-sm-5
+                    .input-group
+                      .input-group-addon Day
+                      %input#exampleInputAmount.form-control{:name => "day_allow_for_order_slot", :type => "number", :value => unit_details[:day_allow_for_order_slot]}  
+
+                .form-group
+                  %label{:for => "slot_applicable_from", :class => "col-sm-4 control-label" } Slot applicable from
+                  .col-sm-5 
+                    #week_start_day.input-group
+                      = select_tag "slot_applicable_from",options_for_select([["Today","Today"],["Tomorrow","Tomorrow"],["Day After Tomorrow","Day After Tomorrow"]],unit_details[:slot_applicable_from]||"Today"), :class=>"form-control"            
+
+                .form-group
+                  %label{:for => "min_order_amount", :class => "col-sm-4 control-label"} Resturant time slot
+                  .col-sm-5
+
+                    .input-group
+                      .input-group-addon
+                        %i.fa.fa-clock-o
+                      %input#exampleInputAmount.form-control{:name => "resturant_time_slot", :type => "number", :value => unit_details[:resturant_time_slot]}
+                        .input-group-addon Minute
+
+                .form-group
+                  %label{:for=>"standard_delivery_time", :class=> "col-sm-4 control-label"} Standard Delivery Time
+                  .col-sm-5
+                  
+                    .input-group
+                      .input-group-addon
+                        %i.fa.fa-clock-o
+                      %input#exampleInputAmount.form-control{:name=> "standard_delivery_time", :type=>"number", :value=> unit_details[:standard_delivery_time]}
+                        .input-group-addon Minute
+
+                .form-group
+                  %label{:for => "on_line_order", :class => "col-sm-4 control-label"} On Line Order
+                  .col-sm-5
+                    %input{:type => "radio", :id => "on_line_order_y", :name => "on_line_order", :value => 'Yes', :checked => (unit_details[:on_line_order] == 'Yes')}
+                    %label{:for => "on_line_order_y"} yes
+                    %input{:type => "radio", :id => "on_line_order_n", :name => "on_line_order", :value => 'No', :checked => (unit_details[:on_line_order] == 'No')}
+                    %label{:for => "on_line_order_n"} No
+
+                .form-group
+                  %label{:for => "home_del", :class => "col-sm-4 control-label"} Free home delevery
+                  .col-sm-5
+                    %input{:type => "radio",:id=>"free_home_delevery_available", :name => "free_home_delevery", :value => "Available", :checked => (unit_details[:free_home_delevery] == "Available")}
+                    %label{:for => "free_home_delevery_available"} Available
+                    %input{:type => "radio",:id=>"free_home_delevery_unavailable", :name => "free_home_delevery", :value => "Not available", :checked => (unit_details[:free_home_delevery] ==  "Not available")}
+                    %label{:for => "free_home_delevery_unavailable"} Not Available
+
+                .form-group
+                  %label{:for => "opening_time", :class => "col-sm-4 control-label"} Open and close time
+                  .col-sm-5
+                    #open_from.input-group.date.margin-b-5
+                      %input.form-control{:type => "text", :placeholder => "From", :name => "open_from", :value => unit_details[:open_from]}
+                      %span.input-group-addon
+                        %span.glyphicon.glyphicon-time
+                    #open_to.input-group.date
+                      %input.form-control{:type => "text", :placeholder => "To", :name => "open_to", :value => unit_details[:open_to]}
+                      %span.input-group-addon
+                        %span.glyphicon.glyphicon-time
+                .form-group
+                  %label{:for => "day_closing_time", :class => "col-sm-4 control-label" } Day Closing Time (24:00)
+                  .col-sm-5
+                    #day_closing_time.input-group
+                      = select_tag "day_closing_time",options_for_select([["0 Hour",0],["+1 Hour",1],["+2 Hours",2],["+3 Hours",3],["+4 Hours",4],["+5 Hours",5],["+6 Hours",6],["+7 Hours"],["+8 Hours"],["+9 Hours"]],unit_details[:day_closing_time]||0), :class=>"form-control"
+                .form-group
+                  %label{:for => "week_start_day", :class => "col-sm-4 control-label" } Week Start Day
+                  .col-sm-5 
+                    #week_start_day.input-group
+                      = select_tag "week_start_day",options_for_select([["Sunday","Sunday"],["Monday","Monday"],["Tuesday","Tuesday"],["Wednesday","Wednesday"],["Thursday","Thursday"],["Friday","Friday"],["Saturday","Saturday"]],unit_details[:week_start_day]||"Sunday"), :class=>"form-control"      
+                .form-group
+                  %label{:for => "bill_header", :class => "col-sm-4 control-label" } Bill header text
+                  .col-sm-5
+                    =text_area_tag 'bill_header', unit_details[:bill_header_text], :class=>"form-control"
+                .form-group
+                  %label{:for => "bill_footer", :class => "col-sm-4 control-label" } Bill footer text
+                  .col-sm-5
+                    =text_area_tag 'bill_footer', unit_details[:bill_footer_text], :class=>"form-control"
+                .form-group
+                  %label{:for => "bill_suffix", :class => "col-sm-4 control-label" } Bill Suffix
+                  .col-sm-5
+                    =text_field_tag 'bill_suffix', unit_details[:bill_suffix], :class=>"form-control"
+                .form-group
+                  %label{:for => "bill_prefix", :class => "col-sm-4 control-label" } Bill Prefix
+                  .col-sm-5
+                    =text_field_tag 'bill_prefix', unit_details[:bill_prefix], :class=>"form-control"        
+                .form-group
+                  %label{:for => "bill_tax_details", :class => "col-sm-4 control-label" } Bill tax details
+                  .col-sm-5
+                    =text_area_tag 'bill_tax_details', unit_details[:bill_tax_details], :class=>"form-control"
+                .form-group
+                  %label{:for => "tin_number", :class => "col-sm-4 control-label" } TIN Number
+                  .col-sm-5
+                    =text_field_tag 'tin_number', unit_details[:tin_number], :class=>"form-control"
+
+                / .form-group
+                /   %label{:for => "delivery_charges", :class => "col-sm-4 control-label" } Delivery charges
+                /   .col-sm-5
+                /     =text_field_tag 'delivery_charges', unit_details[:delivery_charges], :class=>"form-control"
+                .form-group
+                  %label{:for => "averages_cost", :class => "col-sm-4 control-label" } Averages cost
+                  .col-sm-5
+                    =text_field_tag 'averages_cost', unit_details[:averages_cost], :class=>"form-control"
+
+                .form-group
+                  %div.alert.alert-info{ :role => "alert" }
+                    Example :- Thank you for your order with Us,
+                    %span.label.label-success
+                      unit_name
+                    Your Order ID is #123. Please give us 30 min to serve you fresh and hot food.
+                  %label{:for => "order_sms_unit_name", :class => "col-sm-4 control-label" } Order SMS unit name
+                  .col-sm-5
+                    =text_field_tag 'order_sms_unit_name', unit_details[:order_sms_unit_name], :class=>"form-control"
+                .form-group
+                  %label{:for => "gst_code", :class => "col-sm-4 control-label"}Gst No
+                  .col-sm-5
+                    %input.form-control{:name => "gst_code", :type => "text", :value => unit_details[:gst_code]}
+                .form-group
+                  %label{:for => "pan_no", :class => "col-sm-4 control-label"}Pan No
+                  .col-sm-5
+                    %input.form-control{:name=>"pan_no", :type=>"text", :value => unit_details[:pan_no]}
+
+    #b.tab-pane.col-sm-9.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Advanced Information
+              .form-horizontal.bordered-row
+                .form-group
+                  %label{:for => "min_order_amount", :class => "col-sm-4 control-label"} Approved Forms of Payment
+                  .col-sm-5
+                    - FormOfPayment.all.each do |fop|
+                      %input.filled-in{:type => "checkbox",:id=>"pay_#{fop.id}", :name => "payment_options[]", :value => fop.id, :checked => (unit_details[:payment_options].include? "#{fop.id}")}
+                      %label{:for => "pay_#{fop.id}"}=fop.name
+                      %br
+                .form-group
+                  %label{:for => "min_order_amount", :class => "col-sm-4 control-label"} Atmosphere
+                  .col-sm-5
+                    - Atmosphere.all.each do |atm|
+                      %input.filled-in{:type => "checkbox",:id=>"atom_#{atm.id}", :name => "atmosphere[]", :value => atm.id, :checked => (unit_details[:atmosphere].include? "#{atm.id}")}
+                      %label{:for => "atom_#{atm.id}"}=atm.name
+                      %br
+                .form-group
+                  %label{:for => "min_order_amount", :class => "col-sm-4 control-label"} Types of Cuisine Served
+                  .col-sm-5
+                    - TypeOfCuisine.all.each do |toc|
+                      %input.filled-in{:type => "checkbox",:id=>"toc_#{toc.id}", :name => "cuisine_type[]", :value => toc.id, :checked => (unit_details[:cuisine_type].include? "#{toc.id}")}
+                      %label{:for => "toc_#{toc.id}"}=toc.name
+                      %br
+                .form-group
+                  %label{:for => "min_order_amount", :class => "col-sm-4 control-label"} More Info
+                  .col-sm-5
+                    - MoreInfo.all.each do |mi|
+                      %input.filled-in{:type => "checkbox",:id=>"mi_#{mi.id}", :name => "more_info[]", :value => mi.id, :checked => (unit_details[:more_info])}
+                      %label{:for => "mi_#{mi.id}"}=mi.name
+                      %br
+                .form-group
+                  %label{:for => "min_order_amount", :class => "col-sm-4 control-label"} Outlet Type
+                  .col-sm-5
+                    - OutletType.all.each do |ot|
+                      %input.filled-in{:type => "checkbox",:id=>"ot_#{ot.id}", :name => "outlet_type[]", :value => ot.id, :checked => (unit_details[:outlet_type])}
+                      %label{:for => "ot_#{ot.id}"}=ot.name
+                      %br
+
+    #c.tab-pane.col-sm-9.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Settings
+              .form-horizontal.bordered-row
+                = render 'index'
+    #d.tab-pane.col-sm-9.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title RRM Information
+
+              .form-group
+                %label{:for => "cancellation_allowed", :class => "col-sm-4 control-label"} Cancellation Allowed
+                .col-sm-5
+                  %input{:type => "radio", :id => "cancellation_allowed_y", :name => "cancellation_allowed", :value => 'Yes', :checked => (unit_details[:cancellation_allowed] == 'Yes')}
+                  %label{:for => "cancellation_allowed_y"} yes
+                  %input{:type => "radio", :id => "cancellation_allowed_n", :name => "cancellation_allowed", :value => 'No', :checked => (unit_details[:cancellation_allowed] == 'No')}
+                  %label{:for => "cancellation_allowed_n"} No
+
+              .form-group
+                %label{:for => "cancellation_allowed_since", :class => "col-sm-4 control-label"} Cancellation Allowed Since
+                .col-sm-5
+                  %input.form-control{:name => "cancellation_allowed_since", :type => "text", :value => unit_details[:cancellation_allowed_since]}
+
+              .form-group
+                %label{:for => "cancellation_refund", :class => "col-sm-4 control-label"} Cancellation Refund
+                .col-sm-5
+                  %input.form-control{:name => "cancellation_refund", :type => "text", :value => unit_details[:cancellation_refund]}
+
+              .form-group
+                %label{:for => "reservation", :class => "col-sm-4 control-label"} Reservation
+                .col-sm-5
+                  %input{:type => "radio", :id => "reservation_y", :name => "reservation", :value => "Yes", :checked => (unit_details[:reservation] == "Yes")}
+                  %label{:for => "reservation_y"} yes
+                  %input{:type => "radio", :id => "reservation_n", :name => "reservation", :value => "No", :checked => (unit_details[:reservation] == "No")}
+                  %label{:for => "reservation_n"} No
+
+              .form-group
+                %label{:for => "table_reservation_timings", :class => "col-sm-4 control-label"} Table Reservation Timings
+                .col-sm-5
+                  %input.form-control{:name => "table_reservation_timings", :type => "text", :value => unit_details[:table_reservation_timings]}
+
+              .form-group
+                %label{:for => "min_book_charge_for_two_table_on_week_days", :class => "col-sm-4 control-label"} Minimum Booking Charge for Table for 2(on Week days)
+                .col-sm-5
+                  %input.form-control{:name => "min_book_charge_for_two_table_on_week_days", :type => "text", :value => unit_details[:min_book_charge_for_two_table_on_week_days]}
+
+              .form-group
+                %label{:for => "min_book_charge_for_two_table_on_weekend_days", :class => "col-sm-4 control-label"} Minimum Booking Charge for Table for 2(on Weekend days)
+                .col-sm-5
+                  %input.form-control{:name => "min_book_charge_for_two_table_on_weekend_days", :type => "text", :value => unit_details[:min_book_charge_for_two_table_on_weekend_days]}
+
+              .form-group
+                %label{:for => "min_book_charge_for_two_table_on_special_days", :class => "col-sm-4 control-label"} Minimum Booking Charge for Table for 2(on special days)
+                .col-sm-5
+                  %input.form-control{:name => "min_book_charge_for_two_table_on_special_days", :type => "text", :value => unit_details[:min_book_charge_for_two_table_on_special_days]}
+
+
+              .form-group
+                %label{:for => "maximum_advance_days_allowed_for_reservation", :class => "col-sm-4 control-label"}Maximum Advance Days Allowed for Reservation(In days)
+                .col-sm-5
+                  .input-group
+                    .input-group-addon= "Days"
+                    %input#exampleInputAmount.form-control{:name => "maximum_advance_days_allowed_for_reservation", :type => "number", :value => unit_details[:maximum_advance_days_allowed_for_reservation]}
+
+              .form-group
+                %label{:for => "reservation_cancellation_allowed_without_charge", :class => "col-sm-4 control-label"} Reservation Cancellation Allowed without charge(In days)
+                .col-sm-5
+                  .input-group
+                    .input-group-addon= "Days"
+                    %input#exampleInputAmount.form-control{:name => "reservation_cancellation_allowed_without_charge", :type => "number", :value => unit_details[:reservation_cancellation_allowed_without_charge]}
+
+              .form-group
+                %label{:for => "reservation_cancellation_allowed", :class => "col-sm-4 control-label"} Reservation Cancellation Allowed
+                .col-sm-5
+                  %input{:type => "radio", :id => "reservation_cancellation_allowed_y", :name => "reservation_cancellation_allowed", :value => "Yes", :checked => (unit_details[:reservation_cancellation_allowed] == "Yes")}
+                  %label{:for => "reservation_cancellation_allowed_y"} yes
+                  %input{:type => "radio", :id => "reservation_cancellation_allowed_n", :name => "reservation_cancellation_allowed", :value => "No", :checked => (unit_details[:reservation_cancellation_allowed] == "No")}
+                  %label{:for => "reservation_cancellation_allowed_n"} No
+
+              .form-group
+                %label{:for => "refund_dates", :class => "col-sm-4 control-label"} Refund Dates
+                .col-sm-5
+                  %input.form-control{:name => "refund_dates", :type => "text", :value => unit_details[:refund_dates]}
+
+              .form-group
+                %label{:for => "preauth", :class => "col-sm-4 control-label"} PreAuth for two person
+                .col-sm-5
+                  .input-group
+                    .input-group-addon= "#{currency}."
+                    %input#exampleInputAmount.form-control{:name => "preauth", :type => "number", :value => unit_details[:preauth]}
+
+              .form-group
+                %label{:for => "reservation_confirmation_without_charge", :class => "col-sm-4 control-label"} Reservation Confirmation Without Charge
+                .col-sm-5
+                  %input{:type => "radio", :id => "reservation_confirmation_without_charge_y", :name => "reservation_confirmation_without_charge", :value => "Yes", :checked => (unit_details[:reservation_confirmation_without_charge] == "Yes"), :class => "reservation_confirmation_without_charge"}
+                  %label{:for => "reservation_confirmation_without_charge_y"} yes
+                  %input{:type => "radio", :id => "reservation_confirmation_without_charge_n", :name => "reservation_confirmation_without_charge", :value => "No", :checked => (unit_details[:reservation_confirmation_without_charge] == "No"), :class => "reservation_confirmation_without_charge"}
+                  %label{:for => "reservation_confirmation_without_charge_n"} No
+
+              .form-group{:id => "days_for_confirmation_of_reservation_without_charge_div"}
+                %label{:for => "days_for_confirmation_of_reservation_without_charge", :class => "col-sm-4 control-label"} Days For Confirmation Of Reservation Without Charge
+                .col-sm-5
+                  .input-group
+                    .input-group-addon= "Days"
+                    %input.form-control{:name => "days_for_confirmation_of_reservation_without_charge", :type => "number", :value => unit_details[:days_for_confirmation_of_reservation_without_charge]}
+
+              .form-group
+                %label{:for => "preauth_percentage_for_order", :class => "col-sm-4 control-label"} Preauth Percentage For Order
+                .col-sm-5
+                  .input-group
+                    .input-group-addon= " % "
+                    %input.form-control{:name => "preauth_percentage_for_order", :type => "number", :value => unit_details[:preauth_percentage_for_order]}
+
+    #p.tab-pane.col-sm-9.padding-r-none
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title RRM Information
+              .form-horizontal.bordered-row
+                .form-group
+                  %label{:for => "access_token", :class => "col-sm-4 control-label" } Access Token
+                  .col-sm-5
+                    =text_field_tag 'access_token', unit_details[:access_token], :class=>"form-control"
+                .form-group
+                  %label{:for => "environment", :class => "col-sm-4 control-label" } Environment
+                  .col-sm-5
+                    =text_field_tag 'environment', unit_details[:environment], :class=>"form-control"
+                .form-group
+                  %label{:for => "merchant_id", :class => "col-sm-4 control-label" } Merchant Id
+                  .col-sm-5
+                    =text_field_tag 'merchant_id', unit_details[:merchant_id], :class=>"form-control"
+                .form-group
+                  %label{:for => "public_key", :class => "col-sm-4 control-label" } Public Key
+                  .col-sm-5
+                    =text_field_tag 'public_key', unit_details[:public_key], :class=>"form-control"
+                .form-group
+                  %label{:for => "private_key", :class => "col-sm-4 control-label" } Private Key
+                  .col-sm-5
+                    =text_field_tag 'private_key', unit_details[:private_key], :class=>"form-control"

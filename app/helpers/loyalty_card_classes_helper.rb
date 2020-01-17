@@ -1,0 +1,2 @@
+module LoyaltyCardClassesHelper
+end

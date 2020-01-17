@@ -1,0 +1,10 @@
+<select id="menu_product_tax_group_id" class="select optional form-control" name="menu_product[tax_group_id]"  required = "true">
+  <option value="">Select Tax Group</option>
+  <% for(var i=0; i<tax_group_details.sections.length; i++) { %>
+    <optgroup label="<%= tax_group_details.sections[i].name %>">
+      <% for(var j=0; j<tax_group_details.sections[i].tax_groups.length; j++) { %>
+        <option data-tax = "<%= tax_group_details.sections[i].tax_groups[j].total_amnt %>" value="<%= tax_group_details.sections[i].tax_groups[j].id %>"><%= tax_group_details.sections[i].tax_groups[j].name %></option>
+      <%}%>
+    </optgroup>
+  <%}%>
+</select>

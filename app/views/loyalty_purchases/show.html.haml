@@ -1,0 +1,18 @@
+%p#notice= notice
+
+%p
+  %b Loyalty card:
+  = @loyalty_purchase.loyalty_card
+%p
+  %b Point purchase:
+  = @loyalty_purchase.point_purchase
+%p
+  %b Purchase cost:
+  = @loyalty_purchase.purchase_cost
+%p
+  %b Purchase type:
+  = @loyalty_purchase.purchase_type
+
+= link_to 'Edit', edit_loyalty_purchase_path(@loyalty_purchase)
+\|
+= link_to 'Back', loyalty_purchases_path

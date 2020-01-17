@@ -1,0 +1,22 @@
+%ul.tabs.z-depth-1
+	%li.tab
+		%a.active{:href => "#search_customer"} Search Customer
+	%li.tab
+		%a{:href => "#search_resource"} Search Resource
+%br
+#search_customer    
+	= form_tag '/customers/find', {:method => :get, :remote => true} do
+		.row.m0
+			.col.s1.p0
+				%i.material-icons.circle.blue.blue-text.text-lighten-5.p5 search
+			.col.s11.p0-20
+				%input.blue-input.z-depth-2#customer-mobile-no{:name => "login", :placeholder => "Search customer by contact number...", :type => "text", :autocomplete=>"off"} 
+	#deliverable-container.min-height-70     
+#search_resource    
+	= form_tag '/resources/find', {:method => :get, :remote => true} do
+		.row.m0
+			.col.s1.p0
+				%i.material-icons.circle.blue.blue-text.text-lighten-5.p5 search
+			.col.s11.p0-20
+				%input.blue-input.z-depth-2#resource_search{:name => "resource_search_key", :placeholder => "Search resource by name or unique identity number...", :type => "text", :autocomplete=>"off"}
+	#deliverable-resource-container.min-height-70 

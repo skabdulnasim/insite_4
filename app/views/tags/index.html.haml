@@ -1,0 +1,54 @@
+
+:css
+  .circle {
+    height: 50px;
+    width: 50px;
+    border-radius: 100%;
+  }
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Tags
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_tag_path}"}
+              %i.mdi-content-add.left
+              New Tag
+        %table.data-table    
+          %tr
+            %th.col-lg-4 
+              %strong Tag Name
+            %th.col-lg-2 
+              %strong Color
+            %th.col-lg-1 
+              %strong Icon
+            %th.col-lg-1 
+              %strong Type
+            %th.col-lg-1 
+              %strong Status
+            %th.col-lg-2 
+              %strong Action
+          - @tags.each do |object|
+            %tr
+              %td.col-lg-2= object.name
+              %td.col-lg-2
+                .circle{:style=>"background-color:#{object.color}"}
+              %td.col-lg-2= object.icon.present? ? image_tag("#{object.icon}", width: '50', :class => "img-thumbnail") : image_tag("icons/product-box-128.png", width: '50', :class => "img-thumbnail")
+              %td.col-lg-1
+                = object.tag_type
+              %td.col-lg-1
+                - tag_status = object.status == 'active' ? true : false
+                .switch.padding-5
+                  %label
+                    = check_box_tag :status, 'enable', tag_status, {"data-value-active"=>"active","data-value-inactive"=>"inactive", "class"=>"update_tag_status", "data-tag-id"=>object.id }
+                    %span.lever.margin-l-none
+              %td.col-lg-4
+                %a.m-btn.green.m-btn-low-padding{:href => "#{tag_path(object)}", :title => "View Tag"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_tag_path(object)}", :title => "Edit Tag"} 
+                  %i.mdi-editor-border-color
+                %a.m-btn.red.m-btn-low-padding{:title => "Remove Tag",:href => "#{tag_path(object)}",:method => :delete,:method => :delete, :data => { :confirm => 'Are you sure?' } }
+                  %i.mdi-action-delete

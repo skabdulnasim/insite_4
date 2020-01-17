@@ -1,0 +1,25 @@
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="Plant wise dispatch report #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            .form-group
+              = smart_listing_controls_for(:plant_wise_dispatch_list, {class: "form-inline float-l margin-l-30"}) do
+                = hidden_field_tag :from_date, "#{params[:from_date]}"
+                = hidden_field_tag :to_date, "#{params[:to_date]}"
+                -if params[:unit_ids].present?
+                  -params[:unit_ids].each do |u_id|
+                    = hidden_field_tag "unit_ids[]",u_id    
+                = select_tag "store_id", options_for_select(@stores.collect{ |u| ["#{u.name}", u.id] }),class: "form-control store_id_for_plant_sales", prompt: 'Select Plant'
+
+              - url = "#{plant_wise_dispatch_report_tsp_reports_path}.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"
+              - if params[:unit_ids].present?
+                - params[:unit_ids].each do |u_id|
+                  -url = url+"&unit_ids[]="+u_id     
+              %a.m-btn.indigo.margin-l-5.export-plant-wise-dispatch-report{:href=>url}
+                %i.mdi-file-file-download.left
+                CSV
+      = smart_listing_render :plant_wise_dispatch_list

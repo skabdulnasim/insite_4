@@ -1,0 +1,64 @@
+= form_for @menu_mapping, :html => { :class => 'form-horizontal bordered-row m-input menu_mapping_form_wizard' } do |f|
+  - if @menu_mapping.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@menu_mapping.errors.count, "error")} prohibited this menu_mapping from being saved:"
+      %ul
+        - @menu_mapping.errors.full_messages.each do |msg|
+          %li= msg
+  = f.hidden_field :unit_id, :value => @current_user.unit_id 
+  .row
+    .col.m12.s12.col-lg-12
+      .card  
+        .card-content.p10
+          #wizard_vertical
+
+            %h3 Basic Details
+            %section.ptb0
+              %h5.header Basic details of menu mapping
+              .divider
+              .divider
+              .margin-t-15
+              .col-sm-12.p0
+                %table.data-table
+                  %tbody
+                    .form-group
+                      = f.label "Day", :class => 'col-sm-2 control-label'
+                      .col-sm-8
+                        .col-sm-11
+                          = f.select :day_id, options_for_select(@days.map{ |day| [day.name, day.id] }, @menu_mapping.day_id), { include_blank: "Select a Day"}, {:class => "form-control"} 
+                    .form-group
+                      = f.label "Section Hold Merge Menu", :class => 'col-sm-2 control-label'
+                      .col-sm-8
+                        - @sections.each do |section|
+                          .col-sm-5.card.margin-t-10
+                            / = f.radio_button(:merge_section_id, section.id,:required => true, @menu_mapping.merge_section_id)
+                            = f.radio_button(:merge_section_id, section.id,:required => true, :checked => @menu_mapping.merge_section_id == section.id)
+                            %label{:for=> "menu_mapping_merge_section_id_#{section.id}"}= section.name
+                          .col-lg-1 
+                    .form-group
+                      = f.label "Status", :class => 'col-sm-2 control-label'
+                      .col-sm-8
+                        .col-lg-5.card.margin-t-10
+                          = f.radio_button(:status,"active",:id=>"active_status",:required => true)
+                          %label{:for=>"active_status"}= "Active"
+                        .col-lg-1
+                        .col-lg-5.card.margin-t-10
+                          = f.radio_button(:status,"inactive",:id=>"inactive_status",:required => true)
+                          %label{:for=>"inactive_status"}= "Inactive"
+
+            %h3 Menu Card Allotment
+            %section.ptb0
+              %h5.header Menu Card Allotment
+              .divider
+              .divider
+              .margin-t-15
+              .col-sm-12.p0
+                %table.data-table
+                  %tbody
+                    .form-group
+                      .col-sm-8
+                        - @menu_cards.each do |menu|
+                          .col-sm-5.margin-t-10.card{:style=>"padding:10px;"}
+                            = f.check_box :menu_card_id,  {:multiple => true , id: "menu_card_id_#{menu.id}"}, "#{menu.id}", false
+                            %label{:for=>"menu_card_id_#{menu.id}"}= menu.name
+                          .col-sm-1

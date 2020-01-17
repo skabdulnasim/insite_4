@@ -1,0 +1,148 @@
+:javascript
+  $(document).ready(function(){
+    loadGallery(true, 'a.thumbnail');
+      function disableButtons(counter_max, counter_current){
+        $('#show-previous-image, #show-next-image').show();
+        if(counter_max == counter_current){
+          $('#show-next-image').hide();
+        } else if (counter_current == 1){
+          $('#show-previous-image').hide();
+        }
+      }
+      function loadGallery(setIDs, setClickAttr){
+        var current_image, selector, counter = 0;
+        function updateGallery(selector) {
+          var $sel = selector;
+          current_image = $sel.data('image-id');
+          $('#image-gallery-caption').text($sel.data('caption'));
+          $('#image-gallery-title').text($sel.data('title'));
+          $('#image-gallery-image').attr('src', $sel.data('image'));
+          disableButtons(counter, $sel.data('image-id'));
+        }
+        if(setIDs == true){
+          $('[data-image-id]').each(function(){
+            counter++;
+            $(this).attr('data-image-id',counter);
+          });
+        }
+        $(setClickAttr).on('click',function(){
+          updateGallery($(this));
+        });
+      }
+    });
+#image-gallery.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+          %span.sr-only Close
+        %h4#image-gallery-title.modal-title
+      .modal-body
+        %img#image-gallery-image.img-responsive{:src => ""}/
+      .modal-footer
+- unless smart_listing.empty?
+  .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+    %table.table-striped#inspections_accordion
+      %thead
+        %tr.data-table__selectable-row{:style=>"background-color:#666666;"}
+          %th.col-lg-1= smart_listing.sortable "ID", "id"
+          %th.col-lg-1{:style=>"color:white;"} Image
+          %th.col-lg-1{:style=>"color:white;"} Vendor
+          %th.col-lg-1{:style=>"color:white;"} Sourcing Executive
+          %th.col-lg-1{:style=>"color:white;"} Day
+          %th.col-lg-2{:style=>"color:white;"} Discussion
+          %th.col-lg-1{:style=>"color:white;"} Recorded at
+          %th.col-lg-1{:style=>"color:white;"} Map Location
+      %tbody
+        - smart_listing.collection.each do |object|
+          - if object.inspected_entity.present?
+            - vendor_name = object.inspected_entity.name.capitalize
+            - vendor_lat = object.inspected_entity.latitude
+            - vendor_long = object.inspected_entity.longitude
+            - vendor_marker_address = object.inspected_entity.address
+          - else
+            - vendor_name = '-'
+
+          - if object.user.profile.present?  
+            - executive_name = object.user.profile.firstname.capitalize+" "+object.user.profile.lastname.capitalize
+            - executive_address = object.user.profile.address
+            - executive_lat = object.user.profile.latitude
+            - executive_long = object.user.profile.longitude
+          - else
+            - executive_name = '-'
+          - if object.discussion.present?
+            - user_inspection_discussion = object.discussion
+          - else
+            - if object.purpose.present?
+              - user_inspection_discussion = object.purpose
+            - else
+              - user_inspection_discussion = ''
+
+          %tr.data-table__selectable-row.inspection_row{"aria-controls" => "inspections_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#inspections_accordion", "data-toggle" => "collapse", :href => "#inspections_collapse_#{object.id}", :role => "button","data-user-inspection-lat"=>"#{object.latitude}","data-user-inspection-long"=>"#{object.longitude}","data-inspection-id"=>"#{object.id}","data-vendor-lat"=>vendor_lat,"data-vendor-long"=>vendor_long,"data-executive-lat"=>executive_lat,"data-executive-long"=>executive_long,"data-executive-address"=>executive_address,"data-vendor-address"=>vendor_marker_address,"data-vendor-name"=>vendor_name,"data-executive-name"=>executive_name,"data-user-inspection-discussion"=>user_inspection_discussion}
+            %td= object.id
+            %td
+              - if object.image.present?
+                =image_tag("#{object.image}", width: '60', :class => "img-thumbnail")
+              - else
+                = image_tag("icons/default_inspection.svg", width: '60', :class => "img-thumbnail")
+            %td= vendor_name
+            %td= executive_name
+            %td= object.day
+            %td= user_inspection_discussion
+            %td= object.recorded_at
+            %td
+              .margin-t-b-2
+                = image_tag "//maps.google.com/maps/api/staticmap?center=#{object.latitude},#{object.longitude}&zoom=10&size=150x80&markers=color:red%7Clabel:%7C#{object.latitude},#{object.longitude}&key=AIzaSyBDxCJM6vT9uP_ddJyvRh-5uqjPNKMqKQk"
+          %tr.collapse.data-table__selectable-row.collapsible-body.light-blue.lighten-5.data-table__selectable-row--is-selected{"aria-labelledby" => "inspections_heading#{object.id}", :role => "tabpanel", :id => "inspections_collapse_#{object.id}"}
+            %td{:colspan=>'8'}
+              %table{:width=>'100%'}
+                %tr
+                  %td.padding-l-none{:colspan=>'2'}
+                    .inspection_ques{:id=>"inspection_ques_#{object.id}"}
+                %tr
+                  %td.blue{:width=>'30%'}
+                    %h2.text-white.text-align-left{:style=>"font-weight:bold;"} Visit Details
+                    %br
+                    .smallstat.box
+                      / %span.float-l
+                      .col-lg-3
+                        = image_tag("icons/inspection_shop.svg", width: '55',:style=>"margin-left:-14px;")
+                      .col-lg-9
+                        %span.title.font-sz-15.text-align-left{:style=>"font-weight:bold;"}
+                          = vendor_name
+                        %span.title.font-sz-12.text-align-left
+                          = object.inspected_entity.address
+                      .clearfix
+                    .smallstat.box
+                      / %span.float-l
+                      .col-lg-3
+                        = image_tag("icons/clerk.svg", width: '55',:style=>"margin-left:-14px;")
+                      .col-lg-9
+                        %span.title.font-sz-15.text-align-left{:style=>"font-weight:bold;"}
+                          = executive_name
+                        %span.title.font-sz-12.text-align-left
+                          = object.user.profile.address
+                      .clearfix
+                    .smallstat.box
+                      .col-lg-3
+                        / = image_tag("icons/clerk.svg", width: '55',:style=>"margin-left:-14px;")
+                        - if object.image.present?
+                          %a.thumbnail{"data-caption" => "#{vendor_name}", "data-image" => "#{object.image}", "data-image-id" => "", "data-target" => "#image-gallery", "data-title" => "#{vendor_name}", "data-toggle" => "modal", :href => "#", :style => "border: none !important; border-radius: 0 !important;"}
+                            %img{:alt => "#{vendor_name}", :src => "#{object.image}", width: '55', :style => "max-width: none !important; margin-left:-14px;"}
+                        - else 
+                          = image_tag("icons/default_inspection.svg", width: '55',:style=>"margin-left:-14px;")
+                      .col-lg-9
+                        %span.title.font-sz-15.text-align-left{:style=>"font-weight:bold;"}
+                          = "Discussion"
+                        %span.title.font-sz-12.text-align-left
+                          = user_inspection_discussion
+                      .clearfix
+                  %td{:width=>'70%'}
+                    .inspections_map{:style=> "width: 100%;height: 400px;", :id=>"inspections_map_#{object.id}"}
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No Records found

@@ -1,0 +1,32 @@
+/ = render "layouts/flash"
+/ .col-sm-3.padding-5
+/   .card
+/     = render :partial => 'user_filter'                             
+/ .col-sm-9.padding-5
+/   = smart_listing_render :users
+
+= render "layouts/flash"
+%ul#task-card.collection.with-header
+	%li.collection-header.indigo.text-white
+		%span.text-white{:style=>"font-size:20px;"} 
+			List of Users
+		/ - if current_user.role.name == 'owner' || current_user.role.name =='dc_manager' || current_user.role.name =='outlet_manager' || current_user.role.name =="bill_manager"
+		%a.m-btn.white.indigo-text.waves-effect.waves-light.float-r{:href => "#{new_user_path}"}
+			Add new User
+			.clearfix  
+	%div 
+		/- load_users_tree(current_user.unit) #userHelper
+.col-lg-12.padding-5
+	.main-section__content
+		.example
+			.example__content.p0
+				.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+					.col-lg-12
+						.mt30.min-height-300
+							%ul.timeline.collapse-lg.timeline-hairline.timeline-parent.col-lg-10 
+								= render :partial => 'users/nested_users',:object => current_user.unit, :as => 'unit'
+ 
+
+
+
+ 

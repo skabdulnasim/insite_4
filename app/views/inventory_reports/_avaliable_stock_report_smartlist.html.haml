@@ -1,0 +1,63 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Stock ID
+        %th Category
+        %th Products
+        %th SKU
+        %th Color
+        %th Size
+        %th Available Stock
+        %th Price (incl. Tax)/unit
+        %th Total Price (incl. Tax)
+    %tbody
+      - smart_listing.collection.each do |object|
+        - smart_listing.count
+        - _price = object.stock_price.present? ? object.stock_price.landing_price : 0
+        - total_price = (object.available_stock * _price)
+        %tr
+          %td=object.id
+          %td=Category.find_by_id(object.product.category_id).name
+          %td=object.product.name
+          %td=object.sku
+          %td=object.color_name
+          %td=object.size_name
+          %td=object.available_stock
+          %td=_price
+          %td=total_price  
+  
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+  .example
+    .example__content.p0
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Summery Of Report
+          .data-table-header__actions    
+        %table.data-table
+          %thead
+            %tr
+              %th Total Stock
+              %th Total Price (incl. Tax)/unit
+              %th Total Price (incl. Tax)
+          %tbody
+          - total_stock = 0
+          - total_unit_price = 0
+          - total_stock_price = 0
+          - @stocks.each do |stock|
+            - _stock = stock.available_stock
+            - total_stock = total_stock + _stock
+            - _price = stock.stock_price.present? ? stock.stock_price.landing_price.present? ? stock.stock_price.landing_price : 0 : 0
+            - total_unit_price = total_unit_price + _price
+            - total_price = (_stock * _price)
+            - total_stock_price = total_stock_price + total_price
+          %tr
+            %td=total_stock
+            %td=number_to_currency(total_unit_price, unit: '')
+            %td=number_to_currency(total_stock_price, unit: '')
+            
+- else
+  .alert.alert-warning
+    No record found

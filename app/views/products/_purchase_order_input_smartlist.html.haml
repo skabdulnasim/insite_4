@@ -1,0 +1,88 @@
+- unless smart_listing.empty?
+  =# params[:business_type]
+  %table.data-table#purchase_product_accordion
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Name", "name"
+        %th 
+          Current 
+          %br
+          Stock
+        - if params[:business_type] == "by_catalog"
+          %th.col-sm-2 Price
+        %th Quantity
+        - if params[:business_type] == "by_catalog"
+          %th Estimated Cost
+    %tbody
+      - smart_listing.collection.each do |object|
+        - _vendor_product = object.vendor_products.by_vendor(@vendor.id).first 
+        - _vendor_product_price = _vendor_product.price.present? ? _vendor_product.price : 0
+        %tr.data-table__selectable-row
+          %td{"aria-controls" => "purchase_product_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#purchase_product_accordion", "data-toggle" => "collapse", :href => "#purchase_product_collapse_#{object.id}", :role => "button"}
+            - _product = Product.find(object)
+            - _product_name = _product.package_component.present? ?  _product.product_name(_product) : _product.name
+            = _product_name.humanize
+            - if object.local_name.present?
+              %b
+                = " ( #{object.local_name} )" 
+          %td
+            %span.label.label-default
+              =number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit
+          - if params[:business_type] == "by_catalog"
+            %td.col-sm-2.m-input
+              .input-group
+                %input.form-control.product_input_quantity.product_price.allow-numeric-only{:name => "price", :type => "text", :class=>"price_#{object.id}", :value=>"#{_vendor_product_price}", :placeholder => "Enter here","data-product-id"=>object.id, "data-vendor-id" => @vendor.id, "data-product-name"=>object.name, "data-vendor-product-id" => "#{_vendor_product.id}","data-basic-unit"=>object.basic_unit, "data-business-type"=>"#{params[:business_type]}"}
+          / %td
+          /   .input-group
+          /     %input.form-control.allow-numeric-only.search{:name => "filter", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id, :class=>"input_quantity quantity_#{object.id}"}
+          /       %span.input-group-btn
+          /         %button.btn.btn-primary.add-products-to-temp-cart{:type => "submit","data-product-id"=>object.id,"data-vendor-id"=>@vendor.id,"data-product-name"=>object.name,"data-product-unit"=>object.basic_unit}
+          /           %i.fa.fa-plus 
+          %td.m-input
+            .col-lg-6.padding-l-r-none
+              %input.allow-numeric-only.margin-b-2.purchase-input.input_quantity.total_input_quantity{:type => "text", :class=>"transfer-quantity-#{object.id}", "data-product-id"=>object.id,"data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit, "data-vendor-product-id" => "#{_vendor_product.id}", "data-business-type"=>"#{params[:business_type]}"}
+            .col-lg-6.padding-l-r-none
+              = select_tag :product_unit_id, options_for_select(object.input_units.active_only.map{ |ut| [ut.product_unit_name, "#{ut.product_unit_id}__#{ut.product_unit_name}__#{ut.basic_unit_multiplier}",{"data-transaction-id"=>ut.id}]}), { prompt: object.basic_unit, :id=>"transaction_unit_#{object.id}", :class=>"form-control transfer-input input_quantity unit-input-#{object.id} add_transaction_unit", "data-product-id"=>object.id,"data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit, "data-business-type"=>"#{params[:business_type]}"}                    
+              = hidden_field_tag "transaction_unit_id_#{object.id}",''
+          - if params[:business_type] == "by_catalog"
+            %td.m-input
+              .input-group
+                %input.form-control.allow-numeric-only{:name => "estiated_cost", :type => "text", :class=>"estimated_cost_#{object.id} product_estmated_cose","data-product-id"=>object.id,"data-product-name"=>object.name,"data-basic-unit"=>object.basic_unit,"data-vendor-product-id" => "#{_vendor_product.id}", :placeholder => "(Optional)", "disabled" => true, "data-business-type"=>"#{params[:business_type]}"}  
+        - if object.product_sizes.enabled.present? || object.color_products.enabled.present?        
+          %tr.collapse.light-blue.lighten-5{"aria-labelledby" => "purchase_product_heading#{object.id}", :role => "tabpanel", :id => "purchase_product_collapse_#{object.id}"}  
+            
+            %td{:colspan=>'100%'}
+              / ,:style=>"max-width:200px !important;overflow: auto;white-space: nowrap;"
+              .inner
+                %table.po_table
+                  %tbody{:style=>"float:left;"}
+                    %tr
+                      %th.fix{:id=>"p_total_qty_#{object.id}"}= ""  
+                      - object.color_products.enabled.each do |cp|
+                        %th
+                          = cp.color.name
+                    - if object.product_sizes.enabled.present?         
+                      - object.product_sizes.enabled.each do |ps|            
+                        %tr
+                          %td.m-input.fix= ps.size.name 
+                          - if object.color_products.enabled.present?
+                            - object.color_products.enabled.each do |cp|         
+                              %td.m-input
+                                %input{:type=>"text", "data-product-id"=>cp.product_id, "data-color-id"=>cp.color_id, "data-color-name"=>cp.color_name, "data-size-id"=>ps.size_id, "data-size-name"=>ps.size_name, :class=>"product_color_size po_color_size_qty po_color_size_#{object.id} po_color_size_#{object.id}_#{cp.color_id}_#{ps.size_id} allow-numeric-only", :value => 0, "data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit, "data-vendor-product-id" => "#{_vendor_product.id}","data-business-type"=>"#{params[:business_type]}"}
+
+                          - else
+                            %td.m-input
+                              %input{:type=>"text", "data-product-id"=>ps.product_id, "data-color-id"=>0, "data-size-id"=>ps.size_id, "data-size-name"=>ps.size_name, :class=>"product_color_size po_color_size_qty po_color_size_#{object.id} po_color_size_#{object.id}_0_#{ps.size_id} allow-numeric-only", :value => 0, "data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit, "data-vendor-product-id" => "#{_vendor_product.id}","data-business-type"=>"#{params[:business_type]}"}
+
+                    - elsif object.product_sizes.enabled.blank? && object.color_products.enabled.present?
+                      %tr
+                        %td.col-lg-1= ""  
+                        - object.color_products.enabled.each do |cp|         
+                          %td.m-input.col-lg-1
+                            %input.col-lg-1{:type=>"text", "data-product-id"=>cp.product_id, "data-color-id"=>cp.color_id, "data-color-name"=>cp.color_name, "data-size-id"=>0, :class=>"product_color_size po_color_size_qty po_color_size_#{object.id} po_color_size_#{object.id}_#{cp.color_id}_0 allow-numeric-only", :value => 0, "data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit, "data-vendor-product-id" => "#{_vendor_product.id}","data-business-type"=>"#{params[:business_type]}"}  
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

@@ -1,0 +1,240 @@
+- if AppConfiguration.get_config_value('po_cancellation_approval') == "enabled"
+  - if AppConfiguration.get_config_value("#{current_user.role.name}_po_cancellation_approval_role") == "enabled"
+    - if @stock_purchase.status == '2'
+      - if @stock_purchase.cancellation_status != 'cancelled'
+        .margin-r-20.margin-t-10
+          = form_tag(cancel_stock_purchase_stock_purchases_path, method: "post") do
+            %button.m-btn.red.float-r.waves-effect.waves-light#cancel-stock-purchase-btn{"data-stock-purchase-id"=>@stock_purchase.id, "data-store-id"=>@stock_purchase.store_id}
+              Cancel Purchase
+%table.data-table#stock_purchase_order_accordion.margin-t-10
+  %thead
+    %tr.data-table__selectable-row
+      %th
+      %th
+      %th
+        //= check_box_tag "parent_check", nil, false, :class=>"checkbox-parent-toggle filled-in" if @stock_purchase.status == "1"
+        %label{:for=>"parent_check"} Product
+      %th 
+        Hsn Code
+      - if AppConfiguration.get_config_value('retail_menu') == 'enabled'  
+        %th.col-lg-1 
+          MRP
+      %th Quantity
+      - if @stock_expiry_date == 'enabled'   
+        %th
+          Expiry Date
+      %th
+        Landing Price
+        %br
+        %small="(in #{currency})"
+      %th 
+        Discount 
+        %br
+        %small="(in #{currency})"          
+      - if AppConfiguration.get_config_value('Percentage_applied_on_lending_price') == 'enabled'
+        %th Sales Percentage            
+      - if @input_tax_config == 'enabled'
+        %th 
+          Total price
+          %br
+          %small (Without TAX)
+        %th.col-lg-3 Applicable TAX classes
+      %th 
+        Additional
+        %br
+        Cost
+      %th
+        Total Price
+        %br
+        %small="(With TAX)" if @input_tax_config == 'enabled'
+        %small="(in #{currency})"   
+      %th Available Stock
+      - if AppConfiguration.get_config_value('retail_menu') == 'enabled'   
+        %th
+          Sale Price
+          %br
+          %small="(in #{currency})"
+      - if AppConfiguration.get_config_value('po_cancellation_approval') == "enabled"
+        - if AppConfiguration.get_config_value("#{current_user.role.name}_po_cancellation_approval_role") == "enabled"
+          - if @stock_purchase.status == '2'
+            - if @stock_purchase.cancellation_status != 'cancelled'
+              %th Cancel Stock
+              %th Cancel Item
+
+  %tbody.test
+    - i = 0
+    - @stock_purchase.purchase_order.purchase_order_metum.not_cancelled.each do |object|
+      - _stock = @stock_purchase.stocks.get_product(object.product_id)
+      - is_base_unit = object.product_unit.present? ? false : true
+      - _unit_name = object.product_unit.present? ? object.product_unit.short_name : object.product.basic_unit
+      - vendor_pro = object.product.vendor_products.by_vendor(@stock_purchase.purchase_order.vendor_id).first
+      - price = 0
+      - if object.price_per_unit.present?
+        - price = object.price_per_unit 
+      -else
+        - if is_base_unit
+          - price = vendor_pro.present? ? vendor_pro.price : 0
+        - else
+          - price = vendor_pro.present? ? (vendor_pro.price* object.product_transaction_unit.basic_unit_multiplier ): 0
+      - if _stock.present?
+        %tr.data-table__selectable-row.data-table__selectable-row--is-selected
+          %td
+          %td
+          %td
+            %label.font-sz-11.padding-l-20{:for=>"#{object.id}"}
+              ="#{object.product.name}"
+              - if object.product.local_name.present?
+                %b
+                  = " ( #{object.product.local_name} )"
+          
+          %td="#{object.product.hsn_code}"
+          
+          - if AppConfiguration.get_config_value('retail_menu') == 'enabled'  
+            %td.col-lg-1 
+              = _stock.last.lot.present? ? _stock.last.lot.mrp : "_"
+          %td
+            %b
+              - if object.transaction_unit_id.present?
+                = "#{_stock.first.stock_credit/object.product_transaction_unit.basic_unit_multiplier} #{object.product_transaction_unit.product_unit_name}"
+                = "(#{_stock.first.stock_credit} #{object.product.basic_unit})"
+              -else
+                = "#{_stock.first.stock_credit} #{object.product.basic_unit}"
+            - if _stock.first.secondary_stocks.present?
+              %br
+              =_stock.first.secondary_stocks.map{|ss| "#{ss.stock_credit} #{ss.product_unit.short_name}(s) of #{ss.product_unit.multiplier} #{ss.product_unit.basic_inventory_unit}"}.join(',')
+          
+          - if @stock_expiry_date == 'enabled'    
+            %td
+              = _stock.first.expiry_date.present? ? _stock.first.expiry_date.strftime("%d-%m-%Y") : ""
+          
+          %td=_stock.first.stock_price.present? ? "#{_stock.first.stock_price.landing_price} /#{_unit_name}" : "-"
+          
+          %td=_stock.first.stock_price.present? ? "#{_stock.first.stock_price.discount_price}" : "-"
+          
+          -if AppConfiguration.get_config_value('Percentage_applied_on_lending_price') == 'enabled'
+            %td= object.purchase_order.stock_purchases.last.stocks.last.stock_price.sales_percentage                      
+          
+          - if @input_tax_config == 'enabled'
+            %td=_stock.first.stock_price.present? ? _stock.first.stock_price.total_price_without_tax : "-"
+          
+          - if @input_tax_config == 'enabled'
+            %td=_stock.first.stock_taxes.map{|tax| "#{tax.tax_class_name}: #{currency}#{tax.tax_amount.to_s} (on #{tax.tax_applicable_on})"}.join(' | ')
+          
+          %td
+            =_stock.first.stock_price.present? ? _stock.first.stock_price.additional_cost : "-"
+            %br
+            =_stock.first.stock_price.present? ? _stock.first.stock_price.addon_cost_remarks : ""
+          %td
+            = _stock.first.price*_stock.count
+          / %td 
+          /   = _stock.first.sku.present? ? _stock.first.sku : ""  
+          
+          - if AppConfiguration.get_config_value('retail_menu') == 'enabled'
+            %td
+              = show_mrp(business_type,_stock)
+          %td
+            = "#{_stock.first.available_stock} #{object.product.basic_unit}"
+            %input.form-control.check-input.allow-numeric-only{:value=> _stock.first.available_stock,:name => "available_stock_qty_#{object.id}_1", :type => "hidden", :id=>"available_stock_qty_#{object.id}_1"}
+          - if AppConfiguration.get_config_value('po_cancellation_approval') == "enabled"
+            - if AppConfiguration.get_config_value("#{current_user.role.name}_po_cancellation_approval_role") == "enabled"
+              - if @stock_purchase.status == '2'
+                - if @stock_purchase.cancellation_status != 'cancelled'
+                  %td
+                    - if _stock.first.available_stock > 0
+                      %input.validate.form-control.allow-numeric-only.cancel_stock_qty{:value=> _stock.first.available_stock,:name => "cancel_stock_qty_#{object.id}_1", :type => "text",:class=>"check-input-#{object.id}-1 cancel_stock_#{object.id}_1", "data-product-id"=>object.product_id,"data-uid"=>"1","data-pom-id"=>object.id}
+                    - else
+                      %input.validate.form-control.allow-numeric-only{:value=>_stock.first.available_stock, :disabled=>"disabled"}
+                  %td
+                    - if _stock.first.available_stock > 0
+                      %a.m-btn.red.m-btn-low-padding.cancel_item_in_sp{:title=>"cancel item in purchase", "data-stock-id"=>_stock.first.id, "data-product-name"=>_stock.first.product.name, "data-product-id" => _stock.first.product.id, "data-stock-purchase-id"=>_stock.first.stock_transaction_id, "data-store-id"=>_stock.first.store_id,"data-uid"=>"1","data-pom-id"=>object.id}
+                        %i.mdi-action-highlight-remove
+                    - else
+                      %a.m-btn.m-btn-low-padding{:style=>"background:#aaa;"}
+                        %i.mdi-action-highlight-remove
+
+      - else
+        %tr.m-input.data-table__selectable-row
+          %td
+          %td
+          %td.padding-r-5
+            = check_box_tag "selected_po_srials[]", "#{object.id}_1", false, :class=>"checkbox-child filled-in purchase_input check_purchase_input", "data-po-id" => "#{object.id}","data-product-id"=>object.product_id,"data-uid"=>1,:id=>"#{object.id}-1"
+            %label.font-sz-11.padding-l-20{:for=>"#{object.id}-1"}
+              ="#{object.product.name}"
+              - if object.product.local_name.present?
+                %b
+                  = " ( #{object.product.local_name} )"
+
+          %td.padding-r-5
+            %input.validate.form-control.margin-b-2{:value=> "#{object.product.hsn_code}",:name => "pro_hsn_code_#{object.id}_1", :type => "text","data-product-id"=>object.product_id,"data-uid"=>1}
+          
+          - if AppConfiguration.get_config_value('retail_menu') == 'enabled'
+            %td.padding-r-5
+              %input.validate.form-control.check-input.allow-numeric-only.margin-b-2.purchase_input.purchase-cost{:value=> "0",:name => "pro_mrp_#{object.id}_1", :type => "text",:class=>"check-input-#{object.id}-1 mrp-#{object.product_id} mrp-#{object.product_id}-1", "data-product-id"=>object.product_id,"data-uid"=>1,"data-pom-id"=>object.id}
+              ="per"
+              %b="#{_unit_name}"
+          
+          %td.padding-r-5{:id=>"input-quantities-#{object.product_id}"}
+            - if is_base_unit
+              %input.filled-in.purchase_input{:type=>"checkbox",:class=> "input_unit_of_#{object.product_id}_1", :id=>"input-unit-of-#{object.product_id}-#{object.product.basic_unit}", :checked=> true, "data-product-id"=>object.product_id, "data-multiplier"=>"1", "data-unit"=>"#{object.product.basic_unit}", "data-id"=>object.id,"data-uid"=>"1" }
+              %input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :value=>"#{object.product_amount}", :class=>"input_quantity_of_#{object.product_id}_#{object.product.basic_unit}_1 input_quantity_of_#{object.product_id}", "data-product-id"=>object.product_id, "data-id"=>object.id,"data-uid"=>"1" }
+              =_unit_name
+            - else
+              %input.filled-in.purchase_input{:type=>"checkbox", :name=>"input_quantity_#{object.product_id}_1", :value =>object.secondary_product_unit_id,:class=> "input_unit_of_#{object.product_id}_1", :id=>"input-unit-of-#{object.product_id}-#{object.product_unit.short_name}", :checked=> true, "data-product-id"=>object.product_id, "data-multiplier"=>object.product_transaction_unit.basic_unit_multiplier, "data-unit"=>"#{object.product_unit.short_name}", "data-id"=>object.id,"data-uid"=>"1" }
+              %input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :name=>"input_quantity_#{object.product_id}_#{object.secondary_product_unit_id}_1", :value=>object.secondary_amount, :class=>"input_quantity_of_#{object.product_id}_#{object.product_unit.short_name}_1 input_quantity_of_#{object.product_id}", "data-product-id"=>object.product_id, "data-id"=>object.id,"data-uid"=>"1" }
+              =_unit_name
+
+          - if @stock_expiry_date == 'enabled'   
+            %td.padding-r-5
+              %input.validate.form-control.datepick{:name => "expiry_date_#{object.id}_1", :type => "text",:placeholder=>"Expiry Date",:required=> true, :value=>"#{Date.today + 1.years}"}
+          
+          %td.padding-r-5
+            %input.validate.form-control.check-input.allow-numeric-only.margin-b-2.landing-price.purchase_input.purchase-qty{:value=> "#{price.round(2)}",:name => "pro_price_#{object.id}_1", :type => "text",:class=>"check-input-#{object.id}-1 landing-price-#{object.product_id}-1 landing-price-#{object.product_id}", "data-product-id"=>object.product_id,"data-uid"=>1,"data-pom-id"=>object.id}
+            ="per"
+            %b="#{_unit_name}"
+          
+          %td
+            %input.validate.form-control.check-input.allow-numeric-only.purchase_input{:value=> "0",:name => "pro_dicount_#{object.id}_1", :type => "text",:class=>"check-input-#{object.id}-1 discount-amount-#{object.product_id} discount-amount-#{object.product_id}-1", "data-product-id"=>object.product_id,"data-uid"=>"1"}  
+            - unless @input_tax_config == 'enabled'
+              %input.form-control.check-input.allow-numeric-only{:value=> "0",:name => "pro_pwot_#{object.id}_1", :type => "hidden",:class=>"purchase_input check-input-#{object.id}-1 price-wot-#{object.product_id}-1", "data-product-id"=>object.product_id,"data-uid"=>"1"}
+           
+          - if AppConfiguration.get_config_value('Percentage_applied_on_lending_price') == 'enabled'  
+            %td.padding-r-5
+              = select_tag "sales_percentage_#{object.id}_1", options_for_select(@percentages.map { |e| ["#{e.value}%", "#{e.id}",{'data-product-id'=>object.product_id}] }), {:class=>"form-control auto_populate_entity tax_serial_#{i} sales_percentage_#{object.product_id}", "data-meta-id"=>object.id, "data-counter"=>i, "data-total-count"=> @stock_purchase.purchase_order.purchase_order_metum.count, "data-entity-type"=>"tax",prompt: "Percent", disabled: true}
+                                  
+          - if @input_tax_config == 'enabled'
+            %td
+              %input.validate.form-control.check-input.allow-numeric-only{:value=> "0",:name => "pro_pwot_#{object.id}_1", :type => "text",:class=>"purchase_input check-input-#{object.id}-1 price-wot-#{object.product_id}-1", "data-product-id"=>object.product_id,"data-uid"=>"1"}
+            %td
+              = get_input_taxes(object.product_id,current_user.unit_id)
+              .clearfix
+              .m-input{:id=>"tax-input-container-#{object.product_id}-1"}
+          
+          %td
+            %input.validate.form-control.check-input.allow-numeric-only{:value=> "0",:name => "pro_additional_cost_#{object.id}_1", :type => "text",:class=>"purchase_input check-input-#{object.id}-1 pro-additional-cost-#{object.product_id}-1 purchase_input_additional_cost", "data-product-id"=>object.product_id,"data-uid"=>"1"}
+          
+            %input.validate.form-control{:name => "addon_remarks_#{object.id}_1", :type => "text",:placeholder=>"(Remarks)","data-uid"=>"1"}
+          
+          %td
+            %input.validate.form-control.check-input.allow-numeric-only.product-total-wt{:value=> "0",:name => "pro_price_wt_#{object.id}_1", :type => "text",:class=>"check-input-#{object.id}-1 product_price_wt_#{object.product_id}_1","data-uid"=>"1", "data-product-id"=>object.product_id}      
+            .row.margin-l-r-none
+              .col-lg-9.padding-l-r-none
+                %input.validate.form-control.check-input.allow-numeric-only.product-qty.purchase_input{:value=> "#{object.product_amount}",:name => "pro_qty_#{object.id}_1", :type => "text",:class=>"check-input-#{object.id}-1 quantity-#{object.product_id}-1", "data-product-id"=>object.product_id,"data-uid"=>"1"}     
+              .col-lg-3.padding-l-r-none
+                %br
+                / =_unit_name
+                =object.product.basic_unit
+          - i += 1    
+
+          - if AppConfiguration.get_config_value('retail_menu') == 'enabled'    
+            %td.padding-r-5
+              %input.validate.form-control.check-input.allow-numeric-only.margin-b-2.sale-price.purchase_input.purchase-qty{:value=> "#{price.round(2)}",:name => "retail_price_#{object.id}_1", :type => "text",:class=>"check-input-#{object.id}-1 landing-price-#{object.product_id}-1 landing-price-#{object.product_id}", "data-product-id"=>object.product_id,"data-uid"=>1,"data-pom-id"=>object.id}
+              ="per"
+              %b="#{_unit_name}"
+
+          - if AppConfiguration.get_config_value('po_cancellation_approval') == "enabled"
+            - if AppConfiguration.get_config_value("#{current_user.role.name}_po_cancellation_approval_role") == "enabled"
+              - if @stock_purchase.status == '2'
+                - if @stock_purchase.cancellation_status != 'cancelled'
+                  %td
+                  %td
+                  %td

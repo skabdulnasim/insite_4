@@ -1,0 +1,68 @@
+= javascript_include_tag "stock_purchases"
+- @site_title.slice! "Digital Bricks | "
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %th Product
+      %th Sku
+      %th Color
+      %th Size
+      %th Quantity
+      %th Print
+      
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr      
+          %td= object.product.name
+          %td= object.sku
+          %td= object.color_name.present? ? object.color_name : '-'
+          %td= object.size_name.present? ? object.size_name : '-'
+          %td= "#{object.stock_qty}" " #{object.product.basic_unit}"
+          %td
+            = button_tag(:print, class: "waves-effect waves-light btn print-barcodde", type: "button", data: { toggle: "true", target: "#print_modal", sku: object.sku, name: object.product.name, mrp:object.mrp, mc: "0", wt: "0", wastage: "0", site: @site_title, count: object.stock_qty, 'model-number'=> object.model, size: object.size_name, 'color-name'=> object.color_name, 'created-at'=>object.created_at.strftime("%d-%m-%Y"),'mfg-date'=>'',"batch-no" => object.batch_no, "itemname"=>object.product.name })
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  %p.warning No records!
+
+#print_modal.modal.fade{:role => "dialog", :tabindex => "-1"}
+  .modal-dialog{:role => "document"}
+    .modal-content
+      .modal-header
+        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×  
+        - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+          %h4.modal-title Print Qr Code
+        - else  
+          %h4.modal-title Print Bar Code
+      .modal-body
+        #radio_by_catalog.float-l
+        .float-l.margin-l-15.margin-r-10.margin-t-5 Enter count of printing : 
+        .form-group.filter.input-append
+          .input-group
+            %input.form-control.allow-numeric-only#print_count{:placeholder => "Enter count of printing...", :type => "text", :style=>"width:200px;"}
+        .panel.panel-default
+          .panel-body
+            .col-md-6.center
+              %h5
+                /.bar-mrp
+                = @site_title
+              - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                %img{:src => "/assets/qr_code.png", :width=>"100%"}
+              - else 
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+              %br
+              .bar-sku
+            .col-md-6.center
+              %h5
+                = @site_title
+              /.bar-mrp
+              - if AppConfiguration.get_config_value('qr_code') == 'enabled' 
+                %img{:src => "/assets/qr_code.png", :width=>"100%"}
+              - else 
+                %img{:src => "/assets/bar_code.jpg", :width=>"100%"}
+              %br
+              .bar-sku        
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        %button.btn.btn-primary{:type => "button", :class => "print-barcode"} Print

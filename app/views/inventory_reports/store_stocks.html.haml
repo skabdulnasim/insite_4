@@ -1,0 +1,64 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $(".dropdown-button").dropdown();    
+  });
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Inventory Report By Store",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+%ul.collapsible{"data-collapsible" => "accordion"}
+  %li
+    .collapsible-header
+      %b Column preferences
+    .collapsible-body
+      %p.col-lg-12
+        = form_tag(save_report_preferences_inventory_reports_path, method: "post", :class=>"padding-20") do
+          - get_by_date_stock_summary_preferences(current_user.unit_id,'stock_summery_report_store_wise')
+          = hidden_field_tag :report_key, "stock_summery_report_store_wise"
+          = hidden_field_tag :unit_id, @unit_id
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+            Save preferences
+      .clearfix
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            = smart_listing_controls_for(:reports, {class: "form-inline float-l"}) do
+              .form-group.filter.input-append.hidden-sm.hidden-xs.col-lg-2
+                = select_tag :stock_filter, options_for_select({"In stock"=>"1", "Out of stock"=>"2"}), class: "search form-control stock_filter", :prompt => "All products"
+              .form-group.filter.input-append.hidden-sm.hidden-xs.stock-report-input.col-lg-2
+                = select_tag :category, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control store-product-category", :prompt => "All categories"          
+              
+                = hidden_field_tag :store_id, '', :value=>params[:store_id],class: "store_id"              
+              .form-group.from_date.input-append.stock-report-input.col-lg-2  
+                = text_field_tag :from_date, '', class: "search form-control form-control-small-pad stock-from-date", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:from_date]
+              .form-group.from_date.input-append.stock-report-input.col-lg-2
+                = text_field_tag :to_date, '', class: "search form-control form-control-small-pad stock-to-date", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:to_date]
+              .form-group.filter.input-append.stock-report-input.col-lg-3
+                .input-group
+                  %input.form-control.search.store-product-name{:placeholder => "Search product...", :type => "text", :name=> "product_filter"}
+                    %span.input-group-btn
+                      %button.btn.btn-default.disabled{:type => "submit" }
+                        %span.glyphicon.glyphicon-search
+          .data-table-header__actions
+            %a.btn.dropdown-button{"data-activates" => "dropdown2", :href => "#!"}
+              Export
+              %i.mdi-navigation-arrow-drop-down.right
+            %ul#dropdown2.dropdown-content
+              %li.width-100
+                %a.export-stock-report-pdf{:href=>"/inventory_reports/store_stocks.pdf?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&store_id=#{params[:store_id]}"}
+                  PDF
+              %li.width-100
+                %a.export-stock-report{:href=>"/inventory_reports/store_stocks.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&store_id=#{params[:store_id]}"}
+                  CSV                                                                                  
+             
+        = smart_listing_render :reports

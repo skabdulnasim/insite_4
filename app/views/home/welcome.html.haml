@@ -1,0 +1,205 @@
+
+- manual_load_javascript "Chart.min.js","welcome","jquery.sparkline.min.js","templates/dashboard/revenue_details","templates/dashboard/sales_details"
+
+= render "layouts/flash"
+- _unit_id = current_user.unit_id
+.collapse#collapseUnitFilter
+  %ul#task-card.collection.with-header
+    %li.collection-header.amber.text-white
+      %span.text-white{:style=>"font-size:20px;"} 
+        Filter by Location
+      %a.m-btn.waves-effect.waves-light.float-r{"data-toggle"=>"collapse", :href=>"#collapseUnitFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseUnitFilter"}
+        %i.mdi-navigation-close.sm
+      %a.m-btn.float-r.waves-effect.waves-light.filter-dashboard-data{"data-toggle"=>"collapse", :href=>"#collapseUnitFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseUnitFilter"}
+        %i.mdi-action-done-all.sm
+    .max-height-400  
+      - load_units_dropdown(current_user.unit_id) #HomeHelper
+
+.collapse#collapseDateFilter
+  %ul#task-card.collection.with-header
+    %li.collection-header.indigo.text-white
+      %span.text-white{:style=>"font-size:20px;"} 
+        Filter by Date Interval
+      %a.m-btn.float-r.waves-effect.waves-light{"data-toggle"=>"collapse", :href=>"#collapseDateFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseDateFilter"}
+        %i.mdi-navigation-close.sm
+      %a.m-btn.float-r.waves-effect.waves-light.filter-dashboard-data{"data-toggle"=>"collapse", :href=>"#collapseDateFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseDateFilter"}
+        %i.mdi-action-done-all.sm        
+    %li.collection-item.m-input
+      .input-field
+        %i.mdi-navigation-arrow-forward.prefix
+        %input#from_date.validate{:type => "date",:placeholder=>"From Date", :value=>"#{Date.today - 1.month}"}
+      .input-field
+        %i.mdi-navigation-arrow-back.prefix
+        %input#to_date.validate{:type => "date",:placeholder=>"To Date", :value=>"#{Date.today.to_s}"}        
+.fixed-action-btn{:style => "bottom: 45px; right: 24px;"}
+  %a.btn-floating.btn-large.red
+    %i.md.mdi-content-filter-list
+  %ul
+    %li
+      %a.btn-floating.waves-effect.waves-light.green{"data-toggle"=>"collapse", :href=>"#collapseDateFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseDateFilter"}
+        %i.small.mdi-device-access-time{"data-toggle"=>"tooltip","title"=>"Select Duration"}
+    %li
+      %a.btn-floating.waves-effect.waves-light.blue{"data-toggle"=>"collapse", :href=>"#collapseUnitFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseUnitFilter"}
+        %i.small.mdi-communication-location-on{"data-toggle"=>"tooltip","title"=>"Select Outlets"}
+    / %li
+    /   %a.btn-floating.red
+    /     %i.small.mdi-editor-insert-chart
+    / %li
+    /   %a.btn-floating.yellow.darken-1
+    /     %i.small.mdi-editor-format-quote
+.row
+  .col-lg-4.col-sm-6.col-xs-12.col-xxs-12
+    .info-box.teal.teal-text.text-lighten-4.card
+      %span.info-box-icon
+        %i.fa.fa-money
+      .info-box-content
+        %span.info-box-text Today's Revenue!
+        %span.info-box-number#total_sales_today 0
+        .progress
+          .progress-bar.sales-widget-progressbar
+        %span.progress-description.font-13.sales-widget-description
+  .col-lg-4.col-sm-6.col-xs-12.col-xxs-12
+    .info-box.blue.blue-text.text-lighten-4.card
+      %span.info-box-icon
+        %i.fa.fa-shopping-cart
+      .info-box-content
+        %span.info-box-text Orders Today!
+        %span.info-box-number#total_orders_today 0
+        .progress
+          .progress-bar.orders-widget-progressbar
+        %span.progress-description.font-13.orders-widget-description
+  .col-lg-4.hidden-sm.hidden-md.hidden-xs
+    .info-box.red.red-text.text-lighten-4.card 
+      %span.info-box-icon
+        %i.fa.fa-cubes
+      .info-box-content
+        %span.info-box-text TOTAL COST TODAY!
+        %span.info-box-number#total_costs_today 0
+        .progress
+          .progress-bar.cost-widget-progressbar
+        %span.progress-description.font-13.cost-widget-description
+
+.loading-chart-data
+
+.card#revenue-card
+  .card-move-up.waves-effect.waves-block.waves-light
+    .move-up.darken-1
+      %span.cyan-text.text-darken-2.activator{:style=>"font-size: 2.2rem !important;"} 
+        Revenue 
+        %i.mdi-action-view-list.right.md.amber-text.text-darken-2
+      .clearfix
+      %br
+      %div{:style=>"min-height:200px;"}
+        %canvas#sales-area-canvas{:height => "160", :width => "700"}
+      .clearfix
+  .card-content.darken-2
+    .col-lg-2.hidden-sm.hidden-md.hidden-xs
+      %h5.cyan-text.text-darken-2.font-sz-18
+        Order sources
+      %canvas#order-src-canvas{:height => "240"} 
+    .col-lg-10
+      %h5.cyan-text.text-darken-2.font-sz-18
+        Number of orders
+      %canvas#order-count-canvas{:height => "100"}
+    / .col-lg-5
+    /   %h5.cyan-text.text-darken-2.font-sz-18
+    /     Profit (Approx.)
+    /   %canvas#profit-line-canvas{:height => "140"}      
+    / .col-lg-4
+    /   %h5.cyan-text.text-darken-2.font-sz-18{:style => "margin-left:20%;"}
+    /     Today's Sales Target
+    /   .statChartHolder
+    /     .progress-pie-chart
+    /       .ppc-progress
+    /         .ppc-progress-fill
+    /       .ppc-percents
+    /         .pcc-percents-wrapper
+    /           %span %
+    /           %label
+    .clearfix   
+  .card-reveal
+    %span.card-title.grey-text.text-darken-4{:style=>"font-size: 2.0rem !important;"} 
+      Revenue by Date
+      %i.mdi-navigation-close.right.sm
+    %p.revenue-tabular-data
+              
+.card.margin-t-15
+  .main-section__content.p0
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title.activator.cursor-pointer 
+                Map View               
+                %i.mdi-action-view-list.right.md.blue-text.text-darken-2
+                / %i.mdi-navigation-more-vert.right
+          .col-lg-9.padding-none
+            #map-canvas.min-height-405
+              .map-loader{ :style=>"margin-top:150px;"}
+          .col-lg-3.blue.lighten-2.light-blue-text.text-lighten-4.min-height-405.hidden-sm.hidden-md.hidden-xs
+            .polar-chart-container
+              %h4.text-white Revenue by location
+              %br
+              .statChartHolder
+                .progress-pie-chart
+                  .ppc-progress
+                    .ppc-progress-fill
+                  .ppc-percents
+                    .pcc-percents-wrapper
+                      %span %
+                      %label.text
+                      %br
+                      %label.value
+              %br
+              %canvas#units-polar-chart{:height => "180", :width => "200"}
+            .map-unit-details
+
+  .card-reveal
+    %span.card-title.grey-text.text-darken-4{:style=>"font-size: 2.0rem !important;"}
+      Sales Analysis
+      %i.mdi-navigation-close.right.sm
+    %p.sales-details-tabular-data                           
+
+/ .card.margin-t-15
+/   .main-section__content.p0
+/     .example
+/       .example__content.p0
+/         .data-table-container
+/           %header.data-table-header
+/             .data-table-header__label
+/               %span.fs-title.activator.cursor-pointer 
+/                 Inventory Report
+/                 %i.mdi-action-view-list.right.md.blue-text.text-darken-2
+/                 / %i.mdi-navigation-more-vert.right
+/           .col-lg-9.padding-none
+/             #map-canvas.min-height-405
+/               .inventory-loader{ :style=>"margin-top:150px;"}
+/           .col-lg-3.cyan.light-blue-text.text-lighten-4.min-height-405.hidden-sm.hidden-md.hidden-xs
+/             .polar-chart-container
+/               %h4.text-white Revenue by location
+/               %br
+/               %br
+/             .map-unit-details
+/   .card-reveal
+/     %span.card-title.grey-text.text-darken-4{:style=>"font-size: 2.0rem !important;"}
+/       Sales Analysis
+/       %i.mdi-navigation-close.right.sm
+/     %p.sales-details-tabular-data  
+
+
+.clearfix
+/ Load Js Here
+:javascript
+  $(document).ready(function() {
+    load_dashboard_UI_components();
+    $(function() {
+      $('#from_date').datetimepicker({
+        format: 'YYYY-MM-DD',
+      });
+      $('#to_date').datetimepicker({
+        format: 'YYYY-MM-DD',
+      });
+    }); 
+    $("[data-toggle=tooltip]").tooltip();
+  });

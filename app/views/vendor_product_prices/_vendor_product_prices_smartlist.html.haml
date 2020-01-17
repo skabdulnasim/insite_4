@@ -1,0 +1,151 @@
+%link{:href => "http://fonts.googleapis.com/icon?family=Material+Icons", :rel => "stylesheet"}
+= stylesheet_link_tag "timeline"
+:css
+	.x::after{
+		content: '';
+		position: absolute;
+		width: 31px;
+		height: 2px;
+		background: #cccccc;
+		left: 9px;
+		top: 50%;
+	}
+	.timeline-entry.card:after{
+		content: "";
+		position: absolute;
+		top: 0px;
+		right: -9px;
+		width: 0px;
+		height: 0px;
+		border-style: solid;
+		border-width: 12px 0px 0px 9px;
+		border-color: transparent transparent transparent #ffffff;
+	}
+- unless smart_listing.empty?
+	- smart_listing.collection.each do |object|
+		.row
+			.margin-t-20
+				%ul.timeline.collapse-lg.timeline-hairline.timeline-parent
+					%li.timeline-inverted
+						.timeline-circ.circ-xl.blue
+							/ %i.material-icons person
+							%i.fa.fa-vimeo
+						.row.m0.timeline-entry.mt30.x
+							.card.m0.col.width-50.pointer.padding-10
+								.p5.margin-l-15
+									%h5.m0
+										.left
+											.font-sz-18
+												%i.fa.fa-user
+												= object.name.humanize
+											.margin-t-10
+												%i.fa.fa-phone
+												= object.phone
+											.margin-t-10
+												%i.fa.fa-map-marker
+												= object.address
+										.right
+											- vendor_info = "<div style='text-align:left;'><b>Vendor Details</b></u> <br/> <i class='fa fa-user margin-t-10'/> #{object.name.humanize} <br/> <i class='fa fa-phone margin-t-5'/> #{object.phone}<br/> <i class='fa fa-map-marker margin-t-5'/> #{object.address}</div>"
+											%img{:src => "/google-maps.png", :class => "map-view", :width => "40px", "data-lat"=>"#{object.latitude}", "data-lon"=>"#{object.longitude}", "data-text"=>vendor_info} 
+
+					- if object.vendor_products.present?
+						- _vendor_products = object.vendor_products
+						- _vendor_products = VendorProduct.filter_by_product(_vendor_products,params[:product_filter]) if params[:product_filter].present?
+						- _vendor_products = VendorProduct.filter_by_approval_status(_vendor_products,params[:approval_status]) if params[:approval_status].present?
+						- if _vendor_products.present?
+							%ul.timeline.collapse-lg.timeline-hairline.margin-l-200
+								- _vendor_products.each do |v_p|
+									%li.timeline-inverted
+										.timeline-circ.circ-xl.blue
+											%i.material-icons local_parking
+										.row.m0.timeline-entry.mt30.x
+											.card.m0.col.width-40-p.pointer.padding-10
+												.p5.margin-l-15
+													%h5.m0
+														%span
+															= get_vendor_product_logo(v_p.product.product_images)
+															= v_p.product.name
+															%span.label.teal=v_p.product.basic_unit
+									-if v_p.vendor_product_prices.present?
+										%ul.timeline.collapse-lg.timeline-hairline.margin-l-150
+											- _vendor_product_prices = v_p.vendor_product_prices
+											- _vendor_product_prices = _vendor_product_prices.by_status(params[:approval_status]) if params[:approval_status].present?
+											- _vendor_product_prices = _vendor_product_prices.order("unit_price asc") if params[:sort_by].present? and params[:sort_by]=='price_asc'
+											- _vendor_product_prices = _vendor_product_prices.order("unit_price desc") if params[:sort_by].present? and params[:sort_by]=='price_desc'
+											- _vendor_product_prices.each do |v_p_p|
+												%li.timeline-inverted
+													.timeline-circ.circ-xl.blue
+														/ %i.material-icons thumb_up_alt
+														%i.fa.fa-money
+													.row.m0.timeline-entry.mt30.x{:style=>"display: inline-flex;"}
+														.card.m0.col.pointer.padding-15
+															.p5.margin-l-15
+																%h5.m0
+																	.left
+																		/ = image_tag("icons/without_tax.png", width: '20')
+																		/ = "Price without tax: #{currency}.#{v_p_p.unit_price_without_tax}"
+																		/ .margin-t-10
+																		/ 	%i.fa.fa-money
+																		/ 	= "Price with tax: #{currency}.#{v_p_p.unit_price_with_tax}"
+																		%i.fa.fa-money
+																		= "Unit price :"
+																		= v_p_p.unit_price.present? ? " #{currency}.#{v_p_p.unit_price}" : "NA"
+																		.margin-t-10
+																			%i.fa.fa-balance-scale
+																			= "Quantity: #{v_p_p.quantity} #{v_p_p.product.basic_unit}"
+																		/ .margin-t-10
+																		/ 	= image_tag("icons/tax.png", width: '20')
+																		/ 	= "Total tax: #{currency}.#{v_p_p.total_tax_amount}"
+																		.margin-t-10
+																			%i.fa.fa-bus.font-sz-16
+																			- delivery_cost = v_p_p.delivery_cost.present? ? "#{currency}. #{v_p_p.delivery_cost.round(2)}" : "NA" 
+																			= "Delivery cost: #{delivery_cost}"
+																		.margin-t-10
+																			= image_tag("icons/cost.png", width: '20')
+																			- cost = v_p_p.cost.present? ? "#{currency}. #{v_p_p.cost.round(2)}" : "NA" 
+																			= "Total cost: #{cost}"
+																		.margin-t-10
+																			%i.fa.fa-balance-scale
+																			Total agreed quantity: 
+																			= v_p_p.total_agreed_qty.present? ? "#{v_p_p.total_agreed_qty} #{v_p_p.product.basic_unit}" : 'NA'
+																		.margin-t-10
+																			- if v_p_p.visited_by.present?
+																				- visited_by_user = User.find(v_p_p.visited_by)
+																				- visited_by = visited_by_user.profile.present? ? visited_by_user.profile.firstname.capitalize+" "+visited_by_user.profile.lastname.capitalize : 'NA'
+																			- else
+																				- visited_by = 'NA'
+																			%i.fa.fa-user.font-sz-16
+																			/ %i.material-icons.margin-l-none person
+																			Visited by: 
+																			= "#{visited_by}"
+																		.margin-t-10.font-bold
+																			= image_tag("icons/tax.png", width: '22')
+																			= v_p_p.tax_inclusion == true ? 'Inclusive of tax' : 'Exclusive of tax'
+																		.margin-t-10.font-bold
+																			%i.fa.fa-train.font-sz-16
+																			= v_p_p.delivery_charge_inclision == true ? 'Inclusive of delivery charge' : 'Exclusive of delivery charge'
+
+																	.right{:style=>"margin-top:15%;"}
+																		- sourcing_info = "<div style='text-align:left;'><b>Sourcing Details</b><br/> <i style='font-size:13px;' class='fa fa-file-powerpoint-o margin-t-10'/> #{v_p.product.name}<br/><i class='fa fa-money margin-t-5'/> #{v_p_p.unit_price_with_tax} #{currency}<br/><i class='fa fa-user margin-t-5'/> #{object.name.humanize} <br/> <i class='fa fa-calendar margin-t-5'/> #{v_p_p.delivery_starts.strftime('%d.%m.%Y')} - #{v_p_p.delivery_ends.strftime('%d.%m.%Y')}</div>"
+																		%img{:src => "/google-maps.png", :class => "map-view", :width => "40px", "data-lat"=>"#{v_p_p.latitude}", "data-lon"=>"#{v_p_p.longitude}", "data-text"=>sourcing_info, "data-lat-v"=>object.latitude, "data-lon-v"=>object.longitude, "data-text-v"=>vendor_info}
+
+														.margin-l-15.margin-t-65
+															%i.fa.fa-calendar
+															= "#{v_p_p.delivery_starts.strftime('%d.%m.%Y')} - "
+															%i.fa.fa-calendar
+															= "#{v_p_p.delivery_ends.strftime('%d.%m.%Y')}"
+															%br
+															.margin-t-15
+																- status = v_p_p.status
+																%input.with-gap{:type=>"radio", :name => "status_#{v_p_p.id}", :id=>"approved_status_#{v_p_p.id}", :checked => (status == "approved"), "class"=> "update_status", "data-vpp-id"=>v_p_p.id, "data-status"=>'approved'}
+																%label{:for=>"approved_status_#{v_p_p.id}"} Approve
+																%input.with-gap{:type=>"radio", :name => "status_#{v_p_p.id}", :id=>"rejected_status_#{v_p_p.id}", :checked => (status == "rejected"), "class"=> "update_status", "data-vpp-id"=>v_p_p.id, "data-status"=>'rejected'}
+																%label{:for=>"rejected_status_#{v_p_p.id}"} Reject
+			%hr
+
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+
+- else
+	.alert.alert-warning
+		No record found

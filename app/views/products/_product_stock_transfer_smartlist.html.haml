@@ -1,0 +1,213 @@
+- if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+  - if AppConfiguration.get_config_value('stock_identity') == 'enabled'
+
+    - unless smart_listing.empty?
+      %table.data-table
+        %thead
+          %tr.data-table__selectable-row
+            %th.col-lg-3= smart_listing.sortable "Name", "name"
+            %th.col-lg-2 Sku
+            %th.col-lg-3 Stock Identity
+            / %th.col-lg-1 Color
+            / %th.col-lg-1 Size
+            / %th.col-lg-1 Batch No.
+            %th.col-lg-1 Current Stock
+            %th.col-lg-2.padding-r-none Quantity
+            %th.col-lg-1
+        %tbody
+          - smart_listing.collection.each do |object|
+            - if params[:sku_filter].present?
+              - products = Stock.get_product(object.id).set_store(@store.id).available.by_sku(params[:sku_filter]) 
+            - else 
+              - products = Stock.get_product(object.id).set_store(@store.id).available
+              /= debug products
+            - if products.present?  
+              - products.each do |product|
+                - if product.stock_price.present?
+                  - mrp = product.stock_price.mrp
+                  - procurement_price = product.stock_price.landing_price
+                - else
+                  - mrp = 0.0
+                  - procurement_price = 0.0
+                %tr.data-table__selectable-row
+                  %td.col-lg-3
+                    - _product = Product.find(object)
+                    - _product_name = _product.package_component.present? ?  _product.product_name(_product) : _product.name  
+                    = _product_name
+                    - if object.local_name.present?
+                      %b
+                        = " ( #{object.local_name} )"
+                  %td.col-lg-2=product.sku
+                  %td.col-lg-3=product.stock_identity
+                  / %td.col-lg-1= product.color_name
+                  / %td.col-lg-1= product.size_name
+                  / %td.col-lg-1= product.batch_no
+                  %td.col-lg-1
+                    %span.label.label-default
+                      =number_with_precision(Stock.available_stock(object.id, @store.id, product.sku), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                      =object.basic_unit
+                      - if object.output_units.active_only.present?
+                        
+                        -object.output_units.active_only.each do |output_unit|
+                          = "/"
+                          = number_with_precision((Stock.available_stock(object.id, @store.id, product.sku) / output_unit.basic_unit_multiplier).round(2), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                          = output_unit.product_unit_name
+
+                  %td.col-lg-2.padding-r-none
+                    %input.allow-numeric-only{:name => "filter", autocomplete: "off", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id, :class=>"form-control stock_identity_transfer_qty transfer_quantity_#{product.stock_identity}", :id=>"transfer_product_#{object.id}", "data-expiry-date"=>"#{product.expiry_date}","data-model-number"=>"#{product.model_number}","data-stock-id"=>"#{product.id}","data-size"=>"#{product.size_name}","data-stock_identity"=>"#{product.stock_identity}","data-size-id"=>"#{product.size_id}","data-color-id"=>"#{product.color_id}","data-color-name"=>"#{product.color_name}","data-sell-price-without-tax"=>"#{product.sell_price_with_tax}","data-mrp"=>"#{mrp}","data-procurment-price"=>"#{procurement_price}","data-sku"=>product.sku, "data-product-name"=>object.name, "data-batch-no"=>"#{product.batch_no}", "data-current-stock"=>number_with_precision(Stock.available_stock(object.id, @store.id, product.sku), :precision => 8, :significant => true, :strip_insignificant_zeros => true)}
+
+                  %td.col-lg-1.padding-r-none{:style=>"width :400px !important;"}
+                    =select_tag :product_unit_id, options_for_select(object.output_units.active_only.map{ |ut| [ut.product_unit_name, ut.basic_unit_multiplier.to_f,{"data-product-unit-id"=>ut.id}]}), { prompt: object.basic_unit, :class=>"transfer-input-multiplier-#{product.sku} input_quantity unit-input-#{object.id}", "data-product-id"=>object.id,"data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit_id, "data-business-type"=>"#{params[:business_type]}"}      
+            - else
+              %tr.data-table__selectable-row
+                %td.col-lg-4
+                  =object.name
+                  - if object.local_name.present?
+                    %b
+                      = " ( #{object.local_name} )"
+                %td.col-lg-2 -
+                %td.col-lg-1 -
+                / %td.col-lg-1 -
+                / %td.col-lg-1 -
+                / %td.col-lg-1 -     
+                %td.col-lg-3
+                  %span.label.label-default
+                    =number_with_precision(0, :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                    =object.basic_unit    
+                %td.col-lg-5.padding-r-none
+                  %input.form-control.allow-numeric-only{:name => "filter", autocomplete: "off", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id, :class=>"transfer_qty transfer_quantity_#{object.id}", :id=>"transfer_product_#{object.id}","data-product-name"=>object.name, "data-current-stock"=>number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)}
+                %td.col-lg-5.padding-r-none
+                  =select_tag :product_unit_id, options_for_select(object.output_units.active_only.map{ |ut| [ut.product_unit_name, ut.basic_unit_multiplier.to_f,{"data-product-unit-id"=>ut.id}]}), { prompt: object.basic_unit, :class=>" input_quantity unit-input-#{object.id}", "data-product-id"=>object.id,"data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit_id, "data-business-type"=>"#{params[:business_type]}"}     
+                                           
+      = smart_listing.paginate
+      = smart_listing.pagination_per_page_links
+    - else
+      .alert.alert-warning
+        No products found
+
+
+
+  - else
+    - unless smart_listing.empty?
+      %table.data-table
+        %thead
+          %tr.data-table__selectable-row
+            %th.col-lg-2= smart_listing.sortable "Name", "name"
+            %th.col-lg-2 Sku
+            %th.col-lg-2 sell price
+            %th.col-lg-1 Color
+            %th.col-lg-1 Size
+            %th.col-lg-1 Batch No.
+            %th.col-lg-2 Current Stock
+            %th.col-lg-3.padding-r-none Quantity
+        %tbody
+          - smart_listing.collection.each do |object|
+            - if params[:sku_filter].present?
+              - products = Stock.get_product(object.id).set_store(@store.id).available.by_sku(params[:sku_filter]) 
+            - else 
+              - products = Stock.get_product(object.id).set_store(@store.id).available.select("sku,color_id,size_id,batch_no,expiry_date,model_number,size_name,color_name,sell_price_with_tax,sum(available_stock) as available_stock,mrp,landing_price").group("sku,color_id,size_id,batch_no,expiry_date,model_number,size_name,color_name,sell_price_with_tax,mrp,landing_price")
+              /= debug products
+            - if products.present?  
+              - products.each do |product|
+                / - if product.stock_price.present?
+                /   - mrp = product.stock_price.mrp
+                /   - procurement_price = product.stock_price.landing_price
+                / - else
+                /   - mrp = 0.0
+                /   - procurement_price = 0.0
+                - mrp = product.mrp
+                - procurement_price = product.landing_price
+
+                %tr.data-table__selectable-row
+                  %td.col-lg-2
+                    - _product = Product.find(object)
+                    - _product_name = _product.package_component.present? ?  _product.product_name(_product) : _product.name  
+                    = _product_name
+                    - if object.local_name.present?
+                      %b
+                        = " ( #{object.local_name} )"
+                  %td.col-lg-2= product.sku
+                  %td.col-lg-2= product.sell_price_with_tax
+                  %td.col-lg-1= product.color_name
+                  %td.col-lg-1= product.size_name
+                  %td.col-lg-1= product.batch_no
+                  %td.col-lg-6
+                    %span.label.label-default
+                      / =number_with_precision(Stock.available_stock(object.id, @store.id, product.sku,product.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                      = product.available_stock
+                      =object.basic_unit
+                      - if object.output_units.active_only.present?
+                        
+                        -object.output_units.active_only.each do |output_unit|
+                          = "/"
+                          / = number_with_precision((Stock.available_stock(object.id, @store.id, product.sku) / output_unit.basic_unit_multiplier).round(2), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                          = (product.available_stock.to_f / output_unit.basic_unit_multiplier).round(2)
+                          = output_unit.product_unit_name
+                  %td.col-lg-6.padding-r-none
+                    %input.allow-numeric-only{:name => "filter", autocomplete: "off", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id, :class=>"form-control sku_transfer_qty transfer_quantity_#{product.sku}", :id=>"transfer_product_#{object.id}", "data-expiry-date"=>"#{product.expiry_date}","data-model-number"=>"#{product.model_number}","data-size"=>"#{product.size_name}","data-size-id"=>"#{product.size_id}","data-color-id"=>"#{product.color_id}","data-color-name"=>"#{product.color_name}","data-sell-price-without-tax"=>"#{product.sell_price_with_tax}","data-mrp"=>"#{mrp}","data-procurment-price"=>"#{procurement_price}","data-sku"=>product.sku, "data-product-name"=>object.name, "data-batch-no"=>"#{product.batch_no}", "data-current-stock"=>product.available_stock}
+
+                  %td.col-lg-6.padding-r-none{:style=>"width :400px !important;"}
+                    =select_tag :product_unit_id, options_for_select(object.output_units.active_only.map{ |ut| [ut.product_unit_name, ut.basic_unit_multiplier.to_f,{"data-product-unit-id"=>ut.id}]}), { prompt: object.basic_unit, :class=>"transfer-input-multiplier-#{product.sku} input_quantity unit-input-#{object.id}", "data-product-id"=>object.id,"data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit_id, "data-business-type"=>"#{params[:business_type]}"}      
+            - else
+              %tr.data-table__selectable-row
+                %td.col-lg-4
+                  =object.name
+                  - if object.local_name.present?
+                    %b
+                      = " ( #{object.local_name} )"
+                %td.col-lg-2 -
+                %td.col-lg-2 -
+                %td.col-lg-1 -
+                %td.col-lg-1 -
+                %td.col-lg-1 -     
+                %td.col-lg-3
+                  %span.label.label-default
+                    =number_with_precision(0, :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                    =object.basic_unit    
+                %td.col-lg-5.padding-r-none
+                  %input.form-control.allow-numeric-only{:name => "filter", autocomplete: "off", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id, :class=>"transfer_qty transfer_quantity_#{object.id}", :id=>"transfer_product_#{object.id}","data-product-name"=>object.name, "data-current-stock"=>number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)}
+                %td.col-lg-5.padding-r-none
+                  =select_tag :product_unit_id, options_for_select(object.output_units.active_only.map{ |ut| [ut.product_unit_name, ut.basic_unit_multiplier.to_f,{"data-product-unit-id"=>ut.id}]}), { prompt: object.basic_unit, :class=>" input_quantity unit-input-#{object.id}", "data-product-id"=>object.id,"data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit_id, "data-business-type"=>"#{params[:business_type]}"}     
+                                           
+      = smart_listing.paginate
+      = smart_listing.pagination_per_page_links
+    - else
+      .alert.alert-warning
+        No products found
+- else
+  - unless smart_listing.empty?
+    %table.data-table
+      %thead
+        %tr.data-table__selectable-row
+          %th.col-lg-4= smart_listing.sortable "Name", "name"
+          %th.col-lg-3 Current Stock
+          %th.col-lg-5.padding-r-none Quantity
+      %tbody
+        - smart_listing.collection.each do |object| 
+          %tr.data-table__selectable-row
+            %td.col-lg-4
+              =object.name
+              - if object.local_name.present?
+                %b
+                  = " ( #{object.local_name} )"
+            %td.col-lg-3
+              %span.label.label-default
+                =number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                =object.basic_unit   
+                - if object.output_units.active_only.present?
+                  -object.output_units.active_only.each do |output_unit|
+                    = "/"
+                    = number_with_precision((get_product_current_stock(@store.id, object.id) / output_unit.basic_unit_multiplier).round(2), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                    = output_unit.product_unit_name 
+            %td.col-lg-5.padding-r-none
+              %input.form-control.allow-numeric-only{:name => "filter", autocomplete: "off", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id, :class=>"transfer_qty transfer_quantity_#{object.id}", :id=>"transfer_product_#{object.id}","data-product-name"=>object.name, "data-current-stock"=>number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)}
+            
+            %td.col-lg-5.padding-r-none
+              =select_tag :product_unit_id, options_for_select(object.output_units.active_only.map{ |ut| [ut.product_unit_name, ut.basic_unit_multiplier.to_f,{"data-product-unit-id"=>ut.id}]}), { prompt: object.basic_unit, :class=>" input_quantity unit-input-#{object.id}", "data-product-id"=>object.id,"data-product-name"=>object.name, "data-basic-unit"=>object.basic_unit_id, "data-business-type"=>"#{params[:business_type]}"} 
+                 
+                              
+    = smart_listing.paginate
+    = smart_listing.pagination_per_page_links
+  - else
+    .alert.alert-warning
+      No products found

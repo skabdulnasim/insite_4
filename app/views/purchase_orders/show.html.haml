@@ -1,0 +1,134 @@
+= render "layouts/flash"
+- manual_load_javascript "stores"
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Purchase Order: ##{@purchase_order.id} | #{@purchase_order.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- manual_load_javascript "templates/purchase_orders/po_mail_details"
+
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+.col-sm-8.padding-l-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Products in Purchase Order
+            .data-table-header__actions
+              - mail_conf = AppConfiguration.get_config_value('vendor_email')
+              - if mail_conf == "enabled"
+                %a.m-btn.m-btn-green.margin-l-5.po_mail{"data-po-id"=> "#{params[:id]}"}
+                  %i.fa.fa-envelope-o
+                  Reprint PO
+          %table.data-table
+            %thead
+              %tr.data-table__selectable-row
+                %th= "Product ID"
+                %th= "Product Name"
+                %th= "Current stock"
+                %th= "PO Quantity"
+                %th= "Price"
+                %th= "amount"
+            %tbody
+              - @purchase_order.purchase_order_metum.each do |pod|
+                %tr.data-table__selectable-row                      
+                  %td= pod.product.id
+                  %td= pod.product.name
+                  %td
+                    =number_with_precision(get_product_current_stock(@store.id, pod.product_id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                    = pod.product.basic_unit
+                  %td
+                    - if pod.secondary_amount.present?
+                      - quantity = pod.secondary_amount
+                      = "#{[pod.secondary_amount, pod.product_unit.short_name].join(' ')}"
+                      %br
+                      %b= "(#{[pod.product_amount , pod.product.basic_unit].join(" ")})"
+                    -else
+                      - quantity = pod.product_amount
+                      = [pod.product_amount , pod.product.basic_unit].join(" ")
+                  
+                  %td 
+                    - if pod.price_per_unit.present?
+                      -price = pod.price_per_unit
+                    -else
+                      -price = pod.product.vendor_products.by_vendor(@purchase_order.vendor.id).first.price 
+                    -if pod.product_transaction_unit.present?
+                      = "#{price}/#{pod.product_transaction_unit.product_unit_name}"
+                    -else
+                      = "#{price}/#{pod.product.basic_unit}"
+                  %td
+                    = "#{(quantity * price).round(2)}"
+
+                    
+.col-sm-4.padding-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Purchase Order Details
+          .padding-10
+            %button.m-btn.green.width-100.send_now_order{:id => @purchase_order.id} 
+              Send now to vendor
+              %i.mdi-content-send.right
+          .filter-title.margin-t-b-0 
+            %i.mdi-action-label.left
+            Purchase order
+          .padding-10  
+            %ul.collection.po-product-list
+              %li.collection-item
+                %div  
+                  PO Title
+                  %span.secondary-content= @purchase_order.name              
+              %li.collection-item
+                %div  
+                  PO ID
+                  %span.secondary-content= @purchase_order.id       
+              %li.collection-item
+                %div  
+                  PO Serial
+                  %span.secondary-content= @purchase_order.purchase_order_code            
+              %li.collection-item
+                %div  
+                  Valid from
+                  %span.secondary-content= @purchase_order.valid_from            
+              %li.collection-item
+                %div  
+                  Valid till
+                  %span.secondary-content= @purchase_order.valid_till            
+              %li.collection-item
+                %div  
+                  PO Created at
+                  %span.secondary-content= @purchase_order.created_at.strftime("%d %b %Y, %I:%M %p")      
+              %li.collection-item
+                %div  
+                  PO Created by
+                  %span.secondary-content= @purchase_order.user.profile.full_name
+          .filter-title.margin-t-b-0 
+            %i.mdi-action-label.left
+            Vendor Details                                                                                
+          .padding-10  
+            %ul.collection.po-product-list
+              %li.collection-item
+                %div  
+                  Vendor name
+                  %span.secondary-content= @purchase_order.vendor.name              
+              %li.collection-item
+                %div  
+                  Contact No.
+                  %span.secondary-content= @purchase_order.vendor.phone       
+              %li.collection-item
+                %div  
+                  Address
+                  %span.secondary-content= @purchase_order.vendor.address            
+              %li.collection-item                                
+.clearfix
+
+#reprintPurchaseOrderMailModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showPOModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showPOModalLabel.modal-title.purchse-title Reprint Purchase Order
+      .modal-body

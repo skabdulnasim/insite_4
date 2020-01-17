@@ -1,0 +1,12 @@
+#menuModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "menuModal", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg{:style => "border-color:#e74c3c;border-width:5px;"}
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"}
+          %i.fa.fa-times
+        %center
+          %h4#myModalLabel.modal-title Choose product options...
+      #show_product_details.modal-body{:style=>"min-height:300px"}
+        /Template append here
+      .modal-footer
+        %button.m-btn.m-btn-green.font-lato{:type => "button", :id=> "add-to-cart" } ADD TO CART

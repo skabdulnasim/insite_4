@@ -1,0 +1,62 @@
+/ %ul
+/   - submenucategories.each do |sub|
+/     %li{:style => "list-style-type: none;"}
+/       %span{:style => "color:#FF5050; font-weight:bold;", :class => "icon-hand-right"}
+/         = sub.name
+/       %ul
+/         - @menu_products.each do |menu_product|
+/           - if menu_product.menu_category_id == sub.id
+/             %li{:style => "list-style-type: none;"}
+/               %span.badge{:style =>"font-weight:bold;"}
+/                 = menu_product.id
+/               %span{:style => "color:#00CC00; font-weight:bold;", :class => "fa fa-caret-right"}
+/                 = menu_product.product.name
+/                 - if menu_product.mode == 0
+/                   %a{:class => "btn btn-mini btn-primary icon_show", :id => menu_product.id}
+/                     Show
+/                 - else
+/                   %a{:class => "btn btn-mini btn-danger icon_hide", :id => menu_product.id}
+/                     Hide
+/                   %i.icon-ok-circle
+/               %span{:style =>"font-weight:bold; margin-left:20px; float:right;", :class => "fa fa-inr"}
+/                 = menu_product.sell_price
+/               %span{:style =>"font-weight:bold; margin-left:20px; float:right;"}
+/                 = menu_product.stock_qty
+/       = render partial: 'submenu_li', locals: {submenucategories: sub.submenucategories} if sub.submenucategories.present?
+
+
+%ul
+  - submenucategories.each do |sub|
+    %li{:style => "list-style-type: none; color:#FF5050; font-weight:bold;"}
+      .fa.fa-chevron-circle-right
+      = sub.name
+      - @menu_products.each do |menu_product|
+        - if menu_product.menu_category_id == sub.id
+          %li.col-sm-12{:style => "list-style-type: none;"}
+            .col-sm-3
+              %span.badge{:style =>"font-weight:bold;"}
+                = menu_product.id
+              = menu_product.product.name
+            .col-sm-2
+              = number_to_currency("#{menu_product.sell_price_without_tax}", unit: currency, format: "%u %n")
+            .col-sm-2
+              = number_to_currency("#{menu_product.sell_price}", unit: currency, format: "%u %n")
+            .col-sm-1
+              - if menu_product.tax_group.present?
+                = "#{menu_product.tax_group.total_amnt} %"
+              - else
+                = "0 %"
+            .col-sm-2
+              - if menu_product.mode == 0
+                %a{:class => "btn btn-primary icon_show btn-xs", :id => menu_product.id}
+                  Show
+              - else
+                %a{:class => "btn btn-danger icon_hide btn-xs", :id => menu_product.id}
+                  Hide
+              %a{:href => "#{menu_product_path(menu_product)}", :title => "View product", :class => "btn btn-primary btn-xs", :id => menu_product.id}
+                %i.fa.fa-search-plus.fa-lg
+            .col-sm-2
+      %hr
+            
+       
+    = render partial: 'submenu_li', locals: {submenucategories: sub.submenucategories} if sub.submenucategories.present?

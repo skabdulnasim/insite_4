@@ -1,0 +1,19 @@
+%h1 Listing item_preferences
+
+%table
+  %tr
+    %th Preference
+    %th
+    %th
+    %th
+
+  - @item_preferences.each do |item_preference|
+    %tr
+      %td= item_preference.preference
+      %td= link_to 'Show', item_preference
+      %td= link_to 'Edit', edit_item_preference_path(item_preference)
+      %td= link_to 'Destroy', item_preference, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Item preference', new_item_preference_path

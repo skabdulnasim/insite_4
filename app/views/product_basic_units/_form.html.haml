@@ -1,0 +1,15 @@
+= form_for @product_basic_unit, remote: true do |f|
+  - if @product_basic_unit.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+      = "#{pluralize(@product_basic_unit.errors.count, "error")} prohibited this product unit from being saved."
+  .input-field
+    = f.text_field :name, :placeholder=>"Enter Full Name( Ex: Kilogram)",:required=>true, :class => 'form-control validate'
+  .input-field
+    = f.text_field :short_name, :placeholder=>"Enter Short Name( Ex: Kg)",:required=>true, :class => 'form-control validate'    
+  .input-field
+    %button.btn.p0-10.green.green-text.text-lighten-5.waves-effect.waves-light{:type=>"submit"}
+      Save
+    %a.btn-flat.close-product-basic-unit-form
+      Cancel

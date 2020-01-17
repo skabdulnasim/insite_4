@@ -1,0 +1,66 @@
+
+.page-header
+  - if notice.nil? == false
+    #notice.alert.alert-info
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-info.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"} ×
+      = notice
+  %h2
+    %i.fa.fa-tags
+    #{@report.report_folder.name}
+    
+    %small #{@report.name}
+.page-container  
+  - if @report_data.first.present?
+    - attr_names = @report_data.first.attribute_names
+    %table.table.table-stripped.table-hover
+      %thead
+        %tr
+          - attr_names.each do |attr_name|
+            %th= attr_name.titleize
+      %tbody
+        - @report_data.each do |entry|
+
+          %tr
+            - attr_names.each do |key|
+
+              %td= entry[key]
+  - else
+    No Data Found. 
+  %hr            
+  - if @report_grouped_data.present?          
+    - attr_names = @report_grouped_data.first.attribute_names
+    %table.table.table-stripped.table-hover
+      %thead
+        %tr
+          - attr_names.each do |attr_name|
+            %th= attr_name.titleize
+      %tbody
+        - @report_grouped_data.each do |entry|
+
+          %tr
+            - attr_names.each do |key|
+
+              %td= entry[key]          
+  - if @report_agg_data.present?
+    - @report_agg_data.each do |row|
+      - _value = row['label'][0..2].downcase
+      %table.table.table-stripped.table-hover
+        %thead
+          %tr
+            %th= replace_string_char(row['label']).titleize
+            
+            %th.align-right{:width => "20%"}= row['values'][0][_value].to_f.round
+  
+  - if @report_data.first.present? || @report_grouped_data.present?   
+    / %a.btn.btn-block.btn-social.btn-danger{:href=> "#{report_folder_report_path}.pdf", :target => '_blank'}
+    /   %i.fa.fa-calculator
+    /   Download Report
+    %a{:href => "#{report_folders_path}", :class => 'm-btn white grey-text text-darken-2'}
+      %i.icon-backward
+      Back 
+  - else
+    %a{:href => "#{report_folders_path}", :class => 'm-btn white grey-text text-darken-2'}
+      Back    

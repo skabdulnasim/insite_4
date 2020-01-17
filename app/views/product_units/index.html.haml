@@ -1,0 +1,19 @@
+%h1 Listing product_units
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @product_units.each do |product_unit|
+    %tr
+      %td= product_unit.name
+      %td= link_to 'Show', product_unit
+      %td= link_to 'Edit', edit_product_unit_path(product_unit)
+      %td= link_to 'Destroy', product_unit, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Product unit', new_product_unit_path

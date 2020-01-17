@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Denomination:
+  = @cash.denomination
+%p
+  %b Tendered amount:
+  = @cash.tendered_amount
+%p
+  %b Balance return:
+  = @cash.balance_return
+
+= link_to 'Edit', edit_cash_path(@cash)
+\|
+= link_to 'Back', cashes_path

@@ -1,0 +1,16 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Incentive Rules",:url=>incentive_rules_path,:active_class=>""},{:title=>"Editing Incentive Rule",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+.col-lg-7.col-sm-7.padding-5
+	.main-section__content
+		.example
+			.example__content.p0
+				.data-table-container
+					.data-table-header
+						.data-table-header__label
+							%span.fs-title Editing Incentive Rule
+					%br
+					.data-table
+						= render 'form'
+
+

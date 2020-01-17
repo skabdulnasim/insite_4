@@ -1,0 +1,79 @@
+= javascript_include_tag "https://maps.googleapis.com/maps/api/js?key=AIzaSyAZ0hhJa49aRiTi2q8VL8ZJChX2C37-_4w"
+- manual_load_javascript "jquery.cookie"
+= javascript_include_tag "assign_order_for_delivery_boys"
+- manual_load_javascript "templates/delivery_boys/outlet_info"
+- manual_load_javascript "templates/delivery_boys/order_details"
+- manual_load_javascript "templates/delivery_boys/order_info"
+     
+/ :javascript
+/   $( document ).ready(function() {
+/     console.log( "ready!" );
+/     google.maps.event.addDomListener(window, 'load', initialize);
+/   });
+.alert.alert-success.alert-dismissible{:role => "alert",:style => "display:none;"}
+  %span.fa-stack.fa-lg
+    %i.fa.fa-circle.fa-stack-2x
+    %i.fa.fa-check.fa-stack-1x.fa-inverse
+  %button.close{"data-dismiss" => "alert", :type => "button"}
+    %span{"aria-hidden" => "true"} &times;
+    %span.sr-only Close
+  Delivery Boy Assigned to Order successfully.
+.row
+  .col-lg-12
+    .page-header
+      %h3.margin-b-t-none
+      %span.fa-stack
+        %i.fa.fa-circle.fa-stack-2x{:style=>"color:#3498DB"}
+        %i.glyphicon.glyphicon-shopping-cart.fa-stack-1x.fa-inverse
+      %a{:href=>"#{delivery_boys_path}"} 
+        = t :delivery_boy_management
+      %small
+      >
+      = t :assign_orders_to_delivery_boy
+    .page-container
+      .item-details-container.dn
+        .arrow_left{:style=>"display:none"}
+        .panel.panel-default.item-details
+        .arrow_right{:style=>"display:none"}
+      .col-sm-8
+        = smart_listing_render :dboy_orders 
+        / %ul.nav.nav-tabs
+        /   %li.tb.active
+        /     %a{"data-toggle" => "tab", :href => "#orders_view"} Orders
+        /   %li.tb
+        /     %a{"data-toggle" => "tab", :href => "#returns_view"} Returns
+           
+        / .tab-content
+        /   #orders_view.tab-pane.active.fade.in
+        /     = smart_listing_render :dboy_orders  
+        /   #returns_view.tab-pane.fade
+        /     = smart_listing_render :dboy_returns
+      .col-sm-4
+        - @delivery_boys.each_with_index do |delivery_boy,i|
+          .panel.panel-default
+            #headingOne.panel-heading{:role => "tab"}
+              %h5.panel-title
+                %input{:id => "delivery_boy_id_#{i}", :name => "delivery_boy_id", :value => "#{delivery_boy.id}", :type => "radio"}
+                %label{:for => "delivery_boy_id_#{i}"}
+                  = delivery_boy.name 
+                                    
+                %a{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse",:style => 'text-decoration: none', :href => "#collapse#{i}"}
+                  %span.pull-right.glyphicon.glyphicon-chevron-right    
+                %span.badge.pull-right.glyphicon.glyphicon-shopping-cart.cout_order{:id => "assigned_order_count#{delivery_boy.id}" } 0
+                
+            .panel-collapse.collapse{"aria-labelledby" => "headingOne", :role => "tabpanel", "id" =>"collapse#{i}"}
+              .panel-body
+                %ul{:class => "list-group assigned_orders#{delivery_boy.id}",:id => "orders_ul"}
+                
+          
+        
+            
+        .form-group
+          .col-sm-6
+            = button_tag "Save", :class => 'btn btn-success', :type => 'button', :id => 'submit_assign_order'  
+            %a.btn.btn-primary{:href => delivery_boys_path }
+              Back 
+
+    
+
+  

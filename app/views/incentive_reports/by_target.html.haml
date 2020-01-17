@@ -1,0 +1,105 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });    
+  });
+
+- links_arr = [{:title=>"Incentive Report",:url=>incentive_reports_path,:active_class=>""},{:title=>"Incentive Report By Target",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="Target between #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            / %a.m-btn.indigo.margin-l-5{:href=>"/incentive_reports/by_target.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"}
+            /   %i.mdi-file-file-download.left
+            /   CSV
+        %table.data-table
+          %thead
+            %tr.bg-red
+              %th User
+              %th User Role
+              %th Parent User
+              %th 
+                Total Sale
+                %br
+                Without Tax
+              %th
+                Total Sale
+                %br
+                With Tax
+              %th
+                Target 
+              %th
+                Target Type
+              %th
+                Target 
+                %br
+                Achievement
+              %th
+                Target 
+                %br
+                Achievement 
+                %br
+                Percent
+              %th
+                Incentive Amount
+          %tbody
+            - @user_ids_main = []
+            - @user_ids_main = User.set_user_ids(current_user.id,@user_ids_main)
+            - @user_ids_main.each do |user_id|
+              - @user_target = UserTarget.by_child_user(user_id).by_from_to_date(params[:from_date],params[:to_date])
+              - @user_ids = []
+              - @user_ids = User.set_user_ids(user_id,@user_ids)
+
+              - @user_sale = UserSale.by_recorded_at_between(params[:from_date],params[:to_date]).by_user_ids(@user_ids)
+              - now_user = User.find(user_id)
+              - @users_resources=UserResource.by_users(@user_ids)
+              - if @user_target.count > 0
+                %tr.data-table__selectable-row
+                  %td
+                    #{now_user.profile.firstname} #{now_user.profile.lastname}
+                    %br
+                    (#{now_user.email})
+                  %td
+                    %span.label.label-primary=now_user.role.name.humanize
+                  %td="#{User.find(now_user.parent_user_id).profile.firstname} #{User.find(now_user.parent_user_id).profile.lastname}"
+                  %td= @user_sale.count > 0 ? @user_sale.sum(:price_without_tax) : 0
+                  %td= @user_sale.count > 0 ? @user_sale.sum(:price_with_tax) : 0
+                  %td= @user_target[0].target_amount
+                  %td
+                    %span.label.label-info="#{@user_target[0].target_type.humanize}"
+                  - if @user_target[0].target_type == "by_amount"
+                    %td="#{@user_sale.sum(:price_with_tax)}"
+                  - elsif @user_target[0].target_type == "by_product"
+                    %td="#{@user_sale.sum(:quantity)}"
+                  - if @user_target[0].target_type == "by_amount"
+                    %td="#{(@user_sale.sum(:price_with_tax).to_f * 100)/@user_target[0].target_amount.to_f} %"
+                  - elsif @user_target[0].target_type == "by_product"
+                    %td="#{(@user_sale.sum(:quantity).to_f * 100)/@user_target[0].target_amount.to_f} %"
+                  - if @user_target[0].target_type == "by_amount"
+                    %td=calculate_incentive_amount(user_id,(@user_sale.sum(:price_with_tax).to_f * 100)/@user_target[0].target_amount.to_f,"percent",@user_ids,params[:from_date],params[:to_date])
+                  - elsif @user_target[0].target_type == "by_product"
+                    %td=calculate_incentive_amount(user_id,(@user_sale.sum(:quantity).to_f * 100)/@user_target[0].target_amount.to_f,"percent",@user_ids,params[:from_date],params[:to_date])
+
+/ **************** Hierarchical View *******************
+/ .col-lg-12.padding-5
+/   .main-section__content
+/     .example
+/       .example__content.p0
+/         .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+/           .col-lg-12
+/             .mt30.min-height-300
+/               %ul.timeline.collapse-lg.timeline-hairline.timeline-parent.col-lg-10 
+/                 = render :partial => 'incentive_reports/nested_users',:object => current_user, :as => 'my_user'

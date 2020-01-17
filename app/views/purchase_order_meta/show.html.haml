@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Purchase order:
+  = @purchase_order_metum.purchase_order_id
+%p
+  %b Product:
+  = @purchase_order_metum.product_id
+%p
+  %b Product amount:
+  = @purchase_order_metum.product_amount
+
+= link_to 'Edit', edit_purchase_order_metum_path(@purchase_order_metum)
+\|
+= link_to 'Back', purchase_order_meta_path

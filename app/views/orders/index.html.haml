@@ -1,0 +1,68 @@
+= stylesheet_link_tag "order_status_bar"
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+    $('#delivery_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+  });
+  function changeUrbanpiperStatus(v){
+    document.urbanpiper_status_form.order_id.value=v;
+    document.urbanpiper_status_form.new_status.value=document.getElementById("select_urbanpiper_status_"+v).value;
+    document.urbanpiper_status_form.submit();
+  }
+= render "layouts/flash"
+- manual_load_javascript "templates/orders/quick_details"
+.col-sm-3.padding-5
+  = render :partial => "order_filter"
+.col-sm-9.padding-5
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Orders  
+              %span.float-r
+                - if AppConfiguration.get_config_value('upload_bevco_order') == "enabled"
+                  %a.m-btn.teal.waves-effect.waves-light{:href =>"http://195.201.42.200:8002/sync_order?id=#{current_user.id}",:target => "_blank"}
+                    %i.fa.fa-upload
+                    Upload Bevco Order  
+                %button.m-btn.orange#bulk_order{:type => "button","data-target" => "#BulkOrderModal", "data-toggle" => "modal", :target => "_blank"}
+                  %i.fa.fa-upload
+                  Upload Bulk Orders 
+                %button.m-btn.blue#stock_isue{:type => "button"}
+                  %i.mdi-action-trending-up
+                  Issue Stock  
+      = smart_listing_render :orders
+= form_tag(urbanpiper_status_orders_path, "name" => "urbanpiper_status_form" , method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+  %input{:name => "order_id",:id => "order_id", :type => "hidden", :value => ""}
+  %input{:name => "new_status",:id => "new_status", :type => "hidden", :value => ""}
+#BulkOrderModal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header.modal-header-info
+        %button.close{"data-dismiss"=>"modal",:type=>"button"}
+          %span{"arial-hidden"=>"true"}x
+          %span.sr-only close
+        %h4.modal-title{:style=>"text-align:center;"}
+          Order Bulk Upload
+      .modal-body
+        =form_tag(import_orders_path, method:"post",multipart:true,class: "form-horizontal bordered-row") do |f|
+          .form-group 
+            %label.col-sm-4.control-label Select Menu Card
+            .col-sm-8
+              =select_tag(:menu_card_id,option_groups_from_collection_for_select(@sections,:menu_cards, :name, :id,:name,nil), :required => true)
+          .form-group
+            %label.col-sm-4.control-label Choose File
+            .col-sm-8
+              %i.fa.fa-file-upload
+                %input{:name=>"file",:type=>"file",:required=>true}
+          .modal-footer
+            %button.m-btn.red{"data-dismiss" => "modal", :type => "button", :style=>"margin-right:10px;"} Close
+            %input.m-btn.green.large{:name => "commit", :type => "submit", :value => "Upload File", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Your all previous category data will be deleted. Are you sure?')) }}

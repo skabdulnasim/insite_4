@@ -1,0 +1,161 @@
+= render "layouts/flash"
+- if !@purchase_orders.present?
+  .jumbotron
+    %h2 No purchase orders available
+    %p It seems that your store don't have any purchase orders. Follow the link given below to add a purchase orders which you can send to different available vendors.
+    %p
+      %a.btn.btn-primary.btn-lg{:href => "#{new_store_purchase_order_path(@store)}"} Learn more      
+-else
+  %table.table.table-bordered
+    %tr
+      %th Name
+      %th Valid from
+      %th Valid till
+      %th Vendor
+      %th Action    
+      %th Recurring  
+    - @purchase_orders.each do |purchase_order|
+      %tr
+        %td= purchase_order.name
+        %td= purchase_order.valid_from
+        %td= purchase_order.valid_till
+        %td= purchase_order.vendor.name
+        %td
+          %a.btn.btn-sm.btn-success{:href => "#{store_purchase_order_path(@store,purchase_order)}", :title => "View this purchase order"}
+            %i.fa.fa-search-plus.fa-lg
+          %a.btn.btn-sm.btn-danger{:href => "#{purchase_order_path(purchase_order)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete this requisition"}
+            %i.fa.fa-trash-o.fa-lg
+          %button.btn.btn-primary.btn-xs{:type => "button", :class => "send_now_order", :id => purchase_order.id} Send now
+        %td
+          - if purchase_order.recurring == 0
+            %button.btn.btn-primary.btn-xs{:type => "button", "data-toggle"=>"modal", "data-target"=>"#PurchaseOrderModal", :class => "make_rec", :id => purchase_order.id} Make recurring
+          -else
+            %button.btn.btn-primary.btn-xs{:type => "button"} 
+              %i.fa.fa-check.fa-lg{:class=> "icon_activate", "data-toggle" => "tooltip", :id => purchase_order.id}
+    
+
+
+// recurring Modal
+#PurchaseOrderModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "PurchaseOrderModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#myModalLabel.modal-title Make recurring
+      .modal-body
+        = hidden_field_tag :requisition_id, nil
+        .form-inline
+          .input-group
+            %span.input-group-addon
+              //%input{:type => "radio", :name => "requisition_type", :class => "delay_req", :value => "delay"}
+            //%input.form-control{:type => "text", :readonly => "true", :value => "Delay requisition"}
+          / /input-group
+        
+          .input-group
+            %span.input-group-addon
+              %input{:type => "radio", :name => "requisition_type", :class => "recurring_req", :value => "recurring", :checked => true}
+            %input.form-control{:type => "text", :readonly => "true", :value => "Recurring requisition"}
+          / /input-group
+        %br 
+        .form-inline.delay_req_details
+          .form-group
+            #delay_date.input-group.date
+              = text_field_tag :delayed_date, nil, :class => "form-control", "format" => "dd-mm-yyyy", :placeholder => "Enter Delayed Date"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-calendar 
+            #delay_time.input-group.date
+              = text_field_tag :delayed_time, nil, :class => "form-control", "format" => "hh:mm", :placeholder => "Enter Delayed Time"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-time 
+                
+        .form-horizontal.recurring_req_details
+          %select{ :id => "recurrance_type", :class => "form-control"}
+            %option{:value => "same"}= "Same for everyday"
+            //%option{:value => "diff"}= "Different fro each day"
+          %br
+          .col-sm-4
+          
+            .input-group
+              %span.input-group-addon
+                %input{:type => "checkbox", :name => "recurring_type", :value => "0", :checked => "true"}
+              %input.form-control{:type => "text", :readonly => "true", :value => "Sunday"}
+            / /input-group
+            
+            .input-group
+              %span.input-group-addon
+                %input{:type => "checkbox", :name => "recurring_type", :value => "1", :checked => "true"}
+              %input.form-control{:type => "text", :readonly => "true", :value => "Monday"}
+            / /input-group
+          
+            .input-group
+              %span.input-group-addon
+                %input{:type => "checkbox", :name => "recurring_type", :value => "2", :checked => "true"}
+              %input.form-control{:type => "text", :readonly => "true", :value => "Tuesday"}
+            / /input-group
+            
+            .input-group
+              %span.input-group-addon
+                %input{:type => "checkbox", :name => "recurring_type", :value => "3", :checked => "true"}
+              %input.form-control{:type => "text", :readonly => "true", :value => "Wednesday"}
+            / /input-group
+            
+            .input-group
+              %span.input-group-addon
+                %input{:type => "checkbox", :name => "recurring_type", :value => "4", :checked => "true"}
+              %input.form-control{:type => "text", :readonly => "true", :value => "Thursday"}
+            / /input-group
+            
+            .input-group
+              %span.input-group-addon
+                %input{:type => "checkbox", :name => "recurring_type", :value => "5", :checked => "true"}
+              %input.form-control{:type => "text", :readonly => "true", :value => "Friday"}
+            / /input-group
+            
+            .input-group
+              %span.input-group-addon
+                %input{:type => "checkbox", :name => "recurring_type", :value => "6", :checked => "true"}
+              %input.form-control{:type => "text", :readonly => "true", :value => "Saturday"}
+            / /input-group
+            
+            
+          .col-sm-3.diff_time
+            .recurring_diff_time.input-group.date
+              = text_field_tag :monday, nil, :class => "form-control", "format" => "hh:mm", :placeholder => "Time"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-time
+            .recurring_diff_time.input-group.date
+              = text_field_tag :tuesday, nil, :class => "form-control", "format" => "hh:mm", :placeholder => "Time"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-time
+            .recurring_diff_time.input-group.date
+              = text_field_tag :wednesday, nil, :class => "form-control", "format" => "hh:mm", :placeholder => "Time"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-time
+            .recurring_diff_time.input-group.date
+              = text_field_tag :thursday, nil, :class => "form-control", "format" => "hh:mm", :placeholder => "Time"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-time
+            .recurring_diff_time.input-group.date
+              = text_field_tag :friday, nil, :class => "form-control", "format" => "hh:mm", :placeholder => "Time"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-time
+            .recurring_diff_time.input-group.date
+              = text_field_tag :saturday, nil, :class => "form-control", "format" => "hh:mm", :placeholder => "Time"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-time
+            .recurring_diff_time.input-group.date
+              = text_field_tag :sunday, nil, :class => "form-control", "format" => "hh:mm", :placeholder => "Time"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-time
+                
+          .col-sm-3.same_time
+            .recurring_same_time.input-group.date
+              = text_field_tag :same_time, nil, :class => "form-control", "format" => "hh:mm", :placeholder => "Time"
+              %span.input-group-addon
+                %span.glyphicon.glyphicon-time
+                
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        %button.btn.btn-primary{:type => "button", :class => "save_order"} Save changes

@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Available date:
+  = @availability.available_date
+%p
+  %b Slot:
+  = @availability.slot
+%p
+  %b Resource:
+  = @availability.resource
+
+= link_to 'Edit', edit_availability_path(@availability)
+\|
+= link_to 'Back', availabilities_path

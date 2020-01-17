@@ -1,0 +1,62 @@
+.row.m0
+  .col.l5.mt50
+    %ul.circular-progress.mt50
+      %li{"data-name" => "OVERALL PROGRESS", "data-percent" => "#{@progress[:overall_progress]}%"}
+        %svg{:viewbox => "-10 -10 220 220"}
+          %g{:fill => "none", "stroke-width" => "4", :transform => "translate(100,100)"}
+            %path{:d => "M 0,-100 A 100,100 0 0,1 86.6,-50", :stroke => "url(#cl1)"}
+            %path{:d => "M 86.6,-50 A 100,100 0 0,1 86.6,50", :stroke => "url(#cl2)"}
+            %path{:d => "M 86.6,50 A 100,100 0 0,1 0,100", :stroke => "url(#cl3)"}
+            %path{:d => "M 0,100 A 100,100 0 0,1 -86.6,50", :stroke => "url(#cl4)"}
+            %path{:d => "M -86.6,50 A 100,100 0 0,1 -86.6,-50", :stroke => "url(#cl5)"}
+            %path{:d => "M -86.6,-50 A 100,100 0 0,1 0,-100", :stroke => "url(#cl6)"}
+        %svg{:viewbox => "-10 -10 220 220"}
+          %path{:d => "M200,100 C200,44.771525 155.228475,0 100,0 C44.771525,0 0,44.771525 0,100 C0,155.228475 44.771525,200 100,200 C155.228475,200 200,155.228475 200,100 Z", "stroke-dashoffset" => "#{@progress[:overall_progress].to_f * 6.29}"}
+  .col.l7
+    %ul.collection.progress-collection.white-text
+      %li.collection-item.avatar
+        %i.material-icons.circle{:class => "#{@iconcolor}"} domain
+        %span.title Organization
+        %span.secondary-content{:href => "#!"}="#{@progress[:organization_setup]}%"
+      %li.collection-item.avatar
+        %i.material-icons.circle{:class=> @iconcolor} people
+        %span.title Roles & Users
+        %a.secondary-content{:href => "#!"}="#{@progress[:users_setup]}%"
+      %li.collection-item.avatar
+        %i.material-icons.circle{:class=> @iconcolor} local_offer
+        %span.title Products
+        %a.secondary-content{:href => "#!"}="#{@progress[:products_setup]}%"
+      %li.collection-item.avatar
+        %i.material-icons.circle{:class=> @iconcolor} style
+        %span.title Catalogs
+        %a.secondary-content{:href => "#!"}="#{@progress[:products_setup]}%"
+      %li.collection-item.avatar
+        %i.material-icons.circle{:class=> @iconcolor} local_shipping
+        %span.title Inventory
+        %a.secondary-content{:href => "#!"}="#{@progress[:inventory_setup]}%"
+      %li.collection-item.avatar
+        %i.material-icons.circle{:class => "#{@iconcolor}"} cloud
+        %span.title Ready for operations?
+        %a.secondary-content{:href => "#!"}="#{@progress[:operations_setup]}%"
+
+/ Defining Angle Gradient Colors
+%svg{:height => "0", :width => "0"}
+  %defs
+    %lineargradient#cl1{:gradientunits => "objectBoundingBox", :x1 => "0", :x2 => "1", :y1 => "0", :y2 => "1"}
+      %stop{"stop-color" => "#FFF"}
+      %stop{:offset => "100%", "stop-color" => "#FFF"}
+    %lineargradient#cl2{:gradientunits => "objectBoundingBox", :x1 => "0", :x2 => "0", :y1 => "0", :y2 => "1"}
+      %stop{"stop-color" => "#FFF"}
+      %stop{:offset => "100%", "stop-color" => "#FFF"}
+    %lineargradient#cl3{:gradientunits => "objectBoundingBox", :x1 => "1", :x2 => "0", :y1 => "0", :y2 => "1"}
+      %stop{"stop-color" => "#FFF"}
+      %stop{:offset => "100%", "stop-color" => "#FFF"}
+    %lineargradient#cl4{:gradientunits => "objectBoundingBox", :x1 => "1", :x2 => "0", :y1 => "1", :y2 => "0"}
+      %stop{"stop-color" => "#FFF"}
+      %stop{:offset => "100%", "stop-color" => "#FFF"}
+    %lineargradient#cl5{:gradientunits => "objectBoundingBox", :x1 => "0", :x2 => "0", :y1 => "1", :y2 => "0"}
+      %stop{"stop-color" => "#FFF"}
+      %stop{:offset => "100%", "stop-color" => "#FFF"}
+    %lineargradient#cl6{:gradientunits => "objectBoundingBox", :x1 => "0", :x2 => "1", :y1 => "1", :y2 => "0"}
+      %stop{"stop-color" => "#FFF"}
+      %stop{:offset => "100%", "stop-color" => "#FFF"}       

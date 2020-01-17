@@ -1,0 +1,50 @@
+/ %h1 Listing feedbacks
+
+/ %table
+/   %tr
+/     %th Title
+/     %th
+/     %th
+/     %th
+
+/   - @feedbacks.each do |feedback|
+/     %tr
+/       %td= feedback.title
+/       %td= link_to 'Show', feedback
+/       %td= link_to 'Edit', edit_feedback_path(feedback)
+/       %td= link_to 'Destroy', feedback, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+/ %br
+
+/ = link_to 'New Feedback', new_feedback_path 
+
+
+
+
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Feedback
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_feedback_path}"}
+              %i.mdi-content-add.left
+              Add new Feedback              
+        %table.data-table    
+          %tr
+            %th Title
+            %th.right.padding-r-50 Actions
+
+          - @feedbacks.each do |feedback|
+            %tr
+              %td= feedback.title
+              %td
+                %a.m-btn.green.m-btn-low-padding.right{:href => "#{feedback_path(feedback)}", :title => "View feedbacks"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding.right{:href => "#{edit_feedback_path(feedback)}", :title => "Edit feedbacks"} 
+                  %i.mdi-editor-border-color
+                %a.m-btn.red.m-btn-low-padding.right{:href => "#{feedback_path(feedback)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete feedbacks"}
+                  %i.mdi-action-delete 

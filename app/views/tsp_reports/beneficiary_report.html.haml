@@ -1,0 +1,28 @@
+.main-section__content
+	.example
+		.example__content.p0
+			.data-table-container
+				%header.data-table-header
+					.data-table-header__label
+						%span.fs-title Beneficiary commission report
+						%p
+							="From #{Date.parse params[:from_date]} - To -  #{params[:to_date]}"
+					.data-table-header__actions
+						.col-sm-6
+							.form-group
+								= smart_listing_controls_for(:beneficiaries, {class: "form-inline float-l margin-l-30"}) do
+									= hidden_field_tag :from_date, "#{params[:from_date]}"
+									= hidden_field_tag :to_date, "#{params[:to_date]}"
+									.form-group.filter.input-append
+										.input-group
+											%input.form-control.search.search-resource{:placeholder => "Search Resource...", :type => "text", :name=> "resource_filter"}
+												%span.input-group-btn
+													%button.btn.btn-default.disabled{:type => "submit" }
+														%span.glyphicon.glyphicon-search 
+						.col-sm-6
+							%a.m-btn.indigo.margin-l-5{:href=>"/tsp_reports/beneficiary_report.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"}
+								%i.mdi-file-file-download.left CSV
+.main-section__content
+	.example
+		.example__content.p0.min-height-405
+			= smart_listing_render :beneficiaries

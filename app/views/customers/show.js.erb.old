@@ -1,0 +1,11 @@
+<% if @customer.present? %>
+  $('#deliverable-container').html('');
+  $('#deliverable-container').append("<%= j render(:partial => 'customers/deliverable_customer', :object => @customer, :as => 'customer') %>");
+  $("#right-sheet-modal").closeModal({
+    complete: function() {
+      $('.bottom-sheet').addClass('bottom-sheet-complete');
+    }
+  }); 
+<% else %>
+  Materialize.toast("Customer not found", 3000);
+<% end %>

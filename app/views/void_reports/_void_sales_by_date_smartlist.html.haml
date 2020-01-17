@@ -1,0 +1,30 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Bill ID", "id" 
+        %th="Bill Serial"
+        %th="Bill Amount"
+        %th="Total tax"
+        %th="Discount"
+        %th="Grand Total"
+        %th="Void Amount"
+        %th="Billed by user"
+        %th="Date"      
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.id
+          %td=object.serial_no
+          %td= number_to_currency(object.bill_amount, unit: '')
+          %td= number_to_currency(object.tax_amount, unit: '')
+          %td= number_to_currency(object.discount, unit: '')
+          %td= number_to_currency(object.grand_total, unit: '')
+          %td= number_to_currency((object.bill_amount - object.discount)+object.tax_amount, unit: '')
+          %td=object.user.present? ? "#{object.user.profile.firstname} #{object.user.profile.lastname}" : "#{object.user_id}"
+          %td.font-sz-11=object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")             
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

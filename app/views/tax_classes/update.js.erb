@@ -1,0 +1,3 @@
+$('#tax_class_edit_modal').closeModal()
+Materialize.toast("Tax Class updated successfully.", 3000,'green')
+$("#taxclass").find(".taxclass_of_<%= @tax_class.id %>").html("<td><%=@tax_class.name %></td><td><%=@tax_class.tax_type %></td><td><%=@tax_class.ammount %></td><td><%= escape_javascript link_to 'Edit', edit_tax_class_path(@tax_class.id),  :remote => true,:class=>'right modal-trigger edit_tax_class_link' %></td>")

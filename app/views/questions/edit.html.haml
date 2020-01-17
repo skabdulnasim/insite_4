@@ -1,0 +1,7 @@
+= render "layouts/flash"
+.card.padding-20
+	= render 'form'
+
+	= link_to 'Show', @question
+	\|
+	= link_to 'Back', questions_path

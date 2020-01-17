@@ -1,0 +1,35 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %th.col-md-8{:colspan => 3}
+        = smart_listing.sortable "Shipment details", "id" 
+      %th.col-md-2= smart_listing.sortable "Date", "created_at"
+      %th.col-md-2 Action
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td.text-center{:style => "width: 1%;", :class=>"#{transfer_status_class(object.activity_id,object.status)}"}
+          %td.fixed-width-xss
+            %i.fa.fa-tag.fa-2x.padding-5
+          %td
+            %h5
+              = "##{object.id}"              
+              = transfer_status_tag(object.activity_id,object.status)
+            %p.module_description.font-sz-11
+              %b From store:
+              = "#{object.from_store.name} | Address: #{object.from_store.address} | Contact: #{object.from_store.contact_number}"
+              %br
+              %b To store:
+              = "#{object.to_store.name} | Address: #{object.to_store.address} | Contact: #{object.to_store.contact_number}" 
+          %td.font-sz-12= object.created_at.strftime("%d %b %Y, %I:%M %p")                
+          %td.col-lg-2.col-xs-3.padding-top-20
+            %a.btn.btn-default.btn-sm.view-transfer-details.btn-social{"data-target" => "#showShipmentModal", "data-toggle" => "modal", 'data-transfer-id'=> "#{object.id}", "data-access-from"=> "vehicle",'data-primary-store'=> "#{object.primary_store_id}"} 
+              %i.fa.fa-list-ul
+              Pickup shipment          
+      
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    There are no new shipment request for this delivery van.

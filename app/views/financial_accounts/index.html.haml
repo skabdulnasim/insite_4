@@ -1,0 +1,27 @@
+%h1 Listing financial_accounts
+
+%table
+  %tr
+    %th Total credit
+    %th Total debit
+    %th Current balance
+    %th Account holder type
+    %th Account holder
+    %th
+    %th
+    %th
+
+  - @financial_accounts.each do |financial_account|
+    %tr
+      %td= financial_account.total_credit
+      %td= financial_account.total_debit
+      %td= financial_account.current_balance
+      %td= financial_account.account_holder_type
+      %td= financial_account.account_holder_id
+      %td= link_to 'Show', financial_account
+      %td= link_to 'Edit', edit_financial_account_path(financial_account)
+      %td= link_to 'Destroy', financial_account, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Financial account', new_financial_account_path

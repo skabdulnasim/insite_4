@@ -1,0 +1,50 @@
+<tr class="data-table__selectable-row" id="cart_item_size_<%= size_id %>">
+  <td class="accordion-toggle" data-toggle= "collapse" href="#collapse_as_<%= size_id %>" >
+    <%=size_name%>
+    <input type="hidden" name="product[product_sizes_attributes][<%=key%>][size_id]" value="<%=size_id%>">
+  </td>
+  <td>
+    <input id="product_sizes_attributes_<%=key%>__destroy" name="product[product_sizes_attributes][<%=key%>][_destroy]" type="hidden" value="false">
+    <a href="#" class="remove_size" data-size-id="<%= size_id %>">Remove</a>
+  </td>
+</tr>
+<tr class="accordion-body collapse out" id="collapse_as_<%= size_id %>">
+  <td colspan=2>
+    <div class="col-lg-6" style="margin-top:5px;">
+      <div class="btn-primary btn-sm float-left">
+        <span>Choose Image</span>
+        <input class="filestyle" type="file" name="product[product_sizes_attributes][<%=key%>][product_size_images_attributes][<%=key%>1][image]">
+      </div>
+    </div>
+    <div class="col-lg-6" style="margin-top:5px;">
+      <div class="btn-primary btn-sm float-left">
+        <span>Choose Image</span>
+        <input class="filestyle" type="file" name="product[product_sizes_attributes][<%=key%>][product_size_images_attributes][<%=key%>2][image]">
+      </div>
+    </div>
+    <div class="col-lg-6" style="margin-top:5px;">
+      <div class="btn-primary btn-sm float-left">
+        <span>Choose Image</span>
+        <input class="filestyle" type="file" name="product[product_sizes_attributes][<%=key%>][product_size_images_attributes][<%=key%>3][image]">
+      </div>
+    </div>
+    <div class="col-lg-6" style="margin-top:5px;">
+      <div class="btn-primary btn-sm float-left">
+        <span>Choose Image</span>
+        <input class="filestyle" type="file" name="product[product_sizes_attributes][<%=key%>][product_size_images_attributes][<%=key%>4][image]">
+      </div>
+    </div>
+    <div class="col-lg-6" style="margin-top:5px;">
+      <div class="btn-primary btn-sm float-left">
+        <span>Choose Image</span>
+        <input class="filestyle" type="file" name="product[product_sizes_attributes][<%=key%>][product_size_images_attributes][<%=key%>5][image]">
+      </div>
+    </div>
+    <div class="col-lg-6" style="margin-top:5px;">
+      <div class="btn-primary btn-sm float-left">
+        <span>Choose Image</span>
+        <input class="filestyle" type="file" name="product[product_sizes_attributes][<%=key%>][product_size_images_attributes][<%=key%>6][image]">
+      </div>
+    </div>
+  </td>
+</tr>

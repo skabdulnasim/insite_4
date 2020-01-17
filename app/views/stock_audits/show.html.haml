@@ -1,0 +1,7 @@
+- if @stock_audit.business_type == "by_catalog"
+  - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+    = render 'by_catalog_barcode_audit'
+  - else
+    = render 'by_catalog_audit'
+- else
+  = render 'by_mrp_others'

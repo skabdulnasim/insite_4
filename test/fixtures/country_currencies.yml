@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  counrty: MyString
+  currency: MyString
+  currency_code: MyString
+  sybmol: MyString
+
+two:
+  counrty: MyString
+  currency: MyString
+  currency_code: MyString
+  sybmol: MyString

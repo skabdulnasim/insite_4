@@ -1,0 +1,13 @@
+.col-sm-12.padding-5
+	.main-section__content
+		.example
+			.example__content.p0.min-height-405
+				.data-table-container
+					%header.data-table-header
+						.data-table-header__label
+							%span.fs-title Listing Boxings
+						.data-table-header__actions
+							%a.m-btn.m-btn-teal{:href => "#{new_boxing_path}"}
+								%i.mdi-content-add.left
+								Start boxing
+					= smart_listing_render :boxings

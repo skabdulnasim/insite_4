@@ -1,0 +1,15 @@
+= form_for @attribute,:html => { :class => 'form-horizontal' } do |a|
+  - if @attribute.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@attribute.errors.count, "error")} prohibited this attribute from being saved:"
+      %ul
+        - @attribute.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-group
+    = a.label :name, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = a.text_field :name, :class => 'form-control'
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = a.submit 'Save', :class => 'btn btn-success'

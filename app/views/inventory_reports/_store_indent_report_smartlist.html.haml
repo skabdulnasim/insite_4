@@ -1,0 +1,30 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Requisition ID", "id" 
+        %th Reference
+        %th.col-lg-4 Products
+        %th From Store
+        %th= smart_listing.sortable "Status", "status" 
+        %th= smart_listing.sortable "Date", "created_at"
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.id
+          %td
+            ="#{object.store_requisition.name}"                 
+            %br
+            %small="ID: #{object.store_requisition_id}"  
+          %td="#{object.store_requisition.store_requisition_metum.map{|meta| meta.product.name + meta.product_ammount.to_s + meta.product.basic_unit}.join(" | ")}"       
+          %td               
+            = "#{object.from_store.name}"
+            %br
+            ="Branch: #{object.from_store.unit.unit_name}"
+          %td= req_status_tag(object.status)       
+          %td.font-sz-12=object.created_at.strftime('%d-%^b-%Y, %I:%M %p')
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    This store yet not received any requisitions from other stores 

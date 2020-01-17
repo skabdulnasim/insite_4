@@ -1,0 +1,19 @@
+%h1 Listing advertisement_galleries
+
+%table
+  %tr
+    %th Advertise
+    %th
+    %th
+    %th
+
+  - @advertisement_galleries.each do |advertisement_gallery|
+    %tr
+      %td= advertisement_gallery.advertise_id
+      %td= link_to 'Show', advertisement_gallery
+      %td= link_to 'Edit', edit_advertisement_gallery_path(advertisement_gallery)
+      %td= link_to 'Destroy', advertisement_gallery, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Advertisement gallery', new_advertisement_gallery_path

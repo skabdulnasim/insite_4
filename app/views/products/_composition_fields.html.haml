@@ -1,0 +1,10 @@
+%tr{:id=>"cart_item_#{f.object.raw_product_id}"}
+  %td
+    = f.text_field :raw_product_name, :readonly=>true, :style=>"color:#000; border-bottom:none;"
+    = f.hidden_field :raw_product_id
+  %td= f.text_field :raw_product_quantity, :placeholder => "Quantity"
+  %td
+    = f.collection_select :raw_product_unit, @product_units, :id, :name, :class=>"form-control"
+  %td
+    = f.hidden_field :_destroy
+    = link_to "Remove", "#", class: "remove_products", data:{"product-id"=>"#{f.object.raw_product_id}","main-product-id"=>"#{f.object.product_id}"}

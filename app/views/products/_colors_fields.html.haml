@@ -1,0 +1,13 @@
+%tr
+	%td
+		= f.text_field :color_name, :readonly=>true, :style=>"color:#000; border-bottom:none;"
+		= f.text_field :color_id
+	%td
+		.col-sm-7
+			
+			- color_status = (AppConfiguration.get_config_value('pos_terminals') == "enabled") ? true : false
+			- color_status = ColorProduct.find_by_product_id_and_color_id(@product.id,3)
+			.switch.padding-5
+				%label
+					= check_box_tag :pos_terminals, 'enabled', color_status, {"data-conf-key"=>"pos_terminals","data-value-active"=>"enabled","data-value-inactive"=>"disabled", "class"=> "update_app_config"}	
+					%span.lever	

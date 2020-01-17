@@ -1,0 +1,15 @@
+%section.card
+  .card-content.p5              
+    .row.m0
+      .input-field.col.s3.p0.mt1{:style => "width:30% !important;"}
+        = f.label :name
+      .input-field.col.s8.p0.mt1{:style => "width:60% !important;"}
+        = f.text_field :name, :required=>true
+      .input-field.col.s3.p0.mt1{:style => "width:30% !important;"}
+        = f.label :section_type
+      .input-field.col.s8.p0.mt1{:style => "width:60% !important;"}
+        = f.select :section_type, options_for_select({"Dine in section" => "dinein","Takeaway section" => "takeaway","Homedelivery section" => "homedelivery" },f.object.section_type), { include_blank: "Select section type"}, {:class => "browser-default"}
+      .input-field.col.s1.mt1
+        = f.hidden_field :_destroy
+        %a.remove_fields.grey-text.tooltipped{:href=>"#", :title=>"Remove section"}
+          %i.material-icons.font-12.mt15 clear

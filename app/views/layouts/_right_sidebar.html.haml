@@ -1,0 +1,46 @@
+%ul#chat-out.side-nav.right-aligned.right.fixed-right
+  %li
+    %a.chat-close-collapse.float-r{:href => "#!"}
+      %i.mdi-navigation-close
+  %li 
+    .padding-10.font-sz-18 Notifications
+    .notification-loader
+  %li.no-padding.unit-notifications
+    %ul.collapsible.collapsible-accordion
+      %li.bold
+        %a.collapsible-header.waves-effect.waves-red.active.teal.white-text 
+          %i.mdi-image-flash-on
+          Recent Activity
+          %span.badge.white.teal-text.unread-count-sales
+        .collapsible-body
+          %ul#recent_activity                   
+      %li.bold
+        %a.collapsible-header.waves-effect.waves-red.active.cyan.white-text 
+          %i.mdi-image-flash-on
+          Sales Activity
+        .collapsible-body
+      %li.bold
+        %a.collapsible-header.waves-effect.waves-red.active.red.white-text 
+          %i.mdi-image-flash-on
+          Inventory Alerts
+          %span.badge.white.teal-text.unread-count-ivent
+        .collapsible-body
+          %ul#recent_activity_inventory
+          .margin-l-30
+            %ul
+              %li.bold{:style=>"opacity: 0.6;"}
+                %a.waves-effect.waves-red.active.red.white-text{:href => stock_expiry_alerts_notifications_path}
+                  .margin-l-20
+                    %i.fa.fa-warning
+                    Stock Expiry Date Alerts
+                    %span.badge.white.teal-text.expiry-alerts-count
+                      = stock_expiry_notifications.count # NotificationsHelper
+          / .margin-l-30{:style=>"margin-top:5px;"}
+          /   %ul
+          /     %li.bold{:style=>"opacity: 0.6;"}
+          /       %a.waves-effect.waves-red.active.red.white-text{:href => thresh_hold_alerts_notifications_path}
+          /         .margin-l-20
+          /           %i.fa.fa-warning
+          /           Thresh Hold Alerts
+          /           %span.badge.white.teal-text.thresh-hold-alerts-count
+          /             = stock_expiry_notifications.count # NotificationsHelper

@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @product_attribute_group.name
+%p
+  %b Product attribute set:
+  = @product_attribute_group.product_attribute_set
+%p
+  %b Position:
+  = @product_attribute_group.position
+%p
+  %b Is system entity:
+  = @product_attribute_group.is_system_entity
+%p
+  %b Deleted at:
+  = @product_attribute_group.deleted_at
+
+= link_to 'Edit', edit_product_attribute_group_path(@product_attribute_group)
+\|
+= link_to 'Back', product_attribute_groups_path

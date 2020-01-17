@@ -1,0 +1,32 @@
+:javascript
+	$(function(){
+		$('#form_date').datetimepicker({
+			format: 'YYYY-MM-DD',
+			useCurrent: false,
+		});
+	});
+
+- link_arr = [{:title=> "Report", :url=>user_login_logouts_path, :active_class=>""},{:title=>"Authentication Details Report", :url=>"#",:active_class=>"col-breadcrumb-selected"},]
+- render_page_breadcrumbs(link_arr)
+= render "layouts/flash"
+.main-section__content
+	.example
+		.data-table-container
+			%header.data-table-header
+				.data-table-header__label.col-lg-12
+					.col-lg-6.fs-title Authentication Details Report
+					.col-lg-6
+						= smart_listing_controls_for(:user_login_details) do
+							- if current_user.role.name == 'owner' || current_user.role.name == 'dc_manager' || current_user.role.name == 'bill_manager' || current_user.role.name == 'outlet_manager'
+								.filter.input-append
+									%span.fs-title.left
+										= select_tag "filter_role", options_for_select(@roles.map{ |role| [ "#{role.name}","#{role.id}"] }),class: "form-control", prompt: 'Select Role'
+				.data-table-header__actions
+					%a.export-by-date-user-login-logouts_pdf.m-btn.red.margin-l-5{:href=>"/user_login_logouts/by_date.pdf?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}", :target=>"_blank"}
+						%i.mdi-file-file-download.left
+						PDF
+					%a.export-by-date-user-login-logouts.m-btn.indigo.margin-l-5{:href=>"/user_login_logouts/by_date.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"}
+						%i.mdi-file-file-download.left
+						CSV
+			= smart_listing_render :user_login_details
+.clearfix

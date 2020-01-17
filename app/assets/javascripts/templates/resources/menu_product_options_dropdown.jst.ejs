@@ -1,0 +1,4 @@
+<option value="">Select menu product</option>
+<% for(var i=0; i<menu_products.length; i++) { %>
+<option value="<%= menu_products[i].id %>"><%= menu_products[i]['product'].name %></option>
+<%}%>

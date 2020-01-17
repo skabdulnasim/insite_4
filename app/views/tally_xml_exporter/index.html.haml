@@ -1,0 +1,104 @@
+:javascript
+  $(function() {   
+     $('.datepicker').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });  
+  });
+= render "layouts/flash"
+%ul#task-card.collection.with-header
+  %li.collection-header.cyan
+    %h4.white-text.task-card-title Available XMLs
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Sales XML
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag("#{sales_xml_tally_xml_exporter_index_path}.xml", method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepicker",:id=>"sales_by_date", placeholder: "Select Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Purchase XML
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag("#{purchase_xml_tally_xml_exporter_index_path}.xml", method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepicker",:id=>"sales_by_date_range_from", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true
+            
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task7", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Fromdate Todate XML
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag("#{from_date_to_date_xml_tally_xml_exporter_index_path}.xml", method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepicker", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true
+        .form-group.col-lg-3  
+          = text_field_tag :to_date, '', class: "validate datepicker",placeholder: "To Date", :style => "padding: 6px 10px;", :required => true
+        - if current_user.role.name == "owner"   
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"    
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task8", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Voucher XML
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag("#{voucher_xml_tally_xml_exporter_index_path}.xml", method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepicker", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true
+        .form-group.col-lg-3  
+          = text_field_tag :to_date, '', class: "validate datepicker",placeholder: "To Date", :style => "padding: 6px 10px;", :required => true
+        - if current_user.role.name == "owner"   
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"    
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Hii Sales XML
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag("#{hii_sales_xml_tally_xml_exporter_index_path}.xml", method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepicker", :id=>"hii_sales_from_date", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true
+        .form-group.col-lg-3  
+          = text_field_tag :to_date, '', class: "validate datepicker", :id=>"hii_sales_to_date", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true
+        / - if current_user.role.name == "owner"   
+        /   .form-group.col-lg-3  
+        /     = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+
+
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+
+  / %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+  /   %label{:for => "task5", :style => "text-decoration: none;"}
+  /     %i.fa.fa-chevron-right.margin-r-20
+  /     Hii Journal XML
+  /   .task-cat.grey-text
+  /     / %span Please provide the following details to view this report
+  /     = form_tag("#{hii_journal_xml_tally_xml_exporter_index_path}.xml", method: "get", :class=>"m-input") do
+  /       .form-group.col-lg-3
+  /         = text_field_tag :from_date, '', class: "validate datepicker",:id=>"hii_sales_by_date", placeholder: "Select Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true
+  /       %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+  /         View report          
+  /     .clearfix

@@ -1,0 +1,43 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr
+        %th Date
+        %th Plant Name
+        %th Invoice No
+        %th Total Quantity in invoce
+        / %th= "Amount (#{currency})"
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td= object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+          %td= object.orders.first.store.name
+          %td= object.orders.first.checksum
+          %td= object.orders.first.order_details.sum(:quantity)
+          / %td= "#{object.grand_total}"
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links   
+
+  %header.data-table-header
+    .data-table-header__label
+      %span.fs-title Summary Of Report
+    .data-table-header__actions    
+  %table.data-table
+    %thead
+      %tr
+        %th Total No of Invoice
+        %th Total qty
+        / %th Total Amnt
+    %tbody
+      %tr
+        %td=@sales.count
+        %td=@total_qty[0]
+        / %td=@sales.sum(:grand_total)
+
+- else
+  .alert.alert-warning
+    %td
+      No record found
+
+  

@@ -1,0 +1,11 @@
+%li.form-group
+  .col-sm-3
+    = f.text_field :name, :placeholder => 'Category Name', :class=>"form-control", :required=>"true"
+  .col-sm-3    
+    = f.file_field :menu_category_image, :class=>"form-control"
+    = f.text_field :parent, :type => "hidden"
+  .col-sm-3
+    = f.hidden_field :_destroy
+    = link_to "Remove", "#", class: "remove_fields red-text"
+  .clearfix
+

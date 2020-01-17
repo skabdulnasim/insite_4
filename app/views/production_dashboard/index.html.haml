@@ -1,0 +1,86 @@
+/ %script{:src=>"http://fullcalendar.io/js/fullcalendar-2.1.1/lib/moment.min.js"}
+/ %script{:src=>"http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery.min.js"}
+/ %script{:src=>"http://fullcalendar.io/js/fullcalendar-2.1.1/lib/jquery-ui.custom.min.js"}
+%script{:src => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.js"}
+%link{:href => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.css", :rel => "stylesheet"}/
+/ %script{:src=>"http://fullcalendar.io/js/fullcalendar-2.1.1/fullcalendar.min.js"}
+= stylesheet_link_tag 'https://fullcalendar.io/js/fullcalendar-3.1.0/fullcalendar.min.css'
+/ - manual_load_javascript "templates/production_dashboard/production_dashboard"
+#wrapper
+  .row
+    .col-lg-3.col-md-6
+      .panel.panel-primary
+        .panel-heading
+          .row
+            .col-xs-3
+              %i.fa.fa-tasks.fa-5x
+            .col-xs-9.text-right
+              .huge#new
+              %div New
+        %a.view_details{"data-id" => "1","data-target" => "#productionModal", "data-toggle" => "modal", :target => "_blank"}
+          .panel-footer
+            %span.pull-left View Details
+            %span.pull-right
+              %i.fa.fa-arrow-circle-right
+            .clearfix
+    .col-lg-3.col-md-6
+      .panel.panel-yellow
+        .panel-heading
+          .row
+            .col-xs-3
+              %i.fa.fa-hourglass-start.fa-5x
+            .col-xs-9.text-right
+              .huge#started
+              %div Started
+        %a.view_details{"data-id" => "3","data-target" => "#productionModal", "data-toggle" => "modal", :target => "_blank"}
+          .panel-footer
+            %span.pull-left View Details
+            %span.pull-right
+              %i.fa.fa-arrow-circle-right
+            .clearfix
+    .col-lg-3.col-md-6
+      .panel.panel-red
+        .panel-heading
+          .row
+            .col-xs-3
+              %i.fa.fa-ban.fa-5x
+            .col-xs-9.text-right
+              .huge#halted
+              %div Halted
+        %a.view_details{"data-id" => "4","data-target" => "#productionModal", "data-toggle" => "modal", :target => "_blank"}
+          .panel-footer
+            %span.pull-left View Details
+            %span.pull-right
+              %i.fa.fa-arrow-circle-right
+            .clearfix
+    .col-lg-3.col-md-6
+      .panel.panel-green
+        .panel-heading
+          .row
+            .col-xs-3
+              %i.fa.fa-check-circle.fa-5x
+            .col-xs-9.text-right
+              .huge#finished
+              %div Finished
+        %a.view_details{"data-id" => "2","data-target" => "#productionModal", "data-toggle" => "modal", :target => "_blank"}
+          .panel-footer
+            %span.pull-left View Details
+            %span.pull-right
+              %i.fa.fa-arrow-circle-right
+            .clearfix
+  .card
+    %div.col-md-12{style: "margin-top: 10px"}
+      #calendar
+
+#productionModal.modal.fade{"aria-labelledby" => "productionModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg{:role => "document"}
+    .modal-content
+      .modal-header
+        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+        %h4#myModalLabel.modal-title Productions Details
+      .modal-body#productionModalBody
+        \...
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+

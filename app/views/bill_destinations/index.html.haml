@@ -1,0 +1,23 @@
+%h1 Listing bill_destinations
+
+%table
+  %tr
+    %th Name
+    %th Bill header
+    %th Bill footer
+    %th
+    %th
+    %th
+
+  - @bill_destinations.each do |bill_destination|
+    %tr
+      %td= bill_destination.name
+      %td= bill_destination.bill_header
+      %td= bill_destination.bill_footer
+      %td= link_to 'Show', bill_destination
+      %td= link_to 'Edit', edit_bill_destination_path(bill_destination)
+      %td= link_to 'Destroy', bill_destination, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Bill destination', new_bill_destination_path

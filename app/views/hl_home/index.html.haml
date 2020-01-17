@@ -1,0 +1,146 @@
+#navbar-main
+  / Fixed navbar
+  .navbar.navbar-inverse.navbar-fixed-top
+    .container
+      .navbar-header
+        %button.navbar-toggle{"data-target" => ".navbar-collapse", "data-toggle" => "collapse", :type => "button"}
+          %i.fa.fa-paw{:style => "font-size:30px; color:#3498db;"}
+        %a.navbar-brand.hidden-xs.hidden-sm{:href => "/"}
+          %i.fa.fa-paw.fa-lg{:style => "color:#3498db;"}
+            %span{:style => "font-size:18px;"}Hungry
+            %span{:style=>"font-size:18px; color: #999999;"}Leopard
+      .navbar-collapse.collapse{:style=>"float:right"}
+        %ul.nav.navbar-nav
+
+          %li
+            %a.smoothScroll{:href => "#"} 
+              -if @unit_info.nil? == false
+                - @current_city
+                - ip_city = @unit_info[0].data['city']
+                -@cities.each do |ct|
+                  - if(ip_city == ct.city)
+                    %i.famfamfam-flag-in
+                    - @current_city = ip_city
+                    - @page_title = "Hungry Leopard - "+ip_city
+                    = ip_city
+                - if @current_city.nil? == true
+                  - @page_title = "Hungry Leopard - India"
+                  -if @unit_info[0].data['country_name'] == 'India'
+                    %i.famfamfam-flag-in
+                    = "India"
+                    
+                  -else
+                    = @unit_info[0].data['country_name'] + " (Service N/A)"
+          %li
+            %a.smoothScroll{:href => "#","data-toggle"=>"modal", "data-target"=>"#loginModal"} 
+              %i.fa.fa-lock
+              Login
+      / /.nav-collapse
+      
+/ ==== HEADERWRAP ====
+#headerwrap{:name => "home", :style=>"background: url('assets/resz_chicken.jpg') no-repeat center top"}
+  %header.clearfix
+
+    %p.first Getting food now became easy
+    %p at Hungry Leopard
+    %form.form-inline{:role => "form"}
+      .input-group.input-group-lg{:style=> "width:45%; margin:auto"}
+        .input-group-btn
+          %button.btn.btn-default.dropdown-toggle{"data-toggle" => "dropdown", :type => "button"}
+            %i.famfamfam-flag-in
+            %span{:style=> "color:#262626; font-size:14px; padding-left:5px;"} Kolkata
+          %ul.dropdown-menu{:style => "text-align:left"}
+            -@cities.each do |ct|
+              %li
+                %a{:href => "#"}
+                  =ct.city
+
+
+        / /btn-group      
+        %input.form-control{:type => "text", :placeholder=> "Enter your location..."}
+          %span.input-group-btn
+            %a.btn.btn-default.btn-flat{:href => "#","data-toggle"=>"modal", "data-target"=>"#mapModal"}
+              %i.fa.fa-map-marker
+            %button.btn.btn-primary.btn-flat{:type => "button"}
+              %i.fa.fa-search
+              
+    .header-actions{"data-toggle" => "collapse"}
+      .row
+        .col-xs-2.callout
+          %i.fa.fa-map-marker.fa-lg  
+          %h5 1. Tell us your location
+            
+        .col-xs-2.callout
+          %i.fa.fa-cutlery.fa-lg  
+          %h5 2. Select a restaurant
+
+        .col-xs-2.callout
+          %i.fa.fa-shopping-cart.fa-lg  
+          %h5 3. Place your order         
+          
+        .col-xs-2.callout
+          %i.fa.fa-truck.fa-lg  
+          %h5 4. Get delivery
+          
+        .col-xs-2.callout
+          %i.fa.fa-money.fa-lg  
+          %h5 5. Make payment
+          
+        .col-xs-2.callout
+          %i.fa.fa-smile-o.fa-3x 
+          %h5 
+
+/ ==== GREYWRAP ====
+#greywrap
+  .container
+    .row
+      .col-lg-8.centered
+        %img.img-responsive{:align => "", :src => "assets/iphone.png"}
+      .col-lg-4
+        %h2 
+          %i.fa.fa-android.fa-2x{:style => "color:#b3c833"}
+          Download Apps
+        %p Download our android apps to get instant access of our site. Also we are offering free home delivery on orders from our apps. 
+        %p
+          %a.btn.btn-success.btn-lg{:href=> "https://play.google.com/store", :taget=>"_blank"}
+            Play Store &nbsp;&nbsp;&nbsp;&nbsp;
+            %i.fa.fa-chevron-right
+    / row
+  %br
+    %br
+/ greywrap  
+
+
+/ login Modal
+#loginModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "loginModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog{:style=>"width:350px"}
+    .modal-content
+      .modal-header
+        %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} &times;
+        %h4#loginModalLabel.modal-title Login to Hungry Leopard
+      .modal-body
+        %a.btn.btn-primary.btn-block{:href=>"#"}
+          Login with facebook
+        %a.btn.btn-danger.btn-block{:href=>"#"}
+          Login with Google+
+        %a.btn.btn-info.btn-block{:href=>"#"}
+          Login with Skype
+          
+      .modal-footer
+        %button.btn.btn-success{"data-dismiss" => "modal", :type => "button"} Sign Up
+        %button.btn.btn-primary{:type => "button"} Login
+        
+/ map Modal
+#mapModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "mapModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} &times;
+        %h4#mapModalLabel.modal-title Select your location
+      .modal-body
+        Select your location using google map and we will find food for you.
+        %div{:style => "width: 100%;"}
+          #geolocation{:style => "width: 100%; height: 380px;"}
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        %button.btn.btn-primary{:type => "button"} Go!

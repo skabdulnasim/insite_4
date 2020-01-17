@@ -1,0 +1,10 @@
+%ul{:style => "list-style:none"}
+  - submenucategories.each do |sub|
+    %li
+      .radio
+        %label
+          %input{:type => "radio", :name => "menu_product[menu_category_id]", :value => sub.id, :required => true, :checked => (sub.id == @menu_product[:menu_category_id]), :id=>"menu_category_#{sub.id}"}
+            
+          %label{:for=>"menu_category_#{sub.id}"}= sub.name
+        
+      = render partial: 'subcategory_li', locals: {submenucategories: sub.submenucategories} if sub.submenucategories.present?

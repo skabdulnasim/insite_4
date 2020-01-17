@@ -1,0 +1,29 @@
+= form_for @item_preference do |f|
+  - if @item_preference.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@item_preference.errors.count, "error")} prohibited this item_preference from being saved:"
+      %ul
+        - @item_preference.errors.full_messages.each do |msg|
+          %li= msg
+
+  .col-sm-12
+    .col-sm-6
+      .form-group
+        = f.label :preference, :class => 'col-lg-2 control-label'
+        .col-sm-6
+          = f.text_field :preference, :class => 'form-control'
+          .margin-t-10
+          = f.submit 'Save',:class => 'btn btn-success'
+    .col-sm-6
+      .panel.panel-default
+        .panel-heading
+          Select Branch
+        .panel-body
+          %table
+            %thead
+            %tbody
+              - MenuCategory.where(:parent => nil).each do |menu_category|
+                %tr
+                  %td
+                    = check_box_tag "menu_category_ids[]", menu_category.id, @item_preference.category_item_preferences.map(&:menu_category_id).include?(menu_category.id), :id=>"menu_category_#{menu_category.id}"
+                    %label{:for=>"menu_category_#{menu_category.id}"}= menu_category.name

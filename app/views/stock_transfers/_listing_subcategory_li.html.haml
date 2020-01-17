@@ -1,0 +1,23 @@
+/ %ul{:style => "list-style:none"}
+/   - subcategories.each do |sub|
+/     %li
+/       %a{:href => "/products/filter?filter_category=#{sub.id}&filter_type=#{}"}
+/         %i.fa.fa-caret-right
+/         = sub.name
+        
+/       = render partial: 'products/listing_subcategory_li', locals: {subcategories: sub.subcategories} if sub.subcategories.present?
+
+
+
+
+
+
+
+%ul{:style => "list-style:none; padding-left:20px;"}
+  - subcategories.each do |sub|
+    %li
+      %label.checkbox.inline
+        = check_box_tag 'product_category[]', sub.id
+        = sub.name
+        
+      = render partial: 'products/listing_subcategory_li', locals: {subcategories: sub.subcategories} if sub.subcategories.present?

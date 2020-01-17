@@ -1,0 +1,73 @@
+.page-header
+  - if notice.nil? == false
+    #notice.alert.alert-info
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-info.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"} ×
+      = notice
+  %h2
+    %i.fa.fa-tags
+    Listing Report Folder
+    %small
+      %a.m-btn.blue.float-r{:href => "#{new_report_folder_path}"}  
+        Add new Report Folder
+%ul.collapsible{"data-collapsible" => "accordion"}
+
+  - @report_folders.each_with_index do |report_folder,i|
+    %li
+      .collapsible-header
+        %i.mdi-action-assignment
+        ="#{report_folder.name}"
+        %span.margin-l-none.margin-r-5.teal.m-label
+          =report_folder.reports.count
+      .collapsible-body.p10
+        .col-lg-9
+          - report_folder.reports.each do |report|
+            .col-lg-3.padding-5
+              .card
+                .card-content.height-80                
+                  .card-title
+                    =report.name
+                  %small= link_to "Edit", customize_report_folder_report_path(report_folder,report)+"/step/1"
+                .card-action.darken-1.blue.white-text.waves-effect.waves-light
+                  = link_to "View Report", report_folder_report_path(report_folder,report), :title=>"Click to view Report", :class=>" float-r white-text"
+                  .clearfix
+          .clearfix
+          - report_folder.custom_reports.each do |custom_report|
+            .col-lg-3.padding-5
+              .card
+                .card-content.height-80                  
+                  .card-title
+                    =custom_report.name
+                  %small= link_to "Edit", edit_report_folder_custom_report_path(report_folder,custom_report)
+                .card-action.darken-1.indigo.white-text.waves-effect.waves-light
+                  = link_to "View Report", report_folder_custom_report_path(report_folder,custom_report), :title=>"Click to view Report", :class=>" float-r white-text"
+                  .clearfix          
+        .col-lg-3
+          %a.m-btn.blue.width-100.margin-t-15{:href => "#{new_report_folder_report_path(report_folder)}"}
+            Add New Report
+          %a.m-btn.indigo.width-100.margin-t-15.margin-b-5{:href => "#{new_report_folder_custom_report_path(report_folder)}"}
+            Add New Custom Report            
+          
+        .clearfix       
+    
+  / .panel.panel-default
+  /   #headingOne.panel-heading{:role => "tab"}
+  /     %h4.panel-title
+  /       %a{"aria-controls" => "collapseOne", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse#{i}"}
+  /         = #t(report_folder.name + report_folder.reports.count)
+  /         = #report_folder.reports.count
+  /         #{report_folder.name}##{report_folder.reports.count}
+  /         %small
+  /         %a{:href => "#{new_report_folder_report_path(report_folder)}"}
+  /           %button.btn.pull-right.btn-xs{:type => "button"} 
+  /             %i.fa.fa-plus-square
+  /             Add New Report
+
+  /         %small
+
+
+  /   .panel-collapse.collapse{"aria-labelledby" => "headingOne", :role => "tabpanel", "id" =>"collapse#{i}"}
+  /     .panel-body
+

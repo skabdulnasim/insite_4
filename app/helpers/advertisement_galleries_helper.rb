@@ -1,0 +1,2 @@
+module AdvertisementGalleriesHelper
+end

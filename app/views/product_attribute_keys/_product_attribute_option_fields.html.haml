@@ -1,0 +1,12 @@
+.row    
+  .col-sm-3
+    = f.text_field :value, :placeholder => "Option Value"
+  .col-sm-3
+    = f.text_field :label, :placeholder => "Option Label"
+  .col-sm-3
+    = f.check_box :is_default
+    = f.label :is_default, "Default?"    
+  .col-sm-3
+    = f.check_box :_destroy
+    = f.label :_destroy, "Remove"
+    

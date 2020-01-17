@@ -1,0 +1,340 @@
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });           
+  });
+- manual_load_javascript "templates/products/composition", "templates/products/process_composition", "templates/products/attrs_box", "templates/products/attribute", "templates/products/color","templates/products/size","templates/products/transaction_unit", "templates/products/vendor_product", "templates/products/menu_card_products","templates/products/product_tag"
+
+= smart_listing_controls_for(:compositions, {class: ""}) do
+  .form-group.filter.input-append.col-lg-6.padding-l-r-none
+    .input-group
+      %input.form-control.search{:placeholder => "Search compositions by name...", :type => "text", :name=> "filter"}
+        %span.input-group-btn
+          %button.btn.btn-primary.disabled{:type => "submit" }
+            %span.glyphicon.glyphicon-search
+
+= smart_listing_controls_for(:colors, {class: ""}) do
+  .form-group.filter.input-append.col-lg-6.padding-l-r-none
+    .input-group
+      %input.form-control.search{:placeholder => "Search colors by name...", :type => "text", :name=> "color_filter"}
+        %span.input-group-btn
+          %button.btn.btn-primary.disabled{:type => "submit" }
+            %span.glyphicon.glyphicon-search
+
+= smart_listing_controls_for(:sizes, {class: ""}) do
+  .form-group.filter.input-append.col-lg-6.padding-l-r-none
+    .input-group
+      %input.form-control.search{:placeholder => "Search sizes by name...", :type => "text", :name=> "size_filter"}
+        %span.input-group-btn
+          %button.btn.btn-primary.disabled{:type => "submit" }
+            %span.glyphicon.glyphicon-search
+
+= smart_listing_controls_for(:vendors, {class: ""}) do
+  .form-group.filter.input-append.col-lg-6.padding-l-r-none
+    .input-group
+      %input.form-control.search{:placeholder => "Search vendors by name...", :type => "text", :name=> "vendor_filter"}
+        %span.input-group-btn
+          %button.btn.btn-primary.disabled{:type => "submit" }
+            %span.glyphicon.glyphicon-search
+
+= form_for @product, :html => { :class => 'form-horizontal bordered-row m-input generic_product_form' } do |f|
+  - if @product.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@product.errors.count, "error")} prohibited this product from being saved:"
+      %ul
+        - @product.errors.full_messages.each do |msg|
+          %li= msg
+  = f.hidden_field :product_type, :value => @product.product_type
+  = f.hidden_field :business_type, :value => @product.business_type
+  = f.hidden_field :product_attribute_set_id, :value => @product.product_attribute_set_id
+  .row
+    .col.m12.s12.col-lg-12
+      .card  
+        .card-content.p10
+          #wizard_vertical
+            - @product.product_attribute_set.product_attribute_groups.each do |group|
+              %h3=group.name
+              %section.ptb0
+                %h5.header=group.name
+                .divider
+                %br
+                - if group.name == "General"
+                  .form-group
+                    = f.label "Name *", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.text_field :name
+                  .form-group
+                    = f.label "Local Name", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.text_field :local_name   
+                  .form-group
+                    = f.label "HSN CODE", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.text_field :hsn_code  
+                  .form-group
+                    = f.label "ITEM CODE", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.text_field :item_code
+                  .form-group
+                    = f.label "BRAND NAME", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.text_field :brand_name
+                  .form-group
+                    = f.label "BRAND CODE", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.text_field :brand_code
+                  .form-group
+                    = f.label "MFR NAME", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.text_field :mfr_name              
+                  .form-group
+                    = f.label "Category *", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.select :category_id, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, @product.category_id), { include_blank: "Select category"},  {:class => "form-control",:required => true}
+                
+                - elsif group.name == "Descriptions"
+                  .form-group
+                    = f.label "Callorie", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.text_field :callorie
+                  .form-group
+                    = f.label :product_religion, :class => 'col-sm-3 control-label'
+                    .col-sm-6
+                      = f.select :product_religion_id, options_for_select(@product_religions.map{ |pr| [pr.name, pr.id] }, @product.product_religion_id), { include_blank: "Select a religion"}, {:class => "form-control"}
+                  .form-group
+                    = f.label :allergies, :class => 'col-sm-3 control-label'
+                    - @product_allergies.each do |pa|
+                      .col-sm-5
+                        = check_box_tag 'allergie_id[]', pa.id, pa.allergy_products.by_product(@product.id).present?, { :id => "allergie_#{pa.id}", :class=>"filled-in font-sz-12"}
+                        %label{:for=>"allergie_#{pa.id}"}= pa.name.humanize
+                - elsif group.name == "Inventory"
+                  .form-group
+                    = f.label "Basic Unit *", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.select :basic_unit_id, options_for_select(@basic_units.map{ |u| ["#{u.short_name} (#{u.name})", u.id]}, @product.basic_unit_id), { include_blank: "Choose Basic Unit"},  {:class => "form-control",:required => true}
+                  
+                    #product_unit_container.col-sm-9
+                      - transaction_units = @product_units.by_basic_unit(@product.basic_unit_id)
+                      - if transaction_units.present?
+                        %table.data-table
+                          %thead
+                            %tr
+                              %th Unit
+                              %th Use unit as
+                          %tbody
+                            - transaction_units.each do |tu|
+                              - input_transaction_status = @product.input_units.by_unit_id(tu.id).present? ? @product.input_units.by_unit_id(tu.id).first.status : false
+                              - output_transaction_status = @product.output_units.by_unit_id(tu.id).present? ? @product.output_units.by_unit_id(tu.id).first.status : false
+                              %tr
+                                %td="#{tu.short_name} #{tu.name}"
+                                %td
+                                  .row
+                                    .col.sm.1
+                                      =check_box_tag "input_units[]", tu.id, input_transaction_status, :id=>"unit_input_#{tu.id}", :class=>"input_unit_check"
+                                      %label{:for=>"unit_input_#{tu.id}"} Input
+                                      - input_unit =  @product.input_units.by_unit_id(tu.id)
+                                      -if input_unit.present?
+                                        -if input_unit.first.status == true
+                                          - multiplier = input_unit.first.basic_unit_multiplier 
+                                      -else
+                                        - multiplier =""
+                                    .col.sm.1
+                                      = text_field_tag("input_multiplier_#{tu.id}",multiplier,placeholder:"provide multiplier") 
+                                  .row
+                                    .col.sm.1
+                                      =check_box_tag "output_units[]", tu.id,output_transaction_status, :id=>"unit_output_#{tu.id}",:class=>"output_unit_check"
+                                      %label{:for=>"unit_output_#{tu.id}"} Output
+                                      - output_unit = @product.output_units.by_unit_id(tu.id)
+                                      -if output_unit.present?
+                                        -if output_unit.first.status == true
+                                          -multiplier = output_unit.first.basic_unit_multiplier
+                                      -else
+                                        -multiplier =""
+                                    .col.sm.1
+                                      = text_field_tag("output_multiplier_#{tu.id}",multiplier,placeholder:"provide multiplier")
+                  .form-group
+                    = f.label "Conjugated Unit", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+
+                      = f.select :conjugated_unit_id, options_for_select(@conjugated_units.map{ |u| ["#{u.conjugated_name}", u.id]}, @product.conjugated_unit_id), { include_blank: "Select Conjugated Unit"},  {:class => "form-control"}
+                  .form-group
+                    = f.label "Thresh hold limit", :class=>"col-sm-3 control-label"
+                    .col-sm-6
+                      = f.text_field :thresh_hold      
+
+                - elsif group.name == "Images"
+                  = f.fields_for :product_images do |builder|
+                    = render 'product_image_fields', f:builder
+
+                  = link_to_add_fields "Add Image", f, :product_images, {}, 'm-btn green margin-l-15 margin-b-5'
+
+                - group.product_attribute_keys.each do |field|
+                  = fields_for "product[properties_attributes][#{Time.now.to_i}#{field.id}]" do |builder|
+                    = builder.hidden_field :product_attribute_key_id, :value=> field.id
+                    = render "products/fields/#{field.input_type}", field: field, f: builder
+            
+            %h3 Colors
+            %section.ptb0
+              %h5.header Colors
+              .divider
+              .col-sm-6.p0
+                %table.data-table
+                  %tbody#color-container
+                - if @product.color_products.present?
+                  = smart_listing_render :color_products 
+              .col-sm-1    
+              .col-sm-5.p0.card
+                .clearfix                
+                = smart_listing_render :colors 
+
+            %h3 Sizes
+            %section.ptb0
+              %h5.header Sizes
+              .divider
+              .col-sm-6.p0
+                %table.data-table
+                  %thead
+                    %tr.data-table__selectable-row
+                      %th.col-lg-5 Size
+                      %th.col-lg-2 Action
+                  %tbody#size-container
+                - if @product.product_sizes.present?
+                  = smart_listing_render :product_sizes 
+              .col-sm-1    
+              .col-sm-5.p0.card
+                .clearfix                
+                = smart_listing_render :sizes        
+
+            - if params[:product_type] == "variable" || @product.product_type == "variable"
+              %h3 Attributes
+              %section.ptb0
+                %h5.header Attributes
+                .divider
+                %br
+                .form-group
+                  = f.label "Select custom ptoduct attribute", :class=>"col-sm-3 control-label"
+                  .col-sm-6
+                    = select_tag "attribute_id", options_for_select(@attributes.map{ |a| [a.name.humanize, a.id] }), prompt: "Select product attribute", class: "form-control"
+
+                .form-group
+                  .form-horizontal.bordered-row#attr_set
+                    - if @attribute_arr
+                      - @attribute_arr.each do |aa|
+                        - attr_name = Attribute.get_attribute_name(aa)[0][:name]
+                        / .form-group#each_attr{:class => "#{attr_name} term_container_#{term[:id]}"}
+                        .form-group#each_attr{:class => "#{attr_name}"}
+                          %label.col-sm-3.control-label= attr_name.humanize
+                          .col-sm-7
+                            - terms = TermAttribute.get_terms(aa)
+                            = text_field_tag "attribute[]", nil, :value => terms[0].attribute_id, :type => "hidden"
+                            - terms.each do |term|
+                              %input.filled-in{:name => "term_attribute[]", :type => "checkbox", :value => term['id'], :checked => (@attributes_details.include?("#{term[:id]}")), :id=>"attr_#{term[:id]}"}
+                              %label{:for=>"attr_#{term[:id]}"}= term['name'].humanize
+                              %br
+                          .col-sm-2
+                            / %a{:class => "m-btn red m-btn-low-padding attr_rm", :id => "#{attr_name}", "data-term-id"=>"#{term[:id]}"}
+                            %a{:class => "m-btn red m-btn-low-padding attr_rm", :id => "#{attr_name}"}
+                              %i.mdi-action-delete
+                  .clearfix            
+
+            - else
+              %h3 Compositions
+              %section.ptb0
+                %h5.header Compositions
+                .divider
+                .col-sm-7.p0
+                  %table.data-table
+                    %tbody#composition-container
+                      = f.fields_for :compositions do |builder|
+                        = render 'composition_fields', f: builder
+                .col-sm-5.p0
+                  .clearfix                
+                  = smart_listing_render :compositions
+
+              %h3 Varients
+              %section.ptb0
+                %h5.header Product Varients
+                .divider
+                %br
+                .form-group
+                  = f.label "Grouped product", :class => 'col-sm-3 control-label'
+                  .col-sm-5
+                    = f.select :parent, options_for_select(@variable_products.map{ |vp| [vp.name, vp.id] }, @product.parent), { include_blank: "Select a variable product"}, {:class => "form-control"}
+                  - @product.product_attributes.each do |p_a|
+                    - if p_a.term_attribute.present?
+                      = "#{p_a.p_attribute.name} : #{p_a.term_attribute.name}"
+                #variants_box
+                #product_variation
+                  - if @product.product_attrs.present? && @product.parent.present?
+                    - @product.product_attrs.each do |qqq|
+                      .form-group
+                        %label.col-sm-3.control-label= qqq.name
+                        .col-sm-5
+                          %input{:name => "attribute[]", :type => "text", :value => qqq.id, :type => "hidden"}
+                          %select.form-control{:name => "variant[]"}
+                            - qqq.term_attributes.each do |ff|
+                              %option{:value => ff.id}= ff.name         
+            %h3 Processes
+            %section.ptb0
+              %h5.header Processes
+              .divider
+              .col-sm-7.p0
+                %table.data-table
+                  %tbody#process-composition-container
+                    = f.fields_for :process_compositions do |builder|
+                      = render 'process_composition_fields', f: builder
+              .col-sm-5.p0
+                .clearfix                
+                = smart_listing_render :process_compositions
+
+            %h3 Vendors
+            %section.ptb0
+              %h5.header Vendors
+              .divider
+              .col-sm-6.p0
+                %table.data-table
+                  %tbody#vendor-container
+                    = f.fields_for :vendor_products,@vendor_products do |builder|
+                      = render 'vendor_product_fields', f: builder
+              .col-sm-6.p0.card
+                .clearfix                
+                = smart_listing_render :vendors
+
+            %h3 Tags
+            %section.ptb0
+              %h5.header Tags
+              .divider
+              .col-sm-6.p0
+                %table.data-table
+                  %tbody#tag-container
+                    = f.fields_for :product_tags,@product_tags do |builder|
+                      = render 'product_tag_fields', f: builder
+              .col-sm-6.p0.card
+                .clearfix                
+                = smart_listing_render :tags    
+
+            %h3 Menu Cards
+            %section.ptb0
+              %h5.header Menu Cards
+              .divider
+              .col-sm-12.p0
+                %table.data-table
+                  %tbody#menu-cards-container
+                    %tr.data-table__selectable-row#menu_product_header
+                      %td Menu Card
+                      %td Sell Price (without tax)
+                      %td Procured Cost
+                      %td Tax Group
+                      %td Category
+                      %td Store
+                      %td Sort
+                      %td Delivery Mode
+                      %td Maximum Order Quantity
+                    = f.fields_for :menu_products,@menu_products do |builder|
+                      = render 'menu_card_product_fields', f: builder
+              .col-sm-12.p0.card
+                .clearfix                
+                = smart_listing_render :menu_cards 
+   

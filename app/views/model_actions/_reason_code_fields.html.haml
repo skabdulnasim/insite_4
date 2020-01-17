@@ -1,0 +1,15 @@
+.card.col-sm-12.padding-10.remove-card
+	.form-group.col-sm-12
+		= f.label 'reason', :class => 'col-sm-2 control-label'
+		.col-sm-8
+			= f.text_field :reason, :required => true, :autofocus => true, :placeholder => "Enter  cause", :class => 'form-control', autocomplete: 'off'
+		.col-sm-2
+			%a.btn.btn-xs.btn-danger.margin-t-15.remove_reason_code{:href => "#", :title => "Delete", 'data-reason-code-id'=>f.object.id}	
+	.form-group.col-sm-12
+		= f.label :stock_adjustment,:class => 'col-sm-2 control-label'
+		.col-sm-10.input-field
+			= f.radio_button(:stock_adjustment, true,:id=>"stock_adjustment_yes")
+			%label{:for=> "stock_adjustment_yes"}= "Yes"
+			= f.radio_button(:stock_adjustment, false,:id=>"stock_adjustment_no", :checked => true)
+			%label{:for=> "stock_adjustment_no"}= "No"  
+		

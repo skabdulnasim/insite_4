@@ -1,0 +1,4 @@
+- if AppConfiguration.get_config_value('smart_po') == 'enabled' && AppConfiguration.get_config_value('on_behalf_po') == 'enabled'
+  = render "on_behalf_smart_po"
+- else
+  = render "manual_po"

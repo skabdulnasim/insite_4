@@ -1,0 +1,15 @@
+
+  <% for(var i=0; i<package_obj.length; i++) {%>
+    <div class="draggable" table-id="<%=package_obj[i].id%>" id="table<%=package_obj[i].id%>" pax="<%=package_obj[i].capacity%>" table-name="<%=package_obj[i].name%>">
+      <center>
+        <strong><%= package_obj[i].name%></strong> <br><small>(ID: <%= package_obj[i].id%>)</small>
+      <br>
+      Capacity:
+      <%= package_obj[i].capacity%>
+      </center>
+    </div>
+  <%}%>
+
+
+
+    

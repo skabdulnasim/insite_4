@@ -1,0 +1,20 @@
+- links_arr = [{:title=>"Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Stock Transfer Templates",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+.col-lg-12 
+  %table.table.table-bordered
+    %tr.table-header.well
+      %th Template name
+      %th Created at
+      %th Actions
+    
+    - @templates.each do |temp|
+      %tr
+        %td= temp.template_name
+        %td= temp.created_at
+        %td       
+          - if can? :show, StockTransferTemplate           
+            %a.btn.btn-sm.btn-success{:href => "#{details_store_stock_transfer_template_path(@store,temp)}", :title => "use this template"}
+              Use this template
+          - if can? :destroy, StockTransferTemplate        
+            %a.btn.btn-sm.btn-danger{:href => "#{store_stock_transfer_template_path(@store,temp)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete template"}
+              %i.fa.fa-trash-o

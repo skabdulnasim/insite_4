@@ -1,0 +1,81 @@
+= form_for setup_customer(@customer), :html => {"data-remote" => "true", :class => 'form-horizontal'} do |f|
+  #register-customer.modal.fade{:role => "dialog", :tabindex => "-1"}
+    .modal-dialog{:role => "document"}
+      .modal-content
+        .modal-header
+          %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} ×
+          %h4.modal-title Register New Customer
+        .modal-body
+          
+          .form-group
+            .col-sm-2.control-label
+              = f.label :email, "Email"
+            .col-sm-10
+              = f.text_field :email, :required => true, :placeholder => "Email", :class => "form-control", autocomplete: 'off'
+
+          .form-group
+            .col-sm-2.control-label
+              = f.label :mobile_no, "Mobile No"
+            .col-sm-10
+              = f.text_field :mobile_no, :required => true, :placeholder => "Mobile No", :class => "form-control allow-numeric-only", autocomplete: 'off'
+          - if AppConfiguration.get_config_value('customer_unique_id') == "enabled"    
+            .form-group
+              .col-sm-2.control-label
+                = f.label :customer_unique_id, "Customer Unique No"
+              .col-sm-10
+                = f.text_field :customer_unique_id, :placeholder => "Customer Unique No", :class => "form-control", autocomplete: 'off'    
+
+          = f.fields_for :customer_profile do |cp_builder|
+            .form-group
+              .col-sm-2.control-label
+                = cp_builder.label :firstname, "First Name"
+              .col-sm-10
+                = cp_builder.text_field :firstname, :autofocus => true, :required => true, :placeholder => "First Name", :class => "form-control", autocomplete: 'off'
+            .form-group
+              .col-sm-2.control-label
+                = cp_builder.label :lastname, "Last Name"
+              .col-sm-10
+                = cp_builder.text_field :lastname, :autofocus => true, :required => true, :placeholder => "Last Name", :class => "form-control", autocomplete: 'off'    
+                = cp_builder.hidden_field :contact_no
+            
+          = f.fields_for :own_customer_addresses do |addr|  
+            .form-group
+              .col-sm-2.control-label
+                = addr.label :contact_no, "Contact No"
+              .col-sm-10
+                = addr.text_field :contact_no, :autofocus => true, :required => true, :placeholder => "Contact No", :class => "form-control", autocomplete: 'off'                  
+            .form-group
+              .col-sm-2.control-label
+                = addr.label :pincode, "Pincode"
+              .col-sm-10
+                = addr.text_field :pincode, :autofocus => true, :required => true, :placeholder => "Pincode", :class => "form-control", autocomplete: 'off'    
+            .form-group
+              .col-sm-2.control-label
+                = addr.label :landmark, "Landmark"
+              .col-sm-10
+                = addr.text_field :landmark, :autofocus => true, :required => true, :placeholder => "Landmark", :class => "form-control", autocomplete: 'off'    
+            .form-group
+              .col-sm-2.control-label
+                = addr.label :city, "City"
+              .col-sm-10
+                = addr.text_field :city, :autofocus => true, :required => true, :placeholder => "City", :class => "form-control", autocomplete: 'off'
+            .form-group
+              .col-sm-2.control-label
+                = addr.label :state, "State"
+              .col-sm-10
+                = addr.text_field :state, :autofocus => true, :required => true, :placeholder => "State", :class => "form-control", autocomplete: 'off'
+            .form-group
+              .col-sm-2.control-label
+                = addr.label :latitude, "Latitude"
+              .col-sm-10
+                = addr.text_field :latitude, :autofocus => true, :required => true, :placeholder => "Latitude", :class => "form-control", autocomplete: 'off'            
+            .form-group
+              .col-sm-2.control-label
+                = addr.label :longitude, "Longitude"
+              .col-sm-10
+                = addr.text_field :longitude, :autofocus => true, :required => true, :placeholder => "Longitude", :class => "form-control", autocomplete: 'off'            
+    
+          .modal-footer
+            %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+            = submit_tag('Save', :class => 'btn btn-success register-new-customer')

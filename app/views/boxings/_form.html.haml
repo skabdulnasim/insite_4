@@ -1,0 +1,68 @@
+%span
+	= link_to("Confirm boxing submition", store_boxings_path(params[:store_id]), :class=>"m-btn green right", :id=>"confirm-boxing-btn")
+	%h3
+		Boxing Management
+.divider
+.margin-t-15
+.row
+	.col-lg-12
+		.col-lg-7.p0
+			.form-group.margin-t-15
+				%input{:value => params[:store_id], :type => "hidden", :name=> "store_id", :id=> "store_id"}
+				%label{:class => 'col-lg-3 control-label'}
+					Select boxing for
+				.col-lg-7
+					= select_tag :boxing_source, options_for_select(Boxing::BOXING_SOURCE_TYPE), class: "form-control", :prompt => "Select boxing source"
+	.col-lg-12#package-selection-div
+		.col-lg-7.p0
+			.form-group.margin-t-15
+				%label{:class => 'col-lg-3 control-label'}
+					Select a package
+				.col-lg-7
+					= select_tag :package, options_for_select(@packages.map{ |pckg| [pckg[:name], pckg[:id]] }, nil), class: "form-control", :prompt => "Select a package"
+		.col-lg-5.p0#package_components.margin-t-5
+
+	.col-lg-12#boxing-div	
+		.col-lg-7.p0
+			.form-group.margin-t-15
+				%label{:class => 'col-lg-3 control-label'}
+					Start boxing
+				.col-lg-7
+					%input.blue-input.z-depth-2#create-boxing.form-control{:placeholder => "Name of the boxing...", :type => "text", :autocomplete=>"off"}
+				.col-lg-2
+					= button_tag('Create', :class => 'btn btn-success', :id => 'create-boxing-btn', 'data-is-created' => 'false')
+
+.margin-t-15
+.divider
+.margin-t-15
+.row
+	.col-lg-12
+		.col-lg-3
+			%a.m-btn.bg-gray.margin-b-5.waves-effect.waves-light#take-box-btn{"data-target" =>"#selectBoxModal", "data-toggle" => "modal"}
+				Take a box
+	.col-lg-12#selected-boxes
+
+
+#selectBoxModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "selectBoxModalLabel", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content.m-modal-content
+			.modal-header.m-modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#selectBoxModalLabel.modal-title Take a Box
+			.modal-body
+				.col-md-12
+					%label{:class => 'col-lg-3 control-label'}
+						select a box
+					.col-md-6
+						.form-group
+							%input.blue-input.z-depth-2#search-box.form-control{:placeholder => "Search by barcode...", :type => "text", :autocomplete=>"off"}
+					.col-md-3
+						= button_tag('Search', :class => 'btn btn-success', :id => 'search-box-btn')
+				.col-lg-12
+					#selected-box
+				.clearfix
+			.modal-footer
+				%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+				= button_tag('Done', :class => 'btn btn-primary', :id => 'create-box-btn', "data-dismiss"=>"modal")

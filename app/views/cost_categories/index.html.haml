@@ -1,0 +1,21 @@
+%h1 Listing cost_categories
+
+%table
+  %tr
+    %th Name
+    %th Description
+    %th
+    %th
+    %th
+
+  - @cost_categories.each do |cost_category|
+    %tr
+      %td= cost_category.name
+      %td= cost_category.description
+      %td= link_to 'Show', cost_category
+      %td= link_to 'Edit', edit_cost_category_path(cost_category)
+      %td= link_to 'Destroy', cost_category, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Cost category', new_cost_category_path

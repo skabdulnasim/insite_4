@@ -1,0 +1,41 @@
+-cash_data = get_unit_current_cash(@current_user.unit_id,@today_from_datetime,@today_to_datetime)
+= form_for @cash_out, :html => { :class => 'form-horizontal'} do |f|
+  - if @cash_out.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@cash_out.errors.count, "error")} prohibited this cash_out from being saved:"
+      %ul
+        - @cash_out.errors.full_messages.each do |msg|
+          %li= msg
+  .padding-5
+  .col-sm-12
+    = hidden_field_tag 'current_cash', cash_data[:current_cash], :id => "current_amount"
+    = f.hidden_field :user_id, :value => @current_user.id
+    = f.hidden_field :unit_id, :value => @current_user.unit_id
+    .form-group
+      = f.label "Amount", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :amount do
+          = f.text_field :amount, :class => 'form-control allow-numeric-only width-50', :required => true, :id => "cash_out_amount"
+    .form-group
+      = f.label "Reason", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :reason do
+          = f.text_field :reason, :class => 'form-control width-50', :required => true
+    - @denomination.each do|object|      
+      = f.fields_for :cash_out_descriptions do |cod|
+        .col-lg-3.padding-5   
+          .smallstat.box{:style=>'width:228px;height:54px;'}
+            = image_tag object.image.url(:thumb)
+            #denomination_count
+              = cod.hidden_field :denomination_id, :value => object.id, :class => 'inputwrap'
+              = cod.text_field :count, :class => 'form-control allow-numeric-only width-40 cash-out-denomination', :placeholder => "Count", :autofocus => true, :required => false, "data-denomination-value" => "#{object.value}"
+
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        = f.submit 'Save', :class => 'btn btn-success btn-lg payment-save'
+        %a.btn.btn-primary.btn-lg{:href => "#{cash_handlings_path}"}
+          Cancel
+          
+
+
+    

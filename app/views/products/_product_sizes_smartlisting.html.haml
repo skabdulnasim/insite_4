@@ -1,0 +1,68 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-5= smart_listing.sortable "Sizes", "name"
+        %th.col-lg-2
+          Action
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td.accordion-toggle{"data-toggle" => "collapse", :href => "#collapse_#{object.id}"}=object.size.name
+          %td
+            .col-sm-7
+              - size_status = (ProductSize.find_by_product_id_and_size_id(@product.id,object.size_id).status == 0) ? true : false
+              .switch.padding-5
+                %label
+                  = check_box_tag :product_size, 'enabled', size_status, {"data-conf-key"=>"product_size","data-value-active"=>0,"data-value-inactive"=>1, "class"=> "update_product_size", "data-product-id"=>@product.id, "data-size-id"=>object.size_id} 
+                  %span.lever 
+        %tr.accordion-body.collapse.out{"id"=>"collapse_#{object.id}"}
+          %td{:colspan => "2"}
+            - if object.product_size_images.present?
+              - _product_size_image_count = object.product_size_images.count
+              - _req_img = 6 - _product_size_image_count
+              - object.product_size_images.each do |im|
+                .col-lg-6
+                  = image_tag(im.image, width: '140', height: '140')
+                  .col-sm-2{:style => "right: -89px; top: -137px;"}
+                    %a.btn.btn-xs.btn-danger.remove_product_size_image{:href => "#", :title => "Delete", "data-product-size-image-id" => im.id, "data-product-size-id" => object.id,"data-size-id" => object.size_id}
+                      %i.mdi-content-remove
+              - for exi in 1.._req_img
+                - _key1 = DateTime.now.strftime('%Q')
+                .col-lg-6
+                  .btn-primary.btn-sm.float-left{:style => "margin-top:5px;"}
+                    %span Choose Image
+                    %input{:name => "product[product_sizes_attributes][#{_key1}][id]", :type => "hidden", :value => "#{object.id}"}
+                    %input.filestyle{:name => "product[product_sizes_attributes][#{_key1}][product_size_images_attributes][#{_key1}1][image]", :type => "file"}
+            - else
+              - _key2 = DateTime.now.strftime('%Q')
+              %input{:name => "product[product_sizes_attributes][#{_key2}][id]", :type => "hidden", :value => "#{object.id}"}
+              .col-lg-6
+                .btn-primary.btn-sm.float-left{:style => "margin-top:5px;"}
+                  %span Choose Image
+                  %input.filestyle{:name => "product[product_sizes_attributes][#{_key2}][product_size_images_attributes][#{_key2}1][image]", :type => "file"}
+              .col-lg-6
+                .btn-primary.btn-sm.float-left{:style => "margin-top:5px;"}
+                  %span Choose Image
+                  %input.filestyle{:name => "product[product_sizes_attributes][#{_key2}][product_size_images_attributes][#{_key2}2][image]", :type => "file"}
+              .col-lg-6
+                .btn-primary.btn-sm.float-left{:style => "margin-top:5px;"}
+                  %span Choose Image
+                  %input.filestyle{:name => "product[product_sizes_attributes][#{_key2}][product_size_images_attributes][#{_key2}3][image]", :type => "file"}
+              .col-lg-6
+                .btn-primary.btn-sm.float-left{:style => "margin-top:5px;"}
+                  %span Choose Image
+                  %input.filestyle{:name => "product[product_sizes_attributes][#{_key2}][product_size_images_attributes][#{_key2}4][image]", :type => "file"}
+              .col-lg-6
+                .btn-primary.btn-sm.float-left{:style => "margin-top:5px;"}
+                  %span Choose Image
+                  %input.filestyle{:name => "product[product_sizes_attributes][#{_key2}][product_size_images_attributes][#{_key2}5][image]", :type => "file"}
+              .col-lg-6
+                .btn-primary.btn-sm.float-left{:style => "margin-top:5px;"}
+                  %span Choose Image
+                  %input.filestyle{:name => "product[product_sizes_attributes][#{_key2}][product_size_images_attributes][#{_key2}6][image]", :type => "file"}
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No size found

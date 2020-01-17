@@ -1,0 +1,28 @@
+= content_tag_for :div, menu_card, class: "row m0" do
+  .card.mb0
+    .card-content
+      .row.m0
+        .col.l5.s5{:class=>"menu_card_of_#{menu_card.id}"}
+          %span=menu_card.name.humanize
+          %br
+          %label=Unit.find(menu_card.unit_id).unit_name + "(#{Section.find(menu_card.section_id).name})"
+        .col.l6.s6
+          - if menu_card.mode == 1
+            %label.green-text Active
+          - else
+            %label Inactive 
+          = form_tag import_menu_products_path, multipart: true do
+            .input-field
+              = hidden_field_tag :menu_card_id, menu_card.id    
+              = hidden_field_tag :unit_id, menu_card.unit_id    
+              = hidden_field_tag :section_id, menu_card.section_id    
+            .form-group
+              %label.col-sm-4.control-label Menu Product Upload
+              .col-sm-8 
+                = file_field_tag :file
+              .input-field  
+                %button.btn.waves-effect.waves-light{:type=>"submit"}
+                  Save       
+
+        .col.l1.s1
+          = link_to "Edit", edit_menu_card_path(menu_card), :class=>"right modal-trigger edit_menu_card_link", remote: true 

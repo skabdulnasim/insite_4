@@ -1,0 +1,25 @@
+<div class='info_content' id="info_content">
+  <div class="col-md-6 no-left-padding">
+    <div class="panel panel-default">
+      <div class="panel-heading"><b>Delivery Address</b></div>
+      <div class="panel-body">
+        <%= location %>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6 no-left-padding" id="tesvvv">
+    <div class="panel panel-default">
+      <div class="panel-heading"><b>Orders</b></div>
+      <div class="panel-body">
+        <% for(var i=0; i<orders.length; i++) { %>
+          <div class="input-group line-clear order-summery" data-view='marker_info' data-orderid='<%= orders[i].id %>' data-orderstatus='<%= orders[i].status %>' >
+            <span class="input-group-addon" >
+              <input type="checkbox" name="order_ids[]"  aria-label="..." data-delivarydate='<%= orders[i].delivary_date %>' value='<%= orders[i].id %>'>
+            </span>
+            <label class="form-control" aria-label="..." style="background-color:<%= orders[i].color_code %>" >OrderID: #<%= orders[i].id %></label>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>

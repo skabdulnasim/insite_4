@@ -1,0 +1,13 @@
+= form_for @advertisement_gallery do |f|
+  - if @advertisement_gallery.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@advertisement_gallery.errors.count, "error")} prohibited this advertisement_gallery from being saved:"
+      %ul
+        - @advertisement_gallery.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :advertise_id
+    = f.number_field :advertise_id
+  .actions
+    = f.submit 'Save'

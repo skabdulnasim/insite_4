@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  bin_id: 1
+  product_id: 1
+  bin_unique_id: MyString
+  product_sku: MyString
+  product_quantity: 1
+
+two:
+  bin_id: 1
+  product_id: 1
+  bin_unique_id: MyString
+  product_sku: MyString
+  product_quantity: 1

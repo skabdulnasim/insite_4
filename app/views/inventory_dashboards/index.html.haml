@@ -1,0 +1,301 @@
+- manual_load_javascript "Chart.min.js","inventory_dashboard/inventory_dashboard"
+%script{:src=>"https://code.jquery.com/ui/1.12.1/jquery-ui.js"}
+
+:javascript
+  $(function() {
+    $('#product_search').autocomplete({
+      source: "/products/search_products",
+      select: function(event, ui) {
+        $('#product_search').val(ui.item.name);
+        console.log(ui.item);
+        return false;
+      }
+    });
+
+    $('#product_search').autocomplete().data('uiAutocomplete')._renderItem = function(ul, item) {
+      return $('<li class="collection-item">').append('<a>' + item.name + '</a>').appendTo(ul);
+    };
+  });
+
+:css
+  .ui-autocomplete {
+    / position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    float: left;
+    display: none;
+    min-width: 160px;
+    _width: 160px;
+    margin: 2px 0 0 0;
+    list-style: none;
+    background-color: #ffffff;
+    border-color: #ccc;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-style: solid;
+    border-width: 1px;
+  }
+  .ui-menu-item{
+    display: block;
+    padding:10px;
+    clear: both;
+    font-weight: normal;
+    line-height: 18px;
+    white-space: nowrap;
+    border-bottom:1px solid #ccc;
+    margin-left:-40px;
+  }
+  .ui-menu-item:last-child {
+    border: none;
+  }
+  .ui-menu-item:hover { 
+    background-color: #EFEFEF;
+    cursor: pointer;
+  }
+  .ui-corner-all{
+    color: #616567;
+  }
+  .ui-helper-hidden-accessible{
+    display: none;
+  } 
+
+  .popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .font_color{
+    color:black;
+  }
+  .default-sidebar{
+    width:25% !important;
+    background-color : teal !important;
+    color: white !important;
+  }
+  .card.card-title a{
+    color: white !important;
+  }
+
+= render "layouts/flash"
+- _unit_id = current_user.unit_id
+.collapse#collapseUnitFilter
+  %ul#task-card.collection.with-header
+    %li.collection-header.amber.text-white
+      %span.text-white{:style=>"font-size:20px;"} 
+        Filter by Location
+      %a.m-btn.waves-effect.waves-light.float-r{"data-toggle"=>"collapse", :href=>"#collapseUnitFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseUnitFilter"}
+        %i.mdi-navigation-close.sm
+      %a.m-btn.float-r.waves-effect.waves-light.filter-dashboard-data{"data-toggle"=>"collapse", :href=>"#collapseUnitFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseUnitFilter"}
+        %i.mdi-action-done-all.sm
+    .max-height-400  
+      - load_units_dropdown(current_user.unit_id) #HomeHelper
+
+.collapse#collapseDateFilter
+  %ul#task-card.collection.with-header
+    %li.collection-header.indigo.text-white
+      %span.text-white{:style=>"font-size:20px;"} 
+        Filter by Date Interval and Product
+      %a.m-btn.float-r.waves-effect.waves-light{"data-toggle"=>"collapse", :href=>"#collapseDateFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseDateFilter"}
+        %i.mdi-navigation-close.sm
+      %a.m-btn.float-r.waves-effect.waves-light.filter-dashboard-data{"data-toggle"=>"collapse", :href=>"#collapseDateFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseDateFilter"}
+        %i.mdi-action-done-all.sm        
+    %li.collection-item.m-input
+      .input-field
+        %i.mdi-navigation-arrow-forward.prefix
+        %input#from_date.validate{:type => "date",:placeholder=>"From Date", :value=>"#{Date.today - 1.month}"}
+      .input-field
+        %i.mdi-navigation-arrow-back.prefix
+        %input#to_date.validate{:type => "date",:placeholder=>"To Date", :value=>"#{Date.today.to_s}"}
+      .input-field
+        %i.mdi-content-create.prefix
+        %input.input-group{:name => "Search", :id => "product_search", :placeholder => "Search Products...", :type => "text", :style => "height:36px;"}
+
+        
+.fixed-action-btn{:style => "bottom: 45px; right: 24px;"}
+  %a.btn-floating.btn-large.red
+    %i.md.mdi-content-filter-list
+  %ul
+    %li
+      %a.btn-floating.waves-effect.waves-light.green{"data-toggle"=>"collapse", :href=>"#collapseDateFilter", "aria-expanded"=>"false", "aria-controls"=>"collapseDateFilter"}
+        %i.small.mdi-device-access-time{"data-toggle"=>"tooltip","title"=>"Select Duration"}
+
+.row
+  .col-lg-3.col-sm-6.col-xs-12.col-xxs-12
+    .info-box.blue.blue-text.text-lighten-4.card
+      %span.info-box-icon
+        %i.fa.fa-money
+      .info-box-content
+        %span.info-box-text.font_color Opening stock value
+        %span.count#opening_stock.font_color= @openingstock
+        .progress
+          .progress-bar.sales-widget-progressbar
+        %span.progress-description.font-13.sales-widget-description
+
+  .col-lg-3.col-sm-6.col-xs-12.col-xxs-12
+    .info-box.amber.amber-text.text-lighten-4.card
+      %span.info-box-icon
+        %i.fa.fa-money
+      .info-box-content
+        %span.info-box-text.font_color Closing stock value
+        %span.count#closing_stock.font_color= @closingstock
+        .progress
+          .progress-bar.sales-widget-progressbar
+        %span.progress-description.font-13.sales-widget-description.font_color= "#{@closing_stock_value}" if params[:closing_stock_value].present?
+
+
+  .col-lg-3.col-sm-6.col-xs-12.col-xxs-12#po_issue.popup{:onclick=>"po_issue(#{@purchase_order_create.count}, #{@purchase_order_create_amount_arr.count});"}
+    %span.view_details{"data-target" => "#inventory_dashboard", "data-toggle" => "modal"}
+      .info-box.teal.teal-text.text-lighten-4.card
+        %span.info-box-icon
+          %i.fa.fa-usd
+        .info-box-content
+          %span.info-box-text#price.font_color PO issue
+          %span.count#purchase.font_color= @purchase_order_create.count
+          %span.font_color /
+          %span.count.font_color= @purchase_order_create_amount_arr.count
+          / .progress
+          /   .progress-bar.sales-widget-progressbar
+          / %span.progress-description.font-13.sales-widget-description
+
+  .col-lg-3.col-sm-6.col-xs-12.col-xxs-12#purchase_received.popup{:onclick=>"po_receive(#{@total_receive_amount.sum}, #{@purchase_received_per_day.count}, #{@stock_purchase_receive_count.count});"}
+    %span.view_details{"data-target" => "#inventory_dashboard", "data-toggle" => "modal"}
+      .info-box.green.green-text.text-lighten-4.card
+        %span.info-box-icon
+          %i.fa.fa-check-square-o
+        .info-box-content
+          %span.info-box-text.font_color PO received
+          %span.font_color= "#{@total_receive_amount.sum} k"
+          %span.font_color /
+          %span.count#purchase.font_color= "#{@purchase_received_per_day.count}"
+          %span.font_color /
+          %span.count.font_color= "#{@stock_purchase_receive_count.count}"
+        / .progress
+        /   .progress-bar.sales-widget-progressbar
+        / %span.progress-description.font-13.sales-widget-description
+
+  .col-lg-3.col-sm-6.col-xs-12.col-xxs-12#purchase_pending.popup{:onclick=>"po_pending(#{@purchase_pending_per_day.count}, #{@stock_purchase_pending_count_arr.count});"}
+    %span.view_details{"data-target" => "#inventory_dashboard", "data-toggle" => "modal"}
+      .info-box.red.red-text.text-lighten-4.card
+        %span.info-box-icon
+          %i.fa.fa-close
+        .info-box-content
+          %span.info-box-text.font_color PO pending
+          %span.count#po_pending.font_color= "#{@purchase_pending_per_day.count}"
+          %span.font_color / 
+          %span.count.font_color= "#{@stock_purchase_pending_count_arr.count}"
+        / .progress
+        /   .progress-bar.sales-widget-progressbar
+        / %span.progress-description.font-13.sales-widget-description
+
+  .col-lg-3.col-sm-6.col-xs-12.col-xxs-12#purchase_received_partially.popup{:onclick=>"po_received_partially(#{@purchase_received_pertially.count}, #{@pertially_sp_count.count});"}
+    %span.view_details{"data-target" => "#inventory_dashboard", "data-toggle" => "modal"}
+      .info-box.green.green-text.text-lighten-4.card
+        %span.info-box-icon
+          %i.fa.fa-check-square-o
+        .info-box-content
+          %span.info-box-text.font_color PO partially received
+          %span.count#purchase.font_color= "#{@purchase_received_pertially.count}"
+          %span.font_color / 
+          %span.count.font_color= "#{@pertially_sp_count.count}"
+        / .progress
+        /   .progress-bar.sales-widget-progressbar
+        / %span.progress-description.font-13.sales-widget-description
+
+
+
+  .col-lg-3.col-sm-6.col-xs-12.col-xxs-12#hide_audit_approved.popup{:onclick=>"audit_approved(#{@approved_audit.count}, #{@no_of_product_audit_apprived.count}, #{@delta_value}, #{@delta_negative_val.sum}, #{@delta_positive_val.sum});"}
+    %span.view_details{"data-target" => "#inventory_dashboard", "data-toggle" => "modal"}
+      .info-box.green.green-text.text-lighten-4.card
+        %span.info-box-icon
+          %i.fa.fa-check-square-o
+        .info-box-content
+          %span.info-box-text.font_color Audit Approved
+          %span.count#audit_approved.font_color= @approved_audit.count
+          %span.font_color /
+          %span.count.font_color= @no_of_product_audit_apprived.count
+          .progress
+            .progress-bar.sales-widget-progressbar
+          %span.progress-description.font-13.sales-widget-description#delta_stock.font_color= "∆(Delta stock)= #{@delta_value}"
+
+  .col-lg-3.col-sm-6.col-xs-12.col-xxs-12#hide_audit_pending.popup{:onclick=>"audit_pending(#{@pending_audit.count}, #{@no_of_product_audit_pending.count}, #{@pending_delta_value}, #{@pending_delta_positive_val.sum}, #{@pending_delta_negative_val.sum});"}
+    %span.view_details{"data-target" => "#inventory_dashboard", "data-toggle" => "modal"}
+      .info-box.red.red-text.text-lighten-4.card
+        %span.info-box-icon
+          %i.fa.fa-close
+        .info-box-content
+          %span.info-box-text.font_color Audit Pending
+          %span.count#audit_pending.font_color= @pending_audit.count
+          %span.font_color /
+          %span.count.font_color= @no_of_product_audit_pending.count
+          .progress
+            .progress-bar.sales-widget-progressbar
+          %span.progress-description.font-13.sales-widget-description.font_color= "∆(Delta stock)= #{@pending_delta_value.to_f}"
+    
+  #inventory_dashboard.modal.fade{"aria-labelledby" => "productionModalLabel", :role => "dialog", :tabindex => "-1"}
+    .modal-dialog.modal-lg{:style => "width:500px;"}
+      .modal-content
+        .modal-header.blue
+          %h4#myModalLabel.modal-title.card_header
+        .modal-body#productionModalBody{:style=>"font-size: 1.5rem;"}
+          %span.po_details
+        .modal-footer
+          %button.btn.btn-danger{"data-dismiss" => "modal", :type => "button"} Close
+
+
+.loading-chart-data
+
+.card#revenue-card
+  .waves-effect.waves-block.waves-light
+    .move-up.darken-1
+      %span.cyan-text.text-darken-2.activator
+        .data-table-header
+          .data-table-header__label 
+            %span.fs-title.activator.cursor-pointer 
+              Purchase graph               
+              %i.mdi-action-view-list.left.md.blue-text.text-darken-2
+              
+      .card-reveal.default-sidebar
+        %span
+          %i.mdi-navigation-close.right.sm.close-card
+          %i.fa.fa-cube{"aria-hidden" => "true"}
+          %a.color-white{:href => stores_path} Stores
+          %hr
+          %i.fa.fa-user{"aria-hidden" => "true"}
+          %a.color-white{:href => vendors_path} Vendors
+          %hr
+          %i.fa.fa-truck{"aria-hidden" => "true"}
+          %a.color-white{:href => vehicles_path} Vehicles
+          %hr
+          %i.fa.fa-spinner
+          %a.color-white{:href => production_processes_path} Processes
+          / - if AppConfiguration.get_config_value('package_module') == "enabled"
+          /   %hr
+          /   %i.fa.fa-cube
+          /   %a.color-white{:href => boxings_path} Start Boxing
+
+        / %i.mdi-action-view-list.right.md.amber-text.text-darken-2
+      .clearfix
+      %br
+      %div{:style=>"min-height:200px;"}
+        %canvas#sales-area-canvas{:height => "160", :width => "700"}
+      .clearfix
+  .card-content.darken-2
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          %span.fs-title Stock in Hand
+          = smart_listing_controls_for(:stock_in_hand) do
+            .form-group.col-lg-8
+              = select_tag "units_idss", options_from_collection_for_select(@child_units, "id", "unit_name"),class: "form-control",prompt: "Select Branch"
+      = smart_listing_render :stock_in_hand
+.clearfix
+
+  
+

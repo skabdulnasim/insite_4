@@ -1,0 +1,230 @@
+- unless smart_listing.empty?
+	- report_precision = AppConfiguration.get_config_value_of_report('report_precision').to_i
+	- _report_attributes = Bill.report_attributes
+	- total_attributes_length = _report_attributes['tax'].count + _report_attributes['payment'].count + _report_attributes['third_party'].count
+	/ - total_attributes_length = 0
+	%table.data-table
+		%thead
+			%tr.data-table__selectable-row
+				%th.font-bold Bill ID
+				%th.font-bold Bill Serial
+				%th.font-bold Recorded Date
+				%th.font-bold Created Date
+				%th.font-bold Outlet Name
+				%th.font-bold Order Source
+				%th.font-bold Third Party Order Id
+				%th.font-bold Delivery Type
+				%th.font-bold Deliverables At
+				%th.font-bold Section
+				%th.font-bold Biller
+				%th.font-bold Remarks
+
+				%th.font-bold Customer Name
+				%th.font-bold Customer Mobile
+				%th.font-bold Shipping Address
+				%th.font-bold Landmark
+
+				%th.font-bold Server Name
+				%th.font-bold Calling Time
+				%th.font-bold Delivery Time
+				%th.font-bold GSR
+				%th.font-bold Customer Tags
+				%th.font-bold Product Count
+
+				%th.font-bold Item Name
+				%th.font-bold Item Category
+				%th.font-bold Item Quantity
+				%th.font-bold Product Cost
+				%th.font-bold Item Tax
+				%th.font-bold Item Discount Per Unit
+				%th.font-bold Item Unit Price
+
+				%th.font-bold Order Id
+				%th.font-bold Order Details Id
+
+				%th.font-bold Bill Amount (without Tax)
+				%th.font-bold Discount
+
+				%th.font-bold Total Tax
+				- _report_attributes['tax'].each do |attribute|
+					%th.font-bold= attribute.humanize
+
+				%th.font-bold Delivery Charges
+				%th.font-bold Roundoff
+				%th.font-bold Total
+				%th.font-bold Order Status
+				%th.font-bold Bill Status
+
+				- _report_attributes['third_party'].each do |attribute|
+					%th.font-bold= attribute.humanize
+				- _report_attributes['payment'].each do |attribute|
+					%th.font-bold= attribute.humanize
+
+				%th.font-bold Pax
+
+
+		%tbody
+			- smart_listing.collection.each do |object|
+				- order_details = JSON.parse(object.order_details)
+				%tr.data-table__selectable-row
+					%td= object.bill_id
+					%td= "#{object.prefix}""#{object.serial_no}""#{object.suffix}"
+					%td= object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+					%td= object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+					%td= JSON.parse(object.unit)[0]['unit_name']
+					%td= JSON.parse(object.orders)[0]['source']
+					%td= JSON.parse(object.orders)[0]['third_party_order_id']
+					%td= JSON.parse(object.orders)[0]['delivery_type']
+					- bill_deliverable = JSON.parse(object.deliverable)
+					%td= bill_deliverable[0].length > 0 ? show_delivery_name_from_json(bill_deliverable[0]) : object.deliverable_type
+					%td= JSON.parse(object.section)[0] != nil ? JSON.parse(object.section)[0]['name'] : "-"
+					- _biller_name = JSON.parse(object.biller)[0].keys.second == 'profile' ? "#{JSON.parse(object.biller)[0]['profile']['firstname']}" : "#{JSON.parse(object.biller)[0]['email']}"
+					%td= _biller_name
+					%td= object.remarks
+					- _customer_name = JSON.parse(object.customer)[0] != nil ? "#{JSON.parse(object.customer)[0]['profile']['firstname']} #{JSON.parse(object.customer)[0]['profile']['lastname']}" : "-"
+					%td= _customer_name
+					%td= JSON.parse(object.customer)[0] != nil ? JSON.parse(object.customer)[0]['customer']['mobile_no'] : '-'
+					%td= bill_deliverable[0].length > 0 ? bill_deliverable[0].keys.first == 'address' ? bill_deliverable[0]['address']['delivery_address'] : '-' : '-'
+					%td= bill_deliverable[0].length > 0 ? bill_deliverable[0].keys.first == 'address' ? bill_deliverable[0]['address']['landmark'] : '-' : '-'
+
+					%td= '-'
+					%td= '-'
+					%td= Date.parse(JSON.parse(object.orders)[0]['delivary_date']).strftime("%Y-%m-%d %I:%M %p")
+					%td= '-'
+					%td= '-'
+
+					%td= order_details.count
+
+
+
+					- od_count = 0
+					- order_details.each do |o_d|
+						- od_count = od_count + 1
+						- if od_count == 1
+							%td= o_d['product_name']
+							%td= o_d['p_category']
+							%td= "#{o_d['quantity']} #{o_d['p_basic_unit']}"
+							%td= o_d['material_cost']
+							%td= o_d['tax_amount']
+							%td= o_d['discount']
+							%td= o_d['unit_price_with_tax']
+							%td= o_d['order_id']
+							%td= o_d['id']
+
+
+							%td= number_to_currency(object.bill_amount, unit: '', precision: report_precision)
+							%td= number_to_currency(object.discount, unit: '', precision: report_precision)
+
+							%td= number_to_currency(object.tax_amount, unit: '', precision: report_precision)
+							- _bill_taxes = JSON.parse(object.bill_taxes)
+							- _report_attributes['tax'].each do |attribute|
+								- printed_tax_count = 0
+								- if _bill_taxes != nil
+									- _bill_taxes.each do |b_tax|
+										- if b_tax['tax_class_name'] != nil
+											- if b_tax['tax_class_name'].downcase == attribute.downcase
+												%td= b_tax['tax_amount']
+												- printed_tax_count = 1
+												/ %td= b_tax['tax_class_name'].downcase == attribute.downcase ? b_tax['tax_amount'] : ''
+									- if printed_tax_count == 0
+										%td= '-'
+								- else
+									%td= '-'
+
+							%td= JSON.parse(object.orders)[0]['delivery_charges']
+							%td= object.roundoff
+							%td= number_to_currency(object.grand_total, unit: '', precision: report_precision)
+							%td= OrderStatus.find(JSON.parse(object.orders)[0]['order_status_id']).name
+							%td= object.status.humanize
+
+							- if object.status == "paid"
+								- _payments = JSON.parse(object.payments)
+
+								- _report_attributes['third_party'].each do |attribute|
+									- printed_third_party_payment_count = 0
+									- if _payments != nil
+										- _payments.each do |pt|
+											- if pt['p_mode_name'] != nil
+												- if pt['p_mode_name'].downcase == attribute.downcase
+													%td= pt['amount']
+													- printed_third_party_payment_count = 1
+										- if printed_third_party_payment_count == 0
+											%td= '-'
+									- else
+										%td= '-'
+
+								- _report_attributes['payment'].each do |attribute|
+									- printed_payment_count = 0
+									- if _payments != nil
+										- _payments.each do |pt|
+											- if pt['p_mode_name'] != nil
+												- if pt['p_mode_name'].downcase == attribute.downcase
+													%td= pt['amount']
+													- printed_payment_count = 1
+										- if printed_payment_count == 0
+											%td= '-'
+									- else
+										%td= '-'
+
+							- else
+								- _report_attributes['payment'].each do |attribute|
+									%td= '-'		
+								- _report_attributes['third_party'].each do |attribute|
+									%td= '-'		
+
+							%td= object.pax
+
+
+						- else
+							%tr
+								%td= object.bill_id
+								%td= "#{object.prefix}""#{object.serial_no}""#{object.suffix}"
+								%td= object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+								%td= object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+								%td= JSON.parse(object.unit)[0]['unit_name']
+								%td= JSON.parse(object.orders)[0]['source']
+								%td= JSON.parse(object.orders)[0]['third_party_order_id']
+								%td= JSON.parse(object.orders)[0]['delivery_type']
+								%td= bill_deliverable[0].length > 0 ? show_delivery_name_from_json(bill_deliverable[0]) : object.deliverable_type
+								%td= JSON.parse(object.section)[0] != nil ? JSON.parse(object.section)[0]['name'] : "-"
+								%td= _biller_name
+								%td= object.remarks
+     
+								%td{:colspan => 10}
+
+								%td= o_d['product_name']
+								%td= o_d['p_category']
+								%td= "#{o_d['quantity']} #{o_d['p_basic_unit']}"
+								%td= o_d['material_cost']
+								%td= o_d['tax_amount']
+								%td= o_d['discount']
+								%td= o_d['unit_price_with_tax']
+								%td= o_d['order_id']
+								%td= o_d['id']
+
+								%td{:colspan => 9+total_attributes_length}
+					
+					- if object.order_detail_combinations.present?
+						- order_detail_combinations = JSON.parse(object.order_detail_combinations)
+						- order_detail_combinations.each do |odc|
+							%tr
+								%td{:colspan => 22}
+
+								%td= odc['product_name']
+								%td= odc['p_category']
+								%td= "#{odc['combination_qty']} #{odc['p_basic_unit']}"
+								%td= "-"
+								%td= "-"
+								%td= "-"
+								%td= odc['product_price']
+								%td= odc['order_id']
+								%td= odc['order_detail_id']
+								%td{:colspan => 9 +total_attributes_length}
+
+
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+
+- else
+	.alert.alert-warning
+		No sales found

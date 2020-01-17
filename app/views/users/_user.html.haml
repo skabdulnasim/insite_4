@@ -1,0 +1,10 @@
+%li.collection-item.line-height-13.min-height-75.avatar
+  %i.material-icons.circle.blue person
+  %span.title="#{user.profile.firstname} #{user.profile.lastname}" if user.profile.present?
+  %p.grey-text
+    %small=user.email
+    %br
+    %small=user.unit.unit_name
+
+  -# %a.secondary-content.grey-text{:href => "#!"}
+  -#   %i.material-icons edit

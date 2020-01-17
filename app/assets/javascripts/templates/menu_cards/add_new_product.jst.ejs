@@ -1,0 +1,277 @@
+<% 
+  var time = new Date().getTime(); 
+  var key = time+product_id
+%>
+<tr class='data-table__selectable-row' id='cart_item_<%=product_id%>'>
+  <td class='col-lg-1 padding-5'>
+    <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][product_id]" value="<%= product_id %>">
+    <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][mode]" value="1">
+    <a aria-controls="#item_collapse_<%=product_id%>" aria-expanded="false" data-parent="#accordion" data-toggle="collapse" href="#item_collapse_<%=product_id%>" role="button" class="item_collapse_<%=product_id%> font-13"><%=product_name%></a>
+    </br>
+    <a aria-controls="#commission_capping_collapse_<%=product_id%>" aria-expanded="false" data-parent="#accordion" data-toggle="collapse" href="#commission_capping_collapse_<%=product_id%>" role="button" class="commission_capping_collapse_<%=product_id%> btn btn-info font-12">Commission Capping</a>
+  </td>
+  <td class='col-lg-1 padding-5'>
+    <% if(product_business_type == 'by_catalog') {%>
+      <% if (menu_product_type == 'combo_product') { %>
+        <input class='form-control sell_price_combo_product sell_price_combo_product_<%=product_id%> combo_product_prices' name='menu_card[menu_products_attributes][<%=key%>][sell_price_without_tax]' placeholder='(<%product_business_type%>)' type='text' data-combo-product-id='<%=product_id%>'  required>
+      <% } else { %>
+        <input class='form-control' name='menu_card[menu_products_attributes][<%=key%>][sell_price_without_tax]' placeholder='(<%product_business_type%>)' type='text' required>
+      <% } %>
+    <% } else {%>
+      <input class='form-control' name='menu_card[menu_products_attributes][<%=key%>][sell_price_without_tax]' value='0' type='hidden'>
+      <small>N/A</small>
+    <% } %>
+    <!-- <a aria-controls="#commission_capping_collapse_<%=product_id%>" aria-expanded="false" data-parent="#accordion" data-toggle="collapse" href="#commission_capping_collapse_<%=product_id%>" role="button" class="commission_capping_collapse_<%=product_id%> btn btn-info font-12">Add Item</a> -->
+    <!-- <a class='showComboItemsModal btn btn-info font-12' data-master-product-id='<%=product_id%>' data-master-product-key='<%=key%>' data-target='#comboItemsModal' data-toggle='modal'>Add Item</a> -->
+  </td>  
+  <td class='col-lg-1 padding-5'>
+    <% if(product_business_type == 'by_catalog') {%>
+
+      <% if (menu_product_type == 'combo_product') { %>
+        <input class='form-control procured_price_combo_product_<%=product_id%> combo_product_prices' name='menu_card[menu_products_attributes][<%=key%>][procured_price]' placeholder='(<%product_business_type%>)' type='text' data-combo-product-id='<%=product_id%>' required>
+      <% } else { %>
+        <input class='form-control' name='menu_card[menu_products_attributes][<%=key%>][procured_price]' placeholder='(<%product_business_type%>)' type='text' required>
+      <% } %>
+    <% } else {%>
+      <input class='form-control' name='menu_card[menu_products_attributes][<%=key%>][procured_price]' value='0' type='hidden'>
+      <small>N/A</small>
+    <% } %>
+  </td>  
+  <td>
+    <% for (var sec=0; sec < unit_data.sections.length; sec++) { %>
+      <% if(unit_data.sections[sec].id == menu_card.section_id) { %>
+        <% tax_groups = unit_data.sections[sec].tax_groups%>
+        <%  if(tax_groups.length > 0) { %>
+          <select name="menu_card[menu_products_attributes][<%=key%>][tax_group_id]" id="tax_group_<%=product_id%>" class="form-control tax_group_serial_ auto_populate_entity" data-counter="" data-total-count="0" data-entity-type="tax_group" required>
+            <% for (var tg=0; tg < tax_groups.length; tg++) { %>
+              <option value="<%=tax_groups[tg].id%>"><%=tax_groups[tg].name %></option>
+            <% } %>                      
+          </select>
+        <% } %>
+      <% } %>
+    <% } %>
+    <!-- ABC -->
+  </td>
+  <td class='col-lg-2 padding-l-r-none'>
+    <% category_count = menu_card.categories.length %>
+    <%  if(category_count > 0) { %>
+      <select name="menu_card[menu_products_attributes][<%=key%>][menu_category_id]" id="store_<%=product_id%>" class="form-control category_serial_ auto_populate_entity" data-counter="" data-total-count="0" data-entity-type="category" required>
+        <% for (var s=0; s < menu_card.categories.length; s++) { %>
+          <option value="<%=menu_card.categories[s].id%>"><%=menu_card.categories[s].name %></option>
+          <% subcategories = menu_card.categories[s].sub_categories %>
+          <%  if(subcategories.length > 0) { %>
+            <% for (var c=0; c < subcategories.length; c++) { %>
+              <option value="<%=subcategories[c].id%>">-- <%=subcategories[c].name %></option>
+            <% } %>
+          <% } %>
+        <% } %>
+      </select>
+    <% } else { %> 
+      <div class="red-text">Add category before adding item</div> 
+    <% }%>    
+  </td>  
+  <td>
+
+    <% cost_category_count = cost_category_data.cost_categories.length %>
+    
+    <select name="menu_card[menu_products_attributes][<%=key%>][cost_category_id]" id="cost_category_<%=product_id%>" class="form-control cost_category_serial_ auto_populate_entity" data-counter="" data-total-count="0" data-entity-type="cost_category" required>
+      <option value="">Select Cost Category</option>
+      <% for (var s=0; s < cost_category_data.cost_categories.length; s++) { %>
+        <option value="<%=cost_category_data.cost_categories[s].id%>"><%=cost_category_data.cost_categories[s].name %></option>
+      <% } %>                      
+    </select>
+
+  </td>
+  <% if(inventory_status == 'enabled') {%>              
+    <td class='col-lg-2 padding-l-r-none'>
+      <% store_count = unit_data.stores.length %>
+      <%  if(store_count > 0) { %>
+        <select name="menu_card[menu_products_attributes][<%=key%>][store_id]" id="store_<%=product_id%>" class="form-control store_serial_ auto_populate_entity" data-counter="" data-total-count="0" data-entity-type="store" required>
+          <% for (var s=0; s < unit_data.stores.length; s++) { %>
+            <option value="<%=unit_data.stores[s].id%>"><%=unit_data.stores[s].name %></option>
+          <% } %>                      
+        </select>
+      <% } else { %> 
+        <div class="red-text">Add store before cloning</div> 
+        <!-- <a href="#">Add store </a> -->
+      <% }%>    
+    </td>
+  <% } %>
+  <td class='col-lg-2 padding-l-r-none'>
+    <% sort_count = unit_data.sorts.length %>
+    <%  if(sort_count > 0) { %>
+      <select name="menu_card[menu_products_attributes][<%=key%>][sort_id]" id="sort_<%=product_id%>" class="form-control sort_serial_ auto_populate_entity" data-counter="" data-total-count="0" data-entity-type="sort" required>
+        <% for (var k=0; k < unit_data.sorts.length; k++) { %>
+          <option value="<%=unit_data.sorts[k].id%>"><%=unit_data.sorts[k].name %></option>
+        <% } %>                      
+      </select>
+    <% } else { %> 
+      <div class="red-text">Add SORT before adding item</div> 
+    <% }%>   
+  </td>
+  <td class='col-lg-2 padding-l-r-none'>
+    <select name="menu_card[menu_products_attributes][<%=key%>][is_unit_currency]" id="is_unit_currency_<%=product_id%>" class="form-control" >
+      <option >Is Unit Currency ?</option>
+      <option value="Yes">Yes</option>
+      <option value="No">No</option>
+    </select>      
+  </td>
+  <td class='col-lg-2 padding-l-r-none'>
+    <% delivery_modes = menu_card.delivery_modes %>
+    <%  if(delivery_modes.length > 0) { %>
+      <select name="menu_card[menu_products_attributes][<%=key%>][delivery_mode]" id="delivery_mode_<%=product_id%>" class="form-control" required>
+        <% for (var d_m=0; d_m < delivery_modes.length; d_m++) { %>
+          <option value="<%=delivery_modes[d_m]%>"><%= delivery_modes[d_m] %></option>
+        <% } %>                      
+      </select>
+    <% } else { %> 
+      <div class="red-text">Not available</div> 
+    <% }%>    
+  </td>
+
+  <td class='col-lg-1 padding-5'>
+    <input class='form-control' name='menu_card[menu_products_attributes][<%=key%>][max_order_qty]' value='0' type='text'>
+  </td>
+
+</tr>
+
+<tr class="collapse data-table__selectable-row data-table__selectable-row--is-selected" aria-labelledby="heading<%=product_id%>" role = "tabpanel" id="item_collapse_<%=product_id%>">
+  <td class="p0" id="item_customization_<%=product_id%>" colspan=7>
+    <div class="col-sm-8 padding-5 m-input">
+      <div class="card margin-t-none">
+        <div class="card-content p0">
+          <p class="header blue-text text-lighten-5 blue padding-10">
+            ADDONS / COMBINATION ITEMS
+          </p>    
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="font-sz-12">Item</th>
+              <th class="font-sz-12">Price</th>
+              <th class="font-sz-12">Quantity</th>
+              <th class="font-sz-12">Type</th>
+              <th class="font-sz-12"></th>
+            </tr>
+          </thead>
+          <tbody class="selected-addon-container-<%=product_id%>"> 
+            <tr>
+              <td class="padding-l-r-none amber lighten-5 text-center" colspan=5>
+                <a class='showAddonModal' data-master-product-id='<%=product_id%>' data-master-product-key='<%=key%>' data-target='#addonsModal' data-toggle='modal'>Select Addons / Combination items</a>
+              </td>          
+            </tr>
+          </tbody>       
+        </table>
+      </div>
+    </div>
+    
+    <div class="col-sm-4 padding-5">
+      <a class="m-btn width-100 red">Remove</a>
+    </div>
+  </td>
+</tr>
+<tr class="collapse data-table__selectable-row data-table__selectable-row--is-selected" aria-labelledby="heading<%=product_id%>" role = "tabpanel" id="commission_capping_collapse_<%=product_id%>">
+  <td class="p0" id="item_commission_capping_collapse_<%=product_id%>" colspan=7>
+    <div class="col-sm-8 padding-5 m-input">
+      <div class="card margin-t-none">
+        <div class="card-content p0">
+          <p class="header blue-text text-lighten-5 blue padding-10">
+            COMMISSION CAPPING
+          </p>    
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="font-sz-12">Capping Type</th>
+              <th class="font-sz-12">Capping Amount</th>
+            </tr>
+          </thead>
+          <tbody class="selected-addon-container-<%=product_id%>"> 
+            <tr>
+              <td class='col-lg-2 padding-l-r-none'>
+                <% commission_cappings = menu_card.commission_capping %>
+                <%  if(commission_cappings.length > 0) { %>
+                  <select name="menu_card[menu_products_attributes][<%=key%>][commission_capping_type]" id="commission_capping_type_<%=product_id%>" class="form-control">
+                    <% for (var c_c=0; c_c < commission_cappings.length; c_c++) { %>
+                      <option value="<%=commission_cappings[c_c]%>"><%= commission_cappings[c_c] %></option>
+                    <% } %>                      
+                  </select>
+                <% } else { %> 
+                  <div class="red-text">Not available</div> 
+                <% }%>    
+              </td>
+
+              <td class='col-lg-1 padding-5'>
+                <input class='form-control' name='menu_card[menu_products_attributes][<%=key%>][commission_capping]' value='0' type='text'>
+              </td>
+            </tr>
+          </tbody>       
+        </table>
+      </div>
+    </div>
+    
+    <div class="col-sm-4 padding-5">
+      <a class="m-btn width-100 red">Remove</a>
+    </div>
+  </td>
+</tr>
+
+<% if (menu_product_type == 'combo_product') { %>
+  <tr id="combo_items_div_<%=product_id%>">
+    <td>
+      <a class='showComboItemsModal showComboItemsModalBtn<%=product_id%> btn btn-info font-12' data-master-product-id='<%=product_id%>' data-master-product-key='<%=key%>' data-master-product-name='<%=product_name%>' data-target='#comboItemsModal' data-toggle='modal' disabled>Add Combo Item</a>
+    </td>
+    <td class="p0" colspan="100%">
+      <div class="col-sm-9 padding-5 m-input">
+        <div class="card margin-t-none">
+          <div class="card-content p0">
+            <p class="header blue-text text-lighten-5 blue padding-10">
+              COMBO ITEMS
+            </p>    
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="font-sz-12 col-lg-5">Item</th>
+                <th class="font-sz-12 col-lg-2">Size</th>
+                <th class="font-sz-12 col-lg-2">Color</th>
+                <th class="font-sz-12 col-lg-1">Quantity</th>
+                <th class="font-sz-12 col-lg-1">Sell Price</th>
+                <th class="font-sz-12 col-lg-1"></th>
+              </tr>
+            </thead>
+            <tbody id="combo_items_of_<%=product_id%>"></tbody>
+              <!-- <tr>
+                <td>No combo item present.</td>
+              </tr> -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <div class="col-sm-3 padding-5">
+        <a class="m-btn red remove_all_combo_items" data-combo-product-id="<%=product_id%>">Remove</a>
+      </div>
+    </td>
+  </tr>
+<% } %>
+
+<script>
+  $(function() {
+    $('.combo_product_prices').keyup(function() {
+      var combo_product_id = $(this).data('combo-product-id')
+      var cp_sell_price = $(".sell_price_combo_product_"+combo_product_id).val()
+      var cp_procurement_price = $(".procured_price_combo_product_"+combo_product_id).val()
+      if(cp_sell_price > 0 && cp_procurement_price>0)
+        $(".showComboItemsModalBtn"+combo_product_id).attr('disabled',false);
+      else
+        $(".showComboItemsModalBtn"+combo_product_id).attr('disabled',true);
+    });
+    $('.sell_price_combo_product').keyup(function() {
+      var sell_price = $(this).val()
+      var combo_product_id = $(this).attr('combo-product-id')
+      var combo_product_name = $("showComboItemsModalBtn"+combo_product_id).attr("data-master-product-name")
+      $("#total_sp_"+combo_product_id).html(combo_product_name+":" + sell_price +  "Rs.")
+    });
+  });
+</script>

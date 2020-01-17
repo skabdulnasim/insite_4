@@ -1,0 +1,30 @@
+- store_id = params[:store_id]
+- unless smart_listing.empty?
+	%table.data-table
+		%thead
+			%tr{:style=>"background-color: #95A5A6;font-size: 17px;text-transform: uppercase;letter-spacing: 0.03em;"}
+				%th TSP's Name
+				%th Manager's Name
+				%th Product Name 
+				%th Product Quantity
+				%th Product Unit
+		%tbody
+			- smart_listing.collection.each do |tsp|
+				- manager_name = tsp.parent_user.present? ? tsp.parent_user.profile.full_name : 'N/A'
+				%tr
+					%td= "#{tsp.profile.full_name}"
+					%td= "#{manager_name}"
+					%td - 
+					%td -
+					%td -
+				-group_order_details_for_tsp = get_group_order_details_for_tsp(tsp.id,@from_date,@to_date,store_id)
+				-if group_order_details_for_tsp.present?
+					- group_order_details_for_tsp.each do |order_details| 
+						%tr 
+							%td 
+							%td
+							%td= "#{order_details.product_name}"
+							%td= "#{order_details.quantity.to_f.round(0)}"
+							%td= "#{order_details.product.basic_unit}"
+ 
+   				

@@ -1,0 +1,52 @@
+<div class="col-lg-12 padding-5">
+  <div class="card waves-effect waves-light">
+    <div class="card-content p0">
+      <p class="header white-text teal padding-10">
+        PAYMENT DETAILS
+      </p> 
+    </div>   
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th class="font-sz-12">Amount (<%= currency %>)</th>
+          <th class="font-sz-12">Payment Mode</th>           
+          <th class="font-sz-12">Reference No</th>
+          <th class="font-sz-12">Date</th>
+          <th class="font-sz-12">Payment Date</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% for (var i = data.payments.length - 1; i >= 0; i--) { %>
+        <%
+        var payment_date = new Date(data.payments[i].created_at);
+        var payment_date = payment_date.format("dd-mm-yyyy, hh:MM TT");
+        %>
+        <%
+          if(data.payments[i].details == null){
+            var payment_details = '-'
+          }else{
+            var payment_details = data.payments[i].details
+          }
+        %>
+        <tr class="data-table__selectable-row">
+          <td class="font-sz-12"> 
+            <%= data.payments[i].payment_amount %>
+          </td>
+          <td class="font-sz-12"> 
+            <%= data.payments[i].payment_mode %>
+          </td>
+          <td class="font-sz-12"> 
+            <%= payment_details %>
+          </td>
+          <td class="font-sz-12"> 
+            <%= payment_date %>
+          </td>
+          <td class="font-sz-12"> 
+            <%= data.payments[i].payment_date %>
+          </td>
+        </tr>  
+      <%}%>
+      </tbody>
+    </table>     
+  </div>
+</div>

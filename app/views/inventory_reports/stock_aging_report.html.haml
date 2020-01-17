@@ -1,0 +1,18 @@
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Stock Avaliable Report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Stock aging report
+          .data-table-header__actions
+            %a.export-avaliable-stock-report.m-btn.indigo.margin-l-5{:href=>"/inventory_reports/avaliable_stock.csv?store_id=#{params[:store_id]}"}
+              %i.mdi-file-file-download.left
+              CSV
+            = smart_listing_controls_for(:avaliable_reports, {class: "form-inline float-l margin-l-30"}) do       
+              .form-group.from_date.input-append 
+              
+        = smart_listing_render :stock_aging_report

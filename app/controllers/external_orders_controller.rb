@@ -1,0 +1,2 @@
+class ExternalOrdersController < ApplicationController
+end

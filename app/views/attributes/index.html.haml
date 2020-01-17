@@ -1,0 +1,31 @@
+= render "layouts/flash"
+.col-lg-6
+  = render 'form'
+.col-lg-6
+  %h2
+    %small Listing attributes
+
+  .page-container
+    %table.table.table-bordered
+      %tr.table-header
+        %th Name
+        %th Terms
+        %th
+        %th Actions
+    
+      - @attributes.each do |attribute|
+        %tr
+          %td= attribute.name
+          %td
+            - @terms = TermAttribute.get_terms(attribute.id)
+              - @terms.each do |t|
+              =t.name+", "
+          %td
+            %a{:href => "#{term_attributes_path}?id=#{attribute.id}", :class => 'btn btn-mini'}
+              %i.icon-wrench
+              Configure Terms
+          %td
+               
+            %span= link_to image_tag( 'edit.png'), edit_attribute_path(attribute)
+            %span= link_to image_tag( 'delete.gif'), attribute, :method => :delete, :data => { :confirm => 'Are you sure?' }        
+            

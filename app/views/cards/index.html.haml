@@ -1,0 +1,54 @@
+#page-wrapper
+  - if notice 
+    .alert.alert-success.alert-dismissible{:role => "alert"}
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-check.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+        %span.sr-only Close
+      = notice
+  .row
+    .page-header
+      %h1
+        Card Management
+        %small Manage cards
+        %a{:href => "#{new_card_path}"}
+          %button.btn{:type => "submit"} 
+            %i.fa.fa-plus-square
+            New Menu Card
+    .page-container
+    
+    %h1 Listing cards
+    
+    %table
+      %tr
+        %th No
+        %th Valid upto
+        %th Type
+        %th Bank
+        %th Cvv
+        %th Merchandiser
+        %th Name on card
+        %th Amount
+        %th
+        %th
+        %th
+    
+      - @cards.each do |card|
+        %tr
+          %td= card.no
+          %td= card.valid_upto
+          %td= card.type
+          %td= card.bank
+          %td= card.cvv
+          %td= card.merchandiser
+          %td= card.name_on_card
+          %td= card.amount
+          %td= link_to 'Show', card
+          %td= link_to 'Edit', edit_card_path(card)
+          %td= link_to 'Destroy', card, :method => :delete, :data => { :confirm => 'Are you sure?' }
+    
+    %br
+    
+    = link_to 'New Card', new_card_path

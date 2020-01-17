@@ -1,0 +1,93 @@
+- unless smart_listing.empty?
+
+  %table.data-table
+    %thead
+      %tr
+        %th Product
+        %th Vendor
+        / %th Product
+        %th 
+          Sourcing
+          %br
+          Executive
+        %th 
+          Unit Price
+        %th 
+          Supply 
+          %br
+          Quantity
+        %th 
+          Agreed 
+          %br
+          Quantity
+        %th 
+          Delivery
+          %br
+          Charge
+        %th Total Price
+        %th Valid Till
+        %th Recorded At
+        %th Synced At
+        %th Location
+    
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td{:style=>"background-color:rgb(255, 210, 26);"}
+            %b
+              = object.name
+          - pricing_reports = VendorProductPrice.by_product(object.id).by_recorded_at("#{params[:from_date]}","#{params[:to_date]}")
+          - if pricing_reports.present? 
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td{:style => "padding-right: 0px !important;"}
+          - else
+            %td{:style => "padding-left: 12px !important;",:colspan => 12} 
+              No Record Found ....
+          - if pricing_reports.present?
+            - pricing_reports.each do |pp|
+              - _sexc=User.find_by_id(pp.visited_by)
+              - _map_data_individual_arr=[]
+              - _map_data_individual_hash={}
+              - _map_data_individual_hash["product_name"]=object.name
+              - _map_data_individual_hash["lat"]=pp.latitude
+              - _map_data_individual_hash["lon"]=pp.longitude
+              - _map_data_individual_hash["vendor_name"]=pp.vendor.name
+              - _map_data_individual_hash["se_name"]=_sexc.profile.full_name
+              - _map_data_individual_hash["address"]=pp.address_of_place
+              - _map_data_individual_arr.push(_map_data_individual_hash)
+              %tr{:style=>"background-color:rgb(255, 165, 27);"}
+                %td Product Pricing
+                - if pp.vendor.name.present?
+                  %td= pp.vendor.name
+                - else
+                  %td= "-"
+                %td= _sexc.present? ? "#{_sexc.profile.full_name}" : '-'     
+                %td= pp.unit_price.present? ? pp.unit_price.round(2) : '-'     #pp.unit_price_with_tax.round(2)
+                %td= "#{pp.quantity} #{pp.product.basic_unit}"
+                %td= "#{pp.total_agreed_qty} #{pp.product.basic_unit}"
+                %td= pp.delivery_cost.present? ? pp.delivery_cost.round(2) : '-'
+                %td= pp.total_agreed_qty.present? && pp.unit_price.present? ? (pp.unit_price*pp.total_agreed_qty).round(2) : '-'    #pp.total_price_with_tax.round(2)
+                %td= pp.delivery_ends.present? ? pp.delivery_ends.strftime("%Y-%m-%d %I:%M %p") : '-'
+                %td= pp.recorded_at.strftime("%Y-%m-%d %I:%M %p")
+                %td= pp.updated_at.strftime("%Y-%m-%d %I:%M %p")  
+                %td
+                  %img{:src => "/google-maps.png", :class => "map-view", :width => "40px", "data-latlon"=>"#{_map_data_individual_arr.to_json}", "data-map_for"=>"product_pricing"} 
+                
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  %br             
+- else
+  .alert.alert-warning
+    %td
+      No record found
+  

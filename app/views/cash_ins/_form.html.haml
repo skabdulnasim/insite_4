@@ -1,0 +1,36 @@
+- debug "hi"
+= form_for @cash_in, :html => { :class => 'form-horizontal'} do |f|
+  - if @cash_in.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@cash_in.errors.count, "error")} prohibited this cash_in from being saved:"
+      %ul
+        - @cash_in.errors.full_messages.each do |msg|
+          %li= msg
+  .padding-5      
+  .col-sm-12
+    = f.hidden_field :user_id, :value => @current_user.id
+    = f.hidden_field :unit_id, :value => @current_user.unit_id
+    .form-group
+      = f.label "Amount", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :amount do
+          = f.text_field :amount, :class => 'form-control allow-numeric-only width-50 ', :required => true, :id => 'cash_in_amount'
+    .form-group
+      = f.label "Reason", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :reason do
+          = f.text_field :reason, :class => 'form-control width-50', :required => true
+    - @denomination.each do|object|      
+      = f.fields_for :cash_in_descriptions do |cid|
+        .col-lg-3.adding-5   
+          .smallstat.box{:style=>'width:228px;height:54px;'}
+            = image_tag object.image.url(:thumb)
+            #denomination_count
+              = cid.hidden_field :denomination_id, :value => object.id
+              = cid.text_field :count, :class => 'form-control allow-numeric-only cash-in-denomination', :placeholder => "Count", :autofocus => true, :required => false, "data-denomination-value" => "#{object.value}"
+              
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        = f.submit 'Save', :class => 'btn btn-success btn-lg payment-save'
+        %a.btn.btn-primary.btn-lg{:href => "#{cash_handlings_path}"}
+          Cancel

@@ -1,0 +1,19 @@
+- unless smart_listing.empty?
+  -smart_listing.collection.each do |target_product|
+    .card.grey{:style=>"min-height:35px;padding:5px;"}
+      .col-sm-5
+        %span{:style=>"font-size:12px;"}
+          =target_product.product.name
+        %span.font-w-300 Total target :
+        %span.m-label.green= " #{target_product.target_quantity}#{target_product.product.basic_unit}"
+        %br
+      .col-sm-3
+        %input.allow-numeric-only{:id=>"product_quantity_#{target_product.product_id}"}
+        %br
+        %button.m-btn.blue.lighten-1.open_modal#child_user_selection{"data-product-id"=>target_product.product_id,"data-product-name"=>target_product.product.name,"data-product-basic-unit"=>target_product.product.basic_unit, "data-target-quantity"=>target_product.target_quantity}
+          add
+          .mdi-content-send
+  = smart_listing.paginate
+  =smart_listing.pagination_per_page_links
+-else
+  no product found 

@@ -1,0 +1,49 @@
+- unless smart_listing.empty?
+  %a.btn.btn-primary.btn-social.float-r{"aria-controls" => "collapseExample", "aria-expanded" => "false", "data-toggle" => "collapse", :href => "#collapseExample"} 
+    %i.fa.fa-chevron-right
+    Proceed to next step
+  %br
+  %br
+  #collapseExample.collapse
+    .well
+      .col-md-6
+        %strong Do you want to save this data as template?
+      .col-md-6
+      %span#template-info
+        %button.btn.btn-success.btn-sm.show-template-btn
+          Yes
+        %button.btn.btn-warning.btn-sm{:type=>"submit"}
+          Not now
+
+  %table.table.table-striped.table-bordered
+    %thead
+      %th 
+        %input.checkbox-parent-toggle{:type=>"checkbox"}     
+      %th= smart_listing.sortable "Name", "name"
+      %th= smart_listing.sortable "Category", "category_id"
+      %th Current Stock
+      %th Transfer quantity
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td
+            %input.checkbox-child{:value=> "#{object.id }",:name=>"checked_products[]",:type=>"checkbox", "data-po-id" => "#{object.id}"}
+            
+          %td="##{object.id} #{object.name}"
+          %td=object.category.name
+          %td
+            =number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            = object.basic_unit 
+          %td.col-md-2
+            .input-group
+              %input.form-control.check-input.numeric-only{:name => "quantity_#{object.id}", :type => "text",:class=>"check-input-#{object.id}"}
+              .input-group-addon= object.basic_unit 
+
+
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links      
+
+- else
+  .alert.alert-warning
+    No in-stock products found

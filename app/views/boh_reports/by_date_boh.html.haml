@@ -1,0 +1,28 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+
+- links_arr = [{:title=>"BOH Report",:url=>sale_reports_path,:active_class=>""},{:title=>"BOH sale",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title.left Filter data
+          .data-table-header__actions
+            %a.export-by-date-sales-report_pdf.m-btn.red.margin-l-5{:href=>"/sale_reports/by_date.pdf?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}", :target=>"_blank"}
+              %i.mdi-file-file-download.left
+              PDF          
+            %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/sale_reports/by_date.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+
+        = smart_listing_render :boh_sales_by_date

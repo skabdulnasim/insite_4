@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Phone number:
+  = @otp.phone_number
+%p
+  %b Otp:
+  = @otp.otp
+%p
+  %b Verified:
+  = @otp.verified
+
+= link_to 'Edit', edit_otp_path(@otp)
+\|
+= link_to 'Back', otps_path

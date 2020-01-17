@@ -1,0 +1,21 @@
+= form_for :vendor_product, :method => "post", :url => update_vendor_product_vendor_path, :html => { :class => 'form-horizontal'} do |f|
+  .form-group
+    = f.label :product, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      %input{:type => "text", :value => "#{vendor_product.product.name}", :disabled => "true", :class => 'form-control'}
+  .form-group
+    = f.label :Unit, :class => 'col-sm-2 control-label'   
+    .col-sm-4
+      %input{:type => "text", :value => "#{vendor_product.product.basic_unit}", :disabled => "true", :class => 'form-control'}
+  .form-group
+    = f.label :price, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :price, :class => 'form-control'
+  .form-group
+    .col-sm-4
+  .control-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit 'Update', :class => 'btn btn-success btn-lg'   
+      %a{:href => vendor_path(params[:id]), :class => 'btn btn-primary btn-lg'}
+        %i.icon-backward
+        Cancel

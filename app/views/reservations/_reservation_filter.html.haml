@@ -1,0 +1,51 @@
+.card
+  .padding-10 
+    %b FILTER BY
+  = smart_listing_controls_for(:reservations, {class: "text-left"}) do  
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-search.left
+      Search
+    .padding-10 
+      .form-group.filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search by Reservation ID...", :type => "text", :name=> "id_filter"}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search  
+    .filter-title.margin-t-b-0 Slots
+    .padding-l-r-5
+      - Slot.all.each do |slot|
+        .checkbox
+          = check_box_tag 'slot_ids[]', slot.id, false,{ :id => "slot_#{slot.id}", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"slot_#{slot.id}", :style=>"padding-left:30px;"}= slot.title.humanize
+
+    .filter-title.margin-t-b-0 Resources
+    .padding-l-r-5
+      - @resources.each do |resource|
+        .checkbox
+          = check_box_tag 'resource_ids[]', resource.id, false,{ :id => "resource_#{resource.id}", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"resource_#{resource.id}", :style=>"padding-left:30px;"}= resource.name.humanize      
+
+    - if current_user.role.name == "owner"    
+      .filter-title branch 
+      .padding-10{:style => "max-height: 300px; overflow-y: auto;"} 
+        - Order.select("DISTINCT(unit_id)").each do |order|
+          .checkbox
+            = radio_button_tag 'unit_id', order.unit_id, false,{ :id => "source_#{order.unit_id}", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"source_#{order.unit_id}", :style=>"padding-left:30px;"}= order.unit.unit_name.humanize 
+    
+    .filter-title date
+    .padding-10 
+      .form-group.from_date.input-append
+        = text_field_tag :from_date, '', class: "search form-control form-control-small-pad", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;"
+        / %br
+        / %br
+        / = text_field_tag :to_date, '', class: "search form-control form-control-small-pad", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;"
+    .filter-title Reservation status
+    .padding-10 
+      .checkbox
+        = radio_button_tag 'billed', 0, false,{ :id => "unbilled_reservation", :class=>"filled-in"}
+        %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"unbilled_reservation", :style=>"padding-left:30px;"} Unbilled
+      .checkbox
+        = radio_button_tag 'billed', 1, false,{ :id => "billed_reservation", :class=>"filled-in"}
+        %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"billed_reservation", :style=>"padding-left:30px;"} Billed

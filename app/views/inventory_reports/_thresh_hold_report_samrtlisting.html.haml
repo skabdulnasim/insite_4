@@ -1,0 +1,32 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %tr.data-table__selectable-row
+        %td{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"} Product
+        - @stores.each do |store|
+          %td{:colspan => 1, :style => "border-right: 1px solid #ccc",:align => "center"}
+            #{store.name}
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td{:style => "border-right: 1px solid #ccc"}="#{object.name}"
+          - @stores.each do |store|
+            / - product_in_store = Product.product_in_store(object.id, store.id)
+            %td{:style => "border-right: 1px solid #ccc"}
+              %span{:class=>"badge blue padding-5 margin-t-2"}
+                ="#{object.thresh_hold} (#{object.basic_unit})"
+              -_curr_stck = StockUpdate.current_stock(store.id, object.id).to_f
+              - if _curr_stck < object.thresh_hold.to_f
+                %span{:class=>"badge red padding-5 margin-t-2"}
+                  ="#{_curr_stck} (#{object.basic_unit})"
+              - else
+                %span{:class=>"badge green padding-5 margin-t-2"}
+                  ="#{_curr_stck} (#{object.basic_unit})"
+            / - else
+            /   / %td{:style => "border-right: 1px solid #ccc"}="-"
+            /   %td{:style => "border-right: 1px solid #ccc"}="-"
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No records found!.          

@@ -1,0 +1,102 @@
+<tr class='data-table__selectable-row' id="cart_item_menu_product_<%= menu_card_id %>">
+  <td class='padding-l-r-none'>
+    <%=menu_card_name%>
+    <input type="hidden" name="product[menu_products_attributes][<%=key%>][menu_card_id]" value="<%=menu_card_id%>">
+    <input type="hidden" name="product[menu_products_attributes][<%=key%>][mode]" value="1">
+  </td>
+
+  <td class='padding-l-r-none'>
+  	<input class="allow-numeric-only" type="text" name="product[menu_products_attributes][<%=key%>][sell_price_without_tax]" required/>
+  </td>
+
+  <td class='padding-l-r-5'>
+    <input class="allow-numeric-only" type="text" name="product[menu_products_attributes][<%=key%>][procured_price]" required/>
+  </td>
+
+  <td class='padding-l-r-none'>
+    <% for (var sec=0; sec < unit_data.sections.length; sec++) { %>
+      <% if(unit_data.sections[sec].id == menu_card.section_id) { %>
+        <% tax_groups = unit_data.sections[sec].tax_groups%>
+        <%  if(tax_groups.length > 0) { %>
+          <select name="product[menu_products_attributes][<%=key%>][tax_group_id]">
+            <% for (var tg=0; tg < tax_groups.length; tg++) { %>
+              <option value="<%=tax_groups[tg].id%>"><%=tax_groups[tg].name %></option>
+            <% } %>                      
+          </select>
+        <% } %>
+      <% } %>
+    <% } %>
+  </td>
+
+  <td class='padding-l-r-none'>
+    <% category_count = menu_card.categories.length %>
+    <%  if(category_count > 0) { %>
+      <select name="product[menu_products_attributes][<%=key%>][menu_category_id]" style="width:76px !important;">
+        <% for (var s=0; s < menu_card.categories.length; s++) { %>
+          <option value="<%=menu_card.categories[s].id%>"><%=menu_card.categories[s].name %></option>
+          <% subcategories = menu_card.categories[s].sub_categories %>
+          <%  if(subcategories.length > 0) { %>
+            <% for (var c=0; c < subcategories.length; c++) { %>
+              <option value="<%=subcategories[c].id%>">-- <%=subcategories[c].name %></option>
+            <% } %>
+          <% } %>
+        <% } %>
+      </select>
+    <% } else { %> 
+      <div class="red-text">Add category before adding</div> 
+    <% }%> 
+  </td>
+
+  <% if(inventory_status == 'enabled') {%>              
+    <td class='padding-l-r-none'>
+      <% store_count = unit_data.stores.length %>
+      <%  if(store_count > 0) { %>
+        <select name="product[menu_products_attributes][<%=key%>][store_id]" style="width:75px !important;" >
+          <% for (var s=0; s < unit_data.stores.length; s++) { %>
+            <option value="<%=unit_data.stores[s].id%>"><%=unit_data.stores[s].name %></option>
+          <% } %>                      
+        </select>
+      <% } else { %> 
+        <div class="red-text">Add store before adding</div> 
+        <!-- <a href="#">Add store </a> -->
+      <% }%>    
+    </td>
+  <% } else { %>
+    <td class='padding-l-r-none'>-</td>
+  <% } %>
+
+  <td class='padding-l-r-none'>
+    <% sort_count = unit_data.sorts.length %>
+    <%  if(sort_count > 0) { %>
+      <select name="product[menu_products_attributes][<%=key%>][sort_id]">
+        <% for (var k=0; k < unit_data.sorts.length; k++) { %>
+          <option value="<%=unit_data.sorts[k].id%>"><%=unit_data.sorts[k].name %></option>
+        <% } %>                      
+      </select>
+    <% } else { %> 
+      <div class="red-text">Add SORT before adding item</div> 
+    <% }%>   
+  </td>
+
+  <td class='padding-l-r-none'>
+    <% delivery_modes = menu_card.delivery_modes %>
+    <%  if(delivery_modes.length > 0) { %>
+      <select name="product[menu_products_attributes][<%=key%>][delivery_mode]">
+        <% for (var d_m=0; d_m < delivery_modes.length; d_m++) { %>
+          <option value="<%=delivery_modes[d_m]%>"><%= delivery_modes[d_m] %></option>
+        <% } %>                      
+      </select>
+    <% } else { %> 
+      <div class="red-text">Not available</div> 
+    <% }%>    
+  </td>
+
+  <td class='padding-l-r-none'>
+    <input class='form-control' name='product[menu_products_attributes][<%=key%>][max_order_qty]' value='0' type='text'>
+  </td>
+
+  <td class='padding-l-r-none'>
+    <input id="menu_products_attributes_<%=key%>__destroy" name="product[menu_products_attributes][<%=key%>][_destroy]" type="hidden" value="false">
+    <a href="#" class="remove_menu_products" data-menu-card-id="<%= menu_card_id %>">Remove</a>
+  </td>
+</tr>

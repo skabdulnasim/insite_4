@@ -1,0 +1,51 @@
+= form_for @order do |f|
+  - if @order.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@order.errors.count, "error")} prohibited this order from being saved:"
+      %ul
+        - @order.errors.full_messages.each do |msg|
+          %li= msg
+
+  
+    
+  = hidden_field_tag "abs_url", request.original_url, class: "form-control", required: true
+  .col-sm-8
+    = fields_for :order_detail, :html => { :class => 'form-inline'}  do |o_d|
+      - @order_detail.each do |odf|
+        #product_set
+          #callout-stacked-modals.bs-callout.bs-callout-success
+            .col-sm-2
+              - if !odf.menu_product.product.product_image.nil?
+                %img{:src => "/uploads/#{odf.menu_product.product.product_image}", :class => "img-thumbnail"}        
+              - else
+                %img{:src => "/uploads/product.png", :class => "img-thumbnail"}
+            %h4
+              = odf.menu_product.product.name
+              %a.btn.btn-danger.attr_rm{:href => "#{orders_cancel_order_product_path}/?order_details_id=#{odf[:id]}&abs_url=#{request.original_url}"}
+                = "Cancel"
+            .input-group
+              = label_tag "Qty",nil , :class => 'col-sm-2 control-label'
+              .col-sm-4
+                = hidden_field_tag "order_detail[order_details_id][]", odf[:id], class: "form-control", required: true
+                = text_field_tag "order_detail[quantity][]", odf[:quantity], class: "form-control", required: true
+                        
+  .col-sm-4
+    .panel.panel-default
+      .panel-heading Order Details
+      .panel-body
+        .form-group
+          = f.label :table_id , :class => 'control-label'
+          = @order.deliverable[:name]
+        .form-group
+          = f.label :status_id , :class => 'control-label'
+          = @order.order_status[:name]
+        .form-group
+          = f.label :created_at , :class => 'control-label'
+          = @order.created_at.strftime("%d %b %Y, %I:%M %p")
+                
+  
+      
+  .btn-group.col-sm-offset-1
+    = f.submit 'Save', :class => 'btn btn-success'
+    %a{:href => orders_path, :class => 'btn btn-success'}  Back
+  

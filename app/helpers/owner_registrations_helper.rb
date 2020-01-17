@@ -1,0 +1,2 @@
+module OwnerRegistrationsHelper
+end

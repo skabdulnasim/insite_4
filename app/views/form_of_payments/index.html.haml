@@ -1,0 +1,19 @@
+%h1 Listing form_of_payments
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @form_of_payments.each do |form_of_payment|
+    %tr
+      %td= form_of_payment.name
+      %td= link_to 'Show', form_of_payment
+      %td= link_to 'Edit', edit_form_of_payment_path(form_of_payment)
+      %td= link_to 'Destroy', form_of_payment, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Form of payment', new_form_of_payment_path

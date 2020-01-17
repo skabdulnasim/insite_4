@@ -1,0 +1,20 @@
+%h1 Listing conjugated_units
+
+%table
+  %tr
+    %th Conjugated
+    %th Conjugated name
+    %th
+    %th
+    %th
+
+  - @conjugated_units.each do |conjugated_unit|
+    %tr
+      %td= conjugated_unit.conjugated_name
+      %td= link_to 'Show', conjugated_unit
+      %td= link_to 'Edit', edit_conjugated_unit_path(conjugated_unit)
+      %td= link_to 'Destroy', conjugated_unit, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Conjugated unit', new_conjugated_unit_path

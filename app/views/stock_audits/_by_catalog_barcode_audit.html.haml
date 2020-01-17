@@ -1,0 +1,192 @@
+:javascript
+  $(function () {
+    $('[data-toggle="popover"]').popover()
+    $('.date-only').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+  })
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Stock Audit : ID #{@stock_audit.id}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper   
+= render "layouts/flash"
+= form_tag(store_stock_audit_path(@store,@stock_audit), method: "put",multipart: true) do  
+  .col-lg-9.col-sm-12.padding-5
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Products in Audit
+            - _audit_products = @stock_audit.stock_audit_metas
+            %table.table
+              %thead
+                %tr.data-table__selectable-row
+                  %th.col-lg-1 Product
+                  - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+                    %th.col-lg-3 PRODUCT DETAILS
+                  %th.col-lg-4 Audit Details
+                  - if @stock_audit.status == "1"
+                    %th.col-lg-4 Action
+                  - elsif @stock_audit.status == "2"
+                    %th.col-lg-2 Stock consumed
+                    %th.col-lg-2 Stock added
+                  %th.col-lg-2 Remarks
+              %tbody            
+                - _audit_products.each do |object|
+                  /- _current_stock = Stock.find(object.stock_id).available_stock
+                  /- _current_stock = get_product_sku_stock(@store, object.product_id, object.sku) 
+                  /- _current_stock_date = StockUpdate.by_product(object.product_id).by_store(@store).last.created_at
+                  - if AppConfiguration.get_config_value('stock_identity') == 'enabled'
+                    - _stock_id = object.stock_id
+                    - _stock = Stock.find(_stock_id)
+                    - _current_stock = _stock.available_stock
+                    - _current_stock_date = _stock.updated_at
+                  - else
+                    - condition_hash = build_condition_hash(object.color_id,object.size_id,object.model_no,object.batch_no,object.sell_price_with_tax)
+                    - stock_details = Stock.get_product(object.product_id).set_store(@store).by_sku(object.sku).where(condition_hash)
+                    -_current_stock = stock_details.available.sum(:available_stock)
+                    -_current_stock_date = stock_details.first.updated_at
+                    
+                  - _stock_to_consume = _current_stock - (object.counted_stock).to_i
+                  - if _current_stock_date > object.created_at and @stock_audit.status == "1"
+                    %td{:colspan=>4}
+                      .alert.m-alert-danger.padding-5.margin-t-b-0
+                        %h6.text-white.margin-t-b-0 
+                          ="Stock audit of #{object.product.name} can't be approved as it's stock updated on #{_current_stock_date.strftime('%d %b %Y, %I:%M %p')} after the audit on #{object.created_at.strftime('%d %b %Y, %I:%M %p')}."
+                  %tr
+                    %td{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                      =object.product.name
+                      - if object.product.local_name.present?
+                        %b
+                          = " ( #{object.product.local_name} )"
+
+                      %br
+                      /%small="ID: #{object.product_id}"
+                      %br
+                      %small="SKU: #{object.sku}"
+                      %p
+                      %small="STOCK IDENTITY: #{object.stock_identity}" if object.stock_identity.present?
+                    - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+                      %td
+                        %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}  
+                          color:
+                          %span{:style=>"font-weight:normal !important"}= object.color_id.present? ? object.color.name : '-'
+                        %br
+                        %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}  
+                          size:
+                          %span{:style=>"font-weight:normal !important"}= object.size_id.present? ? object.size.name : '-'
+                        %br
+                        %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}  
+                          sale price:
+                          %span{:style=>"font-weight:normal !important"}= object.sell_price_with_tax.present? ? object.sell_price_with_tax : '-'
+                        %br
+                        %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}
+                          batch no:
+                          %span{:style=>"font-weight:normal !important"}= object.batch_no.present? ? object.batch_no : '-'
+                        %br
+                        %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}
+                          model no:
+                          %span{:style=>"font-weight:normal !important"}= object.model_no.present? ? object.model_no : '-'
+                    %td{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                      %table.table.table-bordered{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                        %thead
+                          %tr
+                            %th
+                            %th Current stock
+                            %th Counted Stock
+                            %th Delta stock
+                        %tbody
+                          %tr
+                            %td While audit
+                            %td= "#{object.current_stock} #{object.product.basic_unit}"
+                            %td= "#{object.counted_stock} #{object.product.basic_unit}"
+                            %td= "#{object.delta_stock} #{object.product.basic_unit}"
+                          - if @stock_audit.status == "1"  
+                            %tr  
+                              %td Right now
+                              %td= "#{_current_stock} #{object.product.basic_unit}"
+                              %td= "#{object.counted_stock } #{object.product.basic_unit}"
+                              %td= "#{_stock_to_consume} #{object.product.basic_unit}"
+                          - elsif @stock_audit.status == "2"  
+                            %tr  
+                              %td On review
+                              %td= "#{object.current_stock_at_review} #{object.product.basic_unit}"
+                              %td= "#{object.counted_stock } #{object.product.basic_unit}"
+                              %td= "#{(object.current_stock_at_review - object.counted_stock )} #{object.product.basic_unit}"                              
+                    - if @stock_audit.status == "1"
+                      - params_key = AppConfiguration.get_config_value('stock_identity') == 'enabled' ? object.stock_id : object.id
+                      %td{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                        %input.form-control.allow-numeric-only{:type => "hidden", :name=>"set_stock_#{params_key}", :value=>object.counted_stock}
+                        - if _stock_to_consume <0 && _current_stock_date < object.created_at
+                          %strike= "#{object.counted_stock} #{object.product.basic_unit}"
+                          %br
+                          %span.text-danger Note: Counted stock in audit exceed currently available stock. To adjust the stock please provide these details.
+                          %br
+                         
+                          .input-group.margin-t-5
+                            %span.input-group-addon{:style => "width:50%;text-align:left"} Add to stock
+                            %input.form-control.allow-numeric-only{:type => "hidden", :value => "#{_stock_to_consume.abs}", :name=>"extra_stock_#{params_key}"}
+                            %input.form-control.allow-numeric-only{:type => "text", :value => "#{_stock_to_consume.abs}", :name=>"extra_stock", disabled: true}
+                            .input-group-addon=object.product.basic_unit
+                          .input-group.margin-t-5
+                            %span.input-group-addon{:style => "width:40%;text-align:left"} Model No
+                            %input.form-control{:type => "text", :placeholder=>"Model no", :name=>"model_no#{params_key}", :value => "#{object.model_no}"}
+                          .input-group.margin-t-5
+                            %span.input-group-addon{:style => "width:40%;text-align:left"} Batch No
+                            %input.form-control{:type => "text", :placeholder=>"Batch no", :name=>"batch_no#{params_key}", :value => "#{object.batch_no}"} 
+                          .input-group.margin-t-5
+                            %input.form-control.allow-numeric-only.date-only{:type => "text", :required=> true, :placeholder=>"Expiry Date", :name=>"expiry_date_#{params_key}", :value => "#{Date.today+2.years}"}
+                            .input-group-addon
+                              %span.glyphicon.glyphicon-calendar   
+                          .input-group.margin-t-5
+                            %input.form-control.allow-numeric-only.date-only{:type => "text", :required=> true, :placeholder=>"Mfg Date", :name=>"mfg_date_#{params_key}"}
+                            .input-group-addon
+                              %span.glyphicon.glyphicon-calendar     
+                          .input-group.margin-t-5
+                            %input.form-control.allow-numeric-only{:type => "text", :required=> true, :placeholder=>"Stock Price/unit", :name=>"extra_stock_price_#{params_key}"}
+                            .input-group-addon=currency
+                          .input-group.margin-t-5
+                            %input.form-control.allow-numeric-only{:type => "text", :required=> true, :placeholder=>"Sale Price/unit", :name=>"sale_price_#{params_key}"}
+                            .input-group-addon=currency  
+                          .input-group.margin-t-5
+                            %input.form-control.allow-numeric-only{:type => "text", :required=> true, :placeholder=>"Mrp per unit", :name=>"mrp_price_#{params_key}"}
+                            .input-group-addon=currency    
+                           
+                           
+                        - else
+                          ="#{object.counted_stock} #{object.product.basic_unit}"
+                    - elsif @stock_audit.status == "2"
+                      %td
+                        ="#{object.stock_consumed } #{object.product.basic_unit}" if object.stock_consumed.present?
+                      %td  
+                        ="#{object.stock_added } #{object.product.basic_unit}" if object.stock_added.present?
+                    %td{:class => "#{'module_inactive' if _current_stock_date > object.created_at and @stock_audit.status == '1'}"}
+                      =object.remarks           
+  .col-lg-3.col-sm-12.padding-5
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Audit details
+            - if @stock_audit.status == "1"
+              .padding-10
+                %input.m-btn.green.width-100.waves.waves-light{:name => "commit",:type => "submit",:value => "Confirm and Submit"}
+              .filter-title.margin-t-b-0
+                %label.control-label Select action for this audit
+              .padding-10
+                =select_tag('status', options_for_select({"Approve this stock audit" => "2","Reject this stock audit" => "3"}), {:class => "form-control"} )            
+            .filter-title.margin-t-b-0
+              %i.mdi-action-perm-contact-cal.left
+              Audit date
+            .padding-10=@stock_audit.created_at.strftime("%d %b %Y, %I:%M %p")   
+            .filter-title.margin-t-b-0
+              %i.mdi-action-label.left
+              Current status
+            .padding-10=audit_status_tag(@stock_audit.status)                        
+            / .filter-title.margin-t-b-0
+            /   %i.mdi-action-label.left
+            /   Audited by
+            / .padding-10= debug @stock_audit.audit_user
+.clearfix            

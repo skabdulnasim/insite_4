@@ -1,0 +1,19 @@
+%h1 Listing doc_types
+
+%table
+  %tr
+    %th Title
+    %th
+    %th
+    %th
+
+  - @doc_types.each do |doc_type|
+    %tr
+      %td= doc_type.title
+      %td= link_to 'Show', doc_type
+      %td= link_to 'Edit', edit_doc_type_path(doc_type)
+      %td= link_to 'Destroy', doc_type, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Doc type', new_doc_type_path

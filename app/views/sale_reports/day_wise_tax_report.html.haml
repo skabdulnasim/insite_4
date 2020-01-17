@@ -1,0 +1,72 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });    
+  });
+
+- links_arr = [{:title=>"Sales Report",:url=>sale_reports_path,:active_class=>""},{:title=>"Day Wise Tax Report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+/= debug @dates
+
+- report_precision = AppConfiguration.get_config_value_of_report('report_precision').to_i
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="Sales between #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            %a.m-btn.indigo.margin-l-5{:href=>"/sale_reports/day_wise_tax_report.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+        %table.data-table
+          %thead
+            %tr.data-table__selectable-row
+              %th Date
+              %th 
+                Total 
+                %br
+                Taxable Amount
+              - @tax_group_head.each do |tg_id| 
+                - TaxGroup.find(tg_id).tax_classes.each do |tc|
+                  %th=tc.name
+                %th=TaxGroup.find(tg_id).name
+              %th="Total Tax"
+              %th
+                Total 
+                %br
+                Invoice Value
+          %tbody
+            - @dates.each do |date|
+              - if date.to_date < "2016-04-01".to_date
+                - date = "2016-04-01" 
+              - _from_datetime = date.to_date.beginning_of_day+@unit_detail_options[:day_closing_time].to_i.hours if @unit.unit_detail.present?
+              - _from_datetime ||= date.to_date.beginning_of_day
+              - _to_datetime = date.to_date.end_of_day+@unit_detail_options[:day_closing_time].to_i.hours if @unit.unit_detail.present?
+              - _to_datetime ||= date.to_date.end_of_day              
+              - settlement_data = get_settlement_data_by_date(@unit_id,_from_datetime,_to_datetime)
+              - nc_void = get_nc_void_data(@unit_id,_from_datetime,_to_datetime)
+              - _total_sale = Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:grand_total)
+              %tr.data-table__selectable-row
+                %td=date 
+                %td=number_to_currency(Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:bill_amount), unit: '', precision: report_precision)    
+                - @tax_group_head.each do |tg_id|
+                  - _tax_group_amt=0
+                  - @tax_grup_amount.each do |tg|
+                    -if tg_id==tg["tax_group_id"]
+                      - if tg["created_at"].to_date==date.to_date
+                        - _tax_group_amt=tg["tax_group_amount"]
+                  - TaxGroup.find(tg_id).tax_classes.each do |tc|
+                    %td= number_to_currency(Bill.tax_summery(@unit_id,_from_datetime,_to_datetime,tc.name)[date], unit: '', precision: report_precision) 
+                  %td=_tax_group_amt.round(2)
+                %td=number_to_currency(Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:tax_amount), unit: '', precision: report_precision)
+                %td=number_to_currency(Bill.unit_bills(@unit_id).by_recorded_at(_from_datetime,_to_datetime).valid_bill.sum(:grand_total), unit: '', precision: report_precision)

@@ -1,0 +1,52 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %th= smart_listing.sortable "Stock ID", "id"
+      %th Product
+      %th= smart_listing.sortable "Stock transfered", "stock_debit"
+      %th Cost (#{currency})
+      %th Transfered from store
+      %th Transfered to store
+      %th= smart_listing.sortable "Date", "created_at"
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr      
+          %td=object.id  
+          %td=object.product.name
+          %td="#{object.stock_debit} #{object.product.basic_unit}"
+          %td=number_to_currency(object.price.to_f, unit: '')
+          %td
+            =object.stock_transaction.from_store.name
+            %br
+            %small="(Branch: #{object.stock_transaction.from_store.unit.unit_name})"
+          %td
+            =object.stock_transaction.to_store.name
+            %br
+            %small="(Branch: #{object.stock_transaction.to_store.unit.unit_name})"
+
+          %td=object.created_at.strftime("%d %b %Y, %I:%M %p") 
+      
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  .example
+    .example__content.p0
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Summery Of Report
+          .data-table-header__actions 
+        %table.data-table#mytable
+          %thead
+            %th Product
+            %th Total Stock Transfered            
+            %th Total Cost (#{currency})
+          %tbody
+            - @product_details.each do |data|
+              %tr      
+                %td=data.product.name
+                %td="#{data.total_debit}  #{data.product.basic_unit}"                
+                %td=number_to_currency(data.total_price.to_f, unit: '')
+- else
+  %p.warning No records!
+

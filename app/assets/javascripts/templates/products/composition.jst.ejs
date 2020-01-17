@@ -1,0 +1,26 @@
+
+<tr class='data-table__selectable-row' id='cart_item_<%=product_id%>'>
+  <% console.log(product_name) %>
+  <td>
+    <%=product_name%>  
+    <input type="hidden" name="product[compositions_attributes][<%=key%>][raw_product_id]" value="<%=product_id%>">
+  </td>
+  <td>
+    <input class='allow-numeric-only' name='product[compositions_attributes][<%=key%>][raw_product_quantity]' placeholder='Quantity' type='text' required>
+  </td>
+  <td>
+    <select class='form-control' name='product[compositions_attributes][<%=key%>][raw_product_unit]'>
+      <% for (var i = product_units.length - 1; i >= 0; i--) { %>
+        <% if(product_unit.toLowerCase() == product_units[i][0].toLowerCase()) { %>
+          <option selected value="<%=product_units[i][1] %>"><%=product_units[i][0] %></option>
+        <%} else { %>
+          <option value="<%=product_units[i][1] %>"><%=product_units[i][0] %></option>
+        <% } %>
+      <% } %>
+    </select>
+  </td>
+  <td>
+    <input id="product_compositions_attributes_<%=key%>__destroy" name="product[compositions_attributes][<%=key%>][_destroy]" type="hidden" value="false">
+    <a href="#" class="remove_products" data-product-id="<%= product_id %>">Remove</a>
+  </td>  
+</tr>

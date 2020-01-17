@@ -1,0 +1,90 @@
+.col-lg-8
+  %h5
+    %b Menu products
+  %table.table.table-bordered.table-hover
+    %thead
+      %tr
+        %th.col-lg-1 
+          /%input.checkbox-parent-toggle{:type => "checkbox"}
+        %th.col-lg-4 Menu Product
+        %th.col-lg-7 Estimation of individual ingredients
+    %tbody    
+      - @ingredient_arr = {} 
+      - @menu_products.each do |mp|
+        -if mp.product[:product_type] != "variable"
+          %tr
+            %td{:style=>"text-align:center"}
+              %input{:type => "checkbox",:class=>"checkbox-child menu-pro-check-#{mp.product.id} kitchen-pro-menu-child-check", :name => "checked_raw[]", :value => mp.product.id, :id => mp.product.id}
+              %label{:for=> mp.product.id}
+            %td{:style=>"text-align:center;font-weight:bold;"}
+              - if mp.product.product_image
+                %img{:src => "/uploads/#{mp.product.product_image}", :class => "img-thumbnail", :height => 50, :width =>75 }
+              %span
+                =mp.product.name               
+              .input-group
+                .input-group-addon
+                  Quantity
+                %input.form-control.numeric-only{:name => "quantity_#{mp.product.id}", :value=>"1", :class => "menu-numbers numbers#{mp.product.id}", :id => "#{mp.product.id}", :type => "text"}
+                .input-group-addon=mp.product.basic_unit                      
+            %td
+              .col-lg-12{:style=>"max-height:400px;overflow-y:scroll"}
+                - sub_products = ProductComposition::get_sub_products(mp.product.id)
+                - if sub_products.present?
+                  - sub_products.each do |mk|
+                    - _sub_product_details = ProductComposition::get_product_details_by_id(mk['raw_product_id'])
+                    - _sub_pro_id = _sub_product_details[:id]
+                    - _sub_pro_stock = get_product_current_stock(@store.id, _sub_pro_id)
+                    - _raw_pro_unit = ProductComposition::get_product_unit_details(mk['raw_product_unit'])
+                    - _pro_unit_multiplier = _raw_pro_unit.multiplier #Getting the product multiplier
+                    - _inventry_equity_quantity = (_pro_unit_multiplier.to_f)*(mk['raw_product_quantity'].to_f) #Generating the stock to deduct
+
+                    .input-group{:style=>"margin-bottom:2px;"}
+                      %span.input-group-addon{:style=>"width:50%;text-align:left"}
+                        =_sub_product_details[:name]
+                      %input.form-control{:class => "menu-subnumbers#{mp.product.id} raw-product-#{_sub_pro_id}",:value=>"#{_inventry_equity_quantity}", :id => "#{_inventry_equity_quantity}", :type => "text", 'data-menu-pro-id'=>"#{mp.product.id}", 'data-product-id'=>"#{_sub_pro_id}"}                      
+                      %span.input-group-addon{:style=>"width:15%;"}
+                        =_sub_product_details[:basic_unit]
+
+                    - # Filling the ingredients array
+                    -_raw_arr = {}
+                    -_raw_arr[:raw_product_id]   = _sub_pro_id
+                    -_raw_arr[:raw_product_name] = _sub_product_details[:name]
+                    -_raw_arr[:raw_product_unit] = _sub_product_details[:basic_unit]
+                    -_raw_arr[:raw_product_stock] = _sub_pro_stock
+                    - if !@ingredient_arr.has_key?(_sub_pro_id)  
+                      -@ingredient_arr[_sub_pro_id] = _raw_arr   
+
+
+                - _process_compositions = ProcessComposition::by_product_id(mp.product.id)
+                - if _process_compositions.present?
+                  %hr
+                  .input-group{:style => "font-size:14px;font-weight:bold;margin-bottom:10px;"}= "Processes"
+                  - _process_compositions.each do |process_composition|
+                    .input-group{:style=>"margin-top:2px;"}
+                      %span.input-group-addon{:style=>"padding:9px;"}
+                        = process_composition.production_process.name
+                      %span.input-group-addon{:style=>"padding:9px;"}
+                        = process_composition.duration.to_i.to_s + ' min.'
+                  
+.col-lg-4   
+  %h5
+    %b Consumption overview
+  %table.table.table-bordered
+    %thead
+      %tr
+        %th.col-lg-4 Product
+        %th.col-lg-2 Current Stock
+        %th.col-lg-5 Total estimation
+    %tbody 
+      - @ingredient_arr.each do |ia|
+        %tr
+          %td= ia[1][:raw_product_name]
+          %td="#{ia[1][:raw_product_stock]} #{ia[1][:raw_product_unit]}"
+          %td
+            .input-group
+              %input.form-control{:value=>"0", :class => "estm-numbers estm-numbers#{ia[1][:raw_product_id]}", :id => "#{ia[1][:raw_product_id]}", :type => "text", 'data-current-stock'=> "#{ia[1][:raw_product_stock]}"}
+              .input-group-addon=ia[1][:raw_product_unit]
+            %span.label.label-danger{:class=>"inefficient-raw-#{ia[1][:raw_product_id]}"}
+            %input.err-counter-total{:type=>"hidden", :value=>"0", :class=>"error-counter-#{ia[1][:raw_product_id]}"}
+      
+ 

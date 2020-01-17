@@ -1,0 +1,238 @@
+- manual_load_javascript "stores"
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"SIMO Input",:url=>new_store_simo_path(@store),:active_class=>""},{:title=>"Show SIMO",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)
+
+- if @simo.status == 'initial_state'
+  .col-lg-2.col-sm-2.5.padding-l-r-none
+    = render 'products/material_product_filter'
+  .col-lg-5.col-sm-5.padding-r-none
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Products
+            = smart_listing_render :products
+
+  .col-lg-5.col-sm-3.padding-r-none  
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Output Products
+            = hidden_field_tag :conjugated_unit, @simo.simo_input_product.product.conjugated_unit, :class => 'conjugated_unit'    
+            = hidden_field_tag :input_product, @simo.simo_input_product.quantity, :class => 'input_product'   
+            = form_for @simo, :html => { :class => ''}, :method => :PUT do |so|
+              = so.hidden_field :simo_id, :value => params[:id]
+              = so.hidden_field :store_id, :class => 'form-control', :value => @store.id
+              .padding-10
+                = so.submit 'Initiate SIMO', :class => 'm-btn green width-100 initiate_simo'  
+                
+              .filter-title.margin-t-b-0 
+                %i.mdi-action-label.left 
+                Input Product
+              .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                %ul.collection
+                  %li.collection-item
+                    %div
+                      %span
+                        = @simo.simo_input_product.product.name
+                      %span.right.label.label-default
+                        = "#{@simo.simo_input_product.quantity}" "#{@simo.simo_input_product.product.conjugated_unit}" 
+                / %ul.collection.red#wastage        
+                /   %li.collection-item      
+                /     %div
+                /       %span
+                /         Wastage
+                /       %span.right.label.label-default#wastage_amount
+                /         = "0" "#{@simo.simo_input_product.product.conjugated_unit}"     
+              .filter-title.margin-t-b-0 
+                %i.mdi-action-label.left 
+                initial Products
+              .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                %ul.collection.po-product-list
+                  %table.data-table
+                    %thead
+                      %tr.data-table__selectable-row  
+                        %th Product Name
+                        %th Expected Qty
+                        / %th Actual Qty
+                        %th Price
+                        / %th Total Weight
+                    %tbody#output_product
+                    - @output_products.each do|op|
+                      %tr{:class => "data-table__selectable-row data-table__selectable-row product_check#{op.product_id}"}
+                        %td
+                          = check_box_tag "checked_raw[]", op.product_id,"checked_o",  :id=>"product#{op.product_id}", :class=> "output_selected_product"
+                          %label{:for=>"product#{op.product_id}"}= op.product.name
+                        %td.m-input
+                          .secondary-content.row.margin-l-r-none
+                            .col-lg-9.padding-l-r-none
+                              %input{:name=> "expected_quantity#{op.product_id}", :type=> "text" '', :class =>"form-control numeric-only expected_quantity",:placeholder => "exp qty"}
+                            .col-lg-3.padding-l-r-none
+                              %br 
+                              =op.product.basic_unit
+                        %td.m-input
+                          .secondary-content.row.margin-l-r-none
+                            .col-lg-9.padding-l-r-none
+                              %input{:name=> "price#{op.product_id}", :type=> "text" '', :class =>'form-control numeric-only price',:placeholder => "Price"}
+                            .col-lg-3.padding-l-r-none
+                              %br
+                              ="#{currency}"
+                        
+- elsif @simo.status == 'processed'
+  / .col-lg-2.col-sm-2.5.padding-l-r-none
+  /   = render 'products/material_product_filter'
+  / .col-lg-4.col-sm-5.padding-r-none
+  /   .main-section__content
+  /     .example
+  /       .example__content.p0
+  /         .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+  /           %header.data-table-header
+  /             .data-table-header__label
+  /               %span.fs-title Products
+  /           = smart_listing_render :products
+
+  .col-lg-12.col-sm-12.padding-r-none  
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Output Products
+            = hidden_field_tag :conjugated_unit, @simo.simo_input_product.product.conjugated_unit, :class => 'conjugated_unit'    
+            = hidden_field_tag :input_product, @simo.simo_input_product.quantity, :class => 'input_product'   
+            = form_for @simo, :html => { :class => ''}, :method => :PUT do |so|
+              = so.hidden_field :simo_id, :value => params[:id]
+              = so.hidden_field :store_id, :class => 'form-control', :value => @store.id
+              .padding-10
+                = so.submit 'Finish SIMO', :class => 'm-btn green width-100 finished_simo'  
+                
+              .filter-title.margin-t-b-0 
+                %i.mdi-action-label.left 
+                Input Product
+              .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                %ul.collection
+                  %li.collection-item
+                    %div
+                      %span
+                        = @simo.simo_input_product.product.name
+                      %span.right.label.label-default
+                        = "#{@simo.simo_input_product.quantity}" "#{@simo.simo_input_product.product.conjugated_unit}" 
+                %ul.collection.red#wastage        
+                  %li.collection-item      
+                    %div
+                      %span
+                        Wastage
+
+                      %span.right.label.label-default#wastage_amount
+                        = "0" "#{@simo.simo_input_product.product.conjugated_unit}"     
+              .filter-title.margin-t-b-0 
+                %i.mdi-action-label.left 
+                Output Products
+              .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+                %ul.collection.po-product-list
+                  %table.data-table
+                    %thead
+                      %tr.data-table__selectable-row  
+                        %th Product Name
+                        %th Price
+                        %th Expected Qty
+                        %th Actual Qty
+                        %th Total Weight
+                    %tbody#output_product
+                    - @simo.simo_input_product.simo_output_products.each do|op|
+                      %tr{:class => "data-table__selectable-row.data-table__selectable-row.product_check#{op.product_id}"}
+                        %td
+                          = check_box_tag "checked_raw[]", op.id,"checked_o",  :id=>"product#{op.id}"
+                          %label{:for=>"product#{op.id}"}= op.product.name
+                        %td.m-input
+                          .secondary-content.row.margin-l-r-none
+                            .col-lg-9.padding-l-r-none
+                              %input{:name=> "price#{op.id}", :type=> "text" '', :class =>'form-control numeric-only price',:placeholder => "Price",:value => "#{op.price}"} 
+                            .col-lg-3.padding-l-r-none
+                              %br
+                              ="#{currency}"  
+                        %td.m-input
+                          .secondary-content.row.margin-l-r-none
+                            .col-lg-9.padding-l-r-none
+                              %input{:name=> "expected_quantity#{op.id}", :type=> "text" '', :class =>'form-control numeric-only expected_quantity',:placeholder => "exp qty", :value => "#{op.expected_quantity}"}
+                            .col-lg-3.padding-l-r-none
+                              %br 
+                              =op.product.basic_unit
+                        %td.m-input
+                          .secondary-content.row.margin-l-r-none
+                            .col-lg-9.padding-l-r-none
+                              %input{:name=> "actual_quantity#{op.id}", :type=> "text" '', :class =>'form-control numeric-only actual_quantity',:placeholder => "act qty"}
+                            .col-lg-3.padding-l-r-none
+                              %br 
+                              =op.product.basic_unit  
+                        %td.m-input
+                          .secondary-content.row.margin-l-r-none
+                            .col-lg-9.padding-l-r-none
+                              %input{:name=> "weight#{op.id}", :type=> "text" '', :class =>'form-control numeric-only weight_amount',:placeholder => "weight"}
+                            .col-lg-3.padding-l-r-none
+                              %br 
+                              = @simo.simo_input_product.product.conjugated_unit
+- else                
+  / .clearfix 
+  /   .col-lg-12.col-sm-12.padding-5
+  /     .main-section__content
+  /       .example
+  /         .example__content.p0
+  /           .data-table-container
+  /             %header.data-table-header
+  /               .data-table-header__label
+  /                 %span.fs-title 
+  /                   SIMO Details
+  /             %table.data-table
+  /               %thead
+  /                 %tr.data-table__selectable-row  
+  /                   %th.col-md-2 Input Product
+  /                   %th.col-md-1 Quantity
+  /                   %th.col-md-1 Wastage
+  /                   %th.col-md-8{:colspan => 5} Output Products
+  /                 %tr.data-table__selectable-row
+  /                   %th.col-md-2
+  /                   %th.col-md-1
+  /                   %th.col-md-1
+  /                   %th.col-md-3 Name
+  /                   %th.col-md-1 Expected Quantity
+  /                   %th.col-md-1 Actual Quantity
+  /                   %th.col-md-1 Weight
+  /                   %th.col-md-2 Price
+  /               %tbody
+  /                 %tr
+  /                   %td.col-md-2= @simo.simo_input_product.product.name
+  /                   %td.col-md-1= "#{@simo.simo_input_product.quantity}" "(#{@simo.simo_input_product.product.conjugated_unit})"
+  /                   %td.col-md-1= "#{@simo.simo_input_product.wastage}" "(#{@simo.simo_input_product.product.conjugated_unit})"
+  /                   %td.col-md-3
+  /                   %td.col-md-1
+  /                   %td.col-md-1
+  /                   %td.col-md-1
+  /                   %td.col-md-2
+  /                 - @simo.simo_input_product.simo_output_products.each do |sop|
+  /                   %tr.data-table__selectable-row
+  /                     %td.col-md-2
+  /                     %td.col-md-1
+  /                     %td.col-md-1
+  /                     %td.col-md-3= sop.product.name
+  /                     %td.col-md-1= "#{sop.expected_quantity}" "(#{sop.product.basic_unit })"
+  /                     %td.col-md-1= "#{sop.actual_quantity}" "(#{sop.product.basic_unit })"
+  /                     %td.col-md-1= "#{sop.total_weight}" "(#{@simo.simo_input_product.product.conjugated_unit})"
+  /                     %td.col-md-2= "#{sop.price}" "(in #{currency})"
+
+  
+  - if @simo.isStockAdded == 0
+    = render "simos/adding_to_stock"
+  - elsif @simo.isStockAdded == 1
+    = render "simos/added_to_stock"
+                
+
+
+        
+        

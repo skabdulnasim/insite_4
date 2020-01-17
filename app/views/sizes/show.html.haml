@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @size.name
+%p
+  %b Code:
+  = @size.code
+
+= link_to 'Edit', edit_size_path(@size)
+\|
+= link_to 'Back', sizes_path

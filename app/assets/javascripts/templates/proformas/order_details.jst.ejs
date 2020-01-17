@@ -1,0 +1,61 @@
+<div class="col-lg-12 padding-5">
+	<div class="card waves-effect waves-light">
+		<div class="card-content p0">
+			<p class="header white-text teal padding-10">
+				ORDER DETAILS
+			</p>
+		</div>
+		<table class="data-table">
+			<head>
+				<tr>
+					<th class="font-sz-12 col-sm-1">Order ID</th>
+					<th class="font-sz-12 col-sm-1">Status</th>
+					<th class="font-sz-12">Product</th>
+					<th class="font-sz-12">Quantity</th>
+					<th class="font-sz-12">Product price</th>
+					<th class="font-sz-12">Tax amount</th>
+					<th class="font-sz-12">Discount</th>
+					<th class="font-sz-12">Subtotal</th>
+					<th class="font-sz-12">Hsn code</th>
+					<th class="font-sz-12">Sku</th>
+					<th class="font-sz-12">Recorded date</th>
+				</tr>
+			</head>
+			<tbody>
+				<% for (i = 0; i < response.orders.length; i++) { %>	
+					<% for ( var j = 0; j < response.orders[i].order_items.length; j++  ) { %>
+						<tr class="data-table__selectable-row" style="text-align: center;">
+							<td class="font-sz-12"><%=response.orders[i].id %></td>
+							<td>
+								<span class="m-label margin-l-none teal">
+									<%=response.orders[i].order_status %>
+								</span>
+							</td>
+							<td class="font-sz-12"><%=response.orders[i].order_items[j].product_name %></td>
+							<td class="font-sz-12"><%=response.orders[i].order_items[j].quantity %></td>
+							<td class="font-sz-12"><%=response.orders[i].order_items[j].product_price %></td>
+							<td class="font-sz-12"><%=response.orders[i].order_items[j].tax_amount %></td>
+							<td class="font-sz-12"><%=response.orders[i].order_items[j].discount %></td>
+							<td class="font-sz-12"><%=response.orders[i].order_items[j].subtotal %></td>
+							<td class="font-sz-12"><%=response.orders[i].order_items[j].hsn_code %></td>
+							<td class="font-sz-12"><%=response.orders[i].order_items[j].product_unique_identity %></td>
+							<td class="font-sz-12">
+								<% if(response.orders[i].recorded_at) { %>
+									<%
+										var record_date = new Date(response.orders[i].recorded_at)
+									%>
+									<%= record_date.toLocaleDateString('en-GB') %>
+								<% } %>
+							</td>
+						</tr>
+					<% } %>
+				<% } %>
+			</tbody>
+		</table>
+	</div>
+</div>
+<div class="col-lg-12">
+	<div class="col-sm-4">
+		<a class="m-btn green white-text width-100 generate-order-details" target="_blank" data-toggle="modal" data-target="#orderModal" data-proforma-id="<%=response.id%>", data-page-type="a4"> Print Order</a>
+	</div>
+</div>

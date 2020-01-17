@@ -1,0 +1,33 @@
+- unless smart_listing.empty?
+  .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+    %table.data-table
+      %tbody
+        - smart_listing.collection.each do |resource|
+          %tr.data-table__selectable-row.margin-t-b-2
+            %td.fixed-width-xs.p0.padding-t-b-none.blue{:style=>"height:100px;"}
+              = image_tag("icons/shop.svg", width: '79', :style=>"margin-left: 16px;")
+            %td.padding-l-10
+              %h4
+                = resource.name.capitalize
+              - if resource.customer.present?
+                - if resource.customer.addresses.present?
+                  %p.module_description.hidden-sm.hidden-xs
+                    %i.fa.fa-map-marker
+                    %strong= "Address: "
+                    = resource.customer.addresses.first.delivery_address
+                    %br
+                    %i.fa.fa-thumb-tack
+                    %strong.text-secondary= "Pincode: "
+                    = resource.customer.addresses.first.pincode
+                    %br
+                    %i.fa.fa-phone
+                    %strong= "Contact: "
+                    = "#{resource.customer.mobile_no}"      
+            %td
+              .btn-group.float-r.hidden-sm.hidden-xs
+              = link_to("GO TO SHOP", resource_path(resource.id), :class=>"m-btn green float-r margin-r-10 waves-effect waves-light")
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links  
+-else
+  .jumbotron
+    %h2 No retail shop available

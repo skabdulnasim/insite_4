@@ -1,0 +1,8 @@
+- links_arr = [{:title=>"All Production Processes",:url=>production_processes_path,:active_class=>""},{:title=>"Add new process",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+= render "layouts/flash"
+
+= render 'form'
+
+/ = link_to 'Back', production_processes_path
+.clearfix

@@ -1,0 +1,208 @@
+:javascript
+  $(function() {
+    var dateToday = new Date();
+    $('.datepick').datetimepicker({
+      pickTime: false,
+      format: 'YYYY-MM-DD',
+      useCurrent: true
+    });
+  });  
+- manual_load_javascript "jquery.geocomplete"
+%script{:src => "http://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBq5JlSzFQkPFTx5kT7w-d2gRzwZzeO8Y8"}
+:javascript
+  $( document ).ready(function() {
+    $(".delivery_address").geocomplete()
+  });  
+= form_for setup_customer(@customer), :html => {:class => "form-horizontal bordered-row customer_form_wizard"} do |f|
+  - if @customer.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      = "#{pluralize(@customer.errors.count, "error")} prohibited this product from being saved:"
+      %ul
+        - @customer.errors.full_messages.each do |msg|
+          %li= msg
+  .row
+    .col.m12.s12.col-lg-12
+      .card  
+        .card-content.p10
+          #wizard_vertical
+                      
+            %h3 Customer Details
+            %section.ptb0
+              %h5.header Basic details of Customer
+              .divider
+              .col-sm-12.p0
+                %table.data-table
+                  %tbody        
+                    .form-horizontal.bordered-row.m-input.col-sm-8
+                      .form-group
+                        = f.label :mobile_no, "Mobile No *",:class => 'col-sm-4 control-label'
+                        .col-sm-8.input-field
+                          = f.text_field :mobile_no, :required => true, :autofocus => true, :placeholder => "Mobile No", :class => "form-control allow-numeric-only validate", autocomplete: 'off'
+                      .form-group
+                        = f.label :gstin, "GSt No",:class => 'col-sm-4 control-label'
+                        .col-sm-8.input-field
+                          = f.text_field :gstin, :required => false, :placeholder => "Gst No", :class => "form-control validate", autocomplete: 'off'    
+                      = f.fields_for :customer_profile do |cp_builder|
+                        / .form-group
+                        /   = cp_builder.label :customer_name, "Name",:class => 'col-sm-4 control-label'
+                        /   .col-sm-8.input-field
+                        /     = cp_builder.text_field :customer_name, :required => true, :placeholder => "Full Name", :class => "form-control validate", autocomplete: 'off'
+                        .form-group
+                          = cp_builder.label :firstname, "Firstname *",:class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = cp_builder.text_field :firstname, :required => true, :placeholder => "Firstname", :class => "form-control validate", autocomplete: 'off' 
+                        .form-group
+                          = cp_builder.label :lastname, "Lastname *",:class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = cp_builder.text_field :lastname, :required => true, :placeholder => "Lastname", :class => "form-control validate", autocomplete: 'off'        
+                            = cp_builder.hidden_field :contact_no
+                        .form-group
+                          = cp_builder.label :pan_no, "Pan No",:class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = cp_builder.text_field :pan_no, :required => false, :placeholder => "Pan No", :class => "form-control validate", autocomplete: 'off'
+                        .form-group
+                          = cp_builder.label :alternate_name, "Alternate Name",:class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = cp_builder.text_field :alternate_name, :required => false, :placeholder => "Alternate Name", :class => "form-control validate", autocomplete: 'off'
+                        .form-group
+                          = cp_builder.label :alternate_mobile, "Alternate Mobile",:class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = cp_builder.text_field :alternate_mobile, :required => false, :placeholder => "Alternate Mobile", :class => "form-control validate", autocomplete: 'off'        
+                        
+                        .form-group
+                          = cp_builder.label :gender, "Gender *", :class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            =# cp_builder.text_field :gender, :placeholder => "Gender", :class => "form-control"
+                            = cp_builder.select :gender, "<option selected='selected' value='M'>Male</option><option value='F'>Female</option>".html_safe, {}, { :class => "form-control validate" }
+                        .form-group
+                          = cp_builder.label :dob, "Date of Birth", :class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = cp_builder.text_field :dob, :placeholder => "Date of Birth", :class => "form-control datepick validate"
+            %h3 Address
+            %section.ptb0
+              %h5.header Address Details
+              .divider
+              .margin-t-15
+              .col-sm-12.p0
+                %table.data-table
+                  %tbody    
+                    .form-horizontal.bordered-row.m-input.col-sm-8            
+                      = f.fields_for :addresses do |addr|  
+                        .form-group
+                          = addr.label "Delivery address *", :class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = addr.text_field :delivery_address, :class => 'form-control validate delivery_address', :required => true
+                        .form-group
+                          = addr.label "Pincode *", :class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = addr.text_field :pincode, :class => 'form-control validate', :required => true
+                        .form-group
+                          = addr.label :landmark, :class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = addr.text_field :landmark, :class => 'form-control validate'
+                        .form-group
+                          = addr.label :locality, :class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = addr.text_field :locality, :class => 'form-control validate'    
+                        .form-group
+                          = addr.label "City *", :class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = addr.text_field :city, :class => 'form-control validate', :required => true
+                        .form-group
+                          = addr.label "State *", :class => 'col-sm-4 control-label'
+                          .col-sm-8.input-field
+                            = addr.text_field :state, :class => 'form-control validate', :required => true
+                        / .form-group
+                        /   = addr.label :latitude, :class => 'col-sm-4 control-label'
+                        /   .col-sm-6.input-field
+                        /     = addr.text_field :latitude, :class => 'form-control validate'
+                        / .form-group
+                        /   = addr.label :longitude, :class => 'col-sm-4 control-label'
+                        /   .col-sm-6.input-field
+                        /     = addr.text_field :longitude, :class => 'form-control validate'
+            - if AppConfiguration.get_config_value('tsp_module') == 'enabled'
+              %h3 Resource
+              %section.ptb0
+                %h5.header Resource Details
+                .divider
+                .margin-t-15
+                .col-sm-12.p0
+                  %table.data-table
+                    %tbody    
+                      .form-horizontal.bordered-row.m-input.col-sm-8            
+                        = f.fields_for :resource do |res|
+                          .form-group
+                            = res.label "Resource Type *", :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                              = res.select :resource_type_id, options_for_select(ResourceType.all.map{ |rt| [rt.name, rt.id] },res.object.resource_type_id), { include_blank: "Select Resource Types"}, :class => 'form-control',:required=>true
+                          .form-group
+                            = res.label "Name *", :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                              = res.text_field :name, :class => 'form-control', :placeholder => "Resource Name", :required=>true
+                          .form-group
+                            = res.label "Unique Identity No", :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                              = res.text_field :unique_identity_no, :class => 'form-control', :placeholder => "Unique Identity No"
+                          .form-group
+                            = res.label "Capacity *", :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                              = res.text_field :capacity, :class => 'form-control allow-numeric-only', :placeholder => "Resource capacity", :required=>true
+                          .form-group
+                            = res.label "Price *", :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                              = res.text_field :price, :class => 'form-control allow-numeric-only', :placeholder => "Resource price", :required=>true   
+
+                          .form-group
+                            = res.label "Printer", :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                              = res.select :printer_id, options_for_select(current_user.unit.printers.map{ |printer| [printer.name, printer.id] },res.object.printer_id), { include_blank: "Select printer"}, :class => 'form-control'
+
+                          .form-group
+                            = res.label "Section *", :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                            = res.select :section_id, options_for_select(Section.where(:unit_id => current_user.unit_id).map{ |sec| [sec.name, sec.id] },res.object.section_id), { include_blank: "Select Section"}, :class => 'form-control',:required => true
+                          .form-group
+                            = res.label "Resource state *", :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                              = res.select :resource_state_id, options_for_select(ResourceState.all.map{ |ut| [ut.name, ut.id] },res.object.resource_state_id), { include_blank: "Select resource state"}, :class => 'form-control',:required => true  
+                          .form-group
+                            = res.hidden_field :unit_id, :class => 'form-control',:required => true, :value => current_user.unit_id  
+                          .form-group
+                            = res.label "Status *", :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                              = res.select :status, options_for_select({"Enabled" => "enabled","Disabled" => "disabled" },res.object.status), { include_blank: "Select resource status"}, {:class => "form-control", :required=> true}  
+                          .form-group
+                            = res.label :resource_image, :class => 'col-sm-4 control-label'
+                            .col-sm-8.input-field
+                              = res.file_field :resource_image, :class => "form-control"
+                              - if res.object.resource_image.present?
+                                = image_tag(res.object.resource_image, width: '55', height: '45')
+                              - else
+                                = image_tag("/Comic_image_missing.png", width: '55', height: '45', :class => "img-thumbnail")
+                          .form-group
+                            .checkbox
+                              = check_box_tag(:beneficiary) 
+                              = label_tag(:beneficiary, "Has Benificiary")
+                            .has_beneficiary
+                              = res.fields_for :beneficiaries do |builder|
+                                = render 'beneficiary_fields', f:builder
+                              = link_to_add_fields "Add More beneficiary", res, :beneficiaries, {:type=>"beneficiary"}, 'm-btn green margin-l-15 add_beneficiaries'
+                            
+              %h3 Allocate Units
+              %section.ptb0
+                %h5.header Select Units
+                .divider
+                .margin-t-15
+                .col-sm-12.p0
+                  %table.data-table
+                    %tbody          
+                      .col-sm-12
+                        .panel.panel-default
+                          .panel-heading
+                            Select Branch
+                          .panel-body{:style => "max-height: 400px !important; overflow: auto !important;"}
+                            - Unit.by_unittype(3).each do |unit|
+                              .checkbox
+                                
+                                = check_box_tag "unit_ids[]", unit.id, @customer.unit_customers.map(&:unit_id).include?(unit.id), :id=>"unit_#{unit.id}"
+                                %label{:for=>"unit_#{unit.id}"}= unit.unit_name

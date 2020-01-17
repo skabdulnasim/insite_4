@@ -1,0 +1,54 @@
+//code by:Souvik
+= form_for @menu_category, :html => { :class => 'form-horizontal', :multipart=> true } do |f|
+  - if @menu_category.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@menu_category.errors.count, "error")} prohibited this menu_category from being saved:"
+      %ul
+        - @menu_category.errors.full_messages.each do |msg|
+          %li= msg
+          
+
+ 
+  .form-group
+    = f.label :name, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :name, :class => 'form-control'
+    .col-sm-4
+      = f.hidden_field :menu_card_id, :class => 'form-control'
+  .form-group
+    = f.label :sort_order, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :sort_order, :class => 'form-control'
+  .form-group
+    = f.label :is_parent_visible, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :is_parent_visible, options_for_select({"No" => false, "Yes" => true}, @menu_category.is_parent_visible), {include_blank: "--Select--"},{ :class=>"form-control", :required=> true,:style=>"width:150px;" }
+  .form-group
+    = f.label :menu_card_id, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      %b
+        = @menu_category.menu_card[:name]
+  .form-group
+    = f.label :image, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.file_field :image, :class => 'form-control'       
+  .form-group
+    = f.label :description, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_area :description, :rows => 3, :class => 'form-control'
+
+      
+  .form-group
+  - if !@menu_category.parent.nil? 
+    = f.label :parent, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      //= f.number_field :parent, :class => 'form-control'
+     
+      .form-control
+        = MenuCategory.menu_parent(@menu_category.parent)[0].name
+      
+  .control-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'
+ 
+     

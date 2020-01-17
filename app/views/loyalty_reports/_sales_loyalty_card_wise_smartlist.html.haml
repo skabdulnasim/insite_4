@@ -1,0 +1,20 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Card No
+        %th User Name
+        %th Points
+        %th Date
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object["card_no"]
+          %td=object["name_on_card"]
+          %td=object["total_points"]
+          %td=object["created_at"]
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

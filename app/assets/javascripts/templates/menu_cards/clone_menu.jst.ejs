@@ -1,0 +1,122 @@
+<div class="main-section__content p0">
+  <div class="example">
+    <div class="example__content p0">
+      <div aria-multiselectable="true" class="data-table-container" id="accordion" role="tablist">
+        <header class="data-table-header">
+          <div class="data-table-header__label">
+            <span class="fs-title">Products</span>
+          </div>
+        </header>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th class="col-lg-5">Product</th>
+              <th>Category</th>
+              <th class="col-lg-2">Tax Group</th>
+              <th class="col-lg-2">Store</th>
+              <th class="col-lg-2">Sort</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (var p=0; p < menu_card.products.length; p++) { %>
+              <% 
+                var time = new Date().getTime(); 
+                var key = time+p
+              %>
+              <tr>
+                <td>
+                  <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][product_id]" value="<%= menu_card.products[p].product_id %>">
+                  <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][menu_category_id]" value="<%= menu_card.products[p].menu_category_id %>">
+                  <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][procured_price]" value="<%= menu_card.products[p].procured_price %>">
+                  <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][sell_price_without_tax]" value="<%= menu_card.products[p].sell_price_without_tax %>">
+                  <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][mode]" value="<%= menu_card.products[p].mode %>">
+                  <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][isdefault]" value="<%= menu_card.products[p].isdefault %>">
+                  <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][is_buffet_product]" value="<%= menu_card.products[p].is_buffet_product %>">
+                  <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][variable_id]" value="<%= menu_card.products[p].variable_id %>">
+                  <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][combo_id]" value="<%= menu_card.products[p].combo_id %>">
+                  <%= menu_card.products[p].product_name %>
+                  
+                  <% combinations = menu_card.products[p].combinations; %>
+                  <% if (combinations.length > 0) {%>
+                    <br>
+                    <table class="hidden-xs hidden-sm">
+                      <tbody>
+                        <% for (var com = combinations.length - 1; com >= 0; com--) { %>
+                          <% com_key = key+com %>                        
+                          <tr class="font-sz-11">
+                            <td class="green-text text-darken-1 p0">
+                              <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][menu_product_combinations_attributes][<%=com_key%>][combination_type_id]" value="<%= combinations[com].combination_type_id %>">
+                              <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][menu_product_combinations_attributes][<%=com_key%>][product_id]" value="<%= combinations[com].product_id %>">
+                              <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][menu_product_combinations_attributes][<%=com_key%>][price]" value="<%= combinations[com].price %>">
+                              <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][menu_product_combinations_attributes][<%=com_key%>][combinations_rule_id]" value="<%= combinations[com].combinations_rule_id %>">
+                              <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][menu_product_combinations_attributes][<%=com_key%>][ammount]" value="<%= combinations[com].ammount %>">
+                              <input type="hidden" name="menu_card[menu_products_attributes][<%=key%>][menu_product_combinations_attributes][<%=com_key%>][product_unit_id]" value="<%= combinations[com].product_unit_id %>">
+                              
+                              <i class="mdi-content-add smaller"></i>
+                            </td>
+                            <td class="border-rht-d-1 padding-l-r-5"><%= combinations[com].product_name %></td>
+                            <td class="padding-l-r-5">QTY: <%= combinations[com].ammount %><%= combinations[com].product_unit%></td>
+                          </tr>
+                        <% } %>
+                      </tbody>
+                    </table>
+                  <% } %>                  
+                </td>
+                <td><%= menu_card.products[p].menu_category_name%></td>
+                <td>
+                  <% for (var sec=0; sec < unit_data.sections.length; sec++) { %>
+                    <%  if(unit_data.sections[sec].id == section_id) { %>
+                        <% tax_groups =  unit_data.sections[sec].tax_groups %>
+                        <% if(tax_groups.length > 0) {%>
+                          <select name="menu_card[menu_products_attributes][<%=key%>][tax_group_id]" id="tax_<%=menu_card.products[p].id%>" class="form-control tax_serial_<%=p%> auto_populate_entity" data-counter="<%=p%>" data-total-count="<%=menu_card.products.length%>" data-entity-type="tax" required>                        
+                            <% for (var tax=0; tax < tax_groups.length; tax++) { %>
+                              <option value="<%=tax_groups[tax].id%>"><%=tax_groups[tax].name %> (<%=tax_groups[tax].total_amnt%>%)</option>
+                            <% }%> 
+                          </select>
+                        <% } else {%> 
+                          <small>N/A</small> 
+                        <% }%> 
+                    <% } %> 
+                  <% }%> 
+                </td>                
+                <td>
+                  <% store_count = unit_data.stores.length %>
+                  <%  if(store_count > 0) { %>
+                    <select name="menu_card[menu_products_attributes][<%=key%>][store_id]" id="store_<%=menu_card.products[p].id%>" class="form-control store_serial_<%=p%> auto_populate_entity" data-counter="<%=p%>" data-total-count="<%=menu_card.products.length%>" data-entity-type="store" required>
+                      <% for (var s=0; s < unit_data.stores.length; s++) { %>
+                        <option value="<%=unit_data.stores[s].id%>"><%=unit_data.stores[s].name %></option>
+                      <% } %>                      
+                    </select>
+                  <% } else { %> 
+                    Add store before cloning
+                    <!-- <a href="#">Add store </a> -->
+                  <% }%> 
+                </td>
+                <td>
+                  <% sort_count = unit_data.sorts.length %>
+                  <%  if(sort_count > 0) { %>
+                    <select name="menu_card[menu_products_attributes][<%=key%>][sort_id]" id="sort_<%=menu_card.products[p].id%>" class="form-control sort_serial_<%=p%> auto_populate_entity" data-counter="<%=p%>" data-total-count="<%=menu_card.products.length%>" data-entity-type="sort" required>
+                      <% for (var k=0; k < unit_data.sorts.length; k++) { %>
+                        <option value="<%=unit_data.sorts[k].id%>"><%=unit_data.sorts[k].name %></option>
+                      <% } %>                      
+                    </select>
+                  <% } else { %> 
+                    Add SORT before cloning
+                    <!-- <a href="#">Add SORT</a> -->
+                  <% }%>                       
+                </td>
+              </tr>
+            <% } %>
+            <tr>
+              <td colspan="4">
+                <div class="grey-text">
+                  <strong>Note:</strong> If no tax group available in selected section, then tax group of source menu card will be cloned in target section.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>  

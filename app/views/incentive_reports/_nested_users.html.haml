@@ -1,0 +1,61 @@
+%link{:href => "http://fonts.googleapis.com/icon?family=Material+Icons", :rel => "stylesheet"}
+/ = stylesheet_link_tag "style"
+= stylesheet_link_tag "access_manager_timeline"
+
+%li
+  / .timeline-circ.circ-xl.blue
+  /   %i.fa.fa-user
+  .row.m0.timeline-entry.mt15
+    .card.m0.col.pointer
+      .card-content.p10
+        %h6.m0
+          %span.label.font-13.teal
+            = my_user.role.name.humanize
+          / .margin-t-15
+          .grey-text
+            %span.font-13
+              %b
+                %table.data-table
+                  %tr.bg-red
+                    %th User
+                    %th User Role
+                    %th 
+                      Total Sale
+                      %br
+                      Without Tax
+                    %th
+                      Total Sale
+                      %br
+                      With Tax
+                    %th
+                      Target 
+                    %th
+                      Target Type
+                    %th
+                      Target Achievement
+                    %th
+                      Target Achievement Percent
+                    %th
+                      Incentive Amount
+                  - users = User.by_user(current_user.id)
+                  - if users.present?
+                    - users.each do |object|
+                      - if User.has_parent?(object,users) == false || current_user.id == object.id
+                        %tr
+                          %td 
+                            = object.id
+                          %td
+                            = object.email.present? ? object.email : "-"
+                        - if User.has_child(object.id) == true
+                          %tr
+                            %td{:colspan=>12}
+                              = render :partial => 'incentive_reports/child_users', :object => object, :as => "parent_user"
+  /         .margin-t-15
+  /           .grey-text
+  /             %span.font-13
+  / - child_units =child_units(unit)
+  / - _css_class = child_units.present? ? "visible" : "invisible"
+  / %ul.timeline.collapse-lg.timeline-hairline{:class=>"nested-content-of-unit-#{unit.id} #{_css_class}"}
+  /   - if child_units.present?
+  /     - child_units.each do |child_unit|
+  /       = render :partial => 'users/nested_users', :object => child_unit, :as => "unit"

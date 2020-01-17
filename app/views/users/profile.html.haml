@@ -1,0 +1,39 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Users",:url=>users_path,:active_class=>""},{:title=>"User: #{@user.email}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper   
+.col-lg-12
+  .col-lg-8
+    #callout-stacked-modals.bs-callout.bs-callout-success
+      %h4 
+        Employee Details
+        - if can? :edit, User
+          %a{:href => edit_user_path(@user), :title => "Click to edit", :style => "color:#000;"}
+            %i.fa.fa-edit.fa-lg{:class=> "icon_edit"}
+      %br
+      %i.fa.fa-user
+        = "##{@user[:id]} #{@user.profile.firstname} #{@user.profile.lastname} [#{@user.role.name.presence || ""}]"
+      %br
+      %i.fa.fa-map-marker
+        = "#{@user.profile.address}, #{@user.profile.city}, #{@user.profile.zip_code}, #{@user.profile.state}, #{@user.profile.country}"
+      %br
+      %i.fa.fa-phone-square
+        = @user.profile.contact_no.presence || ""
+      %br
+      %i.fa.fa-envelope
+        = @user.email.presence || ""
+      %br
+      %i.fa.fa-star
+        = @user.key_phrase.presence || ""
+      
+      
+  .col-lg-4
+    #callout-stacked-modals.bs-callout.bs-callout-success
+      %h4 Branch Details  
+      %br
+      = "##{@user.unit.id} #{@user.unit.unit_name.presence || ""} ( #{@user.unit.unittype.unit_type_name} )"
+      %br
+      = @user.unit.address.presence || ""
+      %br
+      = @user.unit.city.presence || ""
+      %br
+      = @user.unit.phone.presence || ""

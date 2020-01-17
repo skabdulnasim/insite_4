@@ -1,0 +1,54 @@
+= render "layouts/flash"
+.col-lg-9.padding-5
+	.main-section__content
+		.example
+			.example__content.p0
+				.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+					%header.data-table-header
+						.data-table-header__label
+							%span.fs-title User Roles
+						.data-table-header__actions
+							- if can? :new, Role       
+								%a.m-btn.m-btn-teal.margin-l-5{"data-target" => "#addRoleModal", "data-toggle" => "modal"} Add new role  
+					- Role.get_root_roles.each do |role|
+						.col-lg-12
+							.mt30.min-height-300
+								%ul.timeline.collapse-lg.timeline-hairline.timeline-parent.col-lg-10
+									= render :partial => 'access_manager/nested_roles', :object => role, :as => 'role'
+
+
+.col-lg-3.padding-5
+	.main-section__content
+		.example
+			.example__content.p0
+				.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+					%header.data-table-header
+						.data-table-header__label
+							%span.fs-title Edit role capabilities 
+					.padding-10    
+						= form_tag(access_manager_show_path, method: "put") do   
+							%label.control-label
+								Select user role   
+							%select{:class => 'form-control',:required => true,:name=>"role[id]"}
+								-@all_roles.each do |ar|
+									%option{:value=>"#{ar.id}"}
+										=ar.name   
+							%br
+							%button.btn.btn-success.btn-block.btn-sm{:type=>"submit"}
+								Proceed to next step
+								&nbsp;&nbsp;&nbsp;
+								%i.fa.fa-arrow-circle-o-right.fa-lg    
+							
+
+/ Add new role Modal
+#addRoleModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "addRoleModalLabel", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content
+			.modal-header
+				%button.close{"data-dismiss" => "modal", :type => "button"}
+					%span{"aria-hidden" => "true"} &times;
+					%span.sr-only Close
+				%h4#addRoleModalLabel.modal-title New role details
+			.modal-body
+				= render 'new_role_form'   
+

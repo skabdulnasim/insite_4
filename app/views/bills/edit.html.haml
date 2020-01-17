@@ -1,0 +1,10 @@
+%h1 Editing bill
+= form_for @bill, :html => { :class => 'form-horizontal'} do |b|
+  %p
+    =select_tag "status", options_for_select([ "void", "no_charge" ])   
+  %p
+    =text_field_tag "remarks", nil, :required=>true, :placeholder => "Enter relarks here"  
+  %p
+    =hidden_field_tag :bill_id, @bill.id
+    = b.submit "Save"
+= link_to 'Back', bills_path

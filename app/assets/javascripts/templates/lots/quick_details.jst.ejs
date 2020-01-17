@@ -1,0 +1,90 @@
+
+<div class="col-lg-6 padding-10">
+  <div class="form-horizontal bordered-row m-input">
+    QUICK EDIT
+    <form method="post" action="#" class="form-horizontal bordered-row m-input">
+      <div class="form-group p0">
+        <label for="sell_price_<%=response.id%>" class="col-sm-5 control-label">Sell Price with Tax</label>
+        <div class="col-sm-7 input-field">
+          <input type="text" name="sell_price" class="form-control col-sm-7 input-field" id="sell_price_<%=response.id%>" value="<%= response.sell_price %>">
+        </div>
+      </div>
+      <div class="form-group p0">
+        <label for="expiry_date_<%=response.id%>" class="col-sm-5 control-label">Expiry Date</label>
+        <div class="col-sm-7 input-field">
+          <input type="text" name="expiry_date" class="form-control col-sm-7 input-field" id="expiry_date_<%=response.id%>" value="<%= response.expiry_date %>">
+        </div>
+      </div>
+      <div class="form-group p0">
+        <label for="mrp_<%=response.id%>" class="col-sm-5 control-label">Mrp</label>
+        <div class="col-sm-7 input-field">
+          <input type="text" name="mrp" class="form-control col-sm-7 input-field" id="mrp_<%=response.id%>" value="<%= response.mrp %>">
+        </div>
+      </div>
+      <div class="form-group">
+        <span class="col-sm-7"></span>
+        <button class="m-btn green waves-effect waves-light col-sm-5 lot_quick_update_btn" data-lot-id="<%= response.id %>" >Quick Update</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<% sale_rules = response.sale_rules; %>
+<table class="data-table z-depth-1 col-lg-6 margin-t-b-0 sale_rules_<%=response.id%>">
+  <thead>
+    <tr style="background-color:#F5F5F5">
+      <th class="font-sz-12">#</th>
+      <th class="font-sz-12">Rule</th>
+      <th class="font-sz-12">Valid From</th>
+      <th class="font-sz-12">Valid To</th>
+      <th class="font-sz-12">Action</th>
+    </tr>
+  </thead>
+  <tbody id="tbody_<%=response.id%>">
+    <% for (var i = sale_rules.length - 1; i >= 0; i--) { %>
+      <tr id="lot_sale_rule_tr_<%=response.id%>_<%=sale_rules[i].id%>">
+        <td class="font-sz-12"><%= sale_rules[i].id %></td>
+        <td class="font-sz-12"><%= sale_rules[i].name %></td>
+        <td class="font-sz-12"><%= sale_rules[i].valid_from %></td>
+        <td class="font-sz-12"><%= sale_rules[i].valid_till %></td>
+        <td class="font-sz-12">
+          <a class="m-btn red m-btn-low-padding lot_sale_rule_delete" data-lot-id="<%= response.id %>" data-sale-rule-id="<%= sale_rules[i].id %>" >
+            <i class="mdi-action-highlight-remove"></i>
+          </a>
+        </td>
+      </tr>
+
+    <% } %>
+  </tbody>
+</table>
+
+<% if(response.lot_for_every_purchase == "enabled") { %>
+  <% po_details = response.po_details; %>
+  <% stock_price = response.stock_price; %>
+  <table class="col-lg-12 margin-b-25 white_bg">
+    <thead>
+      <tr>
+        <th class="font-sz-12">Purchase Id</th>
+        <th class="font-sz-12">Purchase Date</th>
+        <th class="font-sz-12">Landing Price</th>
+        <th class="font-sz-12">Procured Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="font-sz-12 white_bg"><%= po_details.purchase_order_id %></td>
+        <td class="font-sz-12 white_bg"><%= new Date(response.created_at).format("yyyy-mm-dd") %></td>
+        <% if (stock_price.landing_price != null) { %>
+          <td class="font-sz-12 white_bg"><%= stock_price.landing_price %></td>
+        <% } else {%>
+          <td class="font-sz-12 white_bg">-</td>
+        <% } %>
+        <% if (response.procured_price != null) { %>
+          <td class="font-sz-12 white_bg"><%= response.procured_price %></td>
+        <% } else { %>
+          <td class="font-sz-12 white_bg">-</td>
+        <% } %>
+      </tr>
+    </tbody>
+  </table>
+<% } %>

@@ -1,0 +1,31 @@
+- unless smart_listing.empty?
+	%table.data-table
+		%tr{"data-toggle"=>"modal" ,"data-target"=>"#currencyModal"}
+			%th
+				%strong Sl no
+			%th
+				%strong Currency
+			%th
+				%strong Currency Code
+			%th
+				%strong Symbol
+			%th
+				%strong Actions
+		- smart_listing.collection.each_with_index do |country_currency,index|
+			%tr{:id=>"currency_#{country_currency.id}"}
+				%td=index+1
+				%td=country_currency.currency
+				%td=country_currency.currency_code
+				%td=country_currency.symbol
+				%td
+					%button.m-btn.blue.lighten-1#add_currency_conversion.open_modal{:type => "button","data-selected-currency"=>"#{country_currency.currency}","data-currency-id"=>"#{country_currency.id}","data-currency-code"=>"#{country_currency.currency_code}","data-base-currency"=>"#{currency}","data-currency-symbol"=>"#{country_currency.symbol}","data-module"=>"selection_module"}
+						Select
+						%i.mdi-content-send 
+			%tr
+	.row
+		= smart_listing.paginate
+		= smart_listing.pagination_per_page_links
+		%br
+- else
+	.alert.alert-warning
+		No apps found        

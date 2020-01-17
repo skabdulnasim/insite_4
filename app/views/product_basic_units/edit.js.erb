@@ -1,0 +1,2 @@
+$("#product_baisc_unit_edit_container").html('<%= j render("form") %>')
+$("#product_basic_unit_action_container").html("<%=j link_to 'Destroy', @product_basic_unit,:method => :delete, :data => { :confirm => 'Are you sure?', :remote => 'true' }, :class => 'btn white grey-text width-100' %>")

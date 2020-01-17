@@ -1,0 +1,39 @@
+<% 
+  var key = master_product_key+addon_product_id
+%>
+<tr class="data-table__selectable-row" id='menu_addon_item_<%addon_product_id%>_of_master_<%=master_product_id%>'>
+  <td>
+    <%=addon_product_name%>
+    <input class="form-control" name="menu_card[menu_products_attributes][<%=master_product_key%>][menu_product_combinations_attributes][<%=key%>][product_id]" type="hidden" value='<%=addon_product_id%>'>
+  </td>
+  <td>
+    <input class="form-control" name="menu_card[menu_products_attributes][<%=master_product_key%>][menu_product_combinations_attributes][<%=key%>][price]" type="text" value='<%=addon_product_price%>' required>
+  </td>
+  <td>
+    <div class="col-sm-8 padding-l-r-none">
+      <input class="form-control" name="menu_card[menu_products_attributes][<%=master_product_key%>][menu_product_combinations_attributes][<%=key%>][ammount]" type="text" value='<%=addon_product_quantity%>' required>
+      <input class="form-control" name="menu_card[menu_products_attributes][<%=master_product_key%>][menu_product_combinations_attributes][<%=key%>][product_unit_id]" type="hidden" value='<%=addon_product_quantity_type%>'>          
+    </div>
+    <div class="col-sm-4 padding-l-r-none">
+      <%=addon_product_quantity_type_name%>
+    </div>  
+  </td>
+  <td>
+    <select class="form-control" name="menu_card[menu_products_attributes][<%=master_product_key%>][menu_product_combinations_attributes][<%=key%>][combination_type_id]">
+      <% for (var i = combination_types.length - 1; i >= 0; i--) { %>
+
+        <% combination = combination_types[i].split('___') %>
+        <% setected_entry = '' %>
+        <% if(combination[0] == addon_product_type) { setected_entry='selected'} %>
+        <option value="<%=combination[0]%>" <%=setected_entry%> ><%=combination[1]%></option>
+      <% } %>
+    </select>  
+    <input class="form-control" name="menu_card[menu_products_attributes][<%=master_product_key%>][menu_product_combinations_attributes][<%=key%>][combinations_rule_id]" type="hidden" value='<%=addon_product_rule_id%>'>
+    
+  </td>
+  <td>
+    <button aria-hidden="true" class="close btn_delete float-r" type="button" data-id="870" data-menu-card-id="48">
+      <i class="fa fa-times-circle"></i>
+    </button>
+  </td>
+</tr>

@@ -1,0 +1,30 @@
+<tr class='data-table__selectable-row' id='addon_cart_item_<%=product_id%>'>
+  <td class='col-lg-3 padding-l-r-none'>
+    <input type='checkbox' name='addon_products[]' id='addon_item_<%=product_id%>' class='addon_products' value='<%=product_id%>' checked>
+    <label for='addon_item_<%=product_id%>' class='font-sz-11'><%=product_name%></label>
+  </td>
+  <td class='col-lg-2 padding-l-r-none'>
+    <input class='form-control addon_name_<%=product_id%>' type='hidden' value='<%=product_name%>'>
+    <input class='form-control addon_price_<%=product_id%>' name='addon_price_<%=product_id%>' placeholder='(required)' type='text' required>
+  </td>
+  <td class='col-lg-4'>
+    <div class="col-lg-6 padding-l-r-none">
+      <input class='form-control addon_quantity_<%=product_id%>' name='addon_quantity_<%=product_id%>' placeholder='(required)' type='text' required>    
+    </div>
+    <div class="col-lg-6 padding-l-r-none">
+      <select class="form-control addon_quantity_type_<%=product_id%>">
+        <% for (var i = product_units.length - 1; i >= 0; i--) { %>
+          <option value="<%=product_units[i].id%>___<%=product_units[i].short_name%>"><%=product_units[i].short_name%></option>
+        <% } %>
+      </select>
+    </div>
+  </td>  
+  <td class='col-lg-3'>
+    <select class="form-control addon_type_<%=product_id%>">
+      <% for (var i = combination_types.length - 1; i >= 0; i--) { %>
+        <% combination = combination_types[i].split('___') %>
+        <option value="<%=combination[0]%>"><%=combination[1]%></option>
+      <% } %>
+    </select>
+  </td>
+</tr>

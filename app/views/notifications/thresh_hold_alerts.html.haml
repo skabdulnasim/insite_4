@@ -1,0 +1,24 @@
+= render "layouts/flash"
+.col-sm-3.padding-5
+  = render :partial => 'material_product_filter'
+.col-sm-9.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Thresh hold alert
+            / .data-table-header__actions
+            /   - _thresh_hold_units = ""
+            /   - params['thresh_hold_unid_ids'].each do |ut|
+            /     -_thresh_hold_units = _thresh_hold_units +"&thresh_hold_unid_ids[]=#{ut}"
+            /   - _thresh_hold_store = ""
+            /   - params['thresh_hold_store'].each do |st|
+            /     -_thresh_hold_store = _thresh_hold_store +"&thresh_hold_store[]=#{st}"
+            /   %a.export-thresh-hold-report.m-btn.indigo.right{:href=>"stock_thresh_hold.csv?unid_id=#{_thresh_hold_units}#{_thresh_hold_store}"}
+            /     %i.mdi-file-file-download.left
+            /     CSV                                                                  
+          = smart_listing_render :thresh_hold_alert
+
+			

@@ -1,0 +1,31 @@
+- unless smart_listing.empty?
+  %table.table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-md-2= smart_listing.sortable "ID", "id"
+        %th.col-md-2 Input Product 
+        %th.col-md-2 Quantity 
+        %th.col-md-2 Wastage
+        %th.col-md-2= smart_listing.sortable "Date", "created_at"
+        %th.col-md-3
+    %tbody
+      - smart_listing.collection.each do |object|
+        / - object.simo_input_product.simo_output_products.each do|sop|
+        %tr.data-table__selectable-row
+          %td
+            %h5
+              =object.id
+          %td.font-sz-12=object.simo_input_product.product.name 
+          %td.font-sz-12="#{object.simo_input_product.quantity}" " (#{object.simo_input_product.product.conjugated_unit})"
+          %td.font-sz-12="#{object.simo_input_product.wastage} (#{object.simo_input_product.product.conjugated_unit})"
+          %td.font-sz-12=object.created_at.strftime("%d %b %Y, %I:%M %p")
+          %td
+            %a.m-btn.green.float-r{:href=>store_simo_path(@store,object)} 
+              %i.mdi-action-subject.left
+              View             
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No SIMO done  yet  
+

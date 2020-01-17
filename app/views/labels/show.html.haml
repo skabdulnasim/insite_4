@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Type:
+  = @label.customer_state
+%p
+  %b Name:
+  = @label.name
+%p
+  %b Status:
+  = @label.status
+
+= link_to 'Edit', edit_label_path(@label)
+\|
+= link_to 'Back', labels_path

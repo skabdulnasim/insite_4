@@ -1,0 +1,33 @@
+.container-fluid
+  .row-fluid
+    .span2
+      %ul.nav.nav-pills.nav-stacked.nav-tabs
+        %li{:class => "#{'active' if current_page?(new_product_path)}"}
+          %a{:href => new_product_path} 
+            %i.icon-plus
+              Create Product
+        %li{:class => "#{'active' if current_page?(products_path)}"}
+          %a{:href => products_path} 
+            %i.icon-list
+              Manage Products
+        %li{:class => "#{'active' if current_page?(new_category_path)}"}
+          %a{:href => new_category_path} 
+            %i.icon-list
+              Manage Category
+        %li{:class => "#{'active' if current_page?(products_settings_path)}"}
+          %a{:href => products_settings_path} 
+            %i.icon-list
+              Settings
+        %li{:class => "#{'active' if current_page?(attributes_path)}"}
+          %a{:href => attributes_path} 
+            %i.icon-tasks
+              Attributes
+    .span10.well
+      %h3 
+        %i.icon-plus
+          Create product
+      %h4
+        %i.icon-road
+          Step - 1 : Select Category
+    
+          = render 'form1'

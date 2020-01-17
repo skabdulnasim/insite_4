@@ -1,0 +1,47 @@
+= render "layouts/flash"
+
+- @loyalty_card_classes.each do |loyalty_card_class|
+  .col-sm-12.col-md-6.col-lg-6
+    .card
+      .card-content
+        %span.card-title= "#{loyalty_card_class.name} Class"
+        %table.data-table.table-striped.table-responsive
+          %thead
+            %tr
+              %th Conversion
+              %th= currency
+              %th Point
+              %th Default Validity (Days)
+              %th Refundable
+          %tbody
+            %tr
+              %td Enrollment
+              %td= loyalty_card_class.enrollment_rule[:amount] 
+              %td= loyalty_card_class.enrollment_rule[:point]
+              %td= loyalty_card_class.enrollment_rule[:validity]
+              %td= loyalty_card_class.enrollment_rule[:refundable] ? "Yes" : "No"
+            %tr
+              %td Recharge
+              %td= loyalty_card_class.recharge_rule[:amount] 
+              %td= loyalty_card_class.recharge_rule[:point]
+              %td= loyalty_card_class.recharge_rule[:validity]
+              %td= loyalty_card_class.recharge_rule[:refundable] ? "Yes" : "No"
+            %tr
+              %td Reward
+              %td= loyalty_card_class.reward_rule[:amount] 
+              %td= loyalty_card_class.reward_rule[:point]
+              %td= loyalty_card_class.reward_rule[:validity]
+              %td= loyalty_card_class.reward_rule[:refundable] ? "Yes" : "No"
+            %tr
+              %td Debit
+              %td= loyalty_card_class.debit_rule[:amount] 
+              %td= loyalty_card_class.debit_rule[:point]
+      .card-action
+        .secondary-content
+          %a{:href => "#{loyalty_card_class_path(loyalty_card_class)}", :title=>""}
+            %i.fa.fa-info.fa-2x
+          &nbsp
+          %a{:href => "#{edit_loyalty_card_class_path(loyalty_card_class)}", :title=>""}
+            %i.fa.fa-pencil.fa-2x
+.col-sm-12.col-md-3.col-lg-4
+  %i.col-centered.fa.fa-plus-square-o.fa-2x

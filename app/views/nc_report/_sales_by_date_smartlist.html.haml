@@ -1,0 +1,54 @@
+- unless smart_listing.empty?
+  - preferences = ReportPreference.by_unit(@unit_id).by_key('nc_report_by_date').first
+  - @pref = preferences.present? ? JSON.parse(preferences.allowed_attributes) : ["bill_id","bill_serial","order_source","deliverables_at","status","user","remarks","date","procurement_cost","sales_price"]
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        - if @pref.include?('bill_id')
+          %th= smart_listing.sortable "Bill ID", "id" 
+        - if @pref.include?('bill_serial')
+          %th="Bill Serial"
+        - if @pref.include?('order_source')
+          %th.hidden-sm.hidden-md.hidden-xs= "Order Source"          
+        - if @pref.include?('deliverables_at')
+          %th.hidden-sm.hidden-md.hidden-xs= "Deliverables At"
+        - if @pref.include?('status')
+          %th="Status"
+        - if @pref.include?('user')
+          %th="User"
+        - if @pref.include?('remarks')
+          %th="Remarks"
+        - if @pref.include?('date')
+          %th="Date"
+        - if @pref.include?('procurement_cost')
+          %th= smart_listing.sortable "Procurement Price","procurement_cost"
+        - if @pref.include?('sales_price')  
+          %th= smart_listing.sortable "Sales Price","sales_price"          
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          - if @pref.include?('bill_id')
+            %td=object.id
+          - if @pref.include?('bill_serial')
+            %td=object.serial_no
+          - if @pref.include?('order_source')
+            %td.hidden-sm.hidden-md.hidden-xs= object.orders.first.source              
+          - if @pref.include?('deliverables_at')
+            %td.hidden-sm.hidden-md.hidden-xs= show_delivery_name(object.orders.first)
+          - if @pref.include?('status')
+            %td=object.status.humanize
+          - if @pref.include?('user')
+            %td=object.user.present? ? "#{object.user.profile.firstname} #{object.user.profile.lastname}" : "#{object.user_id}"
+          - if @pref.include?('remarks')
+            %td.font-sz-11=object.remarks
+          - if @pref.include?('date')
+            %td.font-sz-11=object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+          - if @pref.include?('procurement_cost')
+            %th= number_to_currency(object.orders.inject(0){|result,order| result + order.order_details.where(:trash=>0).inject(0){|data,o_d| data+(o_d.procurement_cost*o_d.quantity)}}, unit: '')
+          - if @pref.include?('sales_price')  
+            %th= number_to_currency(object.orders.inject(0){|result,order| result + order.order_details.where(:trash=>0).inject(0){|data,o_d| data+(o_d.unit_price_without_tax*o_d.quantity)}}, unit: '')            
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

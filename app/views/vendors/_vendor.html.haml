@@ -1,0 +1,6 @@
+%tr{:class=>"vendor_of_#{vendor.id}"}
+  %td=vendor.name
+  %td=vendor.phone
+  %td=vendor.email
+  %td=vendor.unit.unit_name if vendor.unit.present?
+  %td= link_to "Edit",edit_vendor_path(vendor),:class=>"right modal-trigger edit_vendor_link", remote: true

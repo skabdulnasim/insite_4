@@ -1,0 +1,11 @@
+- links_arr = [{:title=>"All Branches",:url=>units_path,:active_class=>""},{:title=>"Add new branch",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+= render "layouts/flash"
+-# %ul.nav.nav-tabs
+-#   %li
+-#     %a{"data-toggle" => "tab", :href => "#branch_type"} Create Branch Type
+-#   %li.active
+-#     %a{"data-toggle" => "tab", :href => "#branch"} Create Branch
+-# .tab-content
+.card.padding-10
+	= render 'primary_form'

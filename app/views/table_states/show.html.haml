@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @table_state.name
+
+= link_to 'Edit', edit_table_state_path(@table_state)
+\|
+= link_to 'Back', table_states_path

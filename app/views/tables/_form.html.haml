@@ -1,0 +1,46 @@
+= form_for @table, :html => { :class => 'form-horizontal'} do |f|
+  - if @table.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@table.errors.count, "error")} prohibited this table from being saved:"
+      %ul
+        - @table.errors.full_messages.each do |msg|
+          %li= msg
+  =# debug @current        
+  .form-group
+    = f.label :name, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :name, :class => 'form-control', :required=> true
+  .form-group
+    = f.label :table_shape, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :table_shape, options_for_select({"Rectangular" => "rectangular","Circular" => "circular" },@table.table_shape), { include_blank: "Select table shape"}, {:class => "form-control", :required=> true}
+      
+  .form-group
+    = f.label :capacity, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.number_field :capacity, :class => 'form-control', :required=> true
+  .form-group
+    = f.label :table_type, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :table_type, options_for_select(@table_types.map{ |ut| [ut.type_name, ut.id] },@table.table_type), { include_blank: "Select table type"}, :class => 'form-control',:required => true
+     
+  .form-group
+    = f.label "Table state", :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :table_state_id, options_for_select(@table_states.map{ |ut| [ut.name, ut.id] },@table.table_state_id), { include_blank: "Select table state"}, :class => 'form-control',:required => true
+
+  .form-group
+    = f.hidden_field :unit_id, :class => 'form-control',:required => true, :value => current_user.unit_id
+  .form-group
+    = f.label :section_id, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :section_id,options_for_select(@sections.map{ |sec| [sec.name, sec.id] },@table.section_id), { include_blank: "Select section"}, :class => 'form-control', :required=> true 
+  .form-group
+    = f.label :status, :class => 'col-sm-2 control-label'
+    .col-sm-4
+      = f.select :status, options_for_select({"Enabled" => "enabled","Disabled" => "disabled" },@table.status), { include_blank: "Select table status"}, {:class => "form-control", :required=> true}           
+  .form-group
+    .col-sm-4.col-md-offset-2
+      = f.submit 'Save', :class => 'btn btn-success'
+      %a.btn.btn-primary{:href => "#{tables_path}"}
+        Cancel

@@ -1,0 +1,40 @@
+.card
+  .padding-10 
+    %b FILTER BY
+  = smart_listing_controls_for(:future_orders, {class: "text-left"}) do
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-search.left
+      Search
+    .padding-10 
+      .form-group.filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search by Order ID...", :type => "text", :name=> "id_filter"}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search  
+    
+    - if current_user.role.name == "owner"    
+      .filter-title branch 
+      .padding-10{:style => "max-height: 300px; overflow-y: auto;"} 
+        - Order.select("DISTINCT(unit_id)").each do |order|
+          .checkbox
+            = radio_button_tag 'unit_id', order.unit_id, false,{ :id => "source_#{order.unit_id}", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"source_#{order.unit_id}", :style=>"padding-left:30px;"}= order.unit.unit_name.humanize 
+    .filter-title source
+    .padding-10
+      - Order.select("DISTINCT(source)").each do |order|
+        .checkbox
+          = check_box_tag 'order_sources[]', order.source, false,{ :id => "source_#{order.source}", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"source_#{order.source}", :style=>"padding-left:30px;"}= order.source.humanize   
+    .filter-title By Recorded at
+    .padding-10 
+      .form-group.from_date.input-append
+        = text_field_tag :from_date, '', class: "search form-control form-control-small-pad", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;"
+        %br
+        %br
+        = text_field_tag :to_date, '', class: "search form-control form-control-small-pad", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;" 
+    .filter-title By Delivery Date
+    .padding-10 
+      .form-group.from_date.input-append
+        = text_field_tag :delivery_date, '', class: "search form-control form-control-small-pad", placeholder: "Delivery Date", autocomplete: :off, :style => "padding: 6px 10px;"
+        %br    

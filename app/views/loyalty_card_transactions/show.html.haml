@@ -1,0 +1,27 @@
+%p#notice= notice
+
+%p
+  %b Loyaltycard:
+  = @loyalty_card_transaction.LoyaltyCard
+%p
+  %b Transaction type:
+  = @loyalty_card_transaction.transaction_type
+%p
+  %b Loyalty trascaction:
+  = @loyalty_card_transaction.loyalty_trascaction
+%p
+  %b Points:
+  = @loyalty_card_transaction.points
+%p
+  %b Points after transaction:
+  = @loyalty_card_transaction.points_after_transaction
+%p
+  %b Equivalent money:
+  = @loyalty_card_transaction.equivalent_money
+%p
+  %b Remarks:
+  = @loyalty_card_transaction.remarks
+
+= link_to 'Edit', edit_loyalty_card_transaction_path(@loyalty_card_transaction)
+\|
+= link_to 'Back', loyalty_card_transactions_path

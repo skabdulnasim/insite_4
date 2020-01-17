@@ -1,0 +1,11 @@
+= render "layouts/flash"
+%a.btn.btn-primary.btn-sm.float-r{"aria-controls" => "product_bulk_upload", "aria-expanded" => "false", "data-toggle" => "collapse", :href => "#product_bulk_upload"}
+  %i.fa.fa-upload
+  Category bulk upload
+#product_bulk_upload.collapse
+  .well
+    = render 'bulk_cat_form' 
+= render 'form1'        
+
+      
+          

@@ -1,0 +1,22 @@
+<div id="search_box">
+	<p style="padding:5px;">
+		Showing <%= sub_products.length%> Products
+	</p>
+	<% for(var i=0; i<sub_products.length; i++) { %>
+		<li class="each_box">
+		<div>
+			<a href = "<%= url %>/<%= sub_products[i].id %>" class="col-sm-12" >
+			 	<span id="left">
+			 	<img class= "img-thumbnail thumb" src="/uploads/product.png" height = "50" width = "50"></imr>
+			 	</span>
+			 	<span id="right">
+			 	
+				 	<%= sub_products[i].name %>
+				 	<p><%= sub_products[i].product_type %>, <%= sub_products[i].business_type %></p>
+			 	
+				</span>
+			</a>
+		</div>
+		</li>
+	<%}%>
+</div>

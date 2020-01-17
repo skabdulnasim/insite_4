@@ -1,0 +1,27 @@
+%h1 Listing resource_product_stocks
+
+%table
+  %tr
+    %th Resource
+    %th User
+    %th Product
+    %th Stock
+    %th Recorded at
+    %th
+    %th
+    %th
+
+  - @resource_product_stocks.each do |resource_product_stock|
+    %tr
+      %td= resource_product_stock.resource_id
+      %td= resource_product_stock.user_id
+      %td= resource_product_stock.product_id
+      %td= resource_product_stock.stock
+      %td= resource_product_stock.recorded_at
+      %td= link_to 'Show', resource_product_stock
+      %td= link_to 'Edit', edit_resource_product_stock_path(resource_product_stock)
+      %td= link_to 'Destroy', resource_product_stock, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Resource product stock', new_resource_product_stock_path

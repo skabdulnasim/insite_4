@@ -1,0 +1,241 @@
+%table.data-table#stock_purchase_order_accordion
+  %thead
+    %tr.data-table__selectable-row
+      /%th
+      %th
+      %th 
+        %label{:for=>"parent_check"} Product
+      %th
+      %th
+      %th Gender
+      %th.col-lg-1
+        SKU
+      - if AppConfiguration.get_config_value('retail_menu') == 'enabled'  
+        %th.col-lg-1 
+          MRP
+      %th Quantity
+      %th 
+        Batch No
+      - if @stock_expiry_date == 'enabled'   
+        %th
+          Expiry Date
+      %th
+        Landing Price
+        %br
+        %small="(in #{currency})"
+      %th 
+        Discount 
+        %br
+        %small="(in #{currency})"
+      - if AppConfiguration.get_config_value('Percentage_applied_on_lending_price') == 'enabled'  
+        %th Sales Percentage 
+      - if @input_tax_config == 'enabled'
+        %th 
+          Total price
+          %br
+          %small (Without TAX)
+        %th.col-lg-3 Applicable TAX classes
+      %th 
+        Additional
+        %br
+        Cost
+      %th
+        Total Price
+        %br
+        %small="(With TAX)" if @input_tax_config == 'enabled'
+        %small="(in #{currency})"      
+      %th
+        Sale Price
+        %br
+        %small="(in #{currency})"
+      %th 
+        Hsn Code
+      %th
+        Model No
+      - if @stock_description != 'enabled'
+        %th
+          Description    
+  %tbody.test
+    - i = 0
+    - if @stock_purchase.stocks.present?
+      - @stock_purchase.stocks.each do |object|
+        %tr.data-table__selectable-row.data-table__selectable-row--is-selected
+          /%td
+          %td
+          %td
+            %label.font-sz-11.padding-l-20{:for=>"#{object.id}"}="#{object.product.name}"
+          
+          %td
+          %td   
+          %td= object.p_gender 
+          %td 
+            = object.sku.present? ? object.sku : ""
+
+          - if AppConfiguration.get_config_value('retail_menu') == 'enabled'  
+            %td.col-lg-1 
+              = object.stock_price.mrp
+          %td
+            %b
+              = "#{object.stock_credit} #{object.product.basic_unit}"
+            - if object.secondary_stocks.present?
+              %br
+              =object.secondary_stocks.map{|ss| "#{ss.stock_credit} #{ss.product_unit.short_name}(s) of #{ss.product_unit.multiplier} #{ss.product_unit.basic_inventory_unit}"}.join(',')
+          %td=  object.batch_no.present? ? "#{object.batch_no}" : "-"
+          - if @stock_expiry_date == 'enabled'    
+            %td
+              = object.expiry_date.strftime("%d-%m-%Y").present? ? object.expiry_date : ""
+          %td=object.stock_price.present? ? "#{object.stock_price.landing_price} /#{object.product.basic_unit}" : "-"
+          %td=object.stock_price.present? ? "#{object.stock_price.discount_price}" : "-"
+
+          -if AppConfiguration.get_config_value('Percentage_applied_on_lending_price') == 'enabled'
+            %td= object.stock_price.sales_percentage
+          
+                     
+          - if @input_tax_config == 'enabled'
+            %td=object.stock_price.present? ? object.stock_price.total_price_without_tax : "-"
+          - if @input_tax_config == 'enabled'
+            %td=object.stock_taxes.map{|tax| "#{tax.tax_class_name}: #{currency}#{tax.tax_amount.to_s} (on #{tax.tax_applicable_on})"}.join(' | ')
+          %td
+            =object.stock_price.present? ? object.stock_price.additional_cost : "-"
+            %br
+            =object.stock_price.present? ? object.stock_price.addon_cost_remarks : ""
+          %td
+            -if object.stock_price.present?
+              -t_price =object.stock_price.landing_price.to_f
+              -t_qty = object.stock_credit
+            -else
+              -t_price = 0  
+              -t_qty = 0
+            = t_price * t_qty   
+            
+          %td
+            = object.stock_price.sell_price_with_tax  
+          %td="#{object.product.hsn_code}"
+          %td=  object.model_number.present? ? "#{object.model_number}" : "-" 
+          %td   
+
+
+    -else      
+      - j = 1
+      - @stock_purchase.purchase_order.purchase_order_metum.each do |object|
+        - is_base_unit = object.product_unit.present? ? false : true
+        - _unit_name = object.product_unit.present? ? object.product_unit.short_name : object.product.basic_unit
+        - vendor_pro = object.product.vendor_products.by_vendor(@stock_purchase.purchase_order.vendor_id).first
+        - price = vendor_pro.present? ? vendor_pro.price : ''
+        - product_sizes = ProductSize.by_product_id(object.product_id).enabled
+        - product_colors = ColorProduct.by_product_id(object.product_id).enabled
+        - product_sku = object.product.properties.find_by_label("SKU").present? ? object.product.properties.find_by_label("SKU").value : ''
+        - count = object.product_amount.to_i
+        / - for j in 1..count
+        %tr.m-input.data-table__selectable-row{:class => "product_receive_tr_#{object.id}_#{j} pom_row_#{object.id}"}
+          .hold_color_size{:class => "hold_color_size_#{object.id}_#{j}"}
+          %td.padding-r-5
+            = check_box_tag "selected_po_srials[]", "#{object.id}_#{j}", false, :class=>"checkbox-child filled-in stock_reiceved stock_purchase_received purchase_input", "data-po-id" => "#{object.id}","data-product-id"=>object.product_id,"data-uid"=>"#{j}",:id=>"#{object.id}-#{j}"
+            %label.font-sz-11.padding-l-20{:for=>"#{object.id}-#{j}"}
+          %td
+            .product_name
+              ="#{object.product.name}"  
+         
+          - if product_sizes.present? && product_colors.present?
+            %td.padding-r-5
+              = select_tag "color_name_#{object.id}_#{j}", options_for_select(product_colors.map{ |pc| [pc.color_name,pc.color_id] },object.color_id), { prompt: "Select Color", class: "map", "data-product-id"=>object.product_id }
+            %td.padding-r-5
+              = select_tag "size_#{object.id}_#{j}", options_for_select(product_sizes.map{ |ps| [ps.size_name,ps.size_id] },object.size_id), { prompt: "Select Size", class: "map", "data-product-id"=>object.product_id } 
+          - elsif product_sizes.present? && product_colors.empty?
+            %td.padding-r-5
+              = select_tag "color_name_#{object.id}_#{j}", options_for_select(Color.all.map{ |cl| [cl.name,cl.id] },object.color_id), { prompt: "Select Color", class: "map", "data-product-id"=>object.product_id }
+            %td.padding-r-5
+              = select_tag "size_#{object.id}_#{j}", options_for_select(product_sizes.map{ |ps| [ps.size_name,ps.size_id] },object.size_id), { prompt: "Select Size", class: "map", "data-product-id"=>object.product_id } 
+          - elsif product_sizes.empty? && product_colors.present?
+            %td.padding-r-5
+              = select_tag "color_name_#{object.id}_#{j}", options_for_select(product_colors.map{ |pc| [pc.color_name,pc.color_id] },object.color_id), { prompt: "Select Color", class: "map", "data-product-id"=>object.product_id }
+            %td.padding-r-5
+              = select_tag "size_#{object.id}_#{j}", options_for_select(Size.all.map{ |sz| [sz.name,sz.id] },object.size_id), { prompt: "Select Size", class: "map", "data-product-id"=>object.product_id }                
+          - else 
+            %td.padding-r-5
+              = select_tag "color_name_#{object.id}_#{j}", options_for_select(Color.all.map{ |cl| [cl.name,cl.id] },object.color_id), { prompt: "Select Color", class: "map", "data-product-id"=>object.product_id }
+            %td.padding-r-5
+              = select_tag "size_#{object.id}_#{j}", options_for_select(Size.all.map{ |sz| [sz.name,sz.id] },object.size_id), { prompt: "Select Size", class: "map", "data-product-id"=>object.product_id }     
+
+          %td.padding-r-5
+            = select_tag "p_gender_#{object.id}_#{j}", options_for_select({"Men" => "M","Women" => "W","Unisex" => "U"}), { class: "form-control", prompt: "Select Gender", "data-product-id"=>object.product_id }
+
+          - if AppConfiguration.get_config_value('auto_generate_sku') == 'enabled' 
+            %td.padding-r-5
+              %input.validate.form-control.check-input.purchase_input.product-sku{:type => "text", :name=>"pro_sku_#{object.id}_#{j}",:placeholder=>"SKU", :style=>"width:100px;", :onkeydown=>"if (event.keyCode == 13) return false"} 
+          - else    
+            %td.padding-r-5
+              %input.validate.form-control.check-input.purchase_input.product-sku{:type => "text", :name=>"pro_sku_#{object.id}_#{j}",:placeholder=>"SKU", :value => "#{product_sku}", :style=>"width:100px;", :onkeydown=>"if (event.keyCode == 13) return false" }
+          %td.padding-r-5
+            %input.validate.form-control.check-input.allow-numeric-only.margin-b-2.purchase_input.purchase-cost.pro-mrp{:value=> "0",:name => "pro_mrp_#{object.id}_#{j}", :type => "text",:class=>"check-input-#{object.id}-#{j} mrp-#{object.product_id} mrp-#{object.product_id}-#{j}", "data-product-id"=>object.product_id,"data-uid"=>"#{j}","data-pom-id"=>object.id}
+            ="per"
+            / %b="#{_unit_name}"  
+            %b=object.product.basic_unit
+          %td.padding-r-5{:id=>"input-quantities-#{object.product_id}"}
+            - if is_base_unit
+              %input.filled-in.purchase_input{:type=>"checkbox",:class=> "input_unit_of_#{object.product_id}_#{j}", :id=>"input-unit-of-#{object.product_id}-#{object.product.basic_unit}", :checked=> true, "data-product-id"=>object.product_id, "data-multiplier"=>"1", "data-unit"=>"#{object.product.basic_unit}", "data-id"=>object.id,"data-uid"=>"#{j}" }
+              %input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :value=>"#{object.product_amount}", :class=>"input_quantity_of_#{object.product_id}_#{object.product.basic_unit}_#{j} input_quantity_of_#{object.id}_#{j}", "data-product-id"=>object.product_id, "data-id"=>object.id,"data-uid"=>"#{j}" }
+              =_unit_name
+            - else
+              %input.filled-in.purchase_input{:type=>"checkbox", :name=>"input_quantity_#{object.product_id}_#{j}", :value =>object.secondary_product_unit_id,:class=> "input_unit_of_#{object.product_id}_#{j}", :id=>"input-unit-of-#{object.product_id}-#{object.product_unit.short_name}", :checked=> true, "data-product-id"=>object.product_id, "data-multiplier"=>object.product_unit.multiplier, "data-unit"=>"#{object.product_unit.short_name}", "data-id"=>object.id,"data-uid"=>"#{j}" }
+              %input.validate.form-control.check-input.purchase_input.margin-b-2.allow-numeric-only{:type => "text", :name=>"input_quantity_#{object.product_id}_#{object.secondary_product_unit_id}_#{j}", :value=>object.secondary_amount, :class=>"input_quantity_of_#{object.product_id}_#{object.product_unit.short_name}_#{j} input_quantity_of_#{object.id}_#{j}", "data-product-id"=>object.product_id, "data-id"=>object.id,"data-uid"=>"#{j}" }
+              =_unit_name
+          %td.padding-r-5
+            %input.validate.form-control.margin-b-2{:name => "batch_no_#{object.id}_#{j}", :type => "text", "data-product-id"=>object.product_id, :placeholder=>"Batch no"}
+          - if @stock_expiry_date == 'enabled'   
+            %td.padding-r-5
+              %input.validate.form-control.datepick{:name => "expiry_date_#{object.id}_#{j}", :type => "text",:placeholder=>"Expiry Date",:required=> true, :value => "#{Date.today+1.years}"}
+          %td.padding-r-5
+            %input.validate.form-control.check-input.allow-numeric-only.margin-b-2.landing-price.purchase_input.purchase-qty{:value=> "#{price}",:name => "pro_price_#{object.id}_#{j}", :type => "text",:class=>"check-input-#{object.id}-#{j} landing-price-#{object.product_id}-#{j} landing-price-#{object.product_id}", "data-product-id"=>object.product_id,"data-uid"=>"#{j}","data-pom-id"=>object.id}
+            ="per"
+            / %b="#{_unit_name}"
+            %b=object.product.basic_unit
+          %td
+            %input.validate.form-control.check-input.allow-numeric-only.purchase_input{:value=> "0",:name => "pro_dicount_#{object.id}_#{j}", :type => "text",:class=>"check-input-#{object.id}-#{j} discount-amount-#{object.product_id}-#{j}", "data-product-id"=>object.product_id,"data-uid"=>"#{j}"}  
+            - unless @input_tax_config == 'enabled'
+              %input.form-control.check-input.allow-numeric-only{:value=> "0",:name => "pro_pwot_#{object.id}_#{j}", :type => "hidden",:class=>"purchase_input check-input-#{object.id}-#{j} price-wot-#{object.product_id}-#{j}", "data-product-id"=>object.product_id,"data-uid"=>"#{j}"}
+                                    
+          - if AppConfiguration.get_config_value('Percentage_applied_on_lending_price') == 'enabled'  
+            %td.padding-r-5
+              = select_tag "sales_percentage_#{object.id}_#{j}", options_for_select(@percentages.map { |e| ["#{e.value}%", "#{e.id}",{'data-product-id'=>object.product_id}] }), {:class=>"form-control auto_populate_entity tax_serial_#{i} sales_percentage_#{object.product_id}", "data-meta-id"=>object.id, "data-counter"=>i, "data-total-count"=> @stock_purchase.purchase_order.purchase_order_metum.sum(:product_amount).to_i, "data-entity-type"=>"tax",prompt: "Percent", disabled: true}
+                                  
+          - if @input_tax_config == 'enabled'
+            %td
+              %input.validate.form-control.check-input.allow-numeric-only{:value=> "0",:name => "pro_pwot_#{object.id}_#{j}", :type => "text",:class=>"purchase_input check-input-#{object.id}-#{j} price-wot-#{object.product_id}-#{j}", "data-product-id"=>object.product_id,"data-uid"=>"#{j}"}
+            %td
+              = get_input_taxes(object.product_id,current_user.unit_id)
+              .clearfix
+              .m-input{:id=>"tax-input-container-#{object.product_id}"}
+          %td
+            %input.validate.form-control.check-input.allow-numeric-only{:value=> "0",:name => "pro_additional_cost_#{object.id}_#{j}", :type => "text",:class=>"purchase_input check-input-#{object.id}-#{j} pro-additional-cost-#{object.product_id}-#{j}", "data-product-id"=>object.product_id,"data-uid"=>"#{j}"}
+          
+            %input.validate.form-control{:name => "addon_remarks_#{object.id}_#{j}", :type => "text",:placeholder=>"(Remarks)","data-uid"=>"#{j}"}
+          %td
+            %input.validate.form-control.check-input.allow-numeric-only.product-total-wt{:value=> "0",:name => "pro_price_wt_#{object.id}_#{j}", :type => "text",:class=>"check-input-#{object.id}-#{j} product_price_wt_#{object.product_id}_#{j}","data-uid"=>"#{j}"}      
+            .row.margin-l-r-none
+              .col-lg-9.padding-l-r-none
+                - if is_base_unit
+                  %input.validate.form-control.check-input.allow-numeric-only.product-qty.purchase_input{:value=> "1",:name => "pro_qty_#{object.id}_#{j}", :type => "text",:class=>"check-input-#{object.id}-#{j} quantity-#{object.product_id}-#{j}", "data-product-id"=>object.product_id,"data-uid"=>"#{j}"}     
+                - else
+                  %input.validate.form-control.check-input.allow-numeric-only.product-qty.purchase_input{:value=> object.secondary_amount * object.product_unit.multiplier,:name => "pro_qty_#{object.id}_#{j}", :type => "text",:class=>"check-input-#{object.id}-#{j} quantity-#{object.product_id}-#{j}", "data-product-id"=>object.product_id,"data-uid"=>"#{j}"}
+              .col-lg-3.padding-l-r-none
+                %br
+                =object.product.basic_unit
+          - i += 1   
+         
+          - if AppConfiguration.get_config_value('retail_menu') == 'enabled'
+            %td.padding-r-5
+              %input.validate.form-control.check-input.allow-numeric-only.margin-b-2.sale-price.purchase_input.purchase-qty{:value=> "#{price}",:name => "retail_price_#{object.id}_#{j}", :type => "text",:class=>"check-input-#{object.id}-#{j} landing-price-#{object.product_id}-#{j} landing-price-#{object.product_id} sale-price-#{object.product_id}", "data-product-id"=>object.product_id,"data-uid"=>"#{j}","data-pom-id"=>object.id}
+              ="per"
+              / %b="#{_unit_name}"
+              %b=object.product.basic_unit
+          %td.padding-r-5
+            %input.validate.form-control.margin-b-2{:value=> "#{object.product.hsn_code}",:name => "pro_hsn_code_#{object.id}_#{j}", :type => "text","data-product-id"=>object.product_id,"data-uid"=>"#{j}",:placeholder=>"Hsn code" }
+          
+          %td.padding-r-5
+            %input.validate.form-control.margin-b-2{:name => "model_number_#{object.id}_#{j}", :type => "text", "data-product-id"=>object.product_id, :placeholder=>"Model No"}
+
+          - if @stock_description != 'enabled'
+            %td.padding-r-5
+              %input.validate.form-control.check-input.purchase_input.description{:type => "text", :name=>"description_#{object.id}_#{j}",:placeholder=>"Desc" }  
+          - j += 1              

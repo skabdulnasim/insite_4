@@ -1,0 +1,151 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Targets",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+- if @can_initiate_new_target #checking id the current user can initiate  new target or not
+	.col-sm-3.padding-5
+		.card
+			.tabbable.tabs-left
+				%ul.nav.nav-tabs.padding-none.width-100
+					%li.active
+						%a{"data-toggle" => "tab", :href => "#a"}
+							%span.float-r.badge= @user_targets.count
+							Manage Targets 
+			.clearfix
+			.filter-title.margin-t-b-0
+				%i.mdi-action-open-in-new.left
+				Quick Links
+			.padding-5 
+				%button.m-btn.blue.width-100.text-align-left.waves-effect.waves-light{"data-toggle"=>"modal","data-target"=>"#user-target-type-model"}
+					%i.mdi-av-equalizer.left
+					Set Target
+
+.col-sm-9.padding-5
+	.tab-content.padding-l-r-none
+		#a.tab-pane.active
+			.main-section__content
+				.example
+					- _own_target_details = current_user.own_targets
+					- if _own_target_details.present?
+
+						- _own_target_details.each do |own_target|
+							- own_target_amount,due_target_amount = calculate_target_and_due_amount(own_target)
+							.card
+								.col-lg-9.padding-r-none
+									.card-content.p10
+										%h5.font-w-400 
+											%span
+												%i.fa.fa-user
+												= "#{current_user.profile.firstname}  #{current_user.profile.lastname}"
+										.divider
+										.margin-l-15.margin-t-15
+											.row
+												%span.font-w-400 Target set by :
+												%span.margin-l-15= " #{own_target.parent_user.profile.full_name}"
+												%br
+												%span.font-w-400 Target Type :
+												%span.margin-l-15= " #{own_target.target_type.humanize}"
+												%br
+												%span.font-w-400 Total target :
+												%span.margin-l-22.m-label.green= " #{own_target_amount} btl"
+												%br
+												/ %span.font-w-400 Remaining target :
+												/ %span.margin-l-22.m-label.red= due_target_amount
+												/ %br
+												%span.font-w-400 Target timeline :
+												%span.margin-l-15= Date::MONTHNAMES[own_target.from_date.month]
+												%span.margin-l-15 
+												%a.m-btn.orange.width-30.text-align-left.waves-effect.waves-light.right{:style=>"float:right",:href =>new_user_target_path(:target_id=>own_target.id,:target_type=>own_target.target_type)}
+													Distribute Target
+													%i.mdi-editor-border-color
+									#target_accordion.accordion
+										.card-header{:id=>"#heading_#{own_target.id}"}
+											%center
+												%h2.mb-0
+													%button.btn.btn-link.expand_cllapse{"aria-controls" => "collapse_target#{own_target.id}", "aria-expanded" => "false", "data-target" => "#collapse_target#{own_target.id}", "data-toggle" => "collapse","data-parent" => "#target_accordion", :type => "button","data-expandable"=>"expand_collapse_#{own_target.id}"}
+														Distribution details
+														%i.fa.fa-sort-down.fa-2x{:id=>"expand_collapse_#{own_target.id}"}
+										.collapse{"aria-labelledby" => "#heading_#{own_target.id}", :id=>"collapse_target#{own_target.id}"}
+											.card
+												.card-body
+													- if own_target.child_targets.present?
+														-own_target.child_targets.each do |child_target|
+															%ul.list-group
+																%li.list-group-item.d-flex.justify-content-between.align-items-center
+																	- own_target_amount,due_target_amount = calculate_target_and_due_amount(child_target)
+																	="#{child_target.child_user.profile.full_name} (#{child_target.child_user.users_role.role.name})"
+																	%span.badge.badge-primary.badge-pill= own_target_amount
+													-else
+														- puts "searching for resource targets"
+														-if own_target.resource_targets.present?
+															-own_target.resource_targets.each do |res_target|
+																%ul.list-group
+																	%li.list-group-item.d-flex.justify-content-between.align-items-center
+																		="#{res_target.resource.name}/(#{res_target.resource.unique_identity_no})"
+																		%span.badge.badge-primary.badge-pill= res_target.user_target_products.sum(:target_quantity)
+														-else
+															%p.alert.red No Distributions of target found
+										
+
+					-else
+						.example__content.p0.min-height-405
+							.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+								%header.data-table-header
+									%span.fs-title{:style=>"margin-left:20px;"} All Targets
+								.data-table-header__label
+								%table.margin-l-15.margin-t-15.data-table
+									%tr
+										/ %th
+										/ 	%strong  Parent user
+										%th 
+											%strong Child user
+										%th 
+											%strong Role
+										%th 
+											%strong Duration
+										%th 
+											%strong Target Timeline
+										%th 
+											%strong Target type
+										%th 
+											%strong Target amount
+										/ %th Is approved
+										/ %th Rejection reason
+										%th
+										%th
+										%th
+									- child_user_target =  current_user.child_user_targets
+
+									- if child_user_target.present?
+										-puts child_user_target.length
+										-child_user_target.each do |child_user_target|
+											- p child_user_target
+											%tr
+												= render partial:"user_targets/target_view_for_super_user", :object => child_user_target,:as => 'user'
+									- else
+										%tr
+											%td
+												No target found
+						/ %br
+						/ .margin-l-15
+						/ 	= link_to 'New User target', new_user_target_path
+
+
+#user-target-type-model.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "showUserTargetTypeModal", :role => "dialog", :tabindex => "-1"}
+	.modal-dialog
+		.modal-content.m-modal-content
+			= form_tag(new_user_target_path,method: :get) do
+				.modal-header.m-modal-header
+					%button.close{"data-dismiss" => "modal", :type => "button"}
+						%span{"aria-hidden" => "true"} &times;
+						%span.sr-only Close
+					%h4#showUserTargetTypeModal.modal-title Select Target Type
+				.modal-body
+					.col-md-12
+						.col-md-1
+						.col-md-9
+							.form-group{:style=> "width:100%"}
+								= select_tag 'target_type', options_for_select(UserTarget::TARGET_TYPE.map{ |_type| [ "#{_type.humanize}", "#{_type}"] }), { prompt: "Select target type", :class => 'form-control',:required => true}
+					.clearfix
+				.modal-footer
+					%button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+					= submit_tag "Proceed", class: "btn btn-primary"

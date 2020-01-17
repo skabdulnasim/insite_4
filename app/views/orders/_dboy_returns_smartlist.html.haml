@@ -1,0 +1,56 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+
+  $('.show_pop').popover('hide');
+  });
+- unless smart_listing.empty?
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Listing Returns 
+          %table.data-table#accordion
+            %thead
+              %tr.data-table__selectable-row    
+                %th
+                  = "Select"            
+                %th
+                  = smart_listing.sortable "Order ID", "order_id"
+                %th
+                  = "Product name"
+                %th
+                  = "Qnt."
+                %th
+                  = smart_listing.sortable "Create Date", "created_at"
+                %th
+                  = "Order Address"
+            %tbody.panel
+              - smart_listing.collection.each do |return_to_delivery_boy|
+                %tr.data-table__selectable-row{:id => "#{return_to_delivery_boy.id}"}
+                  %td
+                    %input{"aria-label" => "...", "data-delivarydate" => return_to_delivery_boy.created_at, :name => "return_ids[]", :type => "checkbox", :value => return_to_delivery_boy.id, :id=>"return_id_#{return_to_delivery_boy.id}"}
+                    %label{:for=>"return_id_#{return_to_delivery_boy.id}"}
+                  %td= return_to_delivery_boy.order_id
+                  %td= return_to_delivery_boy.product.name
+                  %td= return_to_delivery_boy.quantity.to_s+" "+return_to_delivery_boy.product.basic_unit
+                  %td= return_to_delivery_boy.created_at
+                  /%td= return_to_delivery_boy.order.deliverable.delivery_address
+                  
+                %tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{return_to_delivery_boy.id}", :role => "tabpanel", :id => "order_collapse_#{return_to_delivery_boy.id}"}
+                  %td.p0{:colspan=>8,:id=>"order_quickinfo_#{return_to_delivery_boy.id}"}
+                    Loading please wait...
+
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links
+          %br
+- else
+  .alert.alert-warning
+    No returns found

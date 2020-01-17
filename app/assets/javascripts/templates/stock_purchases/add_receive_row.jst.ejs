@@ -1,0 +1,148 @@
+<%
+  var exp_date = new Date()
+  exp_date.setFullYear(exp_date.getFullYear() + 1)
+  var exp_date = exp_date.format("yyyy-mm-dd")
+%>
+<% u = max_u + 1 %>
+<tr style="background:#FFE87C;" class="data-table__selectable-row m-input pom_row_<%= pom_id %> product_receive_tr_<%= pom_id %>_<%= u %>">
+  
+  <td></td>
+
+  <td class="padding-r-5">
+    <input class="filled-in stock_reiceved stock_purchase_received smart_input landing_price_calculation" data-po-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" id="<%= pom_id %>-<%= u %>" name="selected_po_srials[]" type="checkbox" value="<%= pom_id %>_<%= u %>">
+    <label class="font-sz-11 padding-l-20" for="<%= pom_id %>-<%= u %>"></label>
+  </td>
+
+  <td aria-controls="stock_purchase_order_collapse_<%= pom_id %>_<%= u %>" aria-expanded="false" data-parent="#stock_purchase_order_accordion" data-toggle="collapse" href="#stock_purchase_order_collapse_<%= pom_id %>_<%= u %>" role="button">
+    <div class="product_name">
+      <%= product.name %>
+    </div>
+  </td>
+
+  <td class="padding-r-5">
+    <input class="validate form-control margin-b-2" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="pro_hsn_code_<%= pom_id %>_<%= u %>" placeholder="Hsn code" type="text" value="<%= product.hsn_code %>">
+  </td>
+
+  <% if(configurations.auto_generate_sku == 'enabled') { %>
+    <td class="padding-r-5">
+      <input class="validate form-control check-input purchase_input product-sku margin-b-2" name="pro_sku_<%= pom_id %>_<%= u %>" onkeydown="if (event.keyCode == 13) return false" placeholder="SKU" style="width:100px;" type="text">
+    </td>
+  <% } else { %>
+    <td class="padding-r-5">
+      <input class="validate form-control check-input purchase_input product-sku margin-b-2" name="pro_sku_<%= pom_id %>_<%= u %>" onkeydown="if (event.keyCode == 13) return false" placeholder="SKU" style="width:100px;" type="text" value= <%= product_sku %> >
+    </td>
+  <% } %>
+
+  <% if(configurations.retail_menu == 'enabled') { %>
+    <td class="padding-r-5">
+      <input class="allow-numeric-only check-input check-input-<%= pom_id %>-<%= u %> form-control margin-b-2 mrp-<%= product.id %> mrp-<%= product.id %>-<%= u %> pro-mrp purchase-cost smart_input validate valid" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="pro_mrp_<%= pom_id %>_<%= u %>" type="text" value="0">
+      per
+      <b><%= product_unit_name %></b>
+    </td>
+  <% } %>
+
+  <td class="padding-r-5">
+    <input class="allow-numeric-only check-input form-control margin-b-2 margin_on_mrp_<%= product.id %>_<%= u %> smart_input validate" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="margin_on_mrp_<%= pom_id %>_<%= u %>" type="text" value="0">
+  </td>
+
+  <td class="padding-r-5">
+    <input class="allow-numeric-only check-input discount_on_mrp_<%= product.id %>_<%= u %> form-control margin-b-2 smart_input validate" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="discount_on_mrp_<%= pom_id %>_<%= u %>" type="text" value="0">
+  </td>
+
+  <td class="padding-r-5">
+    <input class="allow-numeric-only check-input form-control margin-b-2 purchase_cost_<%= product.id %>_<%= u %> smart_input validate" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="purchase_cost_<%= pom_id %>_<%= u %>" type="text" value="0">
+  </td>
+
+  <td class="padding-r-5" id="input-quantities-<%= product.id %>">
+    <input checked="" class="adding_free_qty filled-in input_unit_of_<%= product.id %>_<%= u %> landing_price_calculation purchase_input smart_input" data-id="<%= pom_id %>" data-multiplier="1" data-product-id= "<%= product.id %>" data-uid="<%= u %>" data-unit="<%= product_unit_name %>" id="input-unit-of-<%= product.id %>-<%= product_unit_name %>" type="checkbox">
+    <input class="adding_free_qty allow-numeric-only check-input form-control input_quantity_<%= product.id %>_<%= u %> input_quantity_of_<%= pom_id %>_<%= u %> input_quantity_of_<%= product.id %>_<%= product_unit_name %>_<%= u %> landing_price_calculation margin-b-2 purchase_input smart_input validate" data-id="<%= pom_id %>" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" type="text" value="1.0">
+    <%= product_unit_name %>
+  </td>
+
+  <td class="padding-r-5">
+    <input class="adding_free_qty form-control free_quantity_<%= pom_id %>_<%= u %> free_quantity_<%= product.id %>_<%= u %> landing_price_calculation margin-b-2 smart_input validate" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="free_quantity_<%= pom_id %>_<%= u %>" type="text" value="0">
+  </td>
+
+  <td class="padding-r-5">
+    <input class="validate form-control margin-b-2" data-product-id= "<%= product.id %>" name="batch_no_<%= pom_id %>_<%= u %>" placeholder="Batch no" type="text">
+  </td>
+
+  <% if(configurations.stock_expiry_date == 'enabled') { %>  
+    <td class="padding-r-5">
+      <input class="validate form-control datepick margin-b-2" name="expiry_date_<%= pom_id %>_<%= u %>" placeholder="Expiry Date" required="" type="text" value="<%= exp_date %>">
+    </td>
+  <% } %>
+
+  <td class="padding-r-5">
+    <input class="allow-numeric-only check-input check-input-<%= pom_id %>-<%= u %> form-control landing-price-<%= product.id %> landing-price-<%= product.id %>-<%= u %> margin-b-2 purchase-qty validate" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="pro_price_<%= pom_id %>_<%= u %>" type="text" value="0.0">
+    per
+    <b><%= product_unit_name %></b>
+    <% if(configurations.input_tax_config != 'enabled'){ %>
+      <input class="allow-numeric-only check-input check-input-<%= pom_id %>-<%= u %> form-control price-wot-<%= product.id %>-<%= u %> purchase_input" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="pro_pwot_<%= pom_id %>_<%= u %>" type="hidden" value="0">
+    <% } %>
+  </td>
+  
+  <td class="padding-r-5">
+    <input class="allow-numeric-only check-input form-control margin-b-2 smart_input validate volume_discount_<%= product.id %>_<%= u %>" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="volume_discount_<%= pom_id %>_<%= u %>" type="text" value="0">
+  </td>
+
+  <td class="padding-r-5">
+    <input class="allow-numeric-only check-input form-control margin-b-2 scheme_discount_<%= product.id %>_<%= u %> smart_input validate" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="scheme_discount_<%= pom_id %>_<%= u %>" type="text" value="0">
+  </td>
+
+  <td class="padding-r-5">
+    <input class="allow-numeric-only check-input form-control margin-b-2 scheme_discount_by_amount_<%= product.id %>_<%= u %> smart_input validate" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="scheme_discount_by_amount_<%= pom_id %>_<%= u %>" type="text" value="0">
+  </td>
+
+  <!-- <% if(configurations.perc_on_landing == 'enabled') { %>
+    <td class="padding-r-5 margin-b-2">
+      <select class="form-control auto_populate_entity tax_serial_<%= u %> sales_percentage_<%= product.id %>" data-counter="1" data-entity-type="tax" data-meta-id="2935" data-total-count="16" disabled="disabled" id="sales_percentage_2935_<%= u %>" name="sales_percentage_2935_<%= u %>">
+        <option value="">Percent</option>
+        <% for(var i = sales_percentages.length - 1; i >= 0; i--){ %>
+          <option value="<%= sales_percentages[i].id %>" data-product-id="<%= product.id %>"><%= sales_percentages[i].value %>%</option>
+        <% } %>
+      </select>
+    </td>
+  <% } %> -->
+
+  <td>
+    <input class="allow-numeric-only check-input check-input-<%= pom_id %>-<%= u %> form-control product-total-wt product_price_wt_<%= product.id %>_<%= u %> validate" data-uid="<%= u %>" name="pro_price_wt_<%= pom_id %>_<%= u %>" type="text" value="0">
+    <div class="row margin-l-r-none">
+      <div class="col-lg-9 padding-l-r-none">
+        <input class="allow-numeric-only check-input check-input-<%= pom_id %>-<%= u %> form-control product-qty quantity-<%= product.id %>-<%= u %> validate" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="pro_qty_<%= pom_id %>_<%= u %>" readonly="true" type="text" value="1">
+      </div>
+      <div class="col-lg-3 padding-l-r-none">
+        <br>
+        <%= product_unit_name %>
+      </div>
+    </div>
+  </td>
+  
+  <% if(configurations.retail_menu == 'enabled') { %>
+    <td class="padding-r-5">
+      <input class="allow-numeric-only check-input check-input-<%= pom_id %>-<%= u %> form-control margin-b-2 purchase-qty sale-price sale-price-<%= product.id %> sale-price-<%= product.id %>-<%= u %> validate" data-pom-id="<%= pom_id %>" data-product-id= "<%= product.id %>" data-uid="<%= u %>" name="retail_price_<%= pom_id %>_<%= u %>" type="text" value="0.0">
+      per
+      <b><%= product_unit_name %></b>
+    </td>
+  <% } %>
+
+  <td class="padding-r-5">
+    <input class="validate form-control margin-b-2" data-product-id= "<%= product.id %>" name="model_number_<%= pom_id %>_<%= u %>" placeholder="Model No" type="text">
+  </td>
+  
+  <% if(configurations.stock_description != 'enabled') { %>
+    <td class="padding-r-5">
+      <input class="validate form-control check-input purchase_input description margin-b-2" name="description_<%= pom_id %>_<%= u %>" placeholder="Desc" type="text">
+    </td>
+    <% } %>
+</tr>
+<script>
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+  });
+</script>

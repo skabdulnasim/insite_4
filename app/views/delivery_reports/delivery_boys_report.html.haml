@@ -1,0 +1,26 @@
+- links_arr = [{:title=>"Delivery  Report",:url=>delivery_reports_path,:active_class=>""},{:title=>"Delivery Boys Report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Delivery Boys Report
+          .data-table-header__actions
+            = hidden_field_tag 'from_date_val', params[:from_date]
+            = hidden_field_tag 'to_date_val', params[:to_date]
+            = hidden_field_tag 'unit_id_val', @unit_id
+            %a.delivery-boys-report.m-btn.indigo.margin-l-5{:href=>"/delivery_reports/delivery_boys_report.csv?unit_id=#{@unit_id}&from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"}
+              %i.mdi-file-file-download.left
+              CSV
+            = smart_listing_controls_for(:delivery_boys_list, {class: "form-inline float-l margin-l-30"}) do
+              .form-group.filter.input-append
+                .input-group
+                  %input.form-control.search{:placeholder => "Search by delivery boy name...", :type => "text", :name=> "name_filter", :id => "delivery_boy_name_filter"}
+                    %span.input-group-btn
+                      %button.btn.btn-default.disabled{:type => "submit" }
+                        %span.glyphicon.glyphicon-search      
+              
+        = smart_listing_render :delivery_boys_list

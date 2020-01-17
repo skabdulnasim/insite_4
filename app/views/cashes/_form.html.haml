@@ -1,0 +1,19 @@
+= form_for @cash do |f|
+  - if @cash.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@cash.errors.count, "error")} prohibited this cash from being saved:"
+      %ul
+        - @cash.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :denomination
+    = f.number_field :denomination
+  .field
+    = f.label :tendered_amount
+    = f.number_field :tendered_amount
+  .field
+    = f.label :balance_return
+    = f.number_field :balance_return
+  .actions
+    = f.submit 'Save'

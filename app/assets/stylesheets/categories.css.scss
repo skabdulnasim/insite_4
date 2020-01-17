@@ -1,0 +1,14 @@
+// Place all the styles related to the Categories controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+#edit_cat{
+  height:200px;
+  overflow-y:scroll;
+  background-color:#fff;
+  padding:10px;
+  width: 50%;
+  margin-bottom: 10px;
+}
+#creat_cat_modal.modal{
+  display:none;
+}

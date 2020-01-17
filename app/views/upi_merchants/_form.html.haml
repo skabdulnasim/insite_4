@@ -1,0 +1,65 @@
+%br
+= form_for @upi_merchant, :html => { :class => 'form-horizontal'} do |f|
+  - if @upi_merchant.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@upi_merchant.errors.count, "error")} prohibited this upi_merchant from being saved:"
+      %ul
+        - @upi_merchant.errors.full_messages.each do |msg|
+          %li= msg
+
+  .col-lg-8
+    .form-group
+      .field
+        = f.label :"Payee Address", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :pa, :class => 'form-control', :required=> true
+    .form-group
+      .field
+        = f.label :"Payee Name", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :pn, :class => 'form-control', :required=> true
+    .form-group
+      .field
+        = f.label :"Merchant Code", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :mc, :class => 'form-control', :required=> true
+    .form-group
+      .field
+        = f.label :"Transaction ID", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :tid, :class => 'form-control'
+    .form-group
+      .field
+        = f.label :"Transaction Ref.", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :tr, :class => 'form-control'
+    .form-group
+      .field
+        = f.label :"Transaction Narration", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :tn, :class => 'form-control'
+    .form-group
+      .field
+        = f.label :"Transaction Amount", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :am, :class => 'form-control'
+    .form-group
+      .field
+        = f.label :"Currency Short code", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :cu, :class => 'form-control'
+    .form-group
+      .field
+        = f.label :"Reference Order page Url", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :ref_url, :class => 'form-control'
+    .form-group
+      .field
+        = f.label :"Minimum Paid Amount", :class => 'col-sm-4 control-label'
+        .col-sm-4
+          = f.text_field :mam, :class => 'form-control'
+    .form-group
+      .col-sm-offset-4.col-sm-10
+        = f.submit 'Save', :class => 'btn btn-success btn-lg'
+        %a.btn.btn-primary.btn-lg{:href => "#{root_url}"}
+          Cancel

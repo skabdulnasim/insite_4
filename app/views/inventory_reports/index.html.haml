@@ -1,0 +1,589 @@
+%script{:src=>"https://code.jquery.com/ui/1.12.1/jquery-ui.js"}
+:javascript
+  $(function() {
+    $('#product_search').autocomplete({
+      source: "/products/search_products",
+      select: function(event, ui) {
+        $('#product_search').val(ui.item.name);
+        $('#product_id').val(ui.item.id);
+        return false;
+      }
+    });
+
+    $('#product_search').autocomplete().data('uiAutocomplete')._renderItem = function(ul, item) {
+      return $('<li class="collection-item">').append('<a>' + item.name + '</a>').appendTo(ul);
+    };
+
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });  
+    $("input[type='checkbox']").change(function () {
+      $(this).siblings('ul').find("input[type='checkbox']").prop('checked', this.checked);
+    });   
+  });
+
+:css
+  .ui-autocomplete {
+    / position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1000;
+    float: left;
+    display: none;
+    min-width: 160px;
+    _width: 160px;
+    margin: 2px 0 0 0;
+    list-style: none;
+    background-color: #ffffff;
+    border-color: #ccc;
+    border-color: rgba(0, 0, 0, 0.2);
+    border-style: solid;
+    border-width: 1px;
+  }
+  .ui-menu-item{
+    display: block;
+    padding:10px;
+    clear: both;
+    font-weight: normal;
+    line-height: 18px;
+    white-space: nowrap;
+    border-bottom:1px solid #ccc;
+    margin-left:-40px;
+  }
+  .ui-menu-item:last-child {
+    border: none;
+  }
+  .ui-menu-item:hover { 
+    background-color: #EFEFEF;
+    cursor: pointer;
+  }
+  .ui-corner-all{
+    color: #616567;
+  }
+  .ui-helper-hidden-accessible{
+    display: none;
+  } 
+
+  .popup {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+  .font_color{
+    color:black;
+  }
+  .default-sidebar{
+    width:25% !important;
+    background-color : teal !important;
+    color: white !important;
+  }
+  .card.card-title a{
+    color: white !important;
+  }
+  
+- manual_load_javascript "templates/reports/store" ,"templates/reports/stock_store","templates/reports/stock_store2", "templates/reports/vendor"
+= render "layouts/flash"
+%ul#task-card.collection.with-header
+  %li.collection-header.cyan
+    %h4.white-text.task-card-title Store Reports
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock summary report of a store
+    .task-cat.grey-text
+      = form_tag(store_stocks_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"
+        - if current_user.role.name != "owner"
+          - @stores = current_user.unit.stores
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"       
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix
+  
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock consumption report
+    .task-cat.grey-text
+      = form_tag(stock_consumption_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}"     
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"                   
+        .form-group.col-lg-2
+          %h6.grey-text Select consumption reason
+          = check_box_tag("stock_transaction_type[]", "OrderDetail", true, :id => "trans_order", :class=>"filled-in" )
+          = label_tag("trans_order", "Order", :class=>"margin-t-2")
+          %br
+          = check_box_tag("stock_transaction_type[]", "StockTransfer", false, :id => "trans_trans", :class=>"filled-in" )
+          = label_tag("trans_trans", "Stock Transfer", :class=>"margin-t-2") 
+          %br
+          = check_box_tag("stock_transaction_type[]", "StockAudit", false, :id => "trans_audit", :class=>"filled-in" )
+          = label_tag("trans_audit", "Stock Audit", :class=>"margin-t-2")
+          %br
+          = check_box_tag("stock_transaction_type[]", "StockProduction", false, :id => "trans_production", :class=>"filled-in" )
+          = label_tag("trans_production", "Stock Production", :class=>"margin-t-2")
+        - if current_user.role.name == "owner"   
+          .form-group.col-lg-2  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 units-store",prompt: "Select Branch"   
+        .form-group.col-lg-2.store-units
+          - render_store_checkboxes(@stores,'consumption')
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix      
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Store indent report
+    .task-cat.grey-text
+      = form_tag(store_indent_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"              
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix   
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock Audit report
+    .task-cat.grey-text
+      = form_tag(stock_audit_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"              
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+    .clearfix        
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock issue report from a store
+    .task-cat.grey-text
+      = form_tag(stock_issue_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"              
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix 
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Avaliable stock in store
+    .task-cat.grey-text
+      = form_tag(avaliable_stock_inventory_reports_path, method: "get", :class=>"m-input") do
+        / .form-group.col-lg-2
+        /   = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true
+        / .form-group.col-lg-2
+        /   = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true 
+        - if current_user.role.name == "owner"   
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"           
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix  
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Avaliable stock in store for a Date
+    .task-cat.grey-text
+      = form_tag(avaliable_stock_for_period_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"              
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix             
+             
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock purchase report of a store
+    .task-cat.grey-text
+      = form_tag(stock_purchase_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"              
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"    
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix  
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Raw material consumption per outlet
+    .task-cat.grey-text
+      = form_tag(raw_product_consumption_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"              
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"    
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Day-By-Day Cost of Material
+    .task-cat.grey-text
+      = form_tag(cost_of_material_report_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        .form-group.col-lg-3
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date",autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"   
+        .form-group.col-lg-3  
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store" 
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock Expiry Report
+    .task-cat.grey-text
+      = form_tag(stock_expiry_report_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        .form-group.col-lg-3
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date",autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}" 
+        .form-group.col-lg-3  
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store" 
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Unit wise stock summary report
+    .task-cat.grey-text
+      = form_tag(unit_wise_stock_summary_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}  
+          - units_checkbox(current_user.unit_id,'transfer')        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock thresh hold report
+    .task-cat.grey-text
+      = form_tag(stock_thresh_hold_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}  
+          - units_checkbox_with_name(current_user.unit_id,'thresh_hold', "thresh_hold_unid_ids[]","thresh-hold-units-store") 
+        / - if current_user.role.name != "owner"    
+        /   - @stores = current_user.unit.stores
+        .form-group.col-lg-2.thresh-hold-store-units
+          - render_all_store_checkboxes(@stores,'thresh_hold')
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix   
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock aging report
+    .task-cat.grey-text
+      = form_tag(stock_aging_report_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}  
+          - units_checkbox_with_name(current_user.unit_id,'thresh_hold', "thresh_hold_unid_ids[]","thresh-hold-units-store") 
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report
+      .clearfix   
+
+%ul#task-card.collection.with-header
+  %li.collection-header.cyan
+    %h4.white-text.task-card-title Stock Transfer Reports
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock transfered from store
+    .task-cat.grey-text
+      = form_tag(stock_transfer_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = hidden_field_tag :transfer_type, '', :value=>"debit"
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"           
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix      
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Transfered stock received in store
+    .task-cat.grey-text
+      = form_tag(stock_transfer_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = hidden_field_tag :transfer_type, '', :value=>"credit"
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"   
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"           
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      PO Transfered and received in store
+    .task-cat.grey-text
+      = form_tag(pending_stock_receive_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          / = hidden_field_tag :transfer_type, '', :value=>"credit"
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"   
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"           
+        .form-group.col-lg-3
+          = select_tag "transfer_store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select transfer store"
+        .form-group.col-lg-3
+          = select_tag "receive_store_id", options_from_collection_for_select(@stores, "id", "name"), :class=>"form-control margin-t-10 unit_store", :required => true, prompt: "select recieived store"         
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+
+  - if current_user.role.name == "owner"     
+    %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+      %label{:for => "task6", :style => "text-decoration: none;"}
+        %i.fa.fa-chevron-right.margin-r-20'
+        Item wise stock transfer report
+      .task-cat.grey-text
+        / %span Please provide the following details to view this report
+        = form_tag(unit_wise_stock_transfer_inventory_reports_path, method: "get", :class=>"m-input") do
+          .form-group.col-lg-2
+            = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+          .form-group.col-lg-2
+            = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+          .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}  
+            - units_checkbox(current_user.unit_id,'transfer')        
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit", id:"summary-submit-button"}
+            View report          
+        .clearfix   
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Item wise stock purchase report
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(unit_wise_stock_purchase_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}"  
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}  
+          - units_checkbox(current_user.unit_id,'purchase')        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit", id:"summary-submit-button"}
+          View report          
+      .clearfix  
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Unit wise stock purchase summary report
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(unit_wise_stock_purchase_summary_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}  
+          - units_checkbox(current_user.unit_id,'purchase_summery')        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit", id:"summary-submit-button"}
+          View report          
+      .clearfix  
+  
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Unit wise stock transfer summary report
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(unit_wise_stock_transfer_summary_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}  
+          - units_checkbox(current_user.unit_id,'transfer_summery')        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit", id:"summary-submit-button"}
+          View report          
+      .clearfix           
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock In hand
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(stock_in_hand_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkboxs(current_user.unit_id)        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit", id:"summary-submit-button"}
+          View report          
+      .clearfix   
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Stock In Store
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(stock_in_store_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-4
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkboxss(current_user.unit_id,"stock_in_store")        
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit", id:"summary-submit-button"}
+          View report          
+      .clearfix       
+
+%ul#task-card.collection.with-header
+  %li.collection-header.cyan
+    %h4.white-text.task-card-title Vendor Reports
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Vendor payment report
+    .task-cat.grey-text
+      = form_tag(vendor_payment_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          / = hidden_field_tag :transfer_type, '', :value=>"debit"
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"    
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control" ,prompt: "Select Branch"          
+                
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix     
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Vendor Products Report
+    .task-cat.grey-text
+      = form_tag(vendor_products_inventory_reports_path, method: "get", :class=>"m-input") do     
+        .input-field
+          %input.input-group{:name => "Search", :id => "product_search", :placeholder => "Search Products...", :type => "text", :style => "height:36px;"}
+        = hidden_field_tag "product_id"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Vendor Wise Product Receive Report
+    .task-cat.grey-text
+      = form_tag(vendor_wise_product_sale_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units-for-vendors",prompt: "Select Branch"
+        - if current_user.role.name != "owner"
+          - @vendors = current_user.unit.vendors
+        .form-group.col-lg-3
+          = select_tag "vendor_id", options_from_collection_for_select(@vendors, "id", "name"), :class => "form-control margin-t-10 unit_vendor", :required => true, prompt: "Select vendor"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+
+%ul#task-card.collection.with-header
+  %li.collection-header.cyan
+    %h4.white-text.task-card-title Simo Reports
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task6", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Store simo report
+    .task-cat.grey-text
+      = form_tag(store_simo_report_inventory_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today-7.days}" 
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today}"  
+        - if current_user.role.name == "owner"  
+          .form-group.col-lg-3  
+            = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control margin-t-10 inventory-units",prompt: "Select Branch"
+        - if current_user.role.name != "owner"
+          - @stores = current_user.unit.stores
+        .form-group.col-lg-3
+          = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name"), :class => "form-control margin-t-10 unit_store", :required => true, prompt: "Select store"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix

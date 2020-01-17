@@ -1,0 +1,2 @@
+module StoreRacksHelper
+end

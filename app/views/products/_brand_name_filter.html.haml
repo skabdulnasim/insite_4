@@ -1,0 +1,16 @@
+.filter-title.margin-t-b-0 
+  %i.mdi-action-search.left
+  Search
+.padding-10 
+  .form-group.filter.input-append
+    .input-group
+      %input.form-control.search{:placeholder => "By Brand...", :type => "text", :name=> "brand"}
+        %span.input-group-btn
+          %button.btn.btn-primary.disabled{:type => "submit" }
+            %span.glyphicon.glyphicon-search   
+                                          
+.filter-title.margin-t-b-0 
+  %i.mdi-action-list.left
+  Brands          
+.padding-10.height-350{:style => "overflow-y: auto;"} 
+  = render 'products/brand_name_list'

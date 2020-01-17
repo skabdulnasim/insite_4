@@ -1,0 +1,14 @@
+- unless smart_listing.empty?
+  %table.table
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td.padding-5=object.product.name
+          %td.padding-5
+            %button.m-btn.green.float-r.m-btn-small.add-combo-item-to-combo-product{"data-product-id"=>object.product_id,"data-product-name"=>object.product.name,"data-product-basic-unit-id"=>object.product.basic_unit_id,"data-menu-product-id"=>object.id}
+              %i.mdi-content-add
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

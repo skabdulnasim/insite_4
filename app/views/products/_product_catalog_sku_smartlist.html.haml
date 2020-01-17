@@ -1,0 +1,47 @@
+/ :css
+/   .custom_span:{
+/     color:white;
+/     background-color:orange
+/     padding:2px
+/   }
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        //%th= smart_listing.sortable "Stock Id", "id"
+        %th= smart_listing.sortable "SKU", "sku"
+        %th= smart_listing.sortable "Name", "name"
+        %th Color
+        %th Size
+        %th Sale Price
+        %th Enter counted stock
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row{:style=>"height:50px !important;"}
+          - product = Product.find(object.product_id)
+          //%td=object.id
+          %td=object.sku
+          %td
+            =object.product.name
+            %br
+            %span.blue{:style=>"color:white; padding:2px;"} Batch No :
+            %span="#{object.batch_no}"
+            %br
+            %span{:style=>"background-color:#c37e18;color:white; padding:2px;"} Model No
+            %span="#{object.model_number}"
+            - if object.product.local_name.present?
+              %b
+                = " ( #{object.product.local_name} )"
+              
+          %td=object.color_id.present? ? object.color.name : "-"
+          %td=object.size_id.present? ? object.size.name : "-"
+          %td=object.sell_price_with_tax
+          %td
+            .input-group
+              %input.form-control.add-stock-products-to-cart-onkey{"data-product-id"=>object.product_id,"data-sku"=>object.sku,"data-product-name"=>product.name,"data-product-unit"=>product.basic_unit,"data-stock-id"=>object.id,"data-product-price"=>object.sell_price_with_tax,"data-product-color"=> object.color_id.present? ? object.color_id : "na","data-product-size"=> object.size_id.present? ? object.size_id : "na", "data-product-model"=>object.model_number.present? ? object.model_number: "na","data-product-batch-no"=>object.batch_no.present? ? object.batch_no : "na", :type => "text", :class=>"quantity_#{object.sku}_#{object.id}"}
+              .input-group-addon=product.basic_unit          
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

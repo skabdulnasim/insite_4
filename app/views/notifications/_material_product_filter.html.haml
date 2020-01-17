@@ -1,0 +1,16 @@
+.card
+  .padding-10 
+    %b FILTER BY
+  = smart_listing_controls_for(:thresh_hold_alert, {class: "text-left"}) do
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-list.left
+      Categories          
+    .padding-10{:style => "overflow-y: scroll; position: sticky; height: 250px;"}
+      = render 'products/listing_category'
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-list.left
+      Stores          
+    .padding-10{:style => "overflow-y: scroll; position: sticky; height: 250px;"}
+      - all_units = []
+      - all_units = Unit.set_unit_ids(current_user.unit_id,all_units)
+      - render_all_store_checkboxes_notification(Store.set_unit_in(all_units),'thresh_hold')

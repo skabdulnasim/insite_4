@@ -1,0 +1,61 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th Reservation ID
+        %th Customer Name
+        %th Checked In 
+        %th Checked Out 
+        %th Status
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td= object.reservation_id
+          %td= "#{object.reservation.customer.customer_profile.firstname} #{object.reservation.customer.customer_profile.lastname}"
+          %td
+            -if object.status == "pending"
+              %span{:class=> "plus click_to_checked_in", "data-target" => "#check_in_dialog", "data-toggle" => "modal"}
+                %a.m-btn.m-btn-low-padding.blue.waves-effect.waves-light.white-text
+                  CHECKED IN
+            -elsif object.status == "checked_in"
+              
+            -elsif object.status == "checked_out"
+              
+          %td
+            -if object.status == "pending"
+              %span{:class=> "plus click_to_checked_in", "data-target" => "#urbanpiper_menu_toggle", "data-toggle" => "modal"}
+                %a.m-btn.m-btn-low-padding.red.waves-effect.waves-light.white-text
+                  CHECKED OUT
+            -elsif object.status == "checked_in"
+              
+            -elsif object.status == "checked_out"
+          %td
+            -if object.status == "pending"
+              %span.badge.yellow.padding-5.margin-t-2
+                ="PENDING"
+            -elsif object.status == "checked_in"
+              %span.badge.green.padding-5.margin-t-2
+                ="Checked IN"
+            -elsif object.status == "checked_out"
+              %span.badge.gray.padding-5.margin-t-2
+                ="Checked OUT"
+  
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links 
+- else
+  .alert.alert-warning
+    No record found
+
+
+#check_in_dialog.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "CheckedIn", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Check IN
+      .modal-body
+        = form_tag(check_informations_path, method: "get",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          .modal-footer         
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Confirm", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}

@@ -1,0 +1,22 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th
+          %input.checkbox-parent-toggle.filled-in{:type=>"checkbox",:id=>"parent_check"}
+            %label{:for=>"parent_check"}  
+        %th= smart_listing.sortable "ID", "id"
+        %th= smart_listing.sortable "Name", "name"
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td
+            %input.checkbox-child.filled-in.available-products{:value=> "#{object.id }",:name=>"selected_products[]",:type=>"checkbox", "data-product-id" => "#{object.id}",:id=>"product_#{object.id}", "data-product-name" => "#{object.name}", "data-product-unit" => "#{object.basic_unit}"}
+            %label{:for=>"product_#{object.id}"}        
+          %td=object.id
+          %td=object.name
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

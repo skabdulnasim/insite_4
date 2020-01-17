@@ -1,0 +1,25 @@
+= form_for @settlement, :html => { :class => 'form-horizontal'} do |f|
+  - if @settlement.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@settlement.errors.count, "error")} prohibited this settlement from being saved:"
+      %ul
+        - @settlement.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :bill_id
+    = f.number_field :bill_id
+  .field
+    = f.label :bill_amount
+    = f.number_field :bill_amount
+  .field
+    = f.label :tips
+    = f.number_field :tips
+  .field
+    = f.label :user_id
+    = f.number_field :user_id
+  .field
+    = f.label :status
+    = f.text_field :status
+  .actions
+    = f.submit 'Save'

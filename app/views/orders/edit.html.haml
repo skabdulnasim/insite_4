@@ -1,0 +1,21 @@
+#page-wrapper   
+  - if notice 
+    .alert.alert-success.alert-dismissible{:role => "alert"}
+      %span.fa-stack.fa-lg
+        %i.fa.fa-circle.fa-stack-2x
+        %i.fa.fa-check.fa-stack-1x.fa-inverse
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+        %span.sr-only Close
+      = notice
+  .row
+    .page-header
+      %h2.margin-b-t-none
+        %span.fa-stack
+          %i.fa.fa-circle.fa-stack-2x{:style=>"color:#F39C12"}
+          %i.fa.fa-cutlery.fa-fw.fa-stack-1x.fa-inverse
+        Order Management
+        %small Editing order
+
+    .page-container 
+      = render 'form'

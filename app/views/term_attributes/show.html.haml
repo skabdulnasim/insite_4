@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @term_attribute.name
+
+= link_to 'Edit', edit_term_attribute_path(@term_attribute)
+\|
+= link_to 'Back', term_attributes_path

@@ -1,0 +1,3 @@
+.input-field.col.s12
+  = u.select :role_id, options_for_select(@roles.map{ |r| [r.name, r.id]}), { include_blank: "Select Role"},  {:class => "browser-default",:required => true,:onchange => "roleOnChange(this)"}
+#ajax-parent-user-section.input-field.col.s12

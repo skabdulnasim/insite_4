@@ -1,0 +1,162 @@
+:javascript
+  $(document).ready(function(){
+    $("#thirdparty_name").change(function(){
+      if( $(this).val() == 'urbanpiper'){
+        $("#urbanpiper_channels").show();
+      }
+      else{
+        $("#urbanpiper_channels").hide();
+      }
+    });
+  });
+  function set_thirdparty_unit_id(){
+    var u = [];
+    var checkboxes = document.getElementsByTagName('input');
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].type == 'checkbox' && checkboxes[i].name == 'thirdparty_unit_id[]' && checkboxes[i].checked == true) {
+        u.push(checkboxes[i].value);
+      }
+    }
+    document.getElementById("thirdparty_upload_unit_id").value = JSON.stringify(u);
+  }
+
+  function set_thirdparty_unit_id_toggle(){
+    var u = [];
+    var checkboxes = document.getElementsByTagName('input');
+    for (var i = 0; i < checkboxes.length; i++) {
+      if (checkboxes[i].type == 'checkbox' && checkboxes[i].name == 'thirdparty_unit_id[]' && checkboxes[i].checked == true) {
+        u.push(checkboxes[i].value);
+      }
+    }
+    document.getElementById("toggle_unit_id").value = JSON.stringify(u);
+  }
+
+  function checkAll(ele) {
+    var checkboxes = document.getElementsByTagName('input');
+    if (ele.checked) {
+       for (var i = 0; i < checkboxes.length; i++) {
+           if (checkboxes[i].type == 'checkbox' && checkboxes[i].name == 'thirdparty_unit_id[]') {
+               checkboxes[i].checked = true;
+           }
+       }
+    } else {
+       for (var i = 0; i < checkboxes.length; i++) {
+           console.log(i)
+           if (checkboxes[i].type == 'checkbox' && checkboxes[i].name == 'thirdparty_unit_id[]') {
+               checkboxes[i].checked = false;
+           }
+       }
+    }
+  }
+= render "layouts/flash"
+- manual_load_javascript "templates/units/unit_sections_dropdown", "templates/units/unit_thirdparties_dropdown", "templates/units/unit_toggle_sections_dropdown"
+%ul#task-card.collection.with-header
+  %li.collection-header.indigo.text-white
+    %span.text-white{:style=>"font-size:20px;"}
+      List of Branches
+    %a.m-btn.white.indigo-text.waves-effect.waves-light.float-r{:href => "#{new_unit_path}?unit_parent=#{current_user.unit_id}"}
+      Add new branch
+    - if 'owner' == current_user.unit.unittype.unit_type_name.downcase || 'superadmin' == current_user.unit.unittype.unit_type_name.downcase
+      %a.m-btn.white.indigo-text.waves-effect.waves-light.float-r{:onclick => "set_thirdparty_unit_id_toggle()",:style=>"margin-right: 10px;", "data-target" => "#thirdparty_unit_toggle", "data-toggle" => "modal"}
+        Toggle To Urbanpiper
+      %a.m-btn.white.indigo-text.waves-effect.waves-light.float-r{:onclick => "set_thirdparty_unit_id()", :style=>"margin-right: 10px;", "data-target" => "#thirdparty_unit_upload", "data-toggle" => "modal"}
+        Upload To Thirdparty
+      = check_box_tag "chk[]", '', false, :id=>"chk", :onClick => "checkAll(this)"
+      %label.float-r{:for=>"chk", :style=>"margin: 10px 10px 0px 0px;"}= "Check all"
+    .clearfix
+  %div
+    - load_units_tree(current_user.unit_id) #unitHelper
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title List of Branch types
+          .data-table-header__actions
+        %table.data-table
+          %thead
+            %tr
+              %th Branch Type
+              %th Branch Type Priority
+              %th Store Creatibility
+              %th
+
+          - @unittypes.each do |unittype|
+            %tbody
+              %tr
+                %td= unittype.unit_type_name
+                %td= unittype.unit_type_priority
+                %td
+                  - if unittype.store_creatability == 0
+                    = "No"
+                  -else
+                    = "Yes"
+                %td
+                  .float-r
+                    - if can? :edit, Unittype
+                      %a.m-btn.orange.waves-effect.waves-light.m-btn-small.margin-r-5{:href=>edit_unittype_path(unittype)}
+                        %i.mdi-editor-border-color
+                    - if can? :destroy, Unittype
+                      %a.m-btn.red.waves-effect.waves-light.m-btn-small.margin-r-5{:href => "#{unittype_path(unittype)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete branch type"}
+                        %i.mdi-action-delete
+#thirdparty_unit_upload.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "thirdpartyUnitUpload", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Thirdparty upload / update 
+      .modal-body
+        = form_tag(thirdparty_upload_units_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          %input{:name => "unit_id",:id => "thirdparty_upload_unit_id", :type => "hidden", :value => ""}
+          .form-group
+            %label.col-sm-4.control-label Section
+            .col-sm-8
+              - _sections = current_user.unit.sections
+              / - _thirdparty_configurations = _section.thirdparty_configurations
+              = select_tag "thirdparty_upload_section_id", options_from_collection_for_select(_sections, "id", "name"),:id=>"_select_section",class: "form-control", prompt:"Select Section", "required" => true
+          .form-group
+            %label#_label_thirdparty.col-sm-4.control-label 
+            #_select_thirdparty.col-sm-8
+          .modal-footer         
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Upload", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}
+#thirdparty_unit_toggle.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "thirdpartyUnitToggle", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#showTransferOptionModalLabel.modal-title Urbanpiper Toggle 
+      .modal-body
+        = form_tag(urbanpiper_toggle_units_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          %input{:name => "toggle_unit_id",:id => "toggle_unit_id", :type => "hidden", :value => ""}
+          .form-group
+            %label.col-sm-4.control-label Section
+            .col-sm-8
+              - _sections = current_user.unit.sections
+              / - _thirdparty_configurations = _section.thirdparty_configurations
+              = select_tag "thirdparty_toggle_section_id", options_from_collection_for_select(_sections, "id", "name"),class: "form-control", prompt:"Select Section", "required" => true
+          .form-group
+            #urbanpiper_channels
+            .form-group
+            .form-group
+              %label.col-sm-4.control-label Select Channel
+              .col-sm-8
+                = check_box_tag "urbanpiper_ch[]", 'zomato', false, :id=>"urbanpiper_zomato"
+                %label{:for=>"urbanpiper_zomato"}= "Zomato"
+                = check_box_tag "urbanpiper_ch[]", 'swiggy', false, :id=>"urbanpiper_swiggy"
+                %label{:for=>"urbanpiper_swiggy"}= "Swiggy"
+                %span{:style=>"color:red; padding-left:20px;"} *Select atlist one channel.
+                = check_box_tag "urbanpiper_ch[]", 'urbanpiper', false, :id=>"urbanpiper_urbanpiper"
+                %label{:for=>"urbanpiper_urbanpiper"}= "Urbanpiper"
+                %span{:style=>"color:red; padding-left:20px;"} *FOR TEST ONLY.
+            .form-group
+              %label.col-sm-4.control-label Unit is Enable/Disable For Checked Channel
+              .col-sm-8
+                = check_box_tag "urbanpiper_channel_isactive", '1', true, :id=>"urbanpiper_channel_isactive"
+                %label{:for=>"urbanpiper_channel_isactive"}= ""
+          .modal-footer         
+            %input.m-btn.orange.large{:name => "commit", :type => "submit", :value => "Upload", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }}

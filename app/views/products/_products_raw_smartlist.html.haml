@@ -1,0 +1,22 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-5= smart_listing.sortable "Product", "name"
+        %th.col-lg-5= smart_listing.sortable "Category", "category_id"
+        %th.col-lg-5= smart_listing.sortable "Unit", "basic_unit"
+        %th.col-lg-2
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.name
+          %td=object.category.name
+          %td=object.basic_unit
+          %td{:style=>"text-align:right"}
+            %button.add-products-as-raw.m-btn.green.m-btn-low-padding{:type => "submit","data-product-id"=>object.id,"data-product-name"=>object.name,"data-product-unit"=>object.basic_unit,"data-basic-unit-id"=>object.basic_unit_id,"data-raw-units"=>@product_units.map{ |a| [a.short_name, a.id] }}
+              %i.mdi-content-add
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

@@ -1,0 +1,78 @@
+<div class="col-lg-6 padding-5">
+  <div class="card waves-effect waves-light">
+    <div class="card-content p0">
+      <p class="header teal-text text-lighten-5 teal padding-10">
+        ORDER DETAILS
+        <small class="teal-text text-lighten-4">(Quotation ID: #
+          <%=response.id%>)</small>
+      </p>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="font-sz-12 hidden-sm hidden-md hidden-xs">#</th>
+            <th class="font-sz-12">Status</th>
+            <th class="font-sz-12">Amount</th>
+            <th class="font-sz-12 hidden-sm hidden-md hidden-xs">Order Date</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% for (var i = response.orders.length - 1; i >= 0; i--) { %>
+              <tr>
+                <td>
+                    <a href="/orders/<%=response.orders[i].id%>" target="_blank"><%=response.orders[i].id%></a>
+                    <!-- <%= response.orders[i].id %> -->
+                </td>
+                <td>
+                    <%= response.orders[i].order_status_id %>
+                </td>
+                <td>
+                    <%= response.orders[i].order_subtotal %>
+                </td>
+                <td>
+                    <%= formatDateTime(response.orders[i].recorded_at) %>
+                </td>
+              </tr>
+            <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="col-lg-6 padding-5">
+  <div class="card waves-effect waves-light">
+    <div class="card-content p0">
+      <p class="header teal-text text-lighten-5 teal padding-10">
+        ADVANCE PAYMENT DETAILS
+        <small class="teal-text text-lighten-4">(Quotation ID: #
+          <%=response.id%>)</small>
+      </p>
+      <table class="data-table">
+          <thead>
+            <tr>
+              <th class="font-sz-12 hidden-sm hidden-md hidden-xs">#</th>
+              <th class="font-sz-12">Amount</th>
+              <th class="font-sz-12">Date</th>
+              <th class="font-sz-12 hidden-sm hidden-md hidden-xs">Mode</th>
+            </tr>
+          </thead>
+          <tbody>
+              <% for (var i = response.advance_payments.length - 1; i >= 0; i--) { %>
+                <tr>
+                  <td>
+                      <%= response.advance_payments[i].id %>
+                  </td>
+                  <td>
+                      <%= response.advance_payments[i].amount %>
+                  </td>
+                  <td>
+                      <%= formatDateTime(response.advance_payments[i].created_at) %>
+                  </td>
+                  <td>
+                      <%= response.advance_payments[i].creditmode_type.replace("Wallet","").replace("CreditMode","") %>
+                  </td>
+                </tr>
+              <% } %>
+          </tbody>
+    </div>
+  </div>
+</div>

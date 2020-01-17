@@ -1,0 +1,6 @@
+%tr{:class=>"taxclass_of_#{tax_class.id}"}
+  %td=tax_class.name
+  %td=tax_class.tax_type
+  %td=tax_class.ammount
+  %td=tax_class.amount_type
+  %td= link_to "Edit",edit_tax_class_path(tax_class),:class=>"right modal-trigger edit_tax_class_link", remote: true

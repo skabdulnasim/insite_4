@@ -1,0 +1,86 @@
+- unless smart_listing.empty?
+  %table.table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-2= smart_listing.sortable "Product", "name"
+        %th.blue-text 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Opening Stock","style"=>"text-decoration:none"} OS*
+        %th.orange-text 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Stock on audit","style"=>"text-decoration:none"} SOA*
+        %th.red-text.text-lighten-2 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Stock consumed for audits","style"=>"text-decoration:none"} CA*
+        %th.red-text.text-lighten-2 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Stock consumed for orders","style"=>"text-decoration:none"} CO*
+        %th.red-text.text-lighten-2 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Stock consumed for stock transfers","style"=>"text-decoration:none"} CT*
+        %th.red-text 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Total stock debit","style"=>"text-decoration:none"} TD*
+        %th.green-text.text-lighten-2 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Total stock purchased","style"=>"text-decoration:none"} SP*
+        %th.green-text 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Total stock credit","style"=>"text-decoration:none"} TC*
+        %th.blue-text 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Closing stock","style"=>"text-decoration:none"} CS*
+        %th.teal-text 
+          %a{"data-toggle" => "tooltip", :href => "#", :title => "Current stock","style"=>"text-decoration:none"} CUS*
+    %tbody
+      - smart_listing.collection.each do |object|
+        - stock_data = get_product_stock_data(@store.id, object.id, @from_datetime, @to_datetime) # StoresHelper
+        %tr.data-table__selectable-row
+          %td
+            ="##{object.id} | #{object.name}"
+            - if object.local_name.present?
+              %b
+                = " ( #{object.local_name} )"
+          %td
+            =number_with_precision(stock_data[:opening_stock], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit  
+          %td
+            - if stock_data[:initial_audit_stock].present?
+              =number_with_precision(stock_data[:initial_audit_stock], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit
+              %br
+              %small.font-sz-11="(#{stock_data[:initial_audit_date]})"              
+          %td
+            =number_with_precision(stock_data[:audit_consumption], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit       
+          %td
+            =number_with_precision(stock_data[:order_consumption], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit  
+          %td
+            =number_with_precision(stock_data[:transfer_consumption], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit  
+          %td
+            =number_with_precision(stock_data[:total_debit], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit                            
+          %td
+            =number_with_precision(stock_data[:total_purchase], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit    
+          %td
+            =number_with_precision(stock_data[:total_credit], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit           
+          %td
+            =number_with_precision(stock_data[:closing_stock], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit                         
+          %td                
+            =number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+            =object.basic_unit       
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  .grey.text-white.padding-5
+    %h5.text-white * Index for column names
+    .col-lg-6
+      %h6.text-white OS: Opening Stock
+      %h6.text-white SOA: Stock on audit, represents  counted physical stocks of items of initial audit (approved) done after `from date`.
+      %h6.text-white CA: Stock consumed for audits
+      %h6.text-white CO: Stock consumed for orders
+    .col-lg-6
+      %h6.text-white CT: Stock consumed for stock transfers
+      %h6.text-white SP: Total stock purchased
+      %h6.text-white TC: Total stock credit
+      %h6.text-white CS: Closing stock
+      %h6.text-white CUS: Current stock
+    .clearfix  
+- else
+  .alert.alert-warning
+    No products found

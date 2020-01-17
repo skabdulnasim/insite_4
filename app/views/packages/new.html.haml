@@ -1,0 +1,51 @@
+%script{:src=>"https://code.jquery.com/ui/1.12.1/jquery-ui.js"}
+:css
+	.ui-autocomplete {
+		position: absolute;
+		top: 100%;
+		left: 0;
+		z-index: 1000;
+		float: left;
+		display: none;
+		min-width: 160px;
+		_width: 160px;
+		margin: 2px 0 0 0;
+		list-style: none;
+		background-color: #ffffff;
+		border-color: #ccc;
+		border-color: rgba(0, 0, 0, 0.2);
+		border-style: solid;
+		border-width: 1px;
+	}
+	.ui-menu-item{
+		display: block;
+		padding:10px;
+		clear: both;
+		font-weight: normal;
+		line-height: 18px;
+		white-space: nowrap;
+		border-bottom:1px solid #ccc;
+		margin-left:-40px;
+	}
+	.ui-menu-item:last-child {
+		border: none;
+	}
+	.ui-menu-item:hover { 
+		background-color: #EFEFEF;
+		cursor: pointer;
+	}
+	.ui-corner-all{
+		color: #616567;
+	}
+	.ui-helper-hidden-accessible{
+		display: none;
+	}
+- links_arr = [{:title=>"Create Package",:url=>"#!",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+.card.padding-10
+	= render 'form'
+- manual_load_javascript "templates/packages/customer", "templates/packages/menu_categories","templates/packages/address", "templates/packages/product","templates/packages/product_compositions"
+
+= hidden_field_tag 'user-email', "#{current_user.email}"
+= hidden_field_tag 'customer-id', ''
+= hidden_field_tag 'package-id', ''

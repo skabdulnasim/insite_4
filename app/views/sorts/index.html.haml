@@ -1,0 +1,32 @@
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing SORT
+          .data-table-header__actions
+            - if can? :new, Sort    
+              %a.m-btn.m-btn-teal.waves-effect.waves-light{:href => "#{new_sort_path}"}
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs Add new SORT  
+
+
+        %table.data-table.white
+          %tr.table-header.well
+            %th Name
+            %th Kot print
+            %th Description
+            %th Actions
+
+          - @sorts.each do |sort|
+            %tr
+              %td= sort.name
+              %td= sort.kot_print
+              %td= sort.description
+              %td
+                = link_to 'Show', sort
+                = link_to 'Edit', edit_sort_path(sort)
+                = link_to 'Destroy', sort, :method => :delete, :data => { :confirm => 'Are you sure?' }

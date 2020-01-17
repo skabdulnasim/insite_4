@@ -1,0 +1,69 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title=@sort.name
+
+        %div{:role => "tabpanel"}
+          / Nav tabs
+          %ul.nav.nav-tabs{:role => "tablist"}
+            %li.active{:role => "presentation"}
+              %a{"aria-controls" => "today", "data-toggle" => "tab", :href => "#today", :role => "tab"} Today
+            %li{:role => "presentation"}
+              %a{"aria-controls" => "previous", "data-toggle" => "tab", :href => "#previous", :role => "tab"} Previous
+            
+          / Tab panes
+          .tab-content
+            #today.tab-pane.active{:role => "tabpanel"}
+              - if @today_sort_items.present?
+                %table.table.table-bordered
+                  %tr.table-header.well
+                    %th Order Details ID
+                    %th Order ID
+                    %th Name
+                    %th status
+                    / %th Actions
+
+                  - @today_sort_items.each do |sort_item|
+                    %tr
+                      %td= sort_item.id
+                      %td= sort_item.order_id
+                      %td= sort_item.menu_product.product.name
+                      %td= show_order_detail_status(sort_item)
+              - else
+                .alert.alert-danger.alert-dismissible{:role => "alert"}
+                  %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+                  %strong 
+                    %i.fa.fa-exclamation-triangle
+                    Oops!
+                  There is nothing to show.
+            #previous.tab-pane{:role => "tabpanel"}
+              - if @sort_items.present?
+                %table.table.table-bordered
+                  %tr.table-header.well
+                    %th Order Details ID
+                    %th Order ID
+                    %th Name
+                    %th status
+                    / %th Actions
+
+                  - @sort_items.each do |sort_item|
+                    %tr
+                      %td= sort_item.id
+                      %td= sort_item.order_id
+                      %td= sort_item.menu_product.product.name
+                      %td= show_order_detail_status(sort_item)
+                      / %td
+                      /   = link_to 'Show', sort
+                      /   = link_to 'Edit', edit_sort_path(sort)
+                      /   = link_to 'Destroy', sort, :method => :delete, :data => { :confirm => 'Are you sure?' }
+              - else
+                .alert.alert-danger.alert-dismissible{:role => "alert"}
+                  %button.close{"aria-label" => "Close", "data-dismiss" => "alert", :type => "button"}
+                  %strong 
+                    %i.fa.fa-exclamation-triangle
+                    Oops!
+                  There is nothing to show.

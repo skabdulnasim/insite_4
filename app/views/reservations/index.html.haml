@@ -1,0 +1,78 @@
+:javascript
+  $(function() {
+    var dateToday = new Date();
+    var time = dateToday.getHours() + ":" + dateToday.getMinutes() + ":" + dateToday.getSeconds();
+    $('.datepick').datetimepicker({
+      pickTime: false,
+      format: 'YYYY-MM-DD',
+      minDate: dateToday,
+      useCurrent: true
+    });
+    $('.dtpicker').datetimepicker({
+      pickTime: false,
+      format: 'YYYY-MM-DD',
+      useCurrent: true
+    });
+
+    $('.redate').datetimepicker({
+      pickTime: true,
+      format: 'YYYY-MM-DD hh:mm',
+      useCurrent: true
+    });
+
+    $('.timepick').datetimepicker({
+      pickDate: false,
+      pickSeconds: true,
+      format: 'hh:mm:ss',
+      use24hours: true,
+      pick12HourFormat: false
+    });
+  });
+= render "layouts/flash"
+- manual_load_javascript "templates/reservations/list_resources"
+%script{:src => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.js"}
+%link{:href => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.css", :rel => "stylesheet"}/
+.col-sm-12.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Reservations
+            .data-table-header__actions
+              / %a.m-btn.m-btn-teal{:href => "#{new_reservation_path}"}
+              %a.m-btn.m-btn-teal.show_details
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs New Reservation
+          %header.data-table-header
+            .col-md-12.padding-5
+              .col-md-2
+                %h2 Filters
+            .col-md-4.padding-2    
+            .row           
+              .col-md-4
+                .form-group.input-group.col-md-8{style: "float:left"}
+                  = text_field_tag(:date, "#{Date.today.to_s}", class: 'form-control datepick', required: 'true')
+                  %span.input-group-addon
+                    %span.glyphicon.glyphicon-calendar                    
+              .col-md-8
+                .form-group.input-group.col-md-4{style: "float:left"}
+                  = text_field_tag(:date, "#{Date.today.to_s}", class: 'form-control datepick', required: 'true')
+                  %span.input-group-addon
+                    %span.glyphicon.glyphicon-calendar      
+                .form-group.col-md-4.resource{style: "float:left"}
+                  = select_tag(:resource, "<option>Select Resource</option>".html_safe, class: 'form-control')
+        %div.col-md-12{style: "margin-top: 10px"}
+          #calendar
+        #desc_dialog.dialog{:style => "display:none;"}
+          #event_desc
+          %br/
+          %br/
+          #event_actions
+            %span#edit_event
+            %span#delete_event
+        #create_event_dialog.dialog{:style => "display:none;"}
+          #create_event
+= render 'new_reservation'
+= render 'register_customer'

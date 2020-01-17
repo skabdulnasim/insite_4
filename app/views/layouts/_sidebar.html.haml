@@ -1,0 +1,185 @@
+.sidebar-collapse
+  %ul#side-menu.nav
+    %li
+      %a{:href => root_path}
+        %i.fa.fa-dashboard.fa-fw.fa-lg
+        Dashboard
+    - if can? :index, Order
+      %li
+        %a{:href => orders_path}
+          %i.fa.fa-cutlery.fa-fw.fa-lg
+          Orders
+    - if can? :index, Bill    
+      %li
+        %a{:href => bills_path}
+          %i.fa.fa-money.fa-fw.fa-lg
+          Bills
+    - if can? :index, Store
+      %li
+        %a{:href => stores_path}
+          %i.fa.fa-database.fa-fw.fa-lg
+          Inventory
+    - if can? :index, Vehicle
+      - if AppConfiguration.get_config_value('shipping_module') == 'enabled'
+        %li
+          %a{:href => vehicles_path}
+            %i.fa.fa-truck.fa-fw.fa-lg
+            Shipping
+    - if can? :index, DeliveryBoy
+      - if AppConfiguration.get_config_value('home_delivery') == 'enabled'
+        %li
+          %a{:href => delivery_boys_path}
+            %i.fa.fa-street-view.fa-lg
+            Home delivery
+    - if can? :index, ReportFolder
+      %li
+        %a{:href => "#"}
+          %i.fa.fa-line-chart.fa-lg
+          Reports
+          %span.fa.arrow
+        %ul.nav.nav-second-level
+          %li{:class => "#{'active' if current_page?(sale_reports_path)}"}
+            %a{:href => sale_reports_path}
+              Sales Report
+          %li{:class => "#{'active' if current_page?(nc_report_index_path)}"}
+            %a{:href => nc_report_index_path}
+              NC Report
+          %li{:class => "#{'active' if current_page?(inventory_reports_path)}"}
+            %a{:href => inventory_reports_path}
+              Inventory Report
+          %li{:class => "#{'active' if current_page?(report_folders_path)}"}
+            %a{:href => report_folders_path}
+              Old Reports
+    - if can? :index, Product
+      %li
+        %a{:href => "#"}
+          %i.fa.fa-archive.fa-fw.fa-lg
+          Products
+          %span.fa.arrow
+        %ul.nav.nav-second-level
+          %li{:class => "#{'active' if current_page?(unit_products_products_path)}"}
+            %a{:href => unit_products_products_path}
+              Branch Products
+          %li{:class => "#{'active' if current_page?(products_path)}"}
+            %a{:href => products_path}
+              Product Master
+          - if can? :new, Category
+            %li{:class => "#{'active' if current_page?(new_category_path)}"}
+              %a{:href => new_category_path}
+                Categories
+          - if can? :index, Attribute         
+            %li{:class => "#{'active' if current_page?(attributes_path)}"}
+              %a{:href => attributes_path} 
+                Attributes          
+          - if can? :settings, Product        
+            %li{:class => "#{'active' if current_page?(products_settings_path)}"}
+              %a{:href => products_settings_path}
+                Settings 
+    - if can? :index, MenuCard
+      %li
+        %a{:href => "#"}
+          %i.fa.fa-file-text-o.fa-fw
+          Menu Cards
+          %span.fa.arrow
+        %ul.nav.nav-second-level
+          %li{:class => "#{'active' if current_page?(menu_cards_path)}"}
+            %a{:href => menu_cards_path} 
+              All Menu Cards
+          %li
+            %a{:href => menu_cards_manage_settings_path} 
+              Settings   
+          %li
+            %a{:href => outlet_menu_association_menu_cards_path} 
+              Menu Assignment
+    - if can? :index, Table
+      %li
+        %a{:href => "#"}
+          %i.fa.fa-flag.fa-fw
+          Tables
+          %span.fa.arrow
+        %ul.nav.nav-second-level
+          %li
+            %a{:href => tables_path} 
+              All Tables
+          - if can? :new, Table    
+            %li
+              %a{:href => new_table_path} 
+                Add new  
+    - if can? :index, Unit
+      %li
+        %a{:href => "#"}
+          %i.fa.fa-sitemap.fa-fw.fa-lg
+          Organization
+          %span.fa.arrow
+        %ul.nav.nav-second-level
+          - if can? :index, Unit
+            %li
+              %a{:href => units_path}
+                Branches
+          - if can? :new, UnitDetail
+            %li
+              %a{:href => new_unit_detail_path} 
+                Branch Options                
+          - if can? :index, Section
+            %li
+              %a{:href => sections_path} 
+                Sections                 
+          - if can? :index, Sort
+            %li
+              %a{:href => sorts_path}
+                %i.fa.fa-flask.fa-fw
+                SORT
+          - if can? :index, PosTerminal  
+            %li
+              %a{:href => pos_terminals_path}
+                %i.fa.fa-desktop.fa-fw.fa-lg
+                POS Terminals                                                                          
+          - if can? :index, LoyaltyCard
+            - if AppConfiguration.get_config_value('loyalty_cards') == 'enabled'
+              %li
+                %a{:href => loyalty_cards_path}
+                  Loyalty Cards
+              %li
+                %a{:href => loyalty_card_classes_path}
+                  Loyalty Card Class
+          - if can? :index, Vendor
+            %li
+              %a{:href => vendors_path}
+                Vendors                    
+          - if can? :index, Advertisement
+            %li
+              %a{:href => advertisements_path}
+                Advertisements                                                                         
+    - if can? :index, User
+      %li
+        %a{:href => "#"}
+          %i.fa.fa-users.fa-fw.fa-lg
+          Users
+          %span.fa.arrow
+        %ul.nav.nav-second-level
+          %li{:class => "#{'active' if current_page?(users_path)}"}
+            %a{:href => users_path} 
+              All Users
+          - if can? :index, AccessManager    
+            %li
+              %a{:href => access_manager_index_path}
+                User roles                
+    
+    - if can? :index, AppConfiguration
+      %li
+        %a{:href => "#"}
+          %i.fa.fa-cogs.fa-fw.fa-lg
+          Settings
+          %span.fa.arrow
+        %ul.nav.nav-second-level
+          %li
+            %a{:href => app_configurations_path} 
+              Configurations
+          - if can? :index, AccessManager    
+            %li
+              %a{:href => access_manager_settings_path}
+                Access Manager Settings
+          - if can? :manage_settings, Order        
+            %li
+              %a{:href => orders_manage_settings_path} 
+                Order Settings

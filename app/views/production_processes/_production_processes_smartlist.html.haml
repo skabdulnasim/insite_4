@@ -1,0 +1,48 @@
+- unless smart_listing.empty?
+  %table.table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "ID", "id"
+        %th= "Name"
+        %th= "Category"
+        %th= "Cost"
+        %th
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td
+            - if object.process_image.present?
+              = image_tag(object.process_image, width:'45px', :style => "height: 45px", :class=>'img-thumbnail')
+            - else
+              = image_tag('icons/product-box-128.png', width:'45px', :class=>'img-thumbnail')
+          %td
+            = link_to object.name, object
+            %br
+            %small
+              ="ID: #{object.id}"
+              %br
+              = object.updated_at.strftime("%d %b %Y, %I:%M %p")
+          %td
+            - if object.category_id
+              = link_to object.category.name, object
+            - else
+              %b= "no category"
+          %td
+            = object.cost
+          %td{:style=>"text-align:right"}
+            - if can? :edit, ProductionProcess  
+              %a.m-btn.blue.m-btn-low-padding{:href => "#{edit_production_process_path(object)}", :title => "Edit process"} 
+                %i.mdi-editor-border-color
+            - if can? :toggle_trash, ProductionProcess  
+              %a.m-btn.orange.m-btn-low-padding{:href => "#{toggle_trash_production_process_path(object)}",:method => :put, :data => { :confirm => 'Are you sure about moving this process to trash?' }, :title => "Trash process"}
+                %i.mdi-action-delete        
+            - if can? :destroy, ProductionProcess      
+              %a.m-btn.red.m-btn-low-padding{:href => "#{production_process_path(object)}",:method => :delete, :data => { :confirm => 'Are you sure about deleting this process?' }, :title => "Delete process"}
+                %i.mdi-action-highlight-remove
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No process found

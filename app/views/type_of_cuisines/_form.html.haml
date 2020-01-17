@@ -1,0 +1,13 @@
+= form_for @type_of_cuisine do |f|
+  - if @type_of_cuisine.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@type_of_cuisine.errors.count, "error")} prohibited this type_of_cuisine from being saved:"
+      %ul
+        - @type_of_cuisine.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .actions
+    = f.submit 'Save'

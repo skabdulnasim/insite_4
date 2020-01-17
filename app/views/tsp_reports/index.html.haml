@@ -1,0 +1,284 @@
+= javascript_include_tag "https://cdn.rawgit.com/digitalBush/jquery.maskedinput/1.4.1/dist/jquery.maskedinput.min.js"
+= javascript_include_tag "https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"
+= javascript_include_tag "month-picker"
+= stylesheet_link_tag "https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+      maxDate: new Date() 
+    }); 
+    $('.datetimepick').datetimepicker({
+      format: 'DD-MM-YYYY hh:mm:ss A',
+      useCurrent: true,
+      maxDate: new Date() 
+    });
+    $("input[type='checkbox']").change(function () {
+      $(this).siblings('ul').find("input[type='checkbox']").prop('checked', this.checked);
+    });  
+    $('.Default').MonthPicker();    
+  });
+= render "layouts/flash"
+%ul#task-card.collection.with-header
+  %li.collection-header.cyan
+    %h4.white-text.task-card-title Available Reports
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Day by day Visiting reports
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(by_date_range_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}" 
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}
+          / = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+          - load_child_units_checkbox(current_user.unit_id,'visiting') #SalesReportHelper
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Day by day order reports
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(day_by_day_order_reports_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-3
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}
+          /  = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+          /- load_child_units_checkbox(current_user.unit_id)
+          - units_checkbox(current_user.unit_id,"day_by_day_order")
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix    
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Shop by Shop order reports
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(day_by_day_shop_order_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-3
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"  
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}
+          /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+          - units_checkbox(current_user.unit_id,"shop_by_shop_order")
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix  
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Shop by Shop order summary reports
+    .task-cat.grey-text
+      = form_tag(shop_wise_order_summary_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-3
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"}  
+          /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+          - units_checkbox(current_user.unit_id,"shop_by_shop_summery")
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix     
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Shop summary reports
+    .task-cat.grey-text
+      = form_tag(shop_sumary_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkbox(current_user.unit_id,"shop_summery_report")
+          /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix 
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      TsE summary reports
+    .task-cat.grey-text
+      = form_tag(tse_sumary_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-3
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkbox(current_user.unit_id,"summery_report")  
+          /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix  
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      TSE sales report
+    .task-cat.grey-text
+      = form_tag(tse_sales_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-3
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkbox(current_user.unit_id,"tse_sale_report")  
+          / = select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix  
+
+  - if current_user.role.name != "sale_person"     
+    %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+      %label{:for => "task5", :style => "text-decoration: none;"}
+        %i.fa.fa-chevron-right.margin-r-20
+        Shop Database
+      .task-cat.grey-text
+        = form_tag(shop_database_tsp_reports_path, method: "get", :class=>"m-input") do
+          .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+            - units_checkbox(current_user.unit_id,"shop_database")  
+            /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+            View report          
+        .clearfix   
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Shop commission reports
+    .task-cat.grey-text
+      = form_tag(shop_commission_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-3
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix      
+
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Beneficiary Report
+    .task-cat.grey-text
+      = form_tag(beneficiary_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-3
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-3
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix  
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Invoice Upload Reports
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(invoice_upload_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"   
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkbox(current_user.unit_id,"invoice_upload_report")
+          /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix                       
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      shop wise sales report
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(shop_wise_sales_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"   
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkbox(current_user.unit_id,"shop_wise_sales_report")
+          /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Plant wise dispatch reports
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(plant_wise_dispatch_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"   
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkbox(current_user.unit_id,"plant_wise_dispatch_report")
+          /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Sale person wise target report
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(sale_person_target_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2#monthly_target
+          = text_field_tag :from_month, '',:class=> 'form-control Default', :placeholder => "Select Start month"
+        .form-group.col-lg-2
+          =text_field_tag :to_month, '',:class=> 'form-control Default', :placeholder => "Select End month" 
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkbox(current_user.unit_id,"sale_person_target_report")
+          /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      District wise sales reports
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(district_wise_sales_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2
+          = text_field_tag :from_date, '', class: "validate datepick",:id=>"", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"
+        .form-group.col-lg-2
+          = text_field_tag :to_date, '', class: "validate datepick",:id=>"", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :required => true, :value=>"#{Date.today.to_s}"   
+        .form-group.col-lg-6.height-250.padding-10{:style => "overflow-y: auto;"} 
+          - units_checkbox(current_user.unit_id,"district_wise_sales_report")
+          /= select_tag "unit_id", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control", prompt:"Select Branch"
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix
+  %li.collection-item.dismissable{:style => "-webkit-user-drag: none;"}
+    %label{:for => "task5", :style => "text-decoration: none;"}
+      %i.fa.fa-chevron-right.margin-r-20
+      Shop wise target report
+    .task-cat.grey-text
+      / %span Please provide the following details to view this report
+      = form_tag(shop_target_report_tsp_reports_path, method: "get", :class=>"m-input") do
+        .form-group.col-lg-2#monthly_target
+          = text_field_tag :from_month, '',:class=> 'form-control Default', :placeholder => "Select Start month"
+        .form-group.col-lg-2
+          =text_field_tag :to_month, '',:class=> 'form-control Default', :placeholder => "Select End month" 
+        %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+          View report          
+      .clearfix

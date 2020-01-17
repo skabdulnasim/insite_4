@@ -1,0 +1,50 @@
+.main-section__content
+	.example
+		.example__content.p0
+			.data-table-container
+				%header.data-table-header
+					.data-table-header__label
+						%span.fs-title Listing Resources
+					.data-table-header__actions
+						%a.m-btn.m-btn-teal{:href => "#{new_customer_path}"}
+							%i.mdi-content-add.left
+							New Resource
+- unless smart_listing.empty?
+	%table.data-table
+		%thead
+			%trd.ata-table__selectable-row
+				%th SL no.
+				%th Name
+				%th Address
+				%th Allocated to beat?
+				%th 
+		%tbody
+			- i = 1
+			-smart_listing.collection.each do |resource|
+				%tr.data-table__selectable-row
+					%td 
+						= i
+					%td
+						= resource.name
+					%th
+						%span 
+							- if resource.customer.present?
+								%p 
+									/= "#{resource.customer.addresses.first.locality} , #{resource.customer.addresses.first.city} , #{resource.customer.addresses.first.pincode}"
+							-else
+								%span N/A
+					%td
+						- if resource.bit_resources.present?
+							%p.text-info
+								= resource.bit_resources.first.bit.name
+						- else
+							%p.text-danger "Not Allocated"
+					%td
+						%a.m-btn.blue.lighten-1{:href=>"#"}
+							%i.mdi-action-trending-up.left
+							add to beat
+				-i=i+1
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+-else
+	%p.warning No Resource found

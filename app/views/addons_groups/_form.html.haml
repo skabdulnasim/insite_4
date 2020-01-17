@@ -1,0 +1,109 @@
+.col-lg-12
+  = smart_listing_controls_for(:products, {class: "text-left"}) do
+    .col-lg-4
+      .form-group.filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search products by name.", :type => "text", :name=> "name_filter"}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search
+    .col-lg-4
+      .form-group.filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search products by id.", :type => "text", :name=> "product_id_filter"}
+            %span.input-group-btn
+              %button.btn.btn-primary.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search
+
+%hr.divider
+
+  / = form_for @addons_group do |f|
+  /   - if @addons_group.errors.any?
+  /     #error_explanation
+  /       %h2= "#{pluralize(@addons_group.errors.count, "error")} prohibited this addons_group from being saved:"
+  /       %ul
+  /         - @addons_group.errors.full_messages.each do |msg|
+  /           %li= msg
+
+  / .col-sm-12.card.padding-20
+  /   .col-sm-8        
+  /     .form-group
+  /       = f.label :title, :class => 'col-sm-2 control-label'
+  /       .col-sm-6
+  /         = f.text_field :title, :class => 'form-control'
+  /     = f.hidden_field :unit_id, :class => 'form-control', :required=> true, :value => current_user.unit_id
+  /   .col-sm-4
+  /     = f.submit 'Save Addons Group',:class => 'm-btn green'
+
+  / .col-lg-12.card
+  /   .margin-l-15
+  /     %h5.header
+  /     .margin-t-15
+  /     .col-lg-12.p0
+  /       %table.data-table
+  /         %tbody
+  /           .col-sm-12
+  /             .panel.panel-default
+  /               .panel-heading
+  /                 Select Products
+  /               .panel-body{:style => "max-height: 400px !important; overflow: auto !important;position:relative !important;"}
+  /                 = smart_listing_render :products
+
+
+
+.col-lg-8.padding-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          .panel.panel-default
+            .panel-heading Select Products
+          = smart_listing_render :products
+
+.col-lg-4.padding-r-none  
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          .panel.panel-default
+            .panel-heading.center Addons Group Details
+          = form_for @addons_group, :html => { :class => ''} do |f|
+            = f.hidden_field :unit_id, :class => 'form-control', :value => current_user.unit_id
+            .padding-10
+              = f.submit 'Save Addons Group', :class => 'm-btn green width-100'
+            .filter-title.margin-t-b-0
+              %i.mdi-action-label.left
+              Enter Details Below
+            .padding-10
+              .form-group
+                = f.select :section_id, options_for_select(@sections.map{ |section| [section.name, section.id] }, @addons_group.section_id), { include_blank: "Select Section"}, {:class => "form-control"}
+              .form-group
+                = f.text_field :title, :class => 'form-control', :placeholder => "Enter addons group title", :required => true, :value=> @addons_group.title
+              .form-group
+                = f.text_field :min_selectable, :class => 'form-control allow-numeric-only', :placeholder => "Min. selectable", :value=> @addons_group.min_selectable
+              .form-group
+                = f.text_field :max_selectable, :class => 'form-control allow-numeric-only', :placeholder => "Max. selectable.", :value=> @addons_group.max_selectable
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Selected Products
+            .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+              %ul.collection.ag-product-list
+                - if @addons_group.addons_group_products.present?
+                  - addons_group_products = @addons_group.addons_group_products
+                  - addons_group_products.each do |ag_p|
+                    %li.collection-item{:id=>"li_product_#{ag_p.product_id}"}
+                      %div
+                        %input{:type=>'checkbox',:name=>'checked_product_ids[]',:value=>"#{ag_p.product_id}",:id=>"product_#{ag_p.product_id}",:checked=>true}
+                        %label{:for=>"product_#{ag_p.product_id}",:class=>'font-sz-11'}= ag_p.product.name
+                        %span.secondary-content.font-sz-11
+                          %span{:id=>"item_qty_#{ag_p.product_id}"}= ag_p.ammount
+                          %span{:id=>"item_unit_#{ag_p.product_id}"}= ProductUnit.find(ag_p.product_unit_id).name
+                          %span{:id=>"item_price_#{ag_p.product_id}"}= "#{ag_p.price} Rs."
+                        %input{:type=>'hidden',:name=>"ammount#{ag_p.product_id}",:value=>ag_p.ammount,:id=>"cart_item_#{ag_p.product_id}"}
+                        %input{:type=>'hidden',:name=>"price#{ag_p.product_id}",:value=>ag_p.price,:id=>"cart_item_price_#{ag_p.product_id}"}
+                        %input{:type=>'hidden',:name=>"product_unit_id#{ag_p.product_id}",:value=>ag_p.product_unit_id,:id=>"cart_item_unit_#{ag_p.product_id}"}
+                - else
+                  %li.collection-item.no-item-selected
+                    %div
+                      No products selected
+.clearfix

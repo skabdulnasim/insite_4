@@ -1,0 +1,144 @@
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+        %ul#task-card.collection.with-header
+          %li.collection-header.indigo.text-white
+            .data-table-header__label.col-sm-2
+              %span.text-white{:style=>"font-size:20px;"}
+                Resources
+            .data-table-header__actions.col-sm-10
+              = form_tag new_resource_path, method: :get do |data|
+                .form-group
+                  .col-sm-3
+                    = select_tag :resource_type_id, options_from_collection_for_select(ResourceType.all, :id, :name),class: 'form-control'
+                  .col-sm-4 
+                    = submit_tag "New Resource", name: nil, class: 'm-btn m-btn-teal'
+                  .col-sm-5
+                    %a.m-btn.blue{"data-target" => "#resourceBulkUpload", "data-toggle" => "modal"} 
+                      %i.mdi-file-cloud-upload.left
+                      %span.hidden-sm.hidden-xs Upload Resource
+            .clearfix
+          %div
+            - unless smart_listing.empty?
+              - smart_listing.collection.each do |object|
+                %li.collection-item.dismissable.padding-r-none{:style =>"-webkit-user-drag: none;"}
+                  .col-lg-12.padding-l-r-none
+                    .col-lg-2.padding-l-r-none
+                      %span.m-label.teal.margin-l-none.margin-r-5
+                        Parent
+                    .col-lg-10.padding-l-c-none   
+                      .product-card.col-lg-12.col-xs-12.col-sm-12.padding-5
+                        .card.margin-t-b-0{:class=>"resource-card-#{object.id} #{get_resource_color(object.resource_state_id)}"}
+                          .col-lg-3{:style=>"margin-top: 8px;"}
+                            .card-image
+                              %a{:href => "#{edit_resource_path(object)}" }
+                                -if object.resource_image.present?
+                                  = image_tag object.resource_image.url(:thumb)
+                                -else
+                                  %img{:src=>"nature_missing.png", :style=>"width:100%;"}
+                          .col-lg-9
+                            .card-content.white-text
+                              %p
+                                = link_to "#{object.resource_type.name}""-(##{object.id}-#{object.name})",edit_resource_path(object), :class => "white-text"
+                              %small.text-lighten-3.font-sz-11
+
+                                = object.properties.map{|key,value| value}.join(" | ") if  object.properties.present?
+                            - if object.unique_identity_no.present?    
+                              %p.white-text.padding-10
+                                %small.text-lighten-3.font-sz-12
+                                  Unique No - 
+                                %small.text-lighten-3.font-sz-12.float-r
+                                  = object.unique_identity_no 
+                            - else
+                              %p.white-text.padding-10
+                                %small.text-lighten-3.font-sz-12
+                                  Unique No - 
+                                %small.text-lighten-3.font-sz-12.float-r
+                                  N/A        
+                            .card-action.white-text
+                              %span.font-sz-12{:class=>"resource-status-#{object.id}"}=object.resource_state.name.upcase if object.resource_state.present?
+                              %i.mdi-content-send.smaller.float-r
+                  %div.clearfix
+                  %ul.collection-child
+                    %br
+                    - _child_resources = Resource.by_parent_resource(object.id)
+                    - if _child_resources.present?
+                      - _child_resources.each do |_child_resource|
+                        %li.collection-item.dismissable.padding-r-none{:style =>"-webkit-user-drag: none;"}
+                          .col-lg-12.padding-l-r-none
+                            .col-lg-2.padding-l-r-none
+                              %span.m-label.teal.margin-l-none.margin-r-5
+                                Child
+                            .col-lg-10.padding-l-c-none   
+                              .product-card.col-lg-12.col-xs-12.col-sm-12.padding-5
+                                .card.margin-t-b-0{:class=>"resource-card-#{_child_resource.id} #{get_resource_color(_child_resource.resource_state_id)}"}
+                                  .col-lg-3{:style=>"margin-top: 8px;"}
+                                    .card-image
+                                      %a{:href => "#{edit_resource_path(_child_resource)}" }
+                                        -if _child_resource.resource_image.present?
+                                          = image_tag _child_resource.resource_image.url(:thumb)
+                                        -else
+                                          %img{:src=>"nature_missing.png", :style=>"width:100%;"}
+                                  .col-lg-9
+                                    .card-content.white-text
+                                      %p
+                                        = link_to "#{_child_resource.resource_type.name}""-(##{_child_resource.id}-#{_child_resource.name})",edit_resource_path(_child_resource), :class => "white-text"
+                                      %small.text-lighten-3.font-sz-11
+                                        = _child_resource.properties.map{|key,value| value}.join(" | ")
+                                    - if _child_resource.unique_identity_no.present?    
+                                      %p.white-text.padding-10
+                                        %small.text-lighten-3.font-sz-12
+                                          Unique No - 
+                                        %small.text-lighten-3.font-sz-12.float-r
+                                          = _child_resource.unique_identity_no 
+                                    - else
+                                      %p.white-text.padding-10
+                                        %small.text-lighten-3.font-sz-12
+                                          Unique No - 
+                                        %small.text-lighten-3.font-sz-12.float-r
+                                          N/A        
+                                    .card-action.white-text
+                                      %span.font-sz-12{:class=>"resource-status-#{_child_resource.id}"}=_child_resource.resource_state.name.upcase if _child_resource.resource_state.present?
+                                      %i.mdi-content-send.smaller.float-r
+                          %div.clearfix
+                            %br   
+              :javascript
+                $(document).ready(function() {
+                  ////////////////////////////// FAYE PUSH NOTIFICATION JS //////////////////////////////
+                  $(function() {
+                    var url = "#{FAYE_SERVER_URL}";
+                    var faye = new Faye.Client(url);
+                    var notification_channel = "#{get_unit_push_channel_name('portal','resource_state_update')}";
+                    faye.subscribe(notification_channel, function(data) {
+                      console.log(data);
+                      Materialize.toast("Resource "+data.resource.name+" updated to "+data.status_log.resource_state_name+" state", 5000);
+                      $(".resource-status-"+data.resource.id).html(data.status_log.resource_state_name);
+                      if(data.status_log.resource_state_id == 1){
+                        $(".resource-card-"+data.resource.id).removeClass( "orange purple red blue grey" ).addClass( "green" );
+                        
+                      }else if(data.status_log.resource_state_id == 2){
+                        $(".resource-card-"+data.resource.id).removeClass( "green purple red blue grey" ).addClass( "orange" );
+                        
+                      }else if(data.status_log.resource_state_id == 3){
+                        $(".resource-card-"+data.resource.id).removeClass( "green orange red blue grey" ).addClass( "purple" );
+                        
+                      }else if(data.status_log.resource_state_id == 4){
+                        $(".resource-card-"+data.resource.id).removeClass( "green orange purple blue grey" ).addClass( "red" );
+                        
+                      }else if(data.status_log.resource_state_id == 5){
+                        $(".resource-card-"+data.resource.id).removeClass( "green orange purple red grey" ).addClass( "blue" );
+                        
+                      }else if(data.status_log.resource_state_id == 6){
+                        $(".resource-card-"+data.resource.id).removeClass( "green orange purple red blue" ).addClass( "grey" );
+                        
+                      }
+                    });
+                  });
+                });
+              = smart_listing.paginate
+              = smart_listing.pagination_per_page_links
+            - else
+              .alert.alert-warning
+                No resource found 
+                

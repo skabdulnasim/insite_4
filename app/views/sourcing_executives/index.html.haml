@@ -1,0 +1,250 @@
+- manual_load_javascript "sourcing_executives"
+%script{:src => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.js"}
+%link{:href => "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.2.6/fullcalendar.min.css", :rel => "stylesheet"}/
+:css
+  #wrap {
+      width: 1100px;
+      margin: 0 auto;
+  }
+  #external-events {
+      float: left;
+      width: 150px;
+      padding: 0 10px;
+      border: 1px solid #ccc;
+      background: #eee;
+      text-align: left;
+  }
+  #external-events h4 {
+      font-size: 16px;
+      margin-top: 0;
+      padding-top: 1em;
+  }
+  #external-events .fc-event {
+      margin: 10px 0;
+      cursor: pointer;
+  }
+  #external-events p {
+      margin: 1.5em 0;
+      font-size: 11px;
+      color: #666;
+  }
+  #external-events p input {
+      margin: 0;
+      vertical-align: middle;
+  }
+  #calendar {
+      float: left;
+      width: 970px;
+  }
+  .modal-header-info {
+    color:#fff;
+    padding:9px 15px;
+    border-bottom:1px solid #eee;
+    background-color: #5bc0de;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+  }
+  .modal-header-calendar {
+    color:#4682B4;
+    padding:9px 15px;
+    border-bottom:1px solid #eee;
+    background-color: #5bc0de;
+    -webkit-border-top-left-radius: 5px;
+    -webkit-border-top-right-radius: 5px;
+    -moz-border-radius-topleft: 5px;
+    -moz-border-radius-topright: 5px;
+     border-top-left-radius: 5px;
+     border-top-right-radius: 5px;
+  }
+  #mySidenav a {
+    position: fixed;
+    right: -50px;
+    transition: 0.3s;
+    padding: 10px;
+    width: 100px;
+    text-decoration: none;
+    font-size: 14px;
+    color: white;
+    border-radius: 5px 0 0 5px;
+    z-index: 9999;
+  }
+  #mySidenav a:hover {
+    right: 0;
+  }
+  #bulk_upload {
+    top: 75%;
+    background-color: #3B0B0B;
+  }
+  a,
+  a label {
+    cursor: pointer;
+  }
+  .fc-more-popover{
+    width:140px;
+  }
+  .fc-widget-header{
+    background-color:orange;
+  }
+  .fc-header{
+    background-color:orange;
+  }
+  .fc-day-grid-event{
+    margin-bottom:7px;
+    height:25px;
+  }
+
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });           
+  });
+
+= render "layouts/flash"
+.preloader
+
+.row{:style=>'position:fixed;background: #555;z-index:1;width: 90%; height:60px;'}
+  .col-lg-6
+    .margin-t-15
+      %span.fs-title.text_white.margin-l-15 Sourcing Executives
+  .col-lg-6
+    = smart_listing_controls_for(:sourcing_executives, {class: "text-left"}) do
+      .col-lg-3
+        .form-group.filter.input-append
+          .input-group
+            %input.form-control.search{:placeholder => "Search Executive...", :type => "text", :name=> "executive_name", :style=>"width:250px; margin-top:15px;"}
+              %span.input-group-btn
+                %button.btn.btn-primary.disabled{:type => "submit", :style=>"margin-top:15px;" }
+                  %span.glyphicon.glyphicon-search 
+= smart_listing_render :sourcing_executives  
+#source_execModal.modal.fade.bd-example-modal-lg{"aria-hidden" => "true", "aria-labelledby" => "source_execModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog{:style => "width:1200px;"}
+    .modal-content
+      .modal-header.modal-header-calendar
+        %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} ×
+        %h3#myModalLabel Vendor Allocation
+        %span{:style=>"font-size:20px;color:white;"}
+          %i.fa.fa-user#user_name
+        %span{:style=>"float:right; color:black;"}
+          %button.btn.orange#clearAllocations{"data-toggle"=>"modal","data-target"=>"#removeAllByDate"}
+            %i.fa.fa-minus-circle
+              Clear Allocations    
+      .modal-body
+        .row
+          .col-md-10
+            #calendar
+          .col-md-2
+            = smart_listing_controls_for(:vendors, {class: "text-left"}) do
+              .form-group.filter.input-append
+                .input-group
+                  %input.form-control.search{:placeholder => "Search Vendor...", :type => "text", :name=> "vendor_name", :style=>"width:140px; margin-top:30px;"}
+                    %span.input-group-btn
+                      %button.btn.btn-primary.disabled{:type => "submit", :style=>"margin-top:30px;" }
+                        %span.glyphicon.glyphicon-search 
+            =smart_listing_render :vendors
+      .modal-footer
+        %button.btn{"aria-hidden" => "true", "data-dismiss" => "modal"} Close
+
+#recursionModal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header.modal-header-info 
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+          %span.sr-only close
+        %h4#modalTitle.modal-title{:style=>"text-align:center;"} Recursion Rule
+      #modalBody.modal-body
+        %p Please Select Recursion Rule
+        %select.form-control#recursionRule
+          %option{"data-id"=>"1"} Daily
+          %option{"data-id"=>"2"} Every Alternative Day
+          %option{"data-id"=>"3"} Weekly
+          %option{"data-id"=>"4"} Every Alternative week
+          %option{"data-id"=>"5"} Monthly
+          %option{"data-id"=>"6"} Yearly
+        %br
+        %p Enter Recursion Duration
+        %input.form-control.validate#duration{:type => "number"}/
+        %br
+        %button.m-btn.green.width-30.waves-effect.waves-light#applyRecursion{:type => "submit" ,:style=>"margin-left:200px;", "data-dismiss" => "modal"  }
+          Apply Recursion
+        %br
+        .com-lg-6#vendorId{:hidden => ""}
+        .col-lg-6#executiveId{:hidden => ""}
+        .col-lg-6#date{:hidden => ""}
+
+#mySidenav
+  %a#bulk_upload{"data-target" => "#showBulkAllocationModal", "data-toggle" => "modal"} 
+    %i.fa.fa-upload
+      Bulk Allocation
+  .clearfix
+
+#DateRangeRemoveModal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header.modal-header-info 
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+          %span.sr-only close
+        %h4#modalTitle.modal-title{:style=>"text-align:center;"} Delete Allocations(By vendor/Date)
+      #modalBody.modal-body
+        %span
+          %p From Date
+          %input.form-control.validate.datepick#from_date{:type => "text"}/  
+        %span
+          %p To Date
+          %input.form-control.validate.datepick#to_date{:type => "text"}/
+        %br
+        %button.m-btn.green.width-30.waves-effect.waves-light#applyRemove{:type => "submit" ,:style=>"margin-left:200px;", "data-dismiss" => "modal"  }
+          Ok
+        %br
+        .com-lg-6#allocationId{:hidden => ""}
+
+#removeAllByDate.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header.modal-header-info 
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+          %span.sr-only close
+        %h4#modalTitle.modal-title{:style=>"text-align:center;"} Delete Allocations By Date
+      #modalBody.modal-body
+        %span
+          %p From Date
+          %input.form-control.validate.datepick#start_date{:type => "text"}/  
+        %span
+          %p To Date
+          %input.form-control.validate.datepick#end_date{:type => "text"}/
+        %br
+        %button.m-btn.green.width-30.waves-effect.waves-light#RemoveByDate{:type => "submit" ,:style=>"margin-left:200px;", "data-dismiss" => "modal"  }
+          Ok
+        %br
+
+
+#showBulkAllocationModal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header.modal-header-info 
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+          %span.sr-only close
+        %h4.modal-title{:style=>"text-align:center;"} Vendor Bulk Allocation
+      .modal-body
+        = form_tag(import_sourcing_executives_path, method: "post",multipart: true, class: "form-horizontal bordered-row" ) do |b|
+          .form-group
+            %label.col-sm-4.control-label Choose file
+            .col-sm-8
+              %input{:name => "file", :type => "file", :required => 'required'}
+          .modal-footer
+            %a{:style=>"margin-right:30px",:href=>"/sourcing_executives/sample_csv.csv"} 
+              %i.fa.fa-download
+                Download sample CSV for Bulk Allocation  
+            %button.m-btn.red{"data-dismiss" => "modal", :type => "button"} Close          
+            %input.m-btn.green.large{:name => "commit", :type => "submit", :value => "Upload file", :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Your all previous category data will be deleted. Are you sure?')) }}
+
+

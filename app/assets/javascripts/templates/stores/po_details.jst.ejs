@@ -1,0 +1,122 @@
+<div class="col-lg-7">
+  <h5>Purchase order ID: <%= package_obj.id%></h5>
+</div>
+<div class="col-lg-5">
+  <h5 class="float-r">Date: <%= package_obj['created_at']%></h5>
+</div>
+<br>
+<table class="table table-bordered table-hover table-striped">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% console.log(package_obj) %>
+      <% for(var i=0; i< package_obj['purchase_order_metum'].length; i++) {%>
+        <% po_metum_descrptions = package_obj['purchase_order_metum'][i].purchase_order_metum_descrptions %>
+        <% if(po_metum_descrptions!='') { %>
+          <% for(var j=0; j< po_metum_descrptions.length; j++) { %>
+            <tr>
+              <td>
+                <%= package_obj['purchase_order_metum'][i].product['name'] %> 
+                <% if(po_metum_descrptions[j].color) { %>
+                  <%= "- " + po_metum_descrptions[j].color['name'] %> 
+                <% } %>
+                <% if(po_metum_descrptions[j].size) { %>
+                  <%= "- " + po_metum_descrptions[j].size['name'] %> 
+                <% } %> 
+              </td>
+              <td class="width-18-p">
+                <%= po_metum_descrptions[j]['quantity']%> 
+                <%= package_obj['purchase_order_metum'][i].product['basic_unit'] %>  
+              </td>
+              <td class="width-18-p"><%=package_obj['purchase_order_metum'][i]['status']%></td>
+            </tr>
+          <%}%>
+        <%} else{%>
+          <tr>
+            <% if(typeof(package_obj['purchase_order_metum'][i].color)=='undefined' && typeof(package_obj['purchase_order_metum'][i].size)=='undefined'){ %>
+              <td>
+                <%= package_obj['purchase_order_metum'][i].product['name']%>
+              </td>
+            <% }else if(typeof(package_obj['purchase_order_metum'][i].color)=='undefined'){%>  
+              <td>
+                <%= package_obj['purchase_order_metum'][i].product['name']%>-(Size:-<%= package_obj['purchase_order_metum'][i].size['name']%>)
+              </td>
+            <% }else if(typeof(package_obj['purchase_order_metum'][i].size)=='undefined'){%>  
+              <td>
+                <%= package_obj['purchase_order_metum'][i].product['name']%>-(Color:-<%= package_obj['purchase_order_metum'][i].color['name']%>)
+              </td>
+            <% }else{ %>
+              <td>
+                <%= package_obj['purchase_order_metum'][i].product['name']%>-(Size:-<%= package_obj['purchase_order_metum'][i].size['name']%>)-(Color:-<%= package_obj['purchase_order_metum'][i].color['name']%>)
+              </td>
+            <% } %>
+            <td class="width-18-p">
+              <% if(package_obj['purchase_order_metum'][i].product_transaction_unit == undefined) {%>
+                <%= package_obj['purchase_order_metum'][i].product_amount %> 
+                <%= package_obj['purchase_order_metum'][i].product['basic_unit'] %>
+              <% } else { %>
+                <%= package_obj['purchase_order_metum'][i].secondary_amount %>
+                <%= package_obj['purchase_order_metum'][i].product_transaction_unit['product_unit_name'] %>
+                <%= "("+package_obj['purchase_order_metum'][i].product_amount %> 
+                <%= package_obj['purchase_order_metum'][i].product['basic_unit'] +")" %>
+              <% } %>
+            </td>
+            <td class="width-18-p"><%=package_obj['purchase_order_metum'][i]['status']%></td>
+          </tr>
+        <%}%>
+      <%}%>
+
+
+    </tbody>
+  </table>
+<% if (package_obj['approvals'].length > 0){ %>
+  <div class="row">
+    <div class="col-lg-12">
+      <h5>Approved By:</h5>
+    </div>
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-content height-100" style="margin-top: -20px !important;">
+          <ol class="progtrckr" data-progtrckr-steps="5">
+            <% for(var k=0; k< package_obj['approvals'].length; k++) {%>
+              <% if(package_obj['approvals'][k]['is_approve']=='false'){ %>
+                <li class="progtrckr-todo"><%= package_obj['approvals'][k]['role']['name'] %></li>
+              <% } else if(package_obj['approvals'][k]['is_approve']=='true') { %>
+                <li class="progtrckr-done"><%= package_obj['approvals'][k]['role']['name'] %><span class="prog_lower_label font-sz-10">(User ID: <%= package_obj['approvals'][k]['user']['id'] %>)</span></li>
+              <% } else { %>
+                <li class="progtrckr-reject"  title="Rejected Reason: <%= package_obj['approvals'][k]['reason'] %>"><%= package_obj['approvals'][k]['role']['name'] %><span class="prog_lower_label font-sz-10">(User ID: <%= package_obj['approvals'][k]['user']['id'] %>)</span></li>
+              <% } %>
+            <% } %>
+        </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+
+<div class="modal-footer" style="clear:both">
+  <div class="form-group">
+    <div class="col-sm-offset-5 col-sm-7">
+      <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+      <% if (package_obj['approvals'].length > 0){ %>
+      <% var flag_approve = 1 %>
+      <% for(var l=0; l< package_obj['approvals'].length; l++) { %>
+      <% if(package_obj['approvals'][l]['is_approve']=='false' || package_obj['approvals'][l]['is_approve']=='reject') { %>
+      <% flag_approve = 0 %>
+      <% } %>
+      <% } %>
+      <% if (flag_approve == 1){ %>
+        <button class="send_now_order m-btn green" id=<%= package_obj.id%>  type="button" data-dismiss="modal">Send Now <i class="mdi-content-send right"></i></button>
+      <% } %> 
+      <% } else {%>
+      <button class="send_now_order m-btn green" id=<%= package_obj.id%>  type="button" data-dismiss="modal">Send Now <i class="mdi-content-send right"></i></button>
+      <% } %>
+    </div>
+  </div>
+</div>

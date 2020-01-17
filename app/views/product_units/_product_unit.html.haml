@@ -1,0 +1,5 @@
+%tr{:class=>"product_unit_of_#{product_unit.id}"}
+  %td=product_unit.name
+  %td=product_unit.multiplier
+  %td=product_unit.basic_inventory_unit
+  %td= link_to "Edit",edit_product_unit_path(product_unit),:class=>"modal-trigger edit_product_unit_link", remote: true

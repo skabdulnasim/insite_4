@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  user_target_id: 1
+  product_id: 1
+  target_quantity: 1.5
+
+two:
+  user_target_id: 1
+  product_id: 1
+  target_quantity: 1.5

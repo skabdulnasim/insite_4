@@ -1,0 +1,665 @@
+
+<div id="DivIdToPrint">
+  <style>
+    html{
+      font-family: "Roboto", sans-serif;
+      color: rgba(0, 0, 0, 0.87);
+    }
+    table{
+      table-layout: fixed;
+      width: 200px;
+    }
+
+    .mytable{
+      border: 1px solid black;
+      border-collapse: collapse;
+
+    }
+
+    .border_horizon{
+      border-right: solid 3px black; 
+      border-left: solid 3px black;
+    }
+
+    .mytd {
+      max-width: 300px;
+      text-overflow: ellipsis;
+      overflow-wrap: break-word;
+    }
+    .invoice_invoice_title{
+      font-size: 13px;
+      font-weight: bold;
+      position: relative;
+      margin-left: 10px;
+    }
+    .row {
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 20px
+
+    }
+
+    .row:after {
+        content: "";
+        display: table;
+        clear: both
+    }
+
+    .row .col.s5 {
+        width: 41.6666666667%;
+        margin-left: auto;
+        left: auto;
+        right: auto
+    }
+
+    .row .col.s7 {
+        width: 58.3333333333%;
+        margin-left: auto;
+        left: auto;
+        right: auto
+    }
+    .mt10 { margin-top: 9px !important; }
+    .p10 { padding: 9px !important; }
+    table {
+        width: 100%;
+        display: table
+    }
+
+    h6 {
+      font-size: 0.8rem;
+      font-weight: 400;
+    }
+    /* hide the page footer on screen display */
+    /*.page-break { display: none; }*/
+    @media print {
+      /* make a 10-inch high block that sits on top of the page content */
+      .page-break {
+        page-break-before: always;
+        display: block;
+        position: absolute;
+        /*height: 640pt;*/
+        height: <%=page_size%>pt;
+      }
+
+      /* stick the contents of .page-break to the bottom of the 10 inch block */
+      .page-break .copyright {
+        position: absolute;
+        bottom: 0px;
+      }
+    }
+
+    .dont-break-out {
+      /* These are technically the same, but use both */
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+
+      -ms-word-break: break-all;
+      /* This is the dangerous one in WebKit, as it breaks things wherever */
+      word-break: break-all;
+      /* Instead use this non-standard one: */
+      word-break: break-word;
+
+      /* Adds a hyphen where the word breaks, if supported (No Blink) */
+      -ms-hyphens: auto;
+      -moz-hyphens: auto;
+      -webkit-hyphens: auto;
+      hyphens: auto;
+    }
+  </style>
+  <% if(action=="simple_bill_invoice") {%>
+  <div style="margin: 9px;" class="page-break">
+    <% console.log(response) %>
+    <div class="row" style="margin: 0px; padding: 0px;">
+      <div class="col s7" style="float: left; box-sizing: border-box; padding: 0 0.15rem;">
+        <% if(response.unit.unit_image) { %>
+          <img src="<%=response.unit.unit_image%>" alt="<%=response.unit.unit_name%>" width='100'>
+        <% } %>
+        <h5 style="margin: 4px 2px;"><%=response.unit.unit_name%></h5>
+        
+        <h6 style="margin: 3px 2px; font-size: 9px; color: #000;">
+          <%=response.unit.bill_header_text%>
+        </h6>
+        <h6 style="margin: 3px 2px; font-size: 9px;">
+          Contact us: <%=response.unit.phone%>
+        </h6>
+      </div>
+      <div class="col s5" style="float: left; box-sizing: border-box; padding: 0 0.15rem;">
+        <h6 style="margin: 5px; font-size: 9px;">Order ID: <%=response.orders[0].id%></h6>
+        <h6 style="margin: 5px; font-size: 9px;">Tax Invoice: <%=response.id%></h6>
+        <h6 style="margin: 5px; font-size: 9px;">Invoice Date: <%=response.synced_at%></h6>
+
+        <h6 style="margin: 2px 5px; font-size: 9px; color: #212121;">
+          <%= response.deliverable_type %>:
+          <% if(response.deliverable_type == "Address") { %>
+            <b><%= response.deliverable.receiver_first_name%> <%= response.deliverable.receiver_last_name%></b>
+            <%= response.deliverable.delivery_address%>,
+            <%= response.deliverable.landmark %>, <%= response.deliverable.city %> - <%= response.deliverable.pincode %>.
+            (Contact: <%= response.deliverable.contact_no %>)
+          <% } else if(response.deliverable_type == "Customer") { %>
+            <%= response.deliverable.more_details.firstname%>
+            <%= response.deliverable.more_details.lastname%>
+            (Contact: <%= response.deliverable.mobile_no %>)
+          <% } else if (response.customer) {%>
+            <%= response.customer.customer_name %>
+          <% } %>
+        </h6 >
+        <% if (response.customer){ %>
+          <h6 style="margin: 5px; font-size: 9px;">
+            GSTIN :
+            <%=  response.customer.gstin %>
+          </h6>
+          <h6 style="margin: 5px; font-size: 9px;word-wrap:break-word;">
+            Address :
+            <%= response.customer.addresses.delivery_address%>&nbsp,&nbsp<%= response.customer.addresses.city%>&nbsp,&nbsp<%= response.customer.addresses.pincode %>
+          </h6>
+          <h6 style="margin: 5px; font-size: 9px;">
+            Phone :
+            <%= response.customer.mobile_no %>
+          </h6>
+        <% } %>
+      </div>
+    </div>
+    <div style="clear: both;"></div>
+    <table style="border-top: 1px solid #000; border-bottom: 1px solid #000; margin-top: 9px;">
+      <thead>
+        <tr>
+          <th style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">Product</th>
+          <th style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">HSN/SAC</th>
+          <th style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">
+            Unit Price
+            <small>(<%=currency%>)</small>
+          </th>
+          <th style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">Qty</th>
+          <th style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">Size</th>
+          <th style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">
+            Total Price
+            <small>(<%=currency%>)</small>
+          </th>
+          <th style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">-
+            
+          </th>
+          <th style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">
+            Subtotal
+            <small>(<%=currency%>)</small>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% orders = response.orders; %>
+        <% for (var i = orders.length - 1; i >= 0; i--) { %>
+          <% for (var j = orders[i].order_items.length - 1; j >= 0; j--) { %>
+            <tr>
+              <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #bdbdbd;">
+                <%= orders[i].order_items[j].product_name %>
+                <br>
+                <% if(orders[i].order_items[j].product_unique_identity) {%>
+                  <small>Serial: <%=orders[i].order_items[j].properties['upc']%></small>  
+                <% } %>
+              </td>
+              <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].hsn_code %></td>
+              <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #bdbdbd;"><%= (orders[i].order_items[j].unit_price_without_tax + orders[i].order_items[j].customization_price).toFixed(2) %></td>
+              <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].quantity %></td>
+              <% if( orders[i].order_items[j].size_name!= null) { %>
+                <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].size_name %></td>
+              <% }else{ %>
+                <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #bdbdbd;">-</td>
+              <% } %>
+              <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #bdbdbd;">
+                <%= (orders[i].order_items[j].quantity * orders[i].order_items[j].unit_price_without_tax).toFixed(2) %>
+              </td>
+              <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #bdbdbd;">-
+              </td>
+              <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].subtotal %></td>
+            </tr>
+          <% } %>
+        <% } %>
+        <tr>
+          <td colspan="5" style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;"><strong>Total</strong></td>
+          <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;"><%= response.bill_amount.toFixed(2) %></td>
+          <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">-</td>
+          <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;"><%= (response.bill_amount + response.tax_amount).toFixed(2) %></td>
+        </tr>
+        <% if(response.roundoff) { %>
+          <tr>
+            <td colspan="6" style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">Roundoff</td>
+            <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;"><%= response.roundoff %></td>
+          </tr>
+        <% } %>
+        <tr>
+          <td style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">Discount</td>
+          <td colspan="6" style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;">
+            <% discounts = response.discounts; %>
+            <% if (discounts.length > 0) {%>
+              <% for (var d = discounts.length - 1; d >= 0; d--) { %>
+                <span style="padding: 2px 5px; color: #212121; border-radius: 2px; font-size: 9px;"> <%= currency %> <%= discounts[d].discount_amount %> | <%= discounts[d].remarks %></span>
+              <% } %>
+            <% } %>
+          </td>
+          <td style="padding: 5px; font-size: 13px; border-bottom: 1px solid #212121;">(-) <%= response.discount %></td>
+        </tr>
+        <% taxes = response.taxes; %>
+          <% for (var t = taxes.length - 1; t >= 0; t--) { %>
+            <tr>
+              <td colspan="7" style="padding: 5px; font-size: 9px; border-bottom: 1px solid #212121;"><%= taxes[t].tax_class_name%>@<%= taxes[t].tax_class_amount%>%</td>
+              <td style="padding: 5px; font-size: 13px; border-bottom: 1px solid #212121;"><%= taxes[t].tax_amount.toFixed(2) %></td>
+            </tr>
+          <% } %>
+        <tr>
+          <td colspan="7"  style="padding: 5px; font-size: 14px;">
+            <strong>Grand Total</strong>
+          </td>
+          <td  style="padding: 5px; font-size: 15px;">
+            <strong><%= response.grand_total %></strong>
+          </td>
+        </tr>
+        <% if(response.remarks) {%>
+          <tr>
+            <td colspan="1" class="teal lighten-5">
+              <strong>Remarks</strong>
+            </td>
+            <td colspan="5" class="teal lighten-5">
+              <%= response.remarks %>
+            </td>
+          </tr>
+        <% } %>
+
+        <% if(response.status == 'paid') {%>
+          <% payments = response.settlement.payments; %>
+          <% if (payments) {%>
+            <% for ( var i = payments.length - 1; i >= 0; i-- ) {%>
+              <tr>
+                <td colspan="7"  style="padding: 5px; font-size: 12px; border-top: 1px solid #212121;">
+                  <span>Amount paid in <%=payments[i].paymentmode_type%></span>
+                </td>
+                <td  style="padding: 5px; font-size: 15px; border-top: 1px solid #212121;">
+                  <span><%= payments[i].paid_amount %></span>
+                </td>
+              </tr>
+            <% } %>
+          <% } %>
+          <tr>
+            <td colspan="7"  style="padding: 5px; font-size: 14px; border-top: 1px solid #212121;">
+              <strong>Total Paid</strong>
+            </td>
+            <td  style="padding: 5px; font-size: 15px; border-top: 1px solid #212121;">
+              <strong><%=response.settlement.bill_amount%></strong>
+            </td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+      <% if(response.unit.bill_tax_details != null){%>
+        <div class="row">
+          <div class="col-sm-6">
+            <br>
+            <ul>
+            <% tc=response.unit.bill_tax_details%>
+            <% var array = tc.split("/")%>
+            <% for(var i=0;i<array.length;i++){ %>
+              <li style="font-size:9px"><%= array[i]%></li>
+            <% } %>
+            </ul>      
+          </div>
+        </div>
+      <% } %>
+      <p style="float: right; width: 100%; margin: 5px 0px; font-size: 9px; border-bottom: 1px dotted #000;">
+        <span style="float:right">
+        <span style="font-size: 15px; font-weight: 300; float:right">Thank You!</span>
+          <br>
+        <span style="font-size: 9px; float:right">for shopping with us.</span>
+        <br>
+        <span style="float:right"><%=response.unit.bill_footer_text%>.</span>
+      </p>
+      <center style="font-size: 8px;">This is a computer generated invoice</center>
+    </div>
+  </div>
+<% } %>
+<% if(action == "way_bill_invoice") {%>
+  <% console.log(response) %>
+  <center><h3><ul>Invoice</ul></h></center>
+  <table border='1' class="mytable">
+    <tr >
+      <td rowspan="2" class="mytd">
+       <span class="invoice_invoice_title"> Seller Address :</span>
+        <div class="col s7 dont-break-out" style="float: left; box-sizing: border-box; padding: 0 0.15rem; ">
+          <% if(response.unit.unit_image) { %>
+            <img src="<%=response.unit.unit_image%>" alt="<%=response.unit.unit_name%>" width='100'>
+          <% } %>
+          <h5 class="dont-break-ou" style="margin: 4px 2px;" ><%=response.unit.unit_name%></h5>
+          <h6 style="margin: 3px 2px; font-size: 9px; color: #000;">
+            <%=response.unit.bill_header_text%>
+          </h6>
+          <h6 style="margin: 3px 2px; font-size: 9px;">
+            Contact us: <%=response.unit.phone%>
+          </h6>
+      </div>
+      </td>
+      <td  class="mycell" height="40px">
+        <div class="container">
+          <div class= "row">
+  
+            <div class="col-sm-12" style="border:0px">
+
+              <label class="invoice_invoice_title">Tax Invoice:</label>
+                <%=   response.id %>
+            </div>
+            <div class="col-sm-12">
+              <label class="invoice_invoice_title">Bill No:</label>
+                <%=   response.serial_no %>
+            </div>
+          </div>
+        <div>
+      </td>
+      <td class="mycell">
+        <label class="invoice_invoice_title" style="margin-left:3px;margin-top:3px">Date:</label>
+        <%= response.synced_at %>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <div class="container">
+          <div class= "row">
+            <div class="col-sm-1" style="border:0px">
+              <label class="invoice_invoice_title">Delivery Note:</label>
+            </div>
+            <div class="col-sm-1">
+            </div>
+          </div>
+        <div>
+      </td>
+      <td class="mycell">
+        <div class="container">
+          <div class= "row">
+            <div class="col-sm-2" style="border:0px">
+              <label class="invoice_invoice_title">Buyer's order number:</label>
+            </div>
+            <div class="col-sm-1">
+            </div>
+          </div>
+        <div>     
+      </td>
+    </tr>
+    <tr>
+      <td rowspan="3" class="mytd">
+         <span class="invoice_invoice_title" >Buyer's Details :</span>
+         <% if(response.customer){%>
+          <table style="margin-left:10px;">
+            <tr>
+              <td  style="font-weight: bold; font-size:0.8em;">Name:</td>
+              <td  class = "col-lg-7 dont-break-out" style= "float:left"><%= response.customer.customer_name%></td>
+            </tr>
+            <tr>
+              <td  style="font-weight: bold; font-size:0.8em;">Address:</td>
+              <td class = "col-lg-7 dont-break-out" style= "word-wrap: break-word; margin-right:5px;"><%= response.customer.addresses.city%>&nbsp,&nbsp<%= response.customer.addresses.pincode%></td>
+            </tr>
+            <tr>
+              <td  style="font-weight: bold; font-size:0.8em;">Contact:</td>
+              <td class = "col-lg-7 dont-break-out" style=" word-wrap: break-word; float:left"><%= response.customer.mobile_no%></td>
+            </tr>
+            <tr>
+              <td  style="font-weight: bold; font-size:0.8em;">GST:</td>
+              <td class = "col-lg-7 dont-break-out" style=" word-wrap: break-word; float:left"><%= response.customer.gstin%></td>
+            </tr>
+          </table>
+         <%} else  {%> 
+          <br>
+          <span style="margin-left:20px;font-weight: bold; font-size:0.8em;">Name:</span><span style="margin-left:10px;font-size:12px"><%= response.deliverable.name %> </span>
+          <br>
+          <span></span>
+         <%}%> 
+          
+      </td>
+      <td class="mycell" height="50">
+        <div class="container">
+          <div class= "row">
+            <div class="col-sm-2" style="border:0px">
+              <label class="invoice_invoice_title">Dispatched document number:</label>
+            </div>
+            <div class="col-sm-1">
+            </div>
+          </div>
+        <div>
+      </td>
+      <td class="mycell">
+        <div class="container">
+          <div class= "row">
+            <div class="col-sm-2" style="border:0px">
+              <label class="invoice_invoice_title">Delivery note date:</label>
+            </div>
+            <div class="col-sm-1">
+            </div>
+          </div>
+        <div>
+      </td>
+    </tr>
+    <tr height="50px">
+      <td class="mycell">
+        <div class="container">
+          <div class= "row">
+            <div class="col-sm-2" style="border:0px">
+              <label class="invoice_invoice_title">Bill of Lading/LR-RR No:</label>
+            </div>
+            <div class="col-sm-1">
+            </div>
+          </div>
+        <div>
+      </td>
+      <td class="mycell">
+        <div class="container">
+          <div class= "row">
+            <div class="col-sm-2" style="border:0px">
+              <label class="invoice_invoice_title">Motor Vehicle No:</label>
+            </div>
+            <div class="col-sm-1">
+            </div>
+          </div>
+        <div>
+      </td>
+    </tr>
+    <tr height="50px">
+      <td colspan='2' class="mycell">
+        <div class="container">
+          <div class= "row">
+            <div class="col-sm-2" style="border:0px">
+              <label class="invoice_invoice_title">Terms of Delivery:</label>
+            </div>
+            <div class="col-sm-1">
+            </div>
+          </div>
+        <div>
+      </td>
+    </tr>
+  </table>
+  <table style="border:1px solid">
+    <theader>
+      <tr>
+        <th class="invoice_invoice_title">SL No.</th>
+        <th class="invoice_invoice_title">Description of Goods</th>
+        <th class="invoice_invoice_title">HSN/SAC</th>
+        <th class="invoice_invoice_title">Quantity</th>
+        <th class="invoice_invoice_title">Size</th>
+        <th class="invoice_invoice_title">Rate</th>
+        <th class="invoice_invoice_title">Per</th>
+        <th class="invoice_invoice_title">Total Price</th>
+        <th class="invoice_invoice_title">Tax amount</th>
+        <th class="invoice_invoice_title">Subtotal</th>
+
+      </tr>
+    </theader>
+    <tbody>
+      
+      <% orders = response.orders;
+          count=0;
+       %>
+        <% for (var i = orders.length - 1; i >= 0; i--) { %>
+          <% for (var j = orders[i].order_items.length - 1; j >= 0; j--) { %>
+            <% count += 1%>
+            <tr>
+              <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= count %></td>
+              <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;">
+                <%= orders[i].order_items[j].product_name %>
+                <br>
+                <% if(orders[i].order_items[j].product_unique_identity) {%>
+                  <small>Serial: <%=orders[i].order_items[j].properties['upc']%></small>
+                <% } %>
+              </td>
+              <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].hsn_code %></td>
+              <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].quantity %></td>
+              <% if(orders[i].order_items[j].size_name!=null){ %>
+                <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].size_name %></td>
+              <% }else { %>
+                <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;">-</td>
+              <% } %>
+              <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= (orders[i].order_items[j].unit_price_without_tax + orders[i].order_items[j].customization_price).toFixed(2) %></td>      
+              <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].product_unit %></td> 
+              <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;">
+                <%= (orders[i].order_items[j].quantity * orders[i].order_items[j].unit_price_without_tax).toFixed(2) %>
+              </td>
+              <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].tax_amount.toFixed(2) %>/unit</td>
+              <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= (orders[i].order_items[j].subtotal).toFixed(2) %></td>
+            </tr>
+          <% } %>
+        <% } %>
+      <tr style="border:2px solid black">
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;"><strong>Total</strong></td>
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;">-</td>
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;">-</td>
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;"><strong>-</strong></td>
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;"><strong>-</strong></td>
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;"><strong>-</strong></td>
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;"><strong>-</strong></td>
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;"><strong>-</strong></td>
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;"><strong><%= response.tax_amount.toFixed(2) %></strong></td>
+        <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #212121;"><strong><%= (response.bill_amount + response.tax_amount).toFixed(2) %></strong></td>
+      
+      </tr>
+      <tr>
+        <td colspan="9">
+        <span class="invoice_invoice_title">Amount in words:</span>
+
+<!-- CODE TO CONVERT DIGIT TO STRING WORD is present in bill.js.coffee  -->
+        <%= amount_in_word %>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <table border='1' class="mytable">
+    <thead>
+      <tr>
+        <th rowspan="2" class="invoice_invoice_title">HSN/SAC</th>
+        <th rowspan="2" class="invoice_invoice_title">Taxable value</th>
+        <th colspan=<%= response.taxes.length+1 %> class="invoice_invoice_title">Intregrated Value</th>
+        <th rowspan="2" class="invoice_invoice_title">Total Value</th>
+      </tr>
+      <tr>
+        <% for(var i=0 ; i<response.taxes.length; i++){ %>
+          <th class="invoice_invoice_title"><%= response.taxes[i].tax_class_name %></th>
+        <% } %>
+        <th class="invoice_invoice_title">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% for (var i = orders.length - 1; i >= 0; i--) { %>
+            <% for (var j = orders[i].order_items.length - 1; j >= 0; j--) { %>
+              <tr>
+                <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].hsn_code %></td>
+                <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;">
+                   <%= (orders[i].order_items[j].quantity * orders[i].order_items[j].unit_price_without_tax).toFixed(2) %>
+                </td>
+                <% for(var tax=0;tax<response.taxes.length;tax++){ %>
+                  <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;">
+                    <%= response.taxes[tax].tax_amount.toFixed(2) %> %
+                  </td>
+                <% } %>
+                <% tax_percentage = (orders[i].order_items[j].tax_amount / orders[i].order_items[j].product_price)*100 %>
+                <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= ((tax_percentage/100)*orders[i].order_items[j].product_price).toFixed(2) %></td>
+                <td style="padding: 5px; font-size: 12px; border-bottom: 1px solid #bdbdbd;"><%= orders[i].order_items[j].subtotal.toFixed(2) %></td>
+              </tr>
+            <% } %>
+          <% } %>
+      <tr class="text-center">
+        <td class="invoice_invoice_title">Total</td>
+        <td class="invoice_invoice_title"><%= (response.bill_amount).toFixed(2) %></td>
+        <% for(var number_of_blank_td=0;number_of_blank_td<response.taxes.length;number_of_blank_td++){ %>
+          <td></td>
+        <% } %>
+        <td class="invoice_invoice_title"><%= response.tax_amount.toFixed(2) %></td>
+        <td class="invoice_invoice_title"><%= response.grand_total.toFixed(2) %></td>
+      </tr>
+    </tbody>  
+  </table>
+  <table table border='1' class="mytable" style="margin-top:10px">
+    <tr >
+      <td class="mycell"> 
+          <div class= "row">
+            <div class="col-md-12" style="border:0px">
+              <label class="invoice_invoice_title">Company's PAN Details:</label>
+            </div>
+          <div>  
+          <div class="row"></div>
+          <div class="row"></div>
+          <div class="row"></div>
+      </td>
+      <td>
+        <div class= "row">
+          <div class="col-md-12" style="border:0px">
+            <label class="invoice_invoice_title">Company's Bank Account Details:</label>
+          </div>
+        <div>  
+          <div class="row"></div>
+          <div class="row"></div>
+          <div class="row"></div>      
+      </td>
+    </tr>
+    <tr>
+      <td class="mycell"> 
+          <div class= "row">
+            <div class="col-md-12" style="border:0px">
+              <label class="invoice_invoice_title">Terms And Conditions:</label>
+            </div>
+          <div>  
+          <div class="row">
+            <ul>
+            <% tc=response.unit.bill_tax_details%>
+            <% var array = tc.split("/")%>
+            <% for(var i=0;i<array.length;i++){ %>
+              <li><%= array[i]%></li>
+            <% } %>
+            </ul>
+          </div>
+      </td>
+      <td>
+          <div class="row" style="margin-left:10px;font-size:9px;">Certified that the particular given above are true and correct</div>
+          <div class= "row" style="margin-left:10px;font-size:9px;>
+            <div class="col-md-12" style="border:0px">
+              <label class="invoice_invoice_title">For, <%=response.unit.unit_name%></label>
+            </div>
+          <div>  
+          <div class="row"></div>
+          <div class="row"></div>
+          <div class="row"></div>          
+      </td>
+    </tr>
+  </table>
+  <div class="copyright">
+      <p style="float: right; width: 100%; margin: 5px; text-align: right;">
+        <span style="font-size: 15px; font-weight: 300;">Thank You!</span>
+        <br>
+        <span style="font-size: 9px;">for Puchasing from us.</span>
+        <br>
+        <span style="float: right;font-size: 9px;"><%=response.unit.bill_footer_text%>.</span>
+      </p>
+      <br>
+      <br>
+      <p style="width: 100%; margin: 5px 0px; font-size: 9px; border-bottom: 1px dotted #000; padding: 9px 0px;">
+      </p>
+      <center style="font-size: 8px;">This is a computer generated invoice</center>
+  </div>
+<% } %>
+</div>
+
+<% if(action=="thermal_print"){ %>
+  <div>
+  <span>thermal print</span>
+  </div>
+<%}%>

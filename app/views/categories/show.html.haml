@@ -1,0 +1,25 @@
+= render "layouts/flash"
+
+%table.table.table-hover
+  %tr
+    %th= "Catehory Name"
+    %th= "Category Parent"
+    %th= "Category Code"
+    %th= "Description"
+
+    %tr
+      %td= @category.name
+      %td
+        - if @category.parent
+          = Category.get_cat_name(@category.parent)[0].name
+        - else
+          = "Root category"
+      %td= @category.code
+      %td= @category.description
+
+%a{:href => "#{edit_category_path(@category)}", :class => 'btn btn-primary btn-mini active'}
+  %i.icon-edit
+  Edit
+%a{:href => "#{new_category_path}", :class => 'btn btn-primary btn-mini active'}
+  %i.icon-backward
+  Back

@@ -1,0 +1,69 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Name", "name"
+        %th= smart_listing.sortable "Vendor", "vendor_id"
+        %th= smart_listing.sortable "Valid from", "Valid_from"
+        %th= smart_listing.sortable "Valid till", "Valid_till"
+        %th Actions
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td= link_to "##{object.id} #{object.name}", store_purchase_order_path(@store,object)
+          %td.font-sz-11=object.vendor.name
+          %td.font-sz-11
+            =object.valid_from.strftime("%d %b %Y, %I:%M %p") if object.valid_from.present?
+          %td.font-sz-11
+            =object.valid_till.strftime("%d %b %Y, %I:%M %p") if object.valid_till.present?
+          %td              
+            / %button.m-btn.blue{:type => "button", :class => "send_now_order", :id => object.id}
+            /   %i.mdi-content-send.left
+            /   Send now 
+            - if can? :send_purchase_order, PurchaseOrder
+              - po_send_or_not = has_po_order_send?(object.id)  # return bolean value
+              - if po_send_or_not
+                - if has_po_order_cancelled?(object.id)
+                  %a.button.m-btn.red.cancelled-po-send{:href=>"#",:title => "Send PO"}
+                    %i.mdi-content-send.left
+                    Send
+                - else
+                  - _view_po_btn_width = "99%"
+                  - _view_po_btn_text = "Send"
+                  - if AppConfiguration.get_config_value('po_cancellation_approval') == "enabled"
+                    - if AppConfiguration.get_config_value("#{current_user.role.name}_po_cancellation_approval_role") == "enabled"
+                      %a.m-btn.orange.m-btn-low-padding{:href=>edit_store_purchase_order_path(object.store,object),:title => "Edit PO"} 
+                        %i.mdi-editor-border-color
+                      - _view_po_btn_width = "52%"
+                      - _view_po_btn_text = ""
+                  %a.button.m-btn.blue.view-po-details{"data-target" => "#showPurchaseModal", "data-toggle" => "modal", 'data-po-id'=> "#{object.id}", 'data-store-id'=>"#{@store.id}", 'data-vendor-name' => "#{object.vendor.name}",:id=>"po_send_#{object.id}",:style=>"width:#{_view_po_btn_width};",'data-po-sent'=>'yes'}
+                    %i.mdi-content-send.left
+                    = _view_po_btn_text
+              -else
+                %span{:style=>"float:left"}
+                  - if has_po_order_cancelled?(object.id)
+                    - _view_po_btn_width = "135%"
+                    - if AppConfiguration.get_config_value('po_cancellation_approval') == "enabled"
+                      - if AppConfiguration.get_config_value("#{current_user.role.name}_po_cancellation_approval_role") == "enabled"
+                        %a.m-btn.red.m-btn-low-padding.cancelled-po-edit{:href=>"#",:title => "Edit PO"} 
+                          %i.mdi-editor-border-color
+                        - _view_po_btn_width = "52%"
+                    %a.button.m-btn.red.m-btn-low-padding.cancelled-po-send{:href=>"#",:title => "Send PO",:style=>"width:#{_view_po_btn_width};"}
+                      %i.mdi-content-send
+                      Send
+                  - else
+                    - _view_po_btn_width = "135%"
+                    - if AppConfiguration.get_config_value('po_cancellation_approval') == "enabled"
+                      - if AppConfiguration.get_config_value("#{current_user.role.name}_po_cancellation_approval_role") == "enabled"
+                        %a.m-btn.orange.m-btn-low-padding{:href=>edit_store_purchase_order_path(object.store,object),:title => "Edit PO"} 
+                          %i.mdi-editor-border-color
+                        - _view_po_btn_width = "52%"
+                    %a.button.m-btn.green.m-btn-low-padding.view-po-details{"data-target" => "#showPurchaseModal", "data-toggle" => "modal", 'data-po-id'=> "#{object.id}", 'data-store-id'=>"#{@store.id}", 'data-vendor-name' => "#{object.vendor.name}",:id=>"po_send_#{object.id}",:style=>"width:#{_view_po_btn_width};",'data-po-sent'=>'no'}
+                      %i.mdi-content-send
+                      Send   
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No purchase order found

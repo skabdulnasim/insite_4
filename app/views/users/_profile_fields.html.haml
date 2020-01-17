@@ -1,0 +1,11 @@
+.input-field.col.s12                   
+  = u.text_field :firstname, :required=>true, :placeholder=>"Enter Firstname"
+  = u.text_field :lastname, :required=>true, :placeholder=>"Enter Lastname"
+  = u.text_field :contact_no, :required=>true, :placeholder=>"Enter contact_no"
+  = u.text_field :address,:placeholder=>"Address",:required=>true
+  = u.text_field :city,:placeholder=>"City",:required=>true
+  = u.text_field :zip_code,:placeholder=>"Zip code",:required=>true
+  = u.text_field :state,:placeholder=>"State",:required=>true
+  = u.text_field :country,:value=>"India",:required=>true
+  - _api_base_url = "http://#{(AppConfiguration.get_config_value('site_url')).to_s}/"
+  = u.hidden_field :appurl,:value=>"#{_api_base_url}"

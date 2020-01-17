@@ -1,0 +1,24 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "ID", "id"
+        %th= smart_listing.sortable "Product Name", "product_name"
+        %th= smart_listing.sortable "Quantity", "quantity"
+        %th= smart_listing.sortable "Price", "price"
+        %th= smart_listing.sortable "Date", "created_at"
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td=object.product_id
+          %td=object.product.name
+          %td=object.quantity
+          %td=object.price
+          %td.font-sz-12=object.created_at.strftime("%d %b %Y, %I:%M %p")
+      
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No stock have been purchased yet

@@ -1,0 +1,24 @@
+= form_for @report, method: "post", url: customize_step_report_folder_report_path(@report_folder,@report,2), :html => { :id => "check_box_validate" } do |f|
+  .col-lg-10
+    - @data_tables.each do |data_table|
+      %ul.collection.with-header
+        %li.collection-header
+          %h5  
+            - _model_name = data_table.first.to_s.classify.constantize
+            = data_table.first.humanize        
+        %li.collection-item
+          - data_table.second.each do |rel_tbl_column|
+            - _field_value = "#{data_table.first}.#{rel_tbl_column[:name]}"
+            - _attribute_validation = check_field(_model_name,_field_value)
+            - if @report_folder[:attributes_accessible].include?_field_value
+              .col-lg-4
+                %input{:type =>"checkbox",:name=>"report_selectors[]",:class=>"check",:id =>"select_#{data_table.first}_#{rel_tbl_column[:name]}",:value=>_field_value,:checked=>((@report.report_selectors || '').include?_field_value)}
+                %label{:for=>"select_#{data_table.first}_#{rel_tbl_column[:name]}"}= rel_tbl_column[:name].humanize 
+          .clearfix
+
+  .col-lg-2          
+    = f.submit "Next", :class=>"m-btn teal"
+
+                
+
+             

@@ -1,0 +1,27 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th= smart_listing.sortable "Audit details", "id" 
+        %th= smart_listing.sortable "Date", "created_at"
+        %th
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td
+            %h5
+              ="Audit ID: #{object.id}"   
+            Status:
+            = audit_status_tag(object.status)
+          %td.font-sz-12=object.created_at.strftime("%d %b %Y, %I:%M %p")  
+          %td.col-lg-2.col-xs-3.padding-top-20
+            %a.m-btn.orange{:href=>"#{store_stock_audit_path(@store,object)}"} 
+              %i.mdi-action-subject.left
+              More details            
+      
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No stock audit done  yet       

@@ -1,0 +1,34 @@
+:javascript
+  $(function() {
+    $('#table_reservation_from_time').datetimepicker({
+      pickDate: false,
+    });
+    $('.time').datetimepicker({
+      pickDate: false,
+    });
+  });
+  $('.collapse').collapse()
+
+#page-wrapper
+  .row
+    .page-header
+      %h2
+        %i.fa.fa-tags
+        Table Management
+        %small Table Reservation > Registration
+
+           
+  #table_reservation
+    %h2#month
+      %center
+        = link_to "<", date: @date.prev_month
+        = @date.strftime("%B %Y")
+        = link_to ">", date: @date.next_month
+    = calendar @date do |date|
+      %a.date{:href =>"/table_reservations/reservation_list/#{date}","data-whatever" => "#{date}",:id=>"date#{date}"}
+        = date.day
+                 
+
+  
+
+

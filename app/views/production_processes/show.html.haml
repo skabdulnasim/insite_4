@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @production_process.name
+%p
+  %b Short name:
+  = @production_process.short_name
+%p
+  %b Local name:
+  = @production_process.local_name
+%p
+  %b Category:
+  = @production_process.category_id
+%p
+  %b Rate/min.:
+  = @production_process.cost
+
+= link_to 'Edit', edit_production_process_path(@production_process)
+\|
+= link_to 'Back', production_processes_path

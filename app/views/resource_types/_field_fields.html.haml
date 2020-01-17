@@ -1,0 +1,20 @@
+.form-group
+    .col-sm-2
+        = f.select :field_type, ResourceType::INPUT_TYPE.map{|data| [data.humanize,data]},{}, {:class=> 'form-control'}
+    .col-sm-4
+        = f.text_field :name, placeholder: "Field Name"
+    .col-sm-4
+        .col-sm-12    
+            = f.check_box :required 
+            = f.label :required
+            = f.check_box :is_sortable 
+            = f.label :is_sortable
+            = f.check_box :is_unique 
+            = f.label :is_unique
+            = f.check_box :is_compareable 
+            = f.label :is_compareable
+            = f.hidden_field :_destroy
+    .col-sm-2
+        / = link_to "[remove]", '#', class: "remove_fields"
+        %a.btn.btn-xs.btn-danger.remove_fields{:href => "#", :title => "Delete"}
+            %i.mdi-content-remove

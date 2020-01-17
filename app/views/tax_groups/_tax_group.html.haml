@@ -1,0 +1,4 @@
+%tr{:class=>"taxgroup_of_#{tax_group.id}"}
+  %td=tax_group.name
+  %td=Section.find(tax_group.section_id).name
+  %td= link_to "Edit",edit_tax_group_path(tax_group),:class=>"right modal-trigger edit_tax_group_link", remote: true

@@ -1,0 +1,9 @@
+%p#notice= notice
+
+%p
+  %b Preference:
+  = @item_preference.preference
+
+= link_to 'Edit', edit_item_preference_path(@item_preference)
+\|
+= link_to 'Back', item_preferences_path

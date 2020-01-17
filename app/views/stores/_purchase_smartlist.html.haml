@@ -1,0 +1,58 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th
+          = smart_listing.sortable "Purchase order details", "id" 
+        %th= smart_listing.sortable "Date", "created_at"
+        %th
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td
+            %h5
+              ="##{object.id} #{object.purchase_order.name}"                 
+              -if object.cancellation_status.present?
+                %span.m-label.red
+                  =object.cancellation_status
+              -else
+                =po_status_tag(object.status)
+            %p.module_description.font-sz-11
+              = "Vendor: #{object.purchase_order.vendor.name} | Address: #{object.purchase_order.vendor.address} | Contact: #{object.purchase_order.vendor.phone}"
+          %td.font-sz-12=object.created_at.strftime("%d %b %Y, %I:%M %p")  
+          %td
+            / %a.m-btn.green.view-po-details.float-r{"data-target" => "#showPurchaseModal", "data-toggle" => "modal", 'data-po-id'=> "#{object.id}", 'data-store-id'=>"#{@store.id}"} 
+            - if object.status == '3'
+              %a.m-btn.cyan.float-r{:href=>store_stock_purchase_path(@store,object)} 
+                %i.mdi-action-subject.left
+                View
+            - else
+              - if object.status == '1'
+                - view_btn_width = '100%'
+                - if AppConfiguration.get_config_value('po_cancellation_approval') == "enabled"
+                  - if AppConfiguration.get_config_value("#{current_user.role.name}_po_cancellation_approval_role") == "enabled"
+                    - view_btn_width = '48%'
+                    - if object.purchase_order.status == 'cancelled'
+                      %a.m-btn.gray.m-btn-low-padding.disabled{:href=>"#",:title => "Cancel"} 
+                        %i.mdi-action-highlight-remove
+                    - else
+                      %a.m-btn.red.m-btn-low-padding{:href=>edit_stock_purchase_store_stock_purchase_path(@store,object),:title => "Cancel"} 
+                        %i.mdi-action-highlight-remove
+                %a.m-btn.green.float-r{:href=>store_stock_purchase_path(@store,object), :style=>"width:#{view_btn_width};"} 
+                  %i.mdi-action-subject.left
+                  View
+              - else
+                %a.m-btn.green.float-r{:href=>store_stock_purchase_path(@store,object)} 
+                  %i.mdi-action-subject.left
+                  View           
+      
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No stock have been purchased yet        
+
+
+
+

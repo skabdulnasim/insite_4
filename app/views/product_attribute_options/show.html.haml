@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Product attribute key:
+  = @product_attribute_option.product_attribute_key_id
+%p
+  %b Value:
+  = @product_attribute_option.value
+%p
+  %b Label:
+  = @product_attribute_option.label
+%p
+  %b Position:
+  = @product_attribute_option.position
+%p
+  %b Deleted at:
+  = @product_attribute_option.deleted_at
+
+= link_to 'Edit', edit_product_attribute_option_path(@product_attribute_option)
+\|
+= link_to 'Back', product_attribute_options_path

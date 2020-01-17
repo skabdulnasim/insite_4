@@ -1,0 +1,21 @@
+<div class='margin-t-15'>
+	<% if (account_transactions.length > 0) { %>
+		<% for (var i = account_transactions.length - 1; i >= 0; i--) { %>
+			<tr>
+				<td><%= account_transactions[i].amount %></td>
+				<td><%= account_transactions[i].transaction_type %></td>
+				<td><%= account_transactions[i].paymentmode %></td>
+				<td><%= account_transactions[i].receiver_name %></td>
+				<td><%= account_transactions[i].device_id %></td>
+				<td><%= account_transactions[i].created_at %></td>
+				<td><%= account_transactions[i].purpose %></td>
+				<td><%= account_transactions[i].remarks %></td>
+
+			</tr>
+		<% } 
+	} else {%>
+		<tr>
+			<td colspan = '8'>No transaction found</td>
+		</tr>
+	<% } %>
+</div>

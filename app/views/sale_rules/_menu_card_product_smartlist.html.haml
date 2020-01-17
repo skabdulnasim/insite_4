@@ -1,0 +1,26 @@
+- unless smart_listing.empty?
+  .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+    %table.data-table
+      %tbody.panel
+        %tr.data-table__selectable-row
+          %th.col-lg-7.font-bold Menu Product Name
+          %th.col-lg-3.font-bold Category
+          %th.col-lg-2.font-bold Price
+        - smart_listing.collection.each do |mp|
+          %tr.data-table__selectable-row
+            %td.col-lg-7
+              = check_box_tag "selected_menu_products[]", "#{mp.id}", @sale_rule.menu_products.include?(mp) , :class=>"filled-in", :id => "mp_#{mp.id}"
+              %label.font-sz-11{:for=>"mp_#{mp.id}"}= mp.product.name
+            %td.col-lg-3
+              = mp.menu_category.name
+            %td.col-lg-2
+              %span.m-label.white.blue-text.float-r{:style=>"line-height:1.3em;"}
+                =@currency
+                %span=mp.sell_price_without_tax
+          
+  .padding-5
+    = smart_listing.paginate
+    = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No menu products found

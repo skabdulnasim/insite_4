@@ -1,0 +1,24 @@
+#newProductModal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "newProductModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} &times;
+          %span.sr-only Close
+        %h4#newProductModalLabel.modal-title New product settings
+      .modal-body
+        = form_tag(new_product_path, method: "get", class: "form-horizontal bordered-row" ) do
+          .form-group
+            %label.col-sm-4.control-label Product Type
+            .col-sm-5
+              = select_tag :product_type, options_for_select(Product::PRODUCT_TYPE.map { |e| [e.humanize, e] }), :class=>"form-control"
+          .form-group
+            %label.col-sm-4.control-label Attribute Set
+            .col-sm-5
+              = select_tag :product_attribute_set_id, options_for_select(@attribute_sets.map { |e| [e.name, e.id] }), :class=>"form-control"
+          .form-group
+            %label.col-sm-4.control-label Sell item
+            .col-sm-5
+              = select_tag :business_type, options_for_select(Product::BUSINESS_TYPE.map { |e| [e.humanize, e] }), :class=>"form-control"
+          .modal-footer
+            %input.m-btn.blue.large{:name => "commit", :type => "submit", :value => "Continue"}

@@ -1,0 +1,17 @@
+<!-- <label class="col-sm-4 control-label" for="resource_id">Select Resource</label>
+<div class="col-sm-8">
+	<select id="resource_id" class="form-control" name="resource_id">
+		<option>Select Resource</option>
+		<% for( var i=0; i <= responseData.length - 1; i++ ) { %>
+			<option value="<%= responseData[i].resource_id %>"><%= responseData[i].resource_name %></option>
+		<% } %>
+	</select>
+</div> -->
+
+
+<select id="resource" class="form-control" name="resource">
+	<option>Select Resource</option>
+	<% for( var i=0; i <= responseData.length - 1; i++ ) { %>
+		<option value="<%= responseData[i].resource_id %>"><%= responseData[i].resource_name %></option>
+	<% } %>
+</select>

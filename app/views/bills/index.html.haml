@@ -1,0 +1,160 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+  });
+  function showValue(newValue)
+  {
+    $("#range").html(newValue);
+  }
+  function showValue2(newValue)
+  {
+    $("#range2").html(newValue);
+  }
+= render "layouts/flash"
+- @unit_currency = currency
+- settlement_data = get_todays_settlement_data(@current_user.unit_id,@today_from_datetime,@today_to_datetime)
+.col-lg-15.col-sm-12.col-xs-12.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-rocket.blue
+    %span.title.font-sz-12 Total Sales Today
+    %span.value=number_to_currency(get_todays_total_sales(@current_user.unit_id),unit: @unit_currency,format: "%u %n", precision: 2)
+    .clearfix
+.col-lg-15.col-sm-12.col-xs-12.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-thumbs-down.red
+    %span.title.font-sz-12 Loss for NC & Void
+    %span.value=number_to_currency(get_todays_nc_void_loss(@current_user.unit_id),unit: @unit_currency,format: "%u %n", precision: 2)
+    .clearfix
+.col-lg-15.col-sm-12.col-xs-12.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-check.green
+    %span.title.font-sz-12 Today's Settled Bill
+    %span.value=number_to_currency(settlement_data[:total_settlement],unit: @unit_currency,format: "%u %n", precision: 2)
+    .clearfix
+.col-lg-15.col-sm-12.col-xs-12.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-money.orange
+    %span.title.font-sz-12 Today's Cash Sale
+    %span.value=number_to_currency(settlement_data[:cash_sale],unit: @unit_currency,format: "%u %n", precision: 2)
+    .clearfix
+.col-lg-15.col-sm-12.col-xs-12.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-credit-card.indigo
+    %span.title.font-sz-12 Today's Card Sale
+    %span.value=number_to_currency(settlement_data[:card_sale],unit: @unit_currency,format: "%u %n", precision: 2)
+    .clearfix
+.clearfix
+.col-sm-3.padding-5
+  .card
+    .padding-10
+      %b FILTER BY
+    = smart_listing_controls_for(:bills, {class: "text-left"}) do
+      .filter-title.margin-t-b-0
+        %i.mdi-action-search.left
+        Search
+      .padding-10
+        .form-group.filter.input-append
+          .input-group
+            %input.form-control.search{:placeholder => "Search by Bill ID...", :type => "text", :name=> "id_filter"}
+              %span.input-group-btn
+                %button.btn.btn-primary.disabled{:type => "submit" }
+                  %span.glyphicon.glyphicon-search
+      - if current_user.role.name == "owner"
+        .filter-title branch
+        .padding-10{:style => "max-height: 300px; overflow-y: auto;"}
+          - Order.select("DISTINCT(unit_id)").each do |order|
+            .checkbox
+              = radio_button_tag 'unit_id', order.unit_id, false,{ :id => "source_#{order.unit_id}", :class=>"filled-in"}
+              %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"source_#{order.unit_id}", :style=>"padding-left:30px;"}= order.unit.unit_name.humanize
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-label.left
+        Bill Type
+      .padding-l-r-5
+        .checkbox.margin-t-b-2
+          = check_box_tag 'is_discount', 1, false,{ :id => "is_discount", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5{:for=>"is_discount", :style=>"padding-left:30px;"}= "Is Discount"
+        .checkbox.margin-t-b-2
+          = check_box_tag 'is_cancel', 1, false,{ :id => "is_cancel", :class=>"filled-in"}
+          %label.checkbox.inline.margin-l-5{:for=>"is_cancel", :style=>"padding-left:30px;"}= "Is Cancel"
+      .filter-title.margin-t-b-0
+        %i.mdi-action-label.left
+        Status
+      .padding-l-r-5
+        - Bill::STATUS.each do |st|
+          .checkbox.margin-t-b-2
+            = check_box_tag 'status[]', st, false,{ :id => "status_#{st}", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5{:for=>"status_#{st}", :style=>"padding-left:30px;"}= st.humanize
+      -# .filter-title source
+      -# .padding-10
+      -#   - Order.select("DISTINCT(source)").each do |order|
+      -#     .checkbox
+      -#       = radio_button_tag 'order_source', order.source, false,{ :id => "source_#{order.source}", :class=>"filled-in"}
+      -#       %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"source_#{order.source}", :style=>"padding-left:30px;"}= order.source.humanize
+      .filter-title PAYMENTMODE
+      .padding-10
+        - get_paymentmod_details() #billshelper
+      .filter-title Section
+      .padding-10
+        - @distinct_sections.each do |distinct_section|
+          .checkbox
+            = radio_button_tag 'section_id', distinct_section.id, false,{ :id => "source_#{distinct_section.id}", :class=>"filled-in"}
+            %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"source_#{distinct_section.id}", :style=>"padding-left:30px;"}= distinct_section.name
+      .filter-title
+        %i.mdi-hardware-keyboard-tab.left
+        price range
+      .padding-10
+        .text-center
+          ="From: #{@unit_currency} "
+          %span#range=0
+        %input{:max =>"#{@maxbill}", :min => "0",:onchange => "showValue(this.value)",:step => "10", :type => "range", :value => "0", :name=> "from_price"}
+        %br
+        .text-center
+          ="To: #{@unit_currency} "
+          %span#range2=@maxbill
+        %input{:max =>"#{@maxbill}", :min => "0",:onchange => "showValue2(this.value)",:step => "10", :type => "range", :value => "#{@maxbill}", :name=> "to_price"}
+
+      .filter-title
+        %i.mdi-action-today.left
+        date
+      .padding-10
+        .form-group.from_date.input-append
+          = text_field_tag :from_date, '', class: "search form-control form-control-small-pad", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;"
+          %br
+          %br
+          = text_field_tag :to_date, '', class: "search form-control form-control-small-pad", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;"
+          .clearfix
+.col-sm-9.padding-5
+  = smart_listing_render :bills
+.clearfix
+- manual_load_javascript "templates/bills/quick_details", "templates/bills/list_stores", "templates/pos/invoice"
+
+#invoiceModal.modal.fade{"aria-labelledby" => "invoiceModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg{:role => "document"}
+    .modal-content
+      .modal-header
+        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+        %h4#myModalLabel.modal-title Invoice
+      .modal-body#invoiceModalBody
+        \...
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        %button.btn.btn-primary.print{:type => "button"} Print
+
+#waybillinvoiceModal.modal.fade{"aria-labelledby" => "invoiceModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog.modal-lg{:role => "document"}
+    .modal-content
+      .modal-header
+        %button.close{"aria-label" => "Close", "data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+        %h4#myModalLabel.modal-title Way Invoice
+      .modal-body#wayinvoiceModalBody
+        \...
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+        %button.btn.btn-primary.print_way_bill{:type => "button"} Print

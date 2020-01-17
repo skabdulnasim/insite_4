@@ -1,0 +1,36 @@
+- links_arr = [{:title=>"All Branches",:url=>units_path,:active_class=>""},{:title=>"Branch: #{@unit.unit_name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+%table.table.table-hover
+  %tr
+    %th= "Branch Name"
+    %th= "Branch Type"
+    %th= "Branch Address"
+    %th= "Branch Parent"
+    %th= "Time Zone"
+    %th= "Branch Image"
+    
+
+    %tr
+      %td= @unit.unit_name
+      %td= @unit.unittype.unit_type_name
+      %td 
+        %p= @unit.address
+        %p= @unit.landmark
+        %p= @unit.city
+        %p= @unit.state
+        %p= @unit.pincode
+        %p= @unit.phone
+      %td
+        -if @unit.unit_parent
+          = Unit.get_unit_name(@unit.unit_parent)[0].unit_name
+      %td= @unit.time_zone.presence || "N/A"
+      %td= image_tag @unit.unit_image.url(:medium) if @unit.unit_image.present? 
+%a{:href => "#{edit_unit_path(@unit)}", :class => 'btn btn-primary btn-mini active'}
+  %i.icon-edit
+  Edit
+%a{:href => "#{units_path}", :class => 'btn btn-primary btn-mini active'}
+  %i.icon-backward
+  Back
+      
+      

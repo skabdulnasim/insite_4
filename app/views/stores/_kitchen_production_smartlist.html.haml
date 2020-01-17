@@ -1,0 +1,31 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %th.col-md-8{:colspan => 3}
+        = smart_listing.sortable "Production details", "id" 
+      %th.col-md-2= smart_listing.sortable "Date", "created_at"
+      %th.col-md-2 Action
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr
+          %td.text-center{:style => "width: 1%;", :class=>"#{production_status_class(object.status)}"}
+          %td.fixed-width-xss
+            %i.fa.fa-cutlery.fa-2x.padding-5
+          %td
+            %h5
+              ="##{object.id}"                 
+              = production_status_tag(object.status)
+            %p.module_description
+              %b Summary:
+              = "#{pluralize(object.stock_production_metas.count, 'product')} | Total procurement cost: #{number_to_currency(object.stock_production_metas.sum(:price), unit: "#{currency}", format: "%u %n")}"
+          %td.font-sz-12=object.created_at.strftime("%d %b %Y, %I:%M %p")  
+          %td.col-lg-2.col-xs-3.padding-top-20
+            %a.btn.btn-default.btn-sm.btn-social{:href=>"#{store_stock_production_path(@store,object)}"} 
+              %i.fa.fa-list-ul
+              =get_production_action_button_text(object.status)                   
+  -# Render nice pagination links fitted for Bootstrap 3 by default
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No production records found!

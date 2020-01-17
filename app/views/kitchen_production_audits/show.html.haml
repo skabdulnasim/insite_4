@@ -1,0 +1,48 @@
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>"#{store_path(@store)}",:active_class=>""},{:title=>"Production audit",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+= form_tag(approve_audit_store_kitchen_production_audits_path(@store), method: "post",multipart: true) do
+  .col-md-8
+    %h4 Products in audit
+    %table.table.table-bordered.product
+      %thead
+        %tr
+          %th.col-md-3 Product
+          %th.col-md-3 Production target qty
+          %th.col-md-2 Procured qty
+          %th.col-md-2 Remarks
+      %tbody
+        - @pro_audits.each do |pa|
+          %tr
+            %td=pa.product.name
+            %td="#{pa.received_qty} #{pa.product.basic_unit}"
+            %td="#{pa.procured_qty} #{pa.product.basic_unit}"
+            %td=pa.remarks
+  .col-md-4.padding-none
+    .panel.panel-default
+      .panel-heading 
+        %b Audit details
+      .panel-body
+        Current Status : 
+        =production_audit_status_tag(@pro_audits.first.status)
+        %br
+        %br
+        Audit serial number:
+        =@pro_audits.first.audit_id
+        %br
+        %br
+        Audit date:
+        =@pro_audits.first.updated_at.strftime("%d %b %Y, %I:%M %p")
+        %br
+        - if @pro_audits.first.status == '2'
+          %br
+          = hidden_field_tag :audit_id, @pro_audits.first.audit_id
+          = select_tag :status, options_for_select({"Approve this audit"=>"3","Reject this audit"=>"4"}), class: "search form-control", :required => true
+          %hr
+          %button.btn.btn-social.btn-success.btn-block{:type=>"submit"}
+            %i.fa.fa-check
+            Save and continue
+        %hr
+        %a.btn.btn-social.btn-default.btn-block{:href=>"#{store_path(@store)}"}
+          %i.fa.fa-reply
+          Back to store

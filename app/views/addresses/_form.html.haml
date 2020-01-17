@@ -1,0 +1,42 @@
+= form_for [@customer,@address], :html => {"data-remote" => "true"} do |f|
+  .row
+    .col.s12
+      .row.m0
+        .input-field.col.s3.offset-s1
+          = f.label :pincode, "Pincode"
+        .input-field.col.s6.m0
+          = f.text_field :pincode, :autofocus => true, :required => true, :placeholder => "Enter Pincode"
+      .row.m0
+        .input-field.col.s3.offset-s1
+          = f.label :receiver_name, "Name"
+        .input-field.col.s6.m0
+          = f.text_field :receiver_name, :required => true, :placeholder => "Full Name"
+      .row.m0
+        .input-field.col.s3.offset-s1
+          = f.label :delivery_address, "Address"
+        .input-field.col.s6.m0
+          = f.text_field :delivery_address, :required => true, :placeholder => "Delivery Address"
+      .row.m0
+        .input-field.col.s3.offset-s1
+          = f.label :landmark, "Locality/Landmark"
+        .input-field.col.s6.m0
+          = f.text_field :landmark, :placeholder => "Landmark (optional)"
+      .row.m0
+        .input-field.col.s3.offset-s1
+          = f.label :city, "City"
+        .input-field.col.s6.m0
+          = f.text_field :city, :placeholder => "City"
+      .row.m0
+        .input-field.col.s3.offset-s1
+          = f.label :state, "State"
+        .input-field.col.s6.m0
+          = f.text_field :state, :placeholder => "State"
+      .row.m0
+        .input-field.col.s3.offset-s1
+          = f.label :contact_no, "Mobile Number"
+        .input-field.col.s6
+          = f.text_field :contact_no, :placeholder => "10 digit mobile number"
+      .row.m0
+        .input-field.col.s6.offset-s4
+          = f.submit :save, :class => 'btn theme-green'
+          = link_to "Cancel", customer_addresses_path(@customer), :remote => true, :class => 'btn white grey-text'

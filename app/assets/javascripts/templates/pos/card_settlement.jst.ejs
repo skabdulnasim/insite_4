@@ -1,0 +1,36 @@
+<h6 style="border-bottom: 1px dashed #ccc; padding-top: 8px; padding-bottom: 15px; ">
+  Pay using Card
+  <span>
+    <input type="checkbox" id="card_settlement_checkbox" class="settlement_mode_checkbox" data-settlement-mode='card'/>
+    <label for="card_settlement_checkbox" class='right'></label>
+  </span>
+</h6>
+<div class="row m0">
+  <div class="input-field col s4 mt1">
+    <label for="card_amount">Amount</label>
+  </div>
+  <div class="input-field col s8 mt1">
+    <input placeholder="Enter Amount" id="card_settlement_amount" type="text" class="validate settlement_amount_input" data-settlement-mode='card'>
+  </div>
+</div>
+<div class="row m0">
+  <div class="input-field col s4 mt1">
+    <label for="card_number">Card Number</label>
+  </div>
+  <div class="input-field col s8 mt1">
+    <input placeholder="Last 4 digit" id="card_number" type="text" class="validate">
+  </div>  
+</div>
+<div class="row m0">
+  <div class="input-field col s4 mt1">
+    <label for="card_merchandiser">Merchandiser</label>
+  </div>
+  <div class="input-field col s8 mt1">
+    <select class="form-control browser-default" id="card_merchandiser">
+      <option value="visa">VISA</option>
+      <option value="mastercard">MasterCard</option>
+      <option value="mastercard">Other</option>
+    </select>
+  </div>
+</div>
+

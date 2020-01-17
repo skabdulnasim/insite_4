@@ -1,0 +1,56 @@
+<% 
+  var key = master_product_key+item_id
+%>
+
+<tr class="data-table__selectable-row" id='menu_combo_item_<%=item_id%>_of_master_<%=master_product_id%>'>
+  <td class="col-lg-5">
+    <%=combo_item_name%>
+    <input class="form-control" name="menu_card[menu_products_attributes][<%=master_product_key%>][combo_items_attributes][<%=key%>][item_id]" type="hidden" value='<%=item_id%>'>
+  </td>
+
+  <td class="col-lg-2">
+    <%  if(combo_sizes.length > 0) { %>
+      <select name="menu_card[menu_products_attributes][<%=master_product_key%>][combo_items_attributes][<%=key%>][size_id]">
+        <% for (var c_c = combo_sizes.length - 1; c_c >= 0; c_c--) {
+          if (combo_sizes[c_c].name == combo_size_name){ %>
+            <option value="<%=combo_sizes[c_c].id%>" selected><%= combo_sizes[c_c].name %></option>
+          <%} else{%>
+            <option value="<%=combo_sizes[c_c].id%>"><%= combo_sizes[c_c].name %></option>
+          <%}%>
+        <% } %>
+      </select>
+    <% } else { %> 
+      <div class="red-text">N/A</div> 
+    <% }%>
+  </td>
+
+  <td class="col-lg-2">
+    <%  if(combo_colors.length > 0) { %>
+      <select name="menu_card[menu_products_attributes][<%=master_product_key%>][combo_items_attributes][<%=key%>][color_id]">
+        <% for (var c_c = combo_colors.length - 1; c_c >= 0; c_c--) {
+          if (combo_colors[c_c].name == combo_color_name){ %>
+            <option value="<%=combo_colors[c_c].id%>" selected><%= combo_colors[c_c].name %></option>
+          <%} else{%>
+            <option value="<%=combo_colors[c_c].id%>"><%= combo_colors[c_c].name %></option>
+          <%}%>
+        <% } %>
+      </select>
+    <% } else { %> 
+      <div class="red-text">N/A</div> 
+    <% }%>
+  </td>
+
+  <td class="col-lg-1">
+    <input class="form-control" name="menu_card[menu_products_attributes][<%=master_product_key%>][combo_items_attributes][<%=key%>][quantity]" type="text" value='<%=combo_quantity%>' required>
+  </td>
+
+  <td class="col-lg-1">
+    <input class="form-control" name="menu_card[menu_products_attributes][<%=master_product_key%>][combo_items_attributes][<%=key%>][sell_price]" type="text" value='<%=combo_sell_price%>' required>
+  </td>
+
+  <td class="col-lg-1">
+    <button aria-hidden="true" class="close remove_combo_item float-r" type="button" data-combo-item-id="<%=item_id%>" data-master-product-id="<%=master_product_id%>">
+      <i class="fa fa-times-circle"></i>
+    </button>
+  </td>
+</tr>

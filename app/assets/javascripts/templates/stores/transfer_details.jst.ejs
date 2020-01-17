@@ -1,0 +1,73 @@
+<div class="col-lg-4">
+  <h4>Transfer details</h4>
+  <p>
+    <b>Transfer ID: <%= package_obj.id%></b>
+    Date: <%= package_obj['created_at']%>
+  </p>
+</div>
+<div class="col-lg-4">
+  <h4>From store</h4>
+  <p>
+   <b><%= package_obj['from_store'].name%></b><br>
+   Address: <%= package_obj['from_store'].address%><br>
+   Contact: <%= package_obj['from_store'].contact_number%>
+  </p> 
+</div>
+<div class="col-lg-4">
+  <h4>To store</h4>
+  <p>
+   <b><%= package_obj['to_store'].name%></b><br>
+   Address: <%= package_obj['to_store'].address%><br>
+   Contact: <%= package_obj['to_store'].contact_number%>
+  </p> 
+
+</div>
+<br>
+<table class="table table-bordered table-hover table-striped">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for(var i=0; i< package_obj['stocks'].length; i++) {%>
+        <% if(package_obj['stocks'][i].store_id == package_obj.primary_store) { %>
+          <tr>
+            <td>
+              <%= package_obj['stocks'][i].product['name']%> 
+            </td>
+            <td class="width-18-p">
+              <%= package_obj['stocks'][i].stock_debit %> 
+              <%= package_obj['stocks'][i].product['basic_unit'] %>                   
+            </td>         
+          </tr>
+        <%}%>
+      <%}%>
+    </tbody>
+  </table>
+<input type="hidden" name="id" value="<%= package_obj.id%>"/>
+<div class="modal-footer" style="clear:both">
+  <div class="form-group">
+    <div class="col-sm-offset-5 col-sm-7">
+      <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+      <% if(package_obj.access_from == "vehicle") {%>
+        <% if(package_obj.status == "10") { %>
+          <input type="hidden" name="status" value="20"/>
+          <input type="hidden" name="status_desc" value="Shipment has been picked up and will be delivered soon"/>
+          <button class="btn btn-success" type="submit">Pickup shipment</button>
+        <% } %>
+        <% if(package_obj.status == "20") { %>
+          <input type="hidden" name="status" value="30"/>
+          <input type="hidden" name="status_desc" value="Shipment has been delivered, waiting for confirmation from recipient store"/>
+          <button class="btn btn-warning" type="submit">Deliver shipment</button>
+        <% } %>     
+        <% if(package_obj.status == "50") { %>
+          <input type="hidden" name="status" value="60"/>
+          <input type="hidden" name="status_desc" value="Return Shipment has been delivered, waiting for confirmation from recipient store"/>
+          <button class="btn btn-danger" type="submit">Deliver return shipment</button>
+        <% } %>            
+      <%}%>      
+    </div>
+  </div>
+</div>

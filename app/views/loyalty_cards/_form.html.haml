@@ -1,0 +1,55 @@
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });
+  });
+= form_for @loyalty_card do |f|
+  - if @loyalty_card.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@loyalty_card.errors.count, "error")} prohibited this loyalty_card from being saved:"
+      %ul
+        - @loyalty_card.errors.full_messages.each do |msg|
+          %li= msg
+  .main-section__content.padding-r-none
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Card Details
+          .min-height-405.bordered-row.m-input   
+            .form-group
+              = f.label :name_on_card, :class => 'col-sm-4 control-label'
+              .col-sm-8.input-field
+                = f.text_field :name_on_card
+            .form-group
+              = f.label :card_no, :class => 'col-sm-4 control-label'
+              .col-sm-8.input-field
+                = f.text_field :card_no
+            .form-group
+              = f.label :card_serial, :class => 'col-sm-4 control-label'
+              .col-sm-8.input-field
+                = f.text_field :card_serial
+            .form-group
+              = f.label :card_type, :class => 'col-sm-4 control-label'
+              .col-sm-8.input-field
+                = f.select :card_type, options_for_select(LoyaltyCard::TYPE), {:class => "form-control"}
+            .form-group
+              = f.label :loyalty_card_class_id, :class => 'col-sm-4 control-label'
+              .col-sm-8.input-field
+                = f.collection_select :loyalty_card_class_id, LoyaltyCardClass.all, :id, :name, {:class => "form-control"}
+                = f.hidden_field :customer_id
+            .form-group
+              = f.label "Validity", :class => 'col-sm-4 control-label'
+              .col-sm-4.input-field
+                = f.text_field :valid_from, :placeholder =>"Valid from", :class=>"datepick"                
+              .col-sm-4.input-field
+                = f.text_field :valid_till, :placeholder =>"Valid till", :class=>"datepick"                                
+            .form-group
+              = f.label :status, :class => 'col-sm-4 control-label'
+              .col-sm-8.input-field
+                = f.select :status, options_for_select(LoyaltyCard::STATUS), {:class => "form-control"}
+            .form-group
+              = f.submit 'Save card', :class=>"m-btn green col-sm-offset-4"

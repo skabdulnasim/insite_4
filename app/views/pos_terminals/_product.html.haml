@@ -1,0 +1,8 @@
+.col.l2.m3.s6.p3
+  .card.small.media-card-small.blue.lighten-1.m0.waves-effect.waves-light.add-to-cart{:class => '', :data => {"catalog-id" => @catalog.id, "catalog-product-id" => product.id, "product-name" => product.product_name, "product-price" => product.sell_price, "currency" => currency, "pos-id" => @pos.id}}
+    .card-image.blue.p20-45= image_tag('box-6.png')
+    .card-title.white-text=product.product_name
+    .card-action.blue.darken-1
+      - if product.sell_price.present?
+        %span.left.blue-text.text-lighten-4="#{currency} #{product.sell_price}"
+      %i.material-icons.right.white-text add_shopping_cart

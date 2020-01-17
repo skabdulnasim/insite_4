@@ -1,0 +1,80 @@
+:css 
+  ul.token-input-list-facebook{
+    width: 280px; 
+  }
+.col-lg-12.p0
+  = render 'stock_transfer_steps/wizard', current_step: "step_1", completed_steps: []
+
+  .col-sm-8.padding-l-r-5
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Products
+            %header.data-table-header
+              .row.data-table-header__label
+                = smart_listing_controls_for(:products, {class: "text-left"}) do 
+                  .form-group.filter.input-append.hidden-sm.hidden-xs.col-md-3
+                    = select_tag :product_category, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control", :prompt => "All categories", style: "width: 100%"
+                  .form-group.filter.input-append.hidden-sm.hidden-xs.col-md-3
+                    %input.form-control.search.sku_search{:placeholder => "Product Search...", :type => "text", :name=> "filter", style: "width: 100%"}
+                  .form-group.filter.input-append.hidden-sm.hidden-xs.col-md-3
+                    %input.form-control.search{:placeholder => "Search Product Id...", :type => "text", :name=> "product_id_filter", style: "width: 104%"}    
+                  .form-group.filter.input-append.hidden-sm.hidden-xs.col-md-3
+                    %input.form-control.search.sku_search{:placeholder => "SKU Search...", :type => "text", :name=> "sku_filter", style: "width: 100%"}
+                  
+                  %input.form-control.search{:value => params[:business_type], :type => "hidden", :name=> "business_type"}
+            = smart_listing_render :products  
+     
+  .m0.col-lg-4.right.card
+    .card-content.padding-10
+      #product_ids
+      = form_for @stock_transfer,:html => { :class => 'form-horizontal' } do |f|
+        %input{:value => params[:business_type], :type => "hidden", :name=> "business_type"}
+        #form-autosave-message
+        .col-lg-12
+          - if @stock_transfer.errors.any?
+            #error_explanation
+              %h2= "#{pluralize(@stock_transfer.errors.count, "error")} prohibited this transfer from being saved:"
+              %ul
+                - @stock_transfer.errors.full_messages.each do |msg|
+                  %li= msg
+          = f.hidden_field :primary_store_id, :value => @store.id
+          = f.hidden_field :store_requisition_log_id, :value => params[:store_requisition_log_id]
+          = f.hidden_field :transfer_status, :value => 'incomplete'
+          = f.hidden_field :expected_delivery_date
+          .form-group.col-sm-12
+            = f.label :transfer_type
+            = f.select :transfer_type, options_for_select(StockTransfer::TRANSFER_TYPES.map { |e| [e.humanize, e] }, @stock_transfer.transfer_type), { include_blank: "Select transfer type"}, {:class => "form-control", "data-store-id"=>@store.id}
+          .clearfix
+          .form-group.col-sm-12.stock_transfer_destination_store_container
+            = f.label :secondary_store_id, "Transfer to"
+            = f.select :secondary_store_id, [], { include_blank: false}, {:class => "form-control", :required => true}
+        .clearfix
+        .stock_transfer_vehicle_container
+          - if @shipping_module == 'enabled'
+            %hr
+            .col-lg-12
+              .form-group.col-sm-12
+                = f.label :vehicle_id
+                = f.select :vehicle_id, options_for_select(@vehicles.map { |e| [e.name, e.id] }, @stock_transfer.vehicle_id), { include_blank: 'Select delivery vehicle'}, {:class => "form-control"}
+        .clearfix
+        %hr
+        #form-autosave-message
+        .col-lg-12
+          .form-group.col-sm-12
+            = f.label :product_tokens, "Selected Products"
+            = f.text_field :product_tokens
+        .clearfix
+        %hr
+        .wizard.vertical
+          .actions.clearfix.clearfixboth
+            %ul{"aria-label" => "Pagination", :role => "menu"}
+              %li.button_previous{"aria-disabled" => "false"}
+                = link_to "Back", "#{store_path(@store)}"
+              %li.button_finish{"aria-hidden" => "false", :style => "display: block;"}
+                = f.submit "Next", :class=> "m-btn grey lighten-2 black-text bold-text initiate-transfer"
+            .clearfixboth
+             

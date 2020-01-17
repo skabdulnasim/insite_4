@@ -1,0 +1,104 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+    });
+  });
+  function showValue(newValue)
+    {
+      $("#range").html(newValue);
+    }
+    function showValue2(newValue)
+    {
+      $("#range2").html(newValue);
+    } 
+-cash_data = get_unit_current_cash(@current_user.unit_id,@from_datetime,@to_datetime)
+- @unit_currency = currency
+.row.white.padding-5
+  .col-lg-4.padding-5
+    .row.white.padding-5.smallstat.box
+      %img.float-l{:src => "/assets/icons/ic_cash.png", :class => "img-thumbnail", :width => "50px"} 
+      %span.title.font-sz-12  Current Cash
+      %span.value=number_to_currency(cash_data[:current_cash],unit: currency,format: "%u %n", precision: 2)
+    .clearfix 
+
+  .col-lg-4.padding-5
+    .row.white.padding-5.smallstat.box
+      %img.float-l{:src => "/assets/icons/ic_cash_in.png", :class => "img-thumbnail", :width => "50px"}
+      %span.title.font-sz-12 Today's Total Cash Ins
+      %span.value=number_to_currency(cash_data[:cash_in],unit: currency,format: "%u %n", precision: 2)
+    .clearfix 
+
+  .col-lg-4.padding-5
+    .row.white.padding-5.smallstat.box
+      %img.float-l{:src => "/assets/icons/ic_cash_out.png", :class => "img-thumbnail", :width => "50px"}
+      %span.title.font-sz-12 Today's Total Cash Outs
+      %span.value=number_to_currency(cash_data[:cash_out],unit: currency,format: "%u %n", precision: 2)
+    .clearfix 
+
+.clearfix
+.col-sm-3.padding-5
+  .card
+    .padding-10 
+      %b FILTER BY
+    = smart_listing_controls_for(:cash_handlings, {class: "text-left"}) do
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-search.left
+        Search
+      .padding-10 
+        .form-group.filter.input-append
+          .input-group
+            %input.form-control.search{:placeholder => "Search by Transaction ID...", :type => "text", :name=> "id_filter"}
+              %span.input-group-btn
+                %button.btn.btn-primary.disabled{:type => "submit" }
+                  %span.glyphicon.glyphicon-search
+
+        .filter-title.margin-t-b-0 
+          %i.mdi-action-label.left
+          Cash Handling
+        .padding-l-r-5
+          - Pay::TRANSACTION_TYPE.each do |tt|
+            .checkbox.margin-t-b-2
+              = check_box_tag 'transaction_type[]', tt, false,{ :id => "transaction_type_#{tt}", :class=>"filled-in"}
+              %label.checkbox.inline.margin-l-5{:for=>"transaction_type_#{tt}", :style=>"padding-left:30px;"}= tt.underscore.humanize.titleize
+
+      - if current_user.role.name == "owner"            
+        .filter-title branch 
+        .padding-10{:style => "max-height: 300px; overflow-y: auto;"} 
+          - Pay.select("DISTINCT(unit_id)").each do |pay|
+            .checkbox
+              = radio_button_tag 'unit_id', pay.unit_id, false,{ :id => "source_#{pay.unit_id}", :class=>"filled-in"}
+              %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"source_#{pay.unit_id}", :style=>"padding-left:30px;"}= pay.unit.unit_name.humanize
+      .filter-title 
+        %i.mdi-hardware-keyboard-tab.left
+        price range
+      .padding-10 
+        .text-center
+          ="From: #{@unit_currency} "
+          %span#range=1 
+        %input{:max =>"#{@maxpay}", :min => "0",:onchange => "showValue(this.value)",:step => "20", :type => "range", :value => "0", :name=> "from_price"} 
+        %br
+        .text-center
+          ="To: #{@unit_currency} "
+          %span#range2=@maxpay
+        %input{:max =>"#{@maxpay}", :min => "0",:onchange => "showValue2(this.value)",:step => "20", :type => "range", :value => "#{@maxpay}", :name=> "to_price"}
+      .filter-title 
+        %i.mdi-action-today.left
+        date
+      .padding-10 
+        .form-group.from_date.input-append
+          = text_field_tag :from_date, '', class: "search form-control form-control-small-pad", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;"
+          %br
+          %br
+          = text_field_tag :to_date, '', class: "search form-control form-control-small-pad", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;"  
+          .clearfix
+
+.col-sm-9.padding-5
+  = smart_listing_render :cash_handlings
+  .clearfix
+
+               
+

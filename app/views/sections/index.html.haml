@@ -1,0 +1,49 @@
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Sections
+          .data-table-header__actions
+            - if can? :new, Sort    
+              %a.m-btn.m-btn-teal.waves-effect.waves-light{:href => "#{new_section_path}"}
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs Add new Section  
+        - @sections.each do |section|
+          .col-sm-6
+            #callout-stacked-modals.bs-callout.bs-callout-success
+              %h4
+                = section.name
+                = link_to '', section, :class => "btn btn-sm btn-success i fa fa-search-plus fa-lg"
+                = link_to '', edit_section_path(section), :class => "btn btn-sm btn-info i fa fa-edit fa-lg"
+                = link_to '', section, :method => :delete, :data => { :confirm => 'Are you sure?' }, :class => "btn btn-sm btn-primary i fa fa-ban fa-lg" 
+
+              .panel-group{"aria-multiselectable" => "true", :role => "tablist", :id => "accordion#{section.id}"}
+                .panel.panel-default
+                  #headingOne.panel-heading{:role => "tab"}
+                    %h4.panel-title
+                      %a{"aria-controls" => "taxGroup#{section.id}", "aria-expanded" => "true", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#taxGroup#{section.id}"}
+                        Tax Groups #1
+                      %small{:style => "float:right;"}
+                        %a{:href => "#{new_tax_group_path}?section_id=#{section.id}"}
+                          %button.btn.btn-xs{:type => "submit"} 
+                            %i.fa.fa-plus-square
+                            Add Tax Group
+                      
+                  .panel-collapse.collapse{:id => "taxGroup#{section.id}", "aria-labelledby" => "headingOne", :role => "tabpanel"}
+                    .panel-body
+                      = render partial: 'tax_list', locals: {section_tax_groups: section.tax_groups}
+
+
+                .panel.panel-default
+                  #headingTwo.panel-heading{:role => "tab"}
+                    %h4.panel-title
+                      %a.collapsed{"aria-controls" => "sectionDetails#{section.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#sectionDetails#{section.id}"}
+                        Section Details #2
+                  .panel-collapse.collapse{:id => "sectionDetails#{section.id}","aria-labelledby" => "headingTwo", :role => "tabpanel"}
+                    .panel-body
+                      Additional Tax = #{get_section_details(section.id).additional_tax}%
+

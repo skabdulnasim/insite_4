@@ -1,0 +1,5 @@
+= content_tag_for :tr, role, class: "" do
+  %td{:class=>"role_of_#{role.id}"}
+    %span=role.name.humanize
+  %td
+    = link_to "Edit", edit_role_path(role), :class=>"right modal-trigger edit_role_link", remote: true

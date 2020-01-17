@@ -1,0 +1,24 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        %th.col-lg-4= smart_listing.sortable "Name", "name"
+        %th.col-lg-3 Current Stock
+        %th.col-lg-5.padding-r-none Quantity
+    %tbody
+      - smart_listing.collection.each do |object| 
+        %tr.data-table__selectable-row
+          %td.col-lg-4=object.name
+          %td.col-lg-3
+            %span.label.label-default
+              =number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.conjugated_unit    
+          %td.col-lg-5.padding-r-none
+            %input.form-control.allow-numeric-only{:name => "filter", autocomplete: "off", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object.id, :class=>"simo_qty simo_quantity_#{object.id}", :id=>"simo_product_#{object.id}","data-product-name"=>object.name, "data-conjugated-unit"=>object.conjugated_unit,"data-current-stock"=>number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)}
+               
+                            
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No products found

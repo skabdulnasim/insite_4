@@ -1,0 +1,27 @@
+= form_for @printer, :html => { :id => "check_box_validate" }  do |f|
+  - if @printer.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@printer.errors.count, "error")} prohibited this printer from being saved:"
+      %ul
+        - @printer.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-group
+    = f.text_field :name, :class => 'form-control', :required=> true, :placeholder => 'Printer Name'
+
+  .form-group
+    = f.hidden_field :unit_id, :class => 'form-control', :required=> true, :value => current_user.unit_id
+
+  .form-group
+    = f.text_field :ip, :class => 'form-control', :required=> true, :placeholder => 'Ip address'
+
+  .form-group
+    = f.select :assignable_type, options_for_select({"options" => "","Sorts" => "Sort","Sections" => "Section", "Stores" => "Store", "Tables" => "Table"}, @printer.assignable_type), { :include_blank=>false }, {:class => "form-control"}
+    = hidden_field(:printer, :id, :value => @printer.id)
+
+  #related_model_data
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit 'Save', :class => 'btn btn-success btn-lg'
+
+=# debug@printer      

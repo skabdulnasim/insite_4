@@ -1,0 +1,135 @@
+<style>
+.mytable{
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+</style>
+<div style="width:100%; height:100%,border:1px solid black">
+  <div style="margin-top:10px; margin-left:40px;">
+    <div style="min-height: 180px; width:95%;">
+      <div class="dont-break-out" style="float: left; width: 40%;  margin: 2px 10px; display: inline; ">
+        <p></p>
+        <span style="font-weight: 600;">
+        	Vendor Details :
+        </span>
+        <br/>
+        <span style="font-weight: 400;"><%= response.purchase_order.vendor.name%></span> 
+        <br/>
+        <span><%= response.purchase_order.vendor.address%></span>
+        <br/>
+        <span><%= response.purchase_order.vendor.address_phone_no%></span>
+        <br/>
+        <span><%= response.purchase_order.vendor.email%></span>
+        <br/>
+        <span> <%= response.purchase_order.vendor.gst_hash %></span>
+      </div>
+      <div class="dont-break-out" style="float: right; width: 40%;  margin: 2px 10px; display: inline; ">
+        <p></p>
+        <span style="font-weight: 600;">
+        	Unit Deatils:
+        </span>
+
+        <br/>
+        <span style="font-weight: 400;"><%= response.purchase_order.unit.unit_name %></span>
+        <br/>
+        <span><%= response.purchase_order.unit.address %></span>
+        <br/>
+        <span>PIN code:<%= response.purchase_order.unit.pincode %></span>
+        <br/>
+        <span><%= response.purchase_order.unit.phone %></span>
+      </div>
+    </div>
+    <div style=" background-color: #D2DCDB;border: 1px solid #e3e3e3;border-radius: 2px;box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) inset; margin-bottom: 20px; min-height: 20px; padding-top: 5px; padding-left: 19px; padding-right: 19px; width:95%;margin-top:35px; min-height:45px">
+      <div class="row">
+      	<div style="float:left; font-size:25px; color:">Stock Purchase</div>
+      </div>
+      <div class="row">
+        <div style="float:left;  margin-left:5%; color:">Stock Purchase Id:
+        	<span style="margin-left:5px;">
+        		<%=response.id%>
+        	<span>
+        </div>
+        <div style="float:right; color:">Date:
+        	<span style="margin-left:5px;">
+        		<%=response.created_at%>
+        	</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div style="float:left; margin-left:5%; color:">invoice Id:
+        	<span style="margin-left:5px;">
+        		<%=response.invoice_no%>
+        	</span>
+        </div>
+        <div style="float:right; color:">GRN No:
+   				<span style="margin-left:5px;">
+  					<%=response.grn_no%>
+  				</span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div style="float:left; margin-left:5%; color:">PO Amount:
+        	<span style="margin-left:5px;">
+        		<%=parseFloat(response.total_amount).toFixed(0)%>
+        	</span>
+        </div>
+      </div>
+
+    </div>
+    <table border='1' class="mytable"  style="width:85%; overflow: hidden;background: #FFF;color: #024457; margin-left:auto;margin-right:auto;">
+      <tr >
+        <th style="background-color: #167F92;color: ;padding: 1em;">
+          Sl
+        </th>
+        <th style="background-color: #167F92;color: ;padding: 1em;">
+          Product Name
+        </th>
+        <th style="background-color: #167F92;color: ;padding: 1em;">
+          Price 
+          <br/>
+        </th>
+        <th style="background-color: #167F92;color: ;padding: 1em;">
+          Quantity
+        </th>
+        <th style="background-color: #167F92;color: ;padding: 1em;">
+          Total Price
+          <br/>
+        </th>
+      </tr>
+      <% index= 0 %>
+      <% while(index<response.purchase_order.purchase_order_metum.length) { %>
+      	<% purchase_order_metum =response.purchase_order.purchase_order_metum[index] %>
+      	<tr>
+      		<td style="background-color: #D2DCDB;color: #000;padding: 1em;text-align:center;">
+      			<%= index+1 %>
+      		</td>
+      		<td style="background-color: #D2DCDB;color: #000;padding: 1em;text-align:center;">
+            <small> <%=purchase_order_metum.product.name%> </small>
+           </td>
+    
+      		<td style="background-color: #D2DCDB;color: #000;padding: 1em;text-align:center;">
+            <small> price </small>
+          </td>
+      		<td style="background-color: #D2DCDB;color: #000;padding: 1em;text-align:center;">
+            <small>  
+            	
+            	<% if(purchase_order_metum.transaction_unit_id ==null){ %>
+            		<%= purchase_order_metum.product_amount %>
+                <%= purchase_order_metum.product.basic_unit %>
+            	<%} else { %>
+            			<%= purchase_order_metum.secondary_amount %>
+                  <%= purchase_order_metum.product_transaction_unit.product_unit_name%>
+            	<% } %>
+            </small>
+          </td>
+          <td style="background-color: #D2DCDB;color: #000;padding: 1em;text-align:center;">
+            <small> total_price </small>
+          </td>
+      	</tr>
+      	<% index += 1 %>
+      <% } %>
+    </table>
+  </div>
+</div>

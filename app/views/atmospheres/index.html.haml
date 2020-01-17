@@ -1,0 +1,19 @@
+%h1 Listing atmospheres
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @atmospheres.each do |atmosphere|
+    %tr
+      %td= atmosphere.name
+      %td= link_to 'Show', atmosphere
+      %td= link_to 'Edit', edit_atmosphere_path(atmosphere)
+      %td= link_to 'Destroy', atmosphere, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Atmosphere', new_atmosphere_path

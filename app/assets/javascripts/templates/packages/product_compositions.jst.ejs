@@ -1,0 +1,13 @@
+<% product_compositions = response.data.product_compositions %>
+<% if (product_compositions.length > 0) { %>
+	<% for (var i = product_compositions.length - 1; i >= 0; i--) { %>
+	  <div class="input-group margin-t-15 col-lg-12">
+	  	<div class="input-group-addon bom_div">
+	  		<input class="form-control bom_product_search ui-autocomplete-input" placeholder="Bom" style="height:36px;" type="text" autocomplete="off" disabled="disabled" value="<%= product_compositions[i].raw_product_name %>">
+	  	</div>
+	  	<div class="input-group-addon bom_qty_div">
+	  		<input class="form-control bom_qty allow-numeric-only" type="text" value="<%= product_compositions[i].inventory_quantity %> <%= product_compositions[i].basic_unit %>" disabled="disabled">
+	  	</div>
+	  </div>
+	<% } %>
+<% } %>

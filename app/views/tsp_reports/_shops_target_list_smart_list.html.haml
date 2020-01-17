@@ -1,0 +1,22 @@
+- unless smart_listing.empty?
+	%table.data-table
+		%tr
+			%th Shop Name
+			%th District Name
+			%th TSP Name
+			%th Actual Target
+			%th Target Achieved
+		-smart_listing.collection.each do |resource|
+			%tr
+				%td=resource.name
+				%td= get_district_name_by_resource(resource)
+				- tsp = fetch_tsp(resource,@from_date,@to_date) 
+				%td= tsp.present? ? "#{tsp.firstname} #{tsp.lastname}" : "-"
+				%td= get_resource_targets(resource,@from_month,@to_month).to_f.round(0)
+				%td= get_achieved_target_for_resource(resource,@from_month,@to_month).to_f.round(0)
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+-else
+	.alert.alert-warning
+		%td
+			No record found

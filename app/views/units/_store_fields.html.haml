@@ -1,0 +1,23 @@
+%section.card
+  .card-content.p5              
+    .row.m0
+      .input-field.col.s3.p0.mt1{:style => "width:30% !important;"}
+        = f.label :name     
+      .input-field.col.s8.p0.mt1{:style => "width:60% !important;"}
+        = f.text_field :name, :required=>true
+      .input-field.col.s3.p0.mt1{:style => "width:30% !important;"}
+        = f.label :store_type
+      .input-field.col.s8.p0.mt1{:style => "width:60% !important;"}
+        = f.select :store_type, options_for_select({"Physical Store" => "physical_store","Virtual Store" => "virtual_store","Production center" => "kitchen_store","Return Store" => "return_store" },f.object.store_type), { include_blank: "Select store type"}, {:class => "browser-default"} 
+      .input-field.col.s3.p0.mt1{:style => "width:30% !important;"}
+        = f.label :store_priority 
+      .input-field.col.s8.p0.mt1{:style => "width:60% !important;"}
+        = f.select :store_priority, options_for_select({"primary store" =>"primary_store", "Secondary store"=>"secondary_store"},f.object.store_priority), { include_blank: "Select Store Priority"}, {:class => "browser-default"}
+      .input-field.col.s1.mt1
+        = f.hidden_field :_destroy
+        - if f.object.persisted?
+          = f.hidden_field :store_priority
+        - else
+          = f.hidden_field :store_priority, :value=>"primary_store"
+        %a.remove_fields.grey-text.tooltipped{:href=>"#", :title=>"Remove store"}
+          %i.material-icons.font-12.mt15 clear

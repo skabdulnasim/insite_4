@@ -1,0 +1,48 @@
+%p#notice= notice
+
+%p
+  %b Customer:
+  = @address.customer_id
+%p
+  %b Place:
+  = @address.place
+%p
+  %b City:
+  = @address.city
+%p
+  %b State:
+  = @address.state
+%p
+  %b Locality:
+  = @address.locality
+%p
+  %b Landmark:
+  = @address.landmark
+%p
+  %b Pincode:
+  = @address.pincode
+%p
+  %b Receiver name:
+  = @address.receiver_name
+%p
+  %b Receiver first name:
+  = @address.receiver_first_name
+%p
+  %b Receiver last name:
+  = @address.receiver_last_name
+%p
+  %b Latitude:
+  = @address.latitude
+%p
+  %b Longitude:
+  = @address.longitude
+%p
+  %b Delivery address:
+  = @address.delivery_address
+%p
+  %b Contact no:
+  = @address.contact_no
+
+= link_to 'Edit', edit_address_path(@address)
+\|
+= link_to 'Back', addresses_path

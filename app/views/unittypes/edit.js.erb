@@ -1,0 +1,2 @@
+$("#unittype_edit_container").html('<%= j render("form") %>')
+$("#unittype_action_container").html("<%=j link_to 'Destroy', @unittype, :method => :delete, :data => { :confirm => 'Are you sure?', :remote => 'true' }, :class => 'btn white grey-text width-100' %>")

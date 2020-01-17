@@ -1,0 +1,219 @@
+- preferences = ReportPreference.by_unit(current_user.unit_id).by_key('stock_summery_report_store_wise').first
+- @pref = preferences.present? ? JSON.parse(preferences.allowed_attributes) : ["product","opening_stock","stock_on_aduit","consumed_for_audit","audit_cost","consumed_for_order","order_cost","credit_on_transfer","consumed_for_transfer","transfer_cost","total_debit","debit_cost","stock_purchase","purchase_cost","total_credit","credit_cost","closing_stock","current_stock","stock_value"]
+- report_precision = AppConfiguration.get_config_value_of_report('report_precision').present? ? AppConfiguration.get_config_value_of_report('report_precision').to_i : 2
+- unless @pro_scope.empty?
+  - stock_value_summery = 0
+  - transfer_cost_summery = 0
+  - credit_cost_summery = 0
+  - opening_stock_cost_summery = 0
+  - closing_stock_cost_summery = 0
+  - @pro_scope.each do |product|
+
+    - product_stock_data = get_product_stock_data(@store.id, product.id, @from_datetime, @to_datetime)
+    - stock_value_summery += product_stock_data[:current_stock_price].to_f
+    - transfer_cost_summery += product_stock_data[:transfer_consumption_price].to_f
+    - credit_cost_summery += product_stock_data[:total_credit_price].to_f
+    - if get_product_current_stock(@store.id, product.id) != 0
+      - opening_stock_cost_summery += ( product_stock_data[:current_stock_price].to_f / get_product_current_stock(@store.id, product.id).to_f ) * product_stock_data[:opening_stock].to_f
+      - closing_stock_cost_summery += ( product_stock_data[:current_stock_price].to_f / get_product_current_stock(@store.id, product.id).to_f ) * product_stock_data[:closing_stock].to_f
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row
+        - if @pref.include?('product')
+          %th.col-lg-2 Product
+        - if @pref.include?('opening_stock')  
+          %th.blue-text.font-sz-11
+            Opening
+            %br
+            Stock
+        - if @pref.include?('stock_on_aduit')    
+          %th.orange-text.font-sz-11
+            Stock
+            %br
+            on Audit
+        - if @pref.include?('consumed_for_audit')        
+          %th.red-text.text-lighten-2.font-sz-11
+            Consumed
+            %br
+            for Audit
+        - if @pref.include?('audit_cost')     
+          %th.red-text.text-lighten-2.font-sz-11
+            Cost of
+            %br
+            Audit 
+        - if @pref.include?('consumed_for_order')            
+          %th.red-text.text-lighten-2.font-sz-11
+            Consumed
+            %br
+            for Order
+        - if @pref.include?('order_cost')    
+          %th.red-text.text-lighten-2.font-sz-11
+            Cost of
+            %br
+            Order 
+        - if @pref.include?('consumed_for_transfer')          
+          %th.red-text.text-lighten-2.font-sz-11
+            Consumed
+            %br
+            for Transfer
+        - if @pref.include?('transfer_cost')     
+          %th.red-text.text-lighten-2.font-sz-11
+            Cost of
+            %br
+            Transfer   
+        - if @pref.include?('total_debit')          
+          %th.red-text.font-sz-11
+            Total
+            %br
+            Debit
+        - if @pref.include?('debit_cost')    
+          %th.red-text.font-sz-11
+            Cost of
+            %br
+            Debit
+        - if @pref.include?('credit_on_transfer')          
+          %th.green-text.text-lighten-2.font-sz-11
+            Credit
+            %br
+            for Transfer
+        - if @pref.include?('stock_purchase')    
+          %th.green-text.text-lighten-2.font-sz-11
+            Stock
+            %br
+            Purchase
+        - if @pref.include?('purchase_cost')    
+          %th.green-text.font-sz-11
+            Cost of
+            %br
+            Purchase 
+        - if @pref.include?('total_credit')  
+          %th.green-text.font-sz-11
+            Total
+            %br
+            Credit
+        - if @pref.include?('credit_cost')     
+          %th.green-text.font-sz-11
+            Cost of
+            %br
+            Credit
+        - if @pref.include?('closing_stock')     
+          %th.blue-text.font-sz-11
+            Closing
+            %br
+            Stock
+        - if @pref.include?('current_stock')  
+          %th.teal-text.font-sz-11
+            Current
+            %br
+            Stock 
+        - if @pref.include?('stock_value')     
+          %th.teal-text.font-sz-11
+            Value of 
+            %br
+            Stock         
+    %tbody
+      - smart_listing.collection.each do |object|
+        - stock_data = get_product_stock_data(@store.id, object.id, @from_datetime, @to_datetime) # StoresHelper
+        %tr.data-table__selectable-row
+          - if @pref.include?('product')
+            %td
+              =object.name
+              %br
+              %small="ID: #{object.id}"
+          - if @pref.include?('opening_stock')     
+            %td
+              =number_with_precision(stock_data[:opening_stock], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit 
+          - if @pref.include?('stock_on_aduit')    
+            %td
+              - if stock_data[:initial_audit_stock].present?
+                =number_with_precision(stock_data[:initial_audit_stock], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                =object.basic_unit
+                %br
+                %small.font-sz-11="(#{stock_data[:initial_audit_date]})"  
+          - if @pref.include?('consumed_for_audit')                   
+            %td
+              =number_with_precision(stock_data[:audit_consumption], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit
+          - if @pref.include?('audit_cost')     
+            %td 
+              = number_to_currency(stock_data[:audit_consumption_price].to_f, unit: '')   
+          - if @pref.include?('consumed_for_order')            
+            %td
+              =number_with_precision(stock_data[:order_consumption], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit
+          - if @pref.include?('order_cost')    
+            %td 
+              = number_to_currency(stock_data[:order_consumption_price].to_f, unit: '')  
+          - if @pref.include?('consumed_for_transfer')     
+            %td
+              =number_with_precision(stock_data[:transfer_consumption], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit
+          - if @pref.include?('transfer_cost')    
+            %td 
+              = number_to_currency(stock_data[:transfer_consumption_price].to_f, unit: '') 
+          - if @pref.include?('total_debit')       
+            %td
+              =number_with_precision(stock_data[:total_debit], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit
+          - if @pref.include?('debit_cost')     
+            %td 
+              = number_to_currency(stock_data[:total_debit_price].to_f, unit: '')
+          - if @pref.include?('credit_on_transfer')
+            %td
+              =number_with_precision(stock_data[:credit_on_transfer], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit
+          - if @pref.include?('stock_purchase')                                  
+            %td
+              =number_with_precision(stock_data[:total_purchase], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit
+          - if @pref.include?('purchase_cost')     
+            %td 
+              = number_to_currency(stock_data[:total_purchase_price].to_f, unit: '')  
+          - if @pref.include?('total_credit')         
+            %td
+              =number_with_precision(stock_data[:total_credit], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit 
+          - if @pref.include?('credit_cost')    
+            %td 
+              = number_to_currency(stock_data[:total_credit_price].to_f, unit: '')
+          - if @pref.include?('closing_stock')                      
+            %td
+              =number_with_precision(stock_data[:closing_stock], :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit 
+          - if @pref.include?('current_stock')                             
+            %td                
+              =number_with_precision(get_product_current_stock(@store.id, object.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+              =object.basic_unit 
+          - if @pref.include?('stock_value')    
+            %td 
+              = number_to_currency(stock_data[:current_stock_price].to_f, unit: '')   
+  %div{:style => "text-align: center;"}
+    %span="** All cost are in #{currency} **"
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  
+  %header.data-table-header
+    .data-table-header__label
+      %span.fs-title Summery Of Report
+    .data-table-header__actions
+  %table.data-table
+    %thead
+      %tr
+        %th Total Value of Stock
+        %th Total Cost of Transfer
+        %th Total Cost of Credit
+        %th Total Opening Stock Cost
+        %th Total Closing Stock Cost
+    %tbody
+      %tr
+        %td= number_with_precision(stock_value_summery, :precision => report_precision)
+        %td= number_with_precision(transfer_cost_summery, :precision => report_precision)
+        %td= number_with_precision(credit_cost_summery, :precision => report_precision)
+        %td= number_with_precision(opening_stock_cost_summery, :precision => report_precision)
+        %td= number_with_precision(closing_stock_cost_summery, :precision => report_precision)
+
+- else
+  .alert.alert-warning
+    No products found

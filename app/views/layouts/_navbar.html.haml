@@ -1,0 +1,65 @@
+%ul.nav.navbar-top-links.navbar-right
+  = render 'layouts/task'
+  %li.dropdown
+    %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
+      %i.fa.fa-bell.fa-fw
+      %i.fa.fa-caret-down
+    %ul.dropdown-menu.dropdown-alerts
+      %li
+        %a{:href => "#"}
+          %div
+            %i.fa.fa-comment.fa-fw
+            New Comment
+            %span.pull-right.text-muted.small 4 minutes ago
+      %li.divider
+      %li
+        %a{:href => "#"}
+          %div
+            %i.fa.fa-twitter.fa-fw
+            3 New Followers
+            %span.pull-right.text-muted.small 12 minutes ago
+      %li.divider
+      %li
+        %a{:href => "#"}
+          %div
+            %i.fa.fa-envelope.fa-fw
+            Message Sent
+            %span.pull-right.text-muted.small 4 minutes ago
+      %li.divider
+      %li
+        %a{:href => "#"}
+          %div
+            %i.fa.fa-tasks.fa-fw
+            New Task
+            %span.pull-right.text-muted.small 4 minutes ago
+      %li.divider
+      %li
+        %a{:href => "#"}
+          %div
+            %i.fa.fa-upload.fa-fw
+            Server Rebooted
+            %span.pull-right.text-muted.small 4 minutes ago
+      %li.divider
+      %li
+        %a.text-center{:href => "#"}
+          %strong See All Alerts
+          %i.fa.fa-angle-right
+    / /.dropdown-alerts
+  / /.dropdown
+  %li.dropdown
+    %a.dropdown-toggle{"data-toggle" => "dropdown", :href => "#"}
+      %i.fa.fa-user.fa-fw
+      %i.fa.fa-caret-down
+    %ul.dropdown-menu.dropdown-user
+      %li
+        %a{:href => profile_user_path(current_user)}
+          %i.fa.fa-user.fa-fw
+          = current_user.email
+      %li.divider
+      %li
+        %a{:href => "#{destroy_user_session_path}", :method => "delete"}
+          %i.fa.fa-sign-out.fa-fw
+          Logout
+    / /.dropdown-user
+  / /.dropdown
+/ /.navbar-top-links

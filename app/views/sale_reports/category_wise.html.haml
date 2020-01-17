@@ -1,0 +1,305 @@
+- links_arr = [{:title=>"Sales Report",:url=>sale_reports_path,:active_class=>""},{:title=>"Sales Report By Category",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+//= debug @category_sales
+//= debug @sub_sale
+%ul.collapsible{"data-collapsible" => "accordion"}
+  %li
+    .collapsible-header
+      %b Column preferences
+    .collapsible-body
+      %p.col-lg-12
+        = form_tag(save_report_preferences_sale_reports_path, method: "post", :class=>"padding-20") do
+          - get_by_date_category_sales_preferences(current_user.unit_id,'category_wise_sales_report')
+          = hidden_field_tag :report_key, "category_wise_sales_report"
+          = hidden_field_tag :unit_id, current_user.unit_id
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+            Save preferences
+      .clearfix
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title=" Sales between #{params[:from_date]} to #{params[:to_date]} ( #{@menu_card.name} )" 
+          .data-table-header__actions
+            .form-group.col-lg-5.cat_list
+              = select_tag "category", options_from_collection_for_select(@categories, "id", "name"),class: "form-control category-list", prompt: 'Select Category'          
+            %a.m-btn.red.margin-l-5{:href=>"/sale_reports/category_wise.pdf?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&menu_card=#{params[:menu_card]}&category_id=#{params[:category_id]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              PDF            
+            %a.m-btn.indigo.margin-l-5{:href=>"/sale_reports/category_wise.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&menu_card=#{params[:menu_card]}&category_id=#{params[:category_id]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+        - preferences = ReportPreference.by_unit(current_user.unit_id).by_key('category_wise_sales_report').first
+        - @pref = preferences.present? ? JSON.parse(preferences.allowed_attributes) : ["main_cetegory","sub_cetegory","product","quantity","average_cost","total_cost","sale_price","sale_without_tax","sale_with_tax"]
+      - if @category_sales.present?        
+        %table.data-table
+          %thead
+            %tr
+              - if @pref.include?('main_cetegory')
+                %th Main Cetegory
+              - if @pref.include?('sub_cetegory') 
+                %th Sub Cetegory
+              - if @pref.include?('product')
+                %th Product
+              - if @pref.include?('sku')
+                %th SKU
+              - if @pref.include?('hsn_code')
+                %th Hsn Code
+              - if @pref.include?('quantity')
+                %th Quantity
+              - if @pref.include?('average_cost')
+                %th Average Cost
+              - if @pref.include?('total_cost')
+                %th Total Cost  
+              - if @pref.include?('sale_price')
+                %th Unit Price
+              - if @pref.include?('sale_without_tax')
+                %th Sale(Without Tax)
+              /%th Price 
+              - if @pref.include?('sgst_percentage')
+                %th Sgst(%)
+              - if @pref.include?('cgst_percentage')
+                %th Cgst(%)
+              - if @pref.include?('sgst')
+                %th Sgst
+              - if @pref.include?('cgst')
+                %th Cgst
+              - if @pref.include?('gst')
+                %th Gst
+              - if @pref.include?('tax')
+                %th Tax
+              - if @pref.include?('sale_with_tax')
+                %th Sale Price (with tax)
+              - if @pref.include?('item_discount')
+                %th Item Discount 
+          %tbody
+            - _total_sale = 0
+            - _item_discount = 0
+            - _sell_price_without_tax = 0
+            - _quantity = 0
+            - _total_tax = 0
+            - _total_ave_cost = 0
+            - _total_cost = 0
+            - _gst = 0
+            - _total_sgst = 0
+            - _total_cgst = 0
+            - _total_gst = 0
+            - @category_sales.each do |main_cat,data|
+              - _total_tax = _total_tax + data['tax'].to_f
+              %tr
+                - if @pref.include?('main_cetegory')
+                  %td= main_cat
+                - if @pref.include?('sub_cetegory')
+                  %td
+                - if @pref.include?('product')
+                  %td
+                - if @pref.include?('sku')
+                  %td
+                - if @pref.include?('hsn_code')
+                  %td
+                - if @pref.include?('quantity')
+                  %td
+                - if @pref.include?('average_cost')
+                  %td
+                - if @pref.include?('total_cost')
+                  %td  
+                - if @pref.include?('sale_price')
+                  %td
+                - if @pref.include?('sale_without_tax')
+                  %td= data['sale'].to_f.round(2)
+                /%td
+                - if @pref.include?('sgst_percentage')
+                  %td
+                - if @pref.include?('cgst_percentage')
+                  %td
+                - if @pref.include?('sgst')
+                  %td
+                - if @pref.include?('cgst')
+                  %td
+                - if @pref.include?('gst')
+                  %td
+                - if @pref.include?('tax')
+                  %td= data['tax'].to_f.round(2)
+                - if @pref.include?('sale_with_tax')
+                  %td= data['sale'].to_f.round(2) + data['tax'].to_f.round(2)
+                - if @pref.include?('item_discount')
+                  %td= " "
+              - data["children"].each do |sub_cat_data|
+                %tr
+                  - if @pref.include?('main_cetegory')
+                    %td
+                  - if @pref.include?('sub_cetegory')
+                    %td= sub_cat_data.keys.first
+                  - if @pref.include?('product')
+                    %td
+                  - if @pref.include?('sku')
+                    %td
+                  - if @pref.include?('hsn_code')
+                    %td
+                  - if @pref.include?('quantity')
+                    %td
+                  /%td
+                  - if @pref.include?('average_cost')
+                    %td 
+                  - if @pref.include?('total_cost')
+                    %td   
+                  - if @pref.include?('sale_price')
+                    %td
+                  - if @pref.include?('sale_without_tax')
+                    %td= sub_cat_data[sub_cat_data.keys.first]["sale"].to_f.round(2)
+                  - if @pref.include?('sgst_percentage')
+                    %td
+                  - if @pref.include?('cgst_percentage')
+                    %td
+                  - if @pref.include?('sgst')
+                    %td
+                  - if @pref.include?('cgst')
+                    %td
+                  - if @pref.include?('gst')
+                    %td
+                  - if @pref.include?('tax')
+                    %td= sub_cat_data[sub_cat_data.keys.first]["tax"].to_f.round(2)
+                  - if @pref.include?('sale_with_tax')
+                    %td= sub_cat_data[sub_cat_data.keys.first]["sale"].to_f.round(2) + sub_cat_data[sub_cat_data.keys.first]["tax"].to_f.round(2)
+                  - if @pref.include?('item_discount')
+                    %td= " "
+                - sub_cat_data[sub_cat_data.keys.first]["products"].each do |product|
+                  - _gst = 0
+                  - _total_sale = _total_sale + product.total_sale.to_f
+                  - _item_discount = _item_discount + product.item_discount.to_f
+                  - _sell_price_without_tax = _sell_price_without_tax + product.menu_product.sell_price_without_tax.to_i
+                  - _quantity =  _quantity + product.quantity
+                  - _ave_cost = (product.pro_cost.to_f / product.quantity)
+                  - _total_ave_cost = _total_ave_cost + _ave_cost
+                  - _total_cost = _total_cost + product.pro_cost.to_f
+                  %tr
+                    - if @pref.include?('main_cetegory')
+                      %td
+                    - if @pref.include?('sub_cetegory')
+                      %td
+                    - if @pref.include?('product')
+                      %td= product.menu_product.product.name
+                    - if @pref.include?('sku')
+                      %td= product.product_unique_identity
+                    - if @pref.include?('hsn_code')
+                      %td= product.menu_product.product.hsn_code
+                    - if @pref.include?('quantity')
+                      %td= product.quantity
+                    - if @pref.include?('average_cost')
+                      %td= number_to_currency(_ave_cost, unit: '')
+                    - if @pref.include?('total_cost')
+                      %td= number_to_currency(product.pro_cost.to_f, unit: '')  
+                    - if @pref.include?('sale_price')
+                      %td= number_to_currency(product.menu_product.sell_price_without_tax, unit: '')
+                    /%td= product.menu_product.sell_price_without_tax
+                    - if @pref.include?('sale_without_tax')
+                      %td= product.total_sale.to_f.round(2)
+                    / - if @pref.include?('sgst_percentage')
+                    /   - product.menu_product.tax_group.tax_classes.each do |tax|
+                    /     %td
+                    /       ="#{tax.ammount}" "(%)"
+                    - if @pref.include?('sgst_percentage')
+                      - if product.tax_details.present?
+                        - JSON.parse(product.tax_details).each do |tax|
+                          %td
+                            ="#{tax["tax_percentage"]}" "(%)" 
+                      / - if @pref.include?('sgst')
+                      /   - product.menu_product.tax_group.tax_classes.each do |tax|
+                      /     - _gst += (product.total_sale.to_f * tax.ammount)/100
+                      /     - _total_gst += (product.total_sale.to_f * tax.ammount)/100 
+                      /     %td
+                      /       = number_to_currency((product.total_sale.to_f * tax.ammount)/100, unit: '')
+                    - if @pref.include?('sgst')
+                      - if product.tax_details.present?
+                        - JSON.parse(product.tax_details).each do |tax|
+                          - _gst += (product.total_sale.to_f * tax["tax_percentage"])/100
+                          - _total_gst += (product.total_sale.to_f * tax["tax_percentage"])/100 
+                          %td
+                            = number_to_currency((product.total_sale.to_f * tax["tax_percentage"])/100, unit: '')
+                    - if @pref.include?('gst')
+                      %td= number_to_currency(_gst, unit: '')
+                    - if @pref.include?('tax')
+                      %td= product.pro_tax.to_f.round(2)
+                    - if @pref.include?('sale_with_tax')
+                      %td= product.total_sale.to_f.round(2) + product.pro_tax.to_f.round(2)
+                    - if @pref.include?('item_discount')
+                      %td= product.item_discount.to_f.round(2)
+      - else
+        .alert.alert-warning
+          No record found             
+  - if @category_sales.present?                  
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Summery Of Report
+            .data-table-header__actions    
+          %table.data-table
+            %thead
+              %tr
+
+              - if @pref.include?('quantity')
+                %th Total Quantity
+              - if @pref.include?('average_cost')
+                %th Total Unit Cost
+              - if @pref.include?('total_cost')
+                %th Total Cost
+              - if @pref.include?('sale_price')
+                %th Total Unit Price 
+              - if @pref.include?('sale_without_tax')
+                %th Total Sale(Without Tax)
+              - if @pref.include?('tax')
+                %th Total Tax
+              - if @pref.include?('sgst')
+                %th Total Sgst
+              - if @pref.include?('cgst')
+                %th Total Cgst
+              - if @pref.include?('gst')
+                %th Total Gst
+              %th Total Sale(With Tax)
+              - if @pref.include?('item_discount')
+                %th Total Item Discount
+              / %th Total Quantity
+              / %th Total Sale(Without Tax)
+              / %th Total Tax
+              / %th Total Sale(With Tax)
+
+            %tbody
+              %tr
+              - if @pref.include?('quantity')
+                %td=_quantity
+              - if @pref.include?('average_cost')  
+                %td=number_to_currency(_total_ave_cost, unit: '')
+              - if @pref.include?('total_cost')  
+                %td=number_to_currency(_total_cost, unit: '')
+              - if @pref.include?('sale_price')  
+                %td=number_to_currency(_sell_price_without_tax, unit: '')
+              - if @pref.include?('sale_without_tax')  
+                %td=number_to_currency(_total_sale.round(2), unit: '')
+              - if @pref.include?('tax')
+                %td=_total_tax.round(2)
+              - if @pref.include?('sgst')
+                %th=number_to_currency(_total_gst/2, unit: '')
+              - if @pref.include?('cgst')
+                %th=number_to_currency(_total_gst/2, unit: '')
+              - if @pref.include?('gst')
+                %th=number_to_currency(_total_gst, unit: '') 
+              %td=(_total_sale + _total_tax).round(2)
+              - if @pref.include?('item_discount')
+                %td=_item_discount.round(2)
+              / %td=_quantity
+              / %td=_total_sale.round(2)
+              / %td=_total_tax.round(2)
+              / %td=(_total_sale + _total_tax).round(2)
+
+                                  
+
+            
+                
+
+          
+

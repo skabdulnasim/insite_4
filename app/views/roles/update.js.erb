@@ -1,0 +1,3 @@
+$('#role_edit_modal').closeModal()
+Materialize.toast("Role updated successfully.", 3000,'green')
+$(".role_of_<%= @role.id %>").html("<%=j content_tag(:span, @role.name) %>")

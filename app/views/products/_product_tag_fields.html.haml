@@ -1,0 +1,7 @@
+%tr{:id=>"cart_item_tag_#{f.object.tag_id}"}
+	%td
+		= text_field_tag "#{f.object.tag.name}", "#{f.object.tag.name}", :style=>"color:#000; border-bottom:none;"
+		= f.hidden_field :tag_id
+	%td
+		= f.hidden_field :_destroy
+		= link_to "Remove", "#", class: "remove_product_tags", data:{"tag-id"=>"#{f.object.tag_id}","product-tag-id"=>"#{f.object.id}"}

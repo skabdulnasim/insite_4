@@ -1,0 +1,81 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Packages",:url=>packages_path,:active_class=>""},{:title=>"package : #{@package.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+
+%link{:href => "http://fonts.googleapis.com/icon?family=Material+Icons", :rel => "stylesheet"}
+= stylesheet_link_tag "timeline"
+
+:css
+  .side-link::after{
+    content: '';
+    position: absolute;
+    width: 31px;
+    height: 2px;
+    background: #cccccc;
+    left: 9px;
+    top: 50%;
+  }
+  .timeline-entry.card:after{
+    content: "";
+    position: absolute;
+    top: 0px;
+    right: -9px;
+    width: 0px;
+    height: 0px;
+    border-style: solid;
+    border-width: 12px 0px 0px 9px;
+    border-color: transparent transparent transparent #ffffff;
+  }
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container.padding-10
+        %h4 Customer Details
+        .card.card-panel.padding-10
+          - if @package.customer.customer_profile.customer_name.present?
+            - customer_name = @package.customer.customer_profile.customer_name
+          - else
+            - customer_name = "#{@package.customer.try(:customer_profile).try(:firstname)} #{@package.customer.try(:customer_profile).try(:lastname)}"
+          %span
+            %label.margin-r-10 Customer Name:
+            = customer_name
+          %br
+          - if @package.customer.addresses.present?
+            - customer_address = @package.customer.addresses.first
+            %span
+              %label.margin-r-10 Contact Number:
+              - if customer_address.contact_no.present?
+                = customer_address.contact_no
+              - else
+                = @package.customer.mobile_no
+            %br
+            %span
+              %label.margin-r-10 Address:
+              = customer_address.delivery_address
+
+        %h4.margin-t-25 Package Details
+        .card.card-panel.padding-10
+          .row
+            %ul.timeline.collapse-lg.timeline-hairline.timeline-parent
+              %li.timeline-inverted
+                .timeline-circ.circ-xl.blue
+                  / %i.material-icons person
+                  = image_tag("icons/full_package.png", :style=>"width:27px;margin-top:4px;")
+                .row.m0.timeline-entry.mt30.side-link
+                  .card.m0.col.width-40-p.pointer.padding-10
+                    .p5.margin-l-15
+                      %h5.m0
+                        .left
+                          .font-w-400.font-sz-15
+                            %i.fa.fa-arrow-circle-right
+                            = @package.name.humanize
+                          .margin-t-10
+                            %i.fa.fa-calendar
+                            = @package.created_at.strftime("%Y-%m-%d  %I:%M %p")
+
+                - if @package.package_units.present?
+                  - @package.package_units.get_root_units.each do |root_unit|
+                    - load_package_units_tree(root_unit.id) #packageHelper
+                        
+
+         

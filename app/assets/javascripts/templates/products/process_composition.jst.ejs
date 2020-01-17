@@ -1,0 +1,14 @@
+<tr class='data-table__selectable-row' id='cart_item_process_<%= process_id %>'>
+  <td>
+    <%=process_name%>
+    <input type="hidden" name="product[process_compositions_attributes][<%=key%>][production_process_id]" value="<%=process_id%>">
+  </td>
+  <td>
+  	<input class="allow-numeric-only" type="text" name="product[process_compositions_attributes][<%=key%>][duration]" required/>
+  </td>
+  <td>(Duration in minutes)</td>
+  <td>
+    <input id="process_compositions_attributes_<%=key%>__destroy" name="product[process_compositions_attributes][<%=key%>][_destroy]" type="hidden" value="false">
+    <a href="#" class="remove_processes" data-process-id="<%= process_id %>">Remove</a>
+  </td>
+</tr>

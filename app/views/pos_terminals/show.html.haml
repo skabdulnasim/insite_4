@@ -1,0 +1,185 @@
+- if @pos.search_type == "by_product_name" or @pos.search_type == "by_barcode_and_name"
+  :javascript
+    $(function() {
+      $('#product_search').autocomplete({
+        source: "/products/search_products",
+        select: function(event, ui) {
+          $('#product_search').val(ui.item.name);
+          return false;
+        }
+      });
+
+      $('#product_search').autocomplete().data('uiAutocomplete')._renderItem = function(ul, item) {
+        return $('<li class="collection-item">').append('<a>' + item.name + '</a>').appendTo(ul);
+      };
+    });  
+  :css
+    .ui-autocomplete {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 1000;
+      float: left;
+      display: none;
+      min-width: 160px;
+      _width: 160px;
+      margin: 2px 0 0 0;
+      list-style: none;
+      background-color: #ffffff;
+      border-color: #ccc;
+      border-color: rgba(0, 0, 0, 0.2);
+      border-style: solid;
+      border-width: 1px;
+    }
+    .ui-menu-item{
+      display: block;
+      padding:10px;
+      clear: both;
+      font-weight: normal;
+      line-height: 18px;
+      white-space: nowrap;
+      border-bottom:1px solid #ccc;
+    }
+    .ui-menu-item:last-child {
+      border: none;
+    }
+    .ui-menu-item:hover { 
+      background-color: #EFEFEF;
+    }
+    .ui-corner-all{
+      color: #616567;
+    }
+    .ui-helper-hidden-accessible{
+      display: none;
+    }
+= hidden_field_tag :stock_check_on_order, AppConfiguration.get_config_value('stock_check_on_order')
+.row.m0
+  - if @catalog.present?
+    .col.l8.s12.p0
+      %nav.top-navbar.theme-blue
+        .nav-wrapper
+          %ul
+            %li
+              %a{:href => pos_terminals_path}
+                %i.material-icons arrow_back
+            %li
+              %a.brand-logo{:href => pos_terminals_path} inPOS
+          - if @pos.search_type == "by_item_name"
+            .col.s4
+              .header-search-wrapper.hide-on-med-and-down
+                %i.material-icons search
+                %input.header-search-input.z-depth-2{:name => "Search", :placeholder => "Search Items...", :type => "text"}    
+          - if @pos.search_type == "by_product_name" or @pos.search_type == "by_barcode_and_name"
+            .col.s4
+              .header-search-wrapper.hide-on-med-and-down
+                %i.material-icons search
+                %input.header-search-input.z-depth-2{:name => "Search", :id => "product_search", :placeholder => "Search Items...", :type => "text", :data => {"pos-id"=>@pos.id, "catalog-id" => @catalog.id, "currency" => currency}}
+                /%input{:type => "hidden", :id => "product_id"}
+          - if @pos.search_type == "by_barcode" or @pos.search_type == "by_barcode_and_name"
+            .col.s4
+              .header-search-wrapper.hide-on-med-and-down.search
+                %i.material-icons view_column
+                %input.header-search-input.z-depth-2.barcode-search{:name => "sku", :placeholder => "Search Barcodes...", :type => "text", :autocomplete=>"off", :data => {"pos-id"=>@pos.id, "catalog-id" => @catalog.id, "currency" => currency}}
+          %ul#nav-mobile.right.hide-on-med-and-down
+            %li
+              %a.waves-effect.waves-light.modal-trigger{:href => "#xls-export-modal", :title => "Export Sales to XLS file"}
+                %i.material-icons cloud_download
+            %li
+              %a.waves-effect.waves-light{:href => edit_pos_terminal_path(@pos), :title => "Change POS settings"}
+                %i.material-icons settings
+            %li
+              %a.waves-effect.waves-light.fullscreen{:href => "#!", :title => "Enable fullscreen mode"}
+                %i.material-icons fullscreen
+      %ul.tabs.small-tab.blue-tab.z-depth-1
+        - @catalog.menu_categories.each do |category|
+          - if category.menu_products_variable_nil.present?
+            %li.tab.col.s3
+              %a{:href => "#category_#{category.id}"}= category.name
+      - @catalog.menu_categories.each do |category|
+        - if category.menu_products_variable_nil.present?
+          %div.p3{:id=>"category_#{category.id}"}
+            = render partial: "product", collection: category.menu_products_variable_nil, as: :product
+    .col.l4.s12.p0.right-sidebar.grey.lighten-5.z-depth-1.patient.active
+      %section.cart.white
+        .card.mt0.z-depth-0
+          .card-content.p10
+            %input{:type => "hidden", :name => 'pos_catalog_id', :id=>'pos_catalog_id', :value => @catalog.id}/
+            %input{:type => "hidden", :name => 'invoice_page_type', :id=>'invoice_page_type', :value => @pos.invoice_page_size}/
+            %input{:type => "hidden", :name => 'upc_based_operations', :id=>'upc_based_operations', :value => @pos.upc_based_operations}/
+            %h6.introduction.grey-text.mt0 Delivery
+            = render 'customer_form'
+            / #deliverable-container.min-height-70
+            %h6.introduction.grey-text
+              %span Cart
+              %a.right.clear-cart-items{:href =>"#!"} Clear cart
+            %ul.collection#pos-cart
+
+        .clearfix
+      %section.checkout
+        %a.btn.right.theme-green.width-100#place_new_order.btn-large{:href=>"#!", :data => {"email-id" => current_user.email, "unit-id" => @catalog.unit_id, "catalog-id" => @catalog.id, "consumer-type" => 'User', "consumer-id" => current_user.id, "currency" => currency, "pos-id" => @pos.id}}
+          %i.material-icons.right> account_balance_wallet
+          Proceed to pay
+          %span="#{currency}."
+          %strong#cart_grand_total 0
+        %small.grey-text * All prices shown above are inclusive of tax.
+
+  - else
+    = render 'form'
+
+#xls-export-modal.modal{:style => "width:40%;"}
+  .modal-content#xls-export-modal-content.theme-blue.white-text
+    .center.mt30
+      %i.material-icons.large cloud_download
+      %h4.font-15 Export today's sales data!
+      %span.blue-text.text-lighten-4 You can download this data before end of the day and import it to ERP like Tally.
+      %br
+      %br
+  .modal-footer.white
+    %a.btn-flat.blue-text.waves-effect.waves-light.tally-xls-exporter.left{:href => "#!", "data-pos-id" => @pos.id, "data-bill-serial-prefix" => @pos.bill_serial_prefix} Export Data
+    %a.modal-action.modal-close.waves-effect.waves-green.btn-flat.close-tally-xls-exporter.left{:href => "#!"} Close
+
+#upc-modal.modal{:style => "width:40%;"}
+  .modal-content#upc-modal-content
+  .modal-footer
+    %a.modal-action.modal-close.waves-effect.waves-green.btn-flat{:href => "#!"} Close
+
+#right-sheet-modal.modal.bottom-sheet.width-50
+  .modal-content.p0
+    %h2.introduction.modal-header.white
+      %span#right-sheet-modal-header
+      %a.modal-close.waves-effect.btn-flat.right{:href => "#!"}
+        %i.material-icons clear
+    .row#modal-data-container
+
+#right-sheet-invoice-modal.modal.bottom-sheet.width-50.modal-fixed-footer
+  .modal-content.p0
+    %h2.introduction.modal-header.white
+      %span#right-sheet-invoice-modal-header
+    .row#invoice-modal-data-container
+  .modal-footer
+    %a.btn.blue.modal-action.waves-effect.waves-light.print.modal-close.close-invoice-modal.ml5{:href => "#!"} Print Invoice & Continue
+    %a.btn.blue.lighten-1.modal-action.waves-effect.waves-light.print.ml5{:href => "#!"} Print Invoice
+    %a.btn.white.grey-text.lighten-1.modal-action.waves-effect.waves-light.ml5.modal-close.close-invoice-modal{:href => "#!"} close
+#right-sheet-payment-modal.modal.bottom-sheet.width-50.modal-fixed-footer
+  .modal-content.p0.patient.active
+    %h2.introduction.modal-header.white
+      %span#right-sheet-payment-modal-header
+      %a.modal-close.waves-effect.btn-flat.right{:href => "#!"}
+        %i.material-icons clear
+    .row.m0#payment-modal-data-container
+      .tabs-vertical
+        .col.s4.m3.l3.p0.white{:style => "height: calc(100vh - 110px); border-right: 1px solid #eee;"}
+          %ul.tabs
+            %li.tab
+              %a.active{:href => "#CashPayment"} Cash
+            %li.tab
+              %a{:href => "#CardPayment"} Card
+
+        .col.s8.m9.l5.white{:style => "height: calc(100vh - 110px);"}
+          #CashPayment.tab-content
+          #CardPayment.tab-content CreditCard
+        .col.s8.m9.l4.p0.grey.lighten-3#MakeSettlementSummary{:style => "height: calc(100vh - 110px);"}
+  .modal-footer
+    %a.btn.theme-green.modal-action.waves-effect.waves-light#make_payment{:href => "#!", :data =>{"email-id" => current_user.email, "client-id" => current_user.id, "pos-id" => @pos.id, "currency" => currency}} Make Payment
+
+- manual_load_javascript "templates/pos/make_settlement_summary", "templates/pos/cash_settlement", "templates/pos/card_settlement", "templates/pos/invoice", "templates/pos/barcode_search", "templates/pos/upc_input"

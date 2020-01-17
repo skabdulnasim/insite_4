@@ -1,0 +1,51 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+
+- links_arr = [{:title=>"Delivery  Report",:url=>delivery_reports_path,:active_class=>""},{:title=>"Slot Specific Delivery Report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Filter data
+          .data-table-header__actions
+            %a.m-btn.indigo.margin-l-5{:href=>"/delivery_reports/slot_specific_delivery_reports.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"}
+              %i.mdi-file-file-download.left
+              CSV
+      %table.data-table
+        %thead
+          %th{:style=>"font-size:1em;font-weight: bold;"} Date
+          %th{:style=>"font-size:1em;font-weight: bold;"} Slot
+          %th{:style=>"font-size:1em;font-weight: bold;"} Product Name
+          %th{:style=>"font-size:1em;font-weight: bold;"} Product Size
+          %th{:style=>"font-size:1em;font-weight: bold;"} Quantity
+        %tbody
+          -@date_hash.each do |key,data|
+            %tr 
+              %td{:style=>"font-weight: bold;",:colspan=>12}
+                =key 
+            -data.each do |slot,product| 
+              %tr
+                %td{:cospan=>2}
+                %td{:style=>"font-weight: bold;",:colspan=>10}
+                  =slot
+              -product.each do |product| 
+                %tr
+                  %td{:colspan=>2}
+                  %td
+                    -product_details=fetch_product_name(product["product_id"])
+                    =product_details.name
+                  %td  
+                    =product["size_name"]
+                  %td
+                    =product["quantity"]
+                    %span
+                      =fetch_product_unit(product["product_id"])

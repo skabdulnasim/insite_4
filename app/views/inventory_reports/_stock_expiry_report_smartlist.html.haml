@@ -1,0 +1,22 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr.data-table__selectable-row.bg-gray
+        %th Stock Id
+        %th Product Name
+        %th Stock Created At
+        %th Available Stock
+        %th Expires On
+    %tbody
+      -smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td= object.id
+          %td= object.product.name
+          %td= object.created_at.strftime("%Y-%m-%d")
+          %td= "#{object.available_stock} #{object.product.basic_unit}"
+          %td= object.expiry_date
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found

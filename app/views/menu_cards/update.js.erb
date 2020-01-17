@@ -1,0 +1,4 @@
+$('#menu_card_edit_modal').closeModal()
+Materialize.toast("Catalog updated successfully.", 3000,'green')
+$(".menu_card_of_<%= @menu_card.id %>").html("<%=j content_tag(:span, @menu_card.name) %>")
+

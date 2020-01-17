@@ -1,0 +1,193 @@
+<div class="row">
+  <div class="col-lg-4 col-md-4">
+    <img src="<%= product_image %>" alt="<%= product_details.product.name %>" class="img-thumbnail">
+    <!-- <input type="hidden" name="menu_card_id" id="menu_card_id" value="<%= menu_card_id %>" /> -->
+  </div>
+  <% if (product_details.variants.length > 0) { %>
+    <% 
+      var prices = new Array();
+      for(index=0; index<product_details.variants.length; index++ ) { 
+         prices.push(product_details.variants[index].sell_price_without_tax); 
+       } 
+       min_price = Math.min.apply(Math,prices);
+     %>
+    <div class="col-lg-8 col-md-8">
+      <div class="col-md-12 col-lg-12 padding-l-0" style="border-bottom: 1px dotted #969696;">
+        <h3 class="margin-t-10"><%= product_details.product.name %></h3>
+        <h5 class="text-muted">Starting from <%= currency %>. <%=min_price%></h5>      
+      </div>
+      <div class="col-lg-6 col-md-6 padding-l-0">
+        <h4 class="text-muted">Select a varient</h4>
+        <div class="margin-t-20 border-rht-s-1">
+          <% for(index=0; index<product_details.variants.length; index++ ) { %>
+            <p>
+              <input  type='radio'
+                      name='items'
+                      data-product-id='<%= product_details.variants[index].id %>'
+                      value='<%= product_details.variants[index].id %>'
+                      data-product-name='<%= product_details.variants[index].product.name %>' 
+                      data-price='<%= product_details.variants[index].sell_price_without_tax %>'
+                      id="<%= product_details.variants[index].id %>"
+                      class="check_customization with-gap"/>
+              <label for="<%= product_details.variants[index].id %>" class='margin-b-0'>
+                <%= product_details.variants[index].product.name %>
+              </label>
+              <span class="radio-button__help"><%= currency %>. <%= product_details.variants[index].sell_price_without_tax %></span>
+            </p>  
+          <% } %>
+          <h3 style="font-size:20px" class="">
+            Quantity <strong class='text-danger'>*</strong>
+            <select class="float-r qty-form-control" id="quantity" style="width: 28%;margin-right:15px;" >
+              <% for (n = 1; n <= 10; n++) { %>
+                <option value="<%= n %>"><%= n %></option>
+              <% } %>
+            </select>            
+          </h3>
+          <div class="col-lg-12 padding-l-0">
+            <input type="text" id="preferences" class="form-control font-lato" placeholder="Give your preferences if any"/>
+          </div>
+
+          <input  type="hidden"
+                  value="<%= product_image %>" 
+                  id='image_url' />
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6">
+        <h4 class="text-muted">Customization Options</h4>
+        <div class="margin-t-20">
+            <p class="no_product_selected radio-button__help margin-t-20 padding-5">
+              Select a product from left
+            </p>
+            <% for(index=0; index<product_details.variants.length; index++ ) { %>
+            <% var combo_count = 0; %>
+            <div class='cust_view' id='cust-<%= product_details.variants[index].id %>'>
+              <% for(i=0;i<product_details.variants[index].combinations_rules.length;i++){ %>
+                <% for(j=0;j<product_details.variants[index].menu_product_combinations.length;j++){ %>
+                  <% if(product_details.variants[index].combinations_rules[i].id == product_details.variants[index].menu_product_combinations[j].combinations_rule_id){ %>
+                    <% combo_count++; %>
+                    <input  type="checkbox" 
+                            name="comb_products_of_<%= product_details.variants[index].id %>"
+                            data-max="<%= product_details.variants[index].combinations_rules[i].max_qty %>"
+                            data-min="<%= product_details.variants[index].combinations_rules[i].min_qty %>"
+                            data-name="<%= product_details.variants[index].menu_product_combinations[j].product.name %>"
+                            id="<%= product_details.variants[index].menu_product_combinations[j].id %>"
+                            data-comb-id="<%= product_details.variants[index].menu_product_combinations[j].id %>"
+                            data-comb-price="<%= product_details.variants[index].menu_product_combinations[j].price %>"
+                            data-parent-product-id="<%= product_details.variants[index].id %>"
+                            class="customizations custom-of-<%= product_details.variants[index].id %>"  />
+                    <label for="<%= product_details.variants[index].menu_product_combinations[j].id %>">
+                      <%= product_details.variants[index].menu_product_combinations[j].product.name %>
+                    </label>
+                    <small>
+                      <%= currency %>:
+                      <%= product_details.variants[index].menu_product_combinations[j].price %>   
+                    </small> 
+                    <select class="float-r qty-form-control" id="qty-<%= product_details.variants[index].menu_product_combinations[j].id %>">
+                      <% for (n = 1; n <= 3; n++) { %>
+                        <option value="<%= n %>"><%= n %></option>
+                      <% } %>                    
+                    </select>                                     
+                    <hr class="margin-t-b-10">                            
+                  <% } %>
+                <% } %>
+              <div class="alert alert-warning padding-5 font-lato custom-warning-msg-<%= product_details.variants[index].id %>"></div>
+              <% } %>
+              <% if(combo_count == 0) { %>
+                <p class="radio-button__help margin-t-20 padding-l-0">
+                  No customization options available for this product.
+                </p>                
+              <% } %>
+            </div>
+              <% } %>
+        </div>
+      </div>
+      <div class="alert alert-danger padding-5 font-lato col-lg-12 margin-t-b-10 add-to-cart-msgs" ></div>        
+    </div>
+  <% } else { %>
+    <div class="col-lg-8 col-md-8">
+      <div class="col-md-12 col-lg-12 padding-l-0"  style="border-bottom: 1px dotted #969696;">
+        <h3 class="margin-t-10"><%= product_details.product.name %></h3>
+      </div>
+      <div class="col-lg-6 col-md-6 padding-l-0 border-rht-s-1">
+        <input  type='radio'
+                name='items'
+                data-product-id='<%= product_details.id %>'
+                value='<%= product_details.id %>'
+                data-product-name='<%= product_details.product.name %>' 
+                data-price='<%= product_details.sell_price_without_tax %>'
+                id="<%= product_details.id %>"
+                class="check_customization" checked/>      
+        <h3 class="font-sz-20"><%= currency %>. <strong><%= product_details.sell_price_without_tax %></strong></h3>
+        <h3 class="font-sz-20">
+          Quantity <strong class='text-danger'>*</strong>
+          <select class="float-r qty-form-control" id="quantity" style="width: 28%;margin-right:15px;" >
+            <% for (n = 1; n <= 10; n++) { %>
+              <option value="<%= n %>"><%= n %></option>
+            <% } %>
+          </select>            
+        </h3>
+        <div class="col-lg-12 padding-l-0">
+          <input type="text" id="preferences" class="form-control font-lato" placeholder="Give your preferences if any"/>
+        </div>
+
+        <input  type="hidden"
+                value="<%= product_image %>" 
+                id='image_url' />      
+      </div>
+      <div class='col-lg-6'>
+        <h4 class="text-muted">Customization Options</h4>
+        <div class="margin-t-20">
+        <% 
+          var combo_count = 0; 
+          var min_count = 0; 
+        %>
+
+        <% for(i=0;i<product_details.combinations_rules.length;i++){ %>
+          <% for(j=0;j<product_details.menu_product_combinations.length;j++){ %>
+            <% if(product_details.combinations_rules[i].id == product_details.menu_product_combinations[j].combinations_rule_id){ %>
+              <%  combo_count++; 
+                  min_count = product_details.combinations_rules[i].min_qty;
+              %>
+
+              <input  type="checkbox" 
+                      name="comb_products_of_<%= product_details.id %>"
+                      data-max="<%= product_details.combinations_rules[i].max_qty %>"
+                      data-min="<%= product_details.combinations_rules[i].min_qty %>"
+                      data-name="<%= product_details.menu_product_combinations[j].product.name %>"
+                      data-comb-id="<%= product_details.menu_product_combinations[j].id %>"
+                      data-comb-price="<%= product_details.menu_product_combinations[j].price %>"
+                      id="<%= product_details.menu_product_combinations[j].id %>"
+                      data-parent-product-id="<%= product_details.id %>"
+                      class="customizations custom-of-<%= product_details.id %>"  />
+              <label for="<%= product_details.menu_product_combinations[j].id %>">
+                <%= product_details.menu_product_combinations[j].product.name %>
+              </label>
+              <small>
+                <%= currency %>    
+                <%= product_details.menu_product_combinations[j].price %>                  
+              </small>
+              <select class="float-r qty-form-control" id="qty-<%= product_details.menu_product_combinations[j].id %>">
+                <% for (n = 1; n <= 3; n++) { %>
+                  <option value="<%= n %>"><%= n %></option>
+                <% } %>                    
+              </select>  
+              <hr class="margin-t-b-10">                            
+            <% } %>
+          <% } %> 
+            <div class="alert alert-warning margin-b-0 padding-5 font-lato custom-warning-msg-<%= product_details.id %>">You need to select minimum <span class='label label-warning'><%= product_details.combinations_rules[i].min_qty %></span> and maximum <span class='label label-danger'><%= product_details.combinations_rules[i].max_qty %></span> from above.</div>            
+        <% } %>
+        <% if(combo_count == 0) { %>
+          <p class="radio-button__help margin-t-20 padding-l-0">
+            No customization options available for this product.
+          </p>                
+        <% } else {
+            if(min_count > 0) {
+              $("#add-to-cart").attr('disabled', 'disabled'); 
+            }
+         } %>          
+        </div>
+      </div>
+      <div class="alert alert-danger padding-5 font-lato col-lg-12 margin-t-b-10 add-to-cart-msgs" ></div>      
+    </div>
+  <% } %>
+</div>

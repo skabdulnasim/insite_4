@@ -1,0 +1,75 @@
+- links_arr = [{:title=>"SE Report",:url=>se_reports_path,:active_class=>""},{:title=>"Day by Day Product Pricing Reports",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+:css
+  #map-canvas {
+    width: 75%;
+    height: 70%;
+    border: 10px solid #fff;
+    border-radius: 15px;
+    box-shadow: 0 0 17px rgba(0,0,0,5);
+    z-index: 999
+    float: right
+  }
+  #show { padding: 1em; font-size: 1.2em; }
+  .overlay {
+    position: fixed;
+    top: 0; 
+    left: 0;
+    z-index: 10;
+    background-color: rgba(0,0,0,0.5);
+    width: 100%; 
+    height: 100%;
+    display: none;
+  }
+  .overlay-bg {
+    background-color: rgba(0,0,0,0.5);
+    width: 100%; 
+    height: 100%;
+    z-index: 11;
+  }
+  .center {
+    margin: auto;
+    position: absolute;
+    top: 0; left: 15%; bottom: 0; right: 0;
+  }
+  .show { display: block; }
+.overlay
+  #map-canvas.center
+  .overlay-bg    
+  %script{:src => "https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyDz0LX0g0LOQAJDit-o4LPGmLLzYHJ07CE", :type => "text/javascript"}  
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title="Product Pricing between #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            .form-group
+              = smart_listing_controls_for(:vendor_product_list, {class: "form-inline float-l margin-l-30"}) do
+                = hidden_field_tag :from_date, "#{params[:from_date]}"
+                = hidden_field_tag :to_date, "#{params[:to_date]}"
+                        
+                .form-group.filter.input-append
+                  / .input-group
+                  /   %input.form-control.search.tse-name{:placeholder => "Search Product...", :type => "text", :name=> "product_filter"}
+                  /     %span.input-group-btn
+                  /       %button.btn.btn-default.disabled{:type => "submit" }
+                  /         %span.glyphicon.glyphicon-search       
+                = select_tag "product_id", options_for_select(@products.collect{ |u| ["#{u.name}", u.id] },params[:product_id]),class: "form-control product-list", prompt: 'Select Product'  
+                               
+              %a.m-btn.indigo.margin-l-5.export-visiting-report{:href=>"/se_reports/by_date_product_pricing.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&user_id=#{params[:user_id]}"}
+                %i.mdi-file-file-download.left
+                CSV
+        = smart_listing_render :vendor_product_list      
+      
+
+                                  
+
+            
+                
+
+          
+

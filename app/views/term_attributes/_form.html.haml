@@ -1,0 +1,18 @@
+= form_for @term_attribute do |f|
+  - if @term_attribute.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@term_attribute.errors.count, "error")} prohibited this term_attribute from being saved:"
+      %ul
+        - @term_attribute.errors.full_messages.each do |msg|
+          %li= msg
+
+  .form-group
+    = f.label :name, :class => 'col-sm-2 control-label'
+    .col-lg-8
+      = f.text_field :name, :class => 'form-control'
+  .form-group
+    .col-lg-8
+      = f.text_field :attribute_id, :class => 'form-control', :value => @attribute.id, :type => "hidden"
+  .form-group
+    .col-sm-offset-2.col-sm-10
+      = f.submit "Save #{@attribute.name}", :class => 'btn btn-success'

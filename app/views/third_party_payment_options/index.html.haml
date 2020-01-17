@@ -1,0 +1,23 @@
+%h1 Listing third_party_payment_options
+
+%table
+  %tr
+    %th Name
+    %th Status
+    %th Is trashed
+    %th
+    %th
+    %th
+
+  - @third_party_payment_options.each do |third_party_payment_option|
+    %tr
+      %td= third_party_payment_option.name
+      %td= third_party_payment_option.status
+      %td= third_party_payment_option.is_trashed
+      %td= link_to 'Show', third_party_payment_option
+      %td= link_to 'Edit', edit_third_party_payment_option_path(third_party_payment_option)
+      %td= link_to 'Destroy', third_party_payment_option, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Third party payment option', new_third_party_payment_option_path

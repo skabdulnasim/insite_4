@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Resource:
+  = @resource_product_stock.resource_id
+%p
+  %b User:
+  = @resource_product_stock.user_id
+%p
+  %b Product:
+  = @resource_product_stock.product_id
+%p
+  %b Stock:
+  = @resource_product_stock.stock
+%p
+  %b Recorded at:
+  = @resource_product_stock.recorded_at
+
+= link_to 'Edit', edit_resource_product_stock_path(@resource_product_stock)
+\|
+= link_to 'Back', resource_product_stocks_path

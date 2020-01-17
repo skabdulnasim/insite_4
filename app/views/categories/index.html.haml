@@ -1,0 +1,41 @@
+= render "layouts/flash"
+%ul#task-card.collection.with-header
+  %li.collection-header.indigo.text-white
+    %span.text-white{:style=>"font-size:20px;"} 
+      Product Categories
+  %li.collection-item
+    %button.m-btn.blue{:class=> "plus", :id=> "", "data-toggle" => "tooltip", "data-target" => "#new_category_modal", "data-toggle" => "modal"}
+      %i.mdi-content-add.left
+      Add Root Category
+  - load_product_category_list(@root_categories) #CategoryHelper
+
+#new_category_modal.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{"aria-hidden" => "true", "data-dismiss" => "modal", :type => "button"} &times;
+        %h4#myModalLabel.modal-title Create Category
+      .modal-body
+        = form_for @category, :html => { :class => 'form-horizontal' } do |f|
+          .form-group
+            = f.label :name, :class => 'col-sm-2 control-label'
+            .col-sm-5
+              = f.text_field :name, :class => 'form-control'
+              
+            .col-sm-5
+              //= f.number_field :parent, :class => 'form-control'
+              = f.text_field :parent, :class => 'text_field parent_val', :type => "hidden"
+              
+          .form-group
+            = f.label :code, :class => 'col-sm-2 control-label'
+            .col-sm-5
+              = f.text_field :code, :class => 'form-control'
+          .form-group
+            = f.label :description, :class => 'col-sm-2 control-label'
+            .col-sm-5
+              = f.text_field :description, :class => 'form-control'
+          .form-group
+            .col-sm-5
+              = f.submit 'Create Category', :class => 'btn btn-success'
+      .modal-footer
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close  

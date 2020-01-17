@@ -1,0 +1,38 @@
+- unless smart_listing.empty?
+  - smart_listing.collection.each do |product|
+    - addons_group_product = @addons_group.addons_group_products.by_product(product.id).first
+    - _ammount = addons_group_product.present? ? addons_group_product.ammount : ''
+    - _price = addons_group_product.present? ? addons_group_product.price : ''
+    - if addons_group_product.present?
+      - _product_unit_id = addons_group_product.product_unit_id
+    - else
+      - _product_basic_unit = ProductUnit.find_by_product_basic_unit_id(product.basic_unit_id)
+      - if _product_basic_unit.present?
+        - _product_unit_id = _product_basic_unit.id
+      - else
+        _product_unit_id = ''
+    .row.padding-5
+      .col-lg-4
+        .checkbox
+          = check_box_tag "product_ids[]", product.id, @addons_group.addons_group_products.map(&:product_id).include?(product.id), :id=>"product_#{product.id}", :class => "product_checkbox", "data-product-id" => product.id, "data-product-name" => product.name
+          %label{:for=>"product_#{product.id}",:style=>"padding-left: 40px;"}= product.name
+      .col-lg-3
+        .form-group
+          .ammount
+            = number_field_tag "ammount#{product.id}", nil, placeholder:"Quantity", size: "5", step: "any", :autocomplete => "off", :class => "addon-input form-control addon_qty_#{product.id}", "data-product-id" => product.id, :value => _ammount
+      .col-lg-2
+        .form-group
+          .product_unit
+            = select_tag "product_unit#{product.id}", options_from_collection_for_select(ProductUnit.all, "id", "name", _product_unit_id), {:class => "addon-input form-control addon_unit_#{product.id}", "data-product-id" => product.id}
+      .col-lg-3
+        .form-group
+          .price
+            = text_field_tag "price#{product.id}", nil, placeholder:"price", size: "5", :class => "addon-input form-control addon_price_#{product.id}", :value => _price, "data-product-id" => product.id
+
+  .padding-5
+    = smart_listing.paginate
+    = smart_listing.pagination_per_page_links
+
+- else
+  .alert.alert-warning
+    No products found

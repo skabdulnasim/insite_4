@@ -1,0 +1,34 @@
+- links_arr = [{:title=>"Delivery Address Details",:url=>delivery_addresses_path,:active_class=>""},{:title=>"Edit delivery address",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+= render "layouts/flash"
+.col-sm-12.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+
+        = render 'form'
+
+        / = form_for @delivery_address, :url => delivery_address_path, :html => { :class => 'form-horizontal' } do |f|
+        /   .form-horizontal.bordered-row.m-input.col-sm-8
+        /     .form-group
+        /       = f.label :address, "Delivery Address",:class => 'col-sm-4 control-label'
+        /       .col-sm-6.input-field
+        /         = f.text_field :address, :required => true, :autofocus => true, :placeholder => "Enter Delivery Location", :class => 'form-control validate delivery_address', autocomplete: 'off'
+        /       .form-group
+        /       = f.label :pincode, "Pincode",:class => 'col-sm-4 control-label'
+        /       .col-sm-6.input-field
+        /         = f.text_field :pincode, :class => 'form-control validate'
+        /   .col-sm-4
+        /     .panel.panel-default
+        /       .panel-heading{:style => "background-color:#4285f4; color:#fff"}
+        /         Select Branch
+        /       .panel-body{:style => "max-height: 300px !important; overflow: auto !important; position: relative !important"}
+        /       = hidden_field_tag "unit.ids[]", nil
+        /         - Unit.all.each do |unit|
+        /           .checkbox  
+        /             = check_box_tag "unit_ids[]", unit.id, @delivery_address.unit_ids.include?(unit.id), :id=>"unit_#{unit.id}"
+        /             %label{:for=>"unit_#{unit.id}"}= unit.unit_name      
+        /   .form-group
+        /     .col-sm-offset-2.col-sm-15
+        /       = f.submit 'Save', :class => 'btn btn-primary btn-lg'

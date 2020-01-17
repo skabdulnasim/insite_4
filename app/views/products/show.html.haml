@@ -1,0 +1,132 @@
+- links_arr = [{:title=>"All Products",:url=>products_path,:active_class=>""},{:title=>"Product: #{@product.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper    
+= render "layouts/flash"
+.col-lg-4.padding-5
+  .card
+    .card-image.waves-effect.waves-block.waves-light
+      / %a.m-btn.btn-floating.btn-large.btn-price.waves-effect.waves-light.pink.accent-2{:href => "#"} $189
+      = get_product_image(@product)
+    %ul.card-action-buttons
+      - if can? :edit, Product  
+        %li
+          %a.m-btn.btn-floating.waves-effect.waves-light.green{:href => "#{edit_product_path(@product)}"}
+            %i.mdi-editor-border-color
+      - if can? :toggle_trash, Product 
+        %li 
+          %a.m-btn.orange.btn-floating.waves-effect.waves-light{:href => "#{toggle_trash_product_path(@product)}",:method => :post, :data => { :confirm => 'Are you sure about moving this product to trash?' }, :title => "Trash product"}
+            %i.mdi-action-delete   
+      - if can? :destroy, Product      
+        %li 
+          %a.btn-floating.waves-effect.waves-light.red.accent-2{:href => "#{product_path(@product)}",:method => :delete, :data => { :confirm => 'Are you sure about deleting this product?' }, :title => "Delete product"}
+            %i.mdi-action-highlight-remove                     
+      - if @png_blob.present?
+        %li 
+          %a.btn-floating.waves-effect.waves-light.indigo.accent-2{:href => "#{product_path(@product)}.png", :target=>"_blank"}
+            %i.mdi-maps-local-offer
+      %li
+        %a.btn-floating.waves-effect.waves-light.light-blue
+          %i.mdi-action-info.activator
+    .card-content
+      %p.card-title.grey-text.text-darken-4
+        %a.grey-text.text-darken-4.activator{:href => "#"}
+          = @product.name if @product.name.present?
+      %hr
+      %p
+        - if @png_blob.present?
+          =image_tag(url_for({:controller => 'products', :action => 'show', :format => "png" }) )            
+          %center=@product.sku
+      %ul.collection
+        - if @product.product_type.present? 
+          %li.collection-item
+            %span.grey-text.darken-1
+              %i.mdi-av-play-arrow
+              Product Type
+            .secondary-content.cyan-text.text-darken-2=@product.product_type      
+        %li.collection-item
+          %span.grey-text.darken-1
+            %i.mdi-av-play-arrow
+            Category
+          .secondary-content.cyan-text.text-darken-2=@product.category.name if @product.category_id.present?
+        %li.collection-item
+          %span.grey-text.darken-1
+            %i.mdi-av-play-arrow
+            Basic Unit
+          .secondary-content.cyan-text.text-darken-2=@product.basic_unit if @product.basic_unit.present?
+        - if @product.sku.present? 
+          %li.collection-item
+            %span.grey-text.darken-1
+              %i.mdi-av-play-arrow
+              SKU
+            .secondary-content.cyan-text.text-darken-2=@product.sku 
+        - if @product.short_name.present? 
+          %li.collection-item
+            %span.grey-text.darken-1
+              %i.mdi-av-play-arrow
+              Short name
+            .secondary-content.cyan-text.text-darken-2=@product.short_name             
+        - if @product.business_type.present? 
+          %li.collection-item
+            %span.grey-text.darken-1
+              %i.mdi-av-play-arrow
+              Business Type
+            .secondary-content.cyan-text.text-darken-2=@product.business_type 
+        %li.collection-item
+          %span.grey-text.darken-1
+            %i.mdi-av-play-arrow
+            Last update
+          .secondary-content.cyan-text.text-darken-2=@product.updated_at.strftime("%d %b %Y, %I:%M %p")
+    .card-reveal{:style => "display: none; transform: translateY(0px);"}
+
+      %span.card-title.grey-text.text-darken-4
+        %i.mdi-navigation-close.right
+        = @product.name if @product.name.present?
+      %p Input Units
+      - if @product.input_units.present?
+        - @product.input_units.each do |input|
+          %span.m-label.green="#{input.product_unit_name} | Multiplier: #{input.basic_unit_multiplier}"
+      %p Output Units
+      - if @product.output_units.present?
+        - @product.output_units.each do |output|
+          %span.m-label.orange="#{output.product_unit_name} | Multiplier: #{output.basic_unit_multiplier}"
+      %p Additional information
+      - product_info_meta = Product.get_product_meta(@product[:id], "info")
+      - if product_info_meta.present?
+        - product_info_meta.each do |info_key, info_value|
+          %h4= info_key
+          .well
+            = info_value       
+- if @related_products.present?
+  .col-lg-4.padding-5
+    .card
+      %ul.collection.with-header.margin-t-b-0
+        %li.collection-header.amber.text-white
+          %span.text-white{:style=>"font-size:20px;"} 
+            Related Products
+        - @related_products.each do |related_product|
+          - product = Product.find(related_product)
+          %li.collection-item
+            =link_to product.name, product_path(product), :target=>"_blank"
+            .secondary-content 
+              - if product.product_attributes.present?
+                - product.product_attributes.each do |product_attr|
+                  - if product_attr.term_attribute.present?
+                    %b= "#{product_attr.p_attribute.name} : "
+                    = product_attr.term_attribute.name
+- if @product_raw_meta.present?
+  .col-lg-4.padding-5
+    .card
+      %table.data.table
+        %thead
+          %tr.active
+            %th Raw Product
+            %th Quantity
+        %tbody
+          - @product_raw_meta.each do |pmeta|
+            %tr
+              %td= ProductManagement::get_product_details_by_id(pmeta['raw_product_id']).name
+              %td
+                = pmeta['raw_product_quantity']
+                = ProductUnit.find(pmeta['raw_product_unit'].to_i).name
+.clearfix                
+
+

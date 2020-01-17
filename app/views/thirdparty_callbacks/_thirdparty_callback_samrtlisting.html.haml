@@ -1,0 +1,19 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %tr.data-table__selectable-row
+        %th{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"} ID
+        %th{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"} Callback Type
+        %th{:align => "center", :style => "border-right: 1px solid #ccc; vertical-align: middle;"} Created At
+    %tbody
+      - smart_listing.collection.each do |object| 
+        %tr.click_callback.data-table__selectable-row{'data-callback-id'=> "#{object.id}"}
+          %td{:style => "border-right: 1px solid #ccc"}="#{object.id}"
+          %td{:style => "border-right: 1px solid #ccc"}="#{object.callback_type.humanize}"
+          %td{:style => "border-right: 1px solid #ccc"}="#{object.created_at}"
+          
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No records found!.          

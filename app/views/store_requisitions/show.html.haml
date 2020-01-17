@@ -1,0 +1,107 @@
+= render "layouts/flash"
+- manual_load_javascript "stores"
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Requisition: ##{@store_requisition.id} | #{@store_requisition.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+.col-sm-8.padding-l-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Products in Requisition     
+          %table.data-table
+            %thead
+              %tr.data-table__selectable-row
+                %th= "Product ID"
+                %th= "Product Name"
+                %th= "Current stock"
+                %th= "Amount in requisition"
+            %tbody
+              - @store_requisition.store_requisition_metum.each do |stp|
+                %tr.data-table__selectable-row
+                  %td= stp.product_id
+                  %td= stp.product.name
+                  %td
+                    =number_with_precision(get_product_current_stock(@store.id, stp.product_id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+                    = stp.product.basic_unit
+                  %td= [stp.product_ammount , stp.product.basic_unit].join(" ") 
+.col-sm-4.padding-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Requisition Details
+          .padding-10
+            %button.m-btn.green.width-100.send_now_inventory_req{:id => @store_requisition.id} 
+              Send now
+              %i.mdi-content-send.right
+          .filter-title.margin-t-b-0 
+            %i.mdi-action-label.left
+            Requisition
+          .padding-10  
+            %ul.collection.po-product-list
+              %li.collection-item
+                %div  
+                  Requisition Title
+                  %span.secondary-content= @store_requisition.name              
+              %li.collection-item
+                %div  
+                  Requisition ID
+                  %span.secondary-content= @store_requisition.id       
+              %li.collection-item
+                %div  
+                  Requisition Code
+                  %span.secondary-content= @store_requisition.requisition_code            
+              %li.collection-item
+                %div  
+                  Valid from
+                  %span.secondary-content= @store_requisition.valid_from            
+              %li.collection-item
+                %div  
+                  Valid till
+                  %span.secondary-content= @store_requisition.valid_till            
+              %li.collection-item
+                %div  
+                  Added at
+                  %span.secondary-content= @store_requisition.created_at.strftime("%d %b %Y, %I:%M %p")
+          .filter-title.margin-t-b-0 
+            %i.mdi-action-label.left
+            Destination Store Details
+          .padding-10  
+            %ul.collection.po-product-list
+              %li.collection-item
+                %div  
+                  Store Name 
+                  %span.secondary-content= @store_requisition.store.name  
+              %li.collection-item
+                %div  
+                  Address 
+                  %span.secondary-content= @store_requisition.store.address
+              %li.collection-item
+                %div  
+                  Contact No
+                  %span.secondary-content= @store_requisition.store.contact_number                                                
+          .filter-title.margin-t-b-0 
+            %i.mdi-action-label.left
+            Recurring Details
+          .padding-10  
+            - if !@store_requisition_details.nil?
+              %b= "Recurring Type : "
+              = @store_requisition_details['recurring_type']
+              %br
+              - str = @store_requisition_details['days']
+              - my_replacement = {"0" => "Sunday", "1" => "Monday", "2" => "Tuesday", "3" => "Wednesday", "4" => "Thursday", "5" => "Friday", "6" => "Saturday"}
+              %b= "Days : "
+              - my_replacement.each { |k, v| str[k] &&= v }
+              = str
+              %br
+              %b= "Time : "
+              = @store_requisition_details['times']
+            - else
+              %b= "Till now this requisition has not been reccured."
+  
+     
+  

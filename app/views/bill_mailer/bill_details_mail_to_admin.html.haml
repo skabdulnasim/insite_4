@@ -1,0 +1,114 @@
+%html
+  %head
+    %meta{:content => "text/html; charset=UTF-8", "http-equiv" => "Content-Type"}/
+  %body{:border => "2"}
+    %p
+    %table{:align => "center", :border => "0", :width => "50%", :frame => "box", :style => "padding: 30px"}
+      %tr
+        %td{:align => "center", :colspan => "4"}
+          /%img{:src => "http://ammk.digitalbrick.net/assets/icons/ic_cash.png", :class => "img-thumbnail", :width => "50px"}
+          %img{:src => "http://#{@site_url}#{@bill.unit.unit_image.url(:thumb)}"} 
+      %tr
+        %td{:align => "center", :colspan => "4"}
+          =@bill.unit.unit_name
+      %tr
+        %td{:align => "center", :colspan => "4"}
+          =@bill.unit.address
+      %tr
+        %td{:align => "center", :colspan => "4"}
+          Phone No:
+          =@bill.unit.phone
+      %tr
+        %td{:align => "center", :colspan => "4"}
+          GST NO:
+          =@bill.unit.unit_detail.options[:gst_code]
+      
+      %tr
+        %td{:align => "center", :colspan => "4"}
+          %hr{:style => "border-style: dotted;"}/
+        
+      %tr
+        %td
+          Bill no: 
+          =@bill.serial_no
+        %td{:align => "right", :colspan => "4"}
+          Date: 
+          =@bill.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+      %tr
+        %td{:align => "center", :colspan => "4"}
+          %hr{:style => "border-style: dotted;"}/
+      %tr
+        %td.font-sz-12 Item
+        %td.font-sz-12 QTY
+        %td.font-sz-12 Price
+        %td.font-sz-12 Amount
+      %tbody
+        -@bill.orders.each do |ord|
+          -ord.order_details.each do |order_item|
+            %tr
+              %td
+                =order_item.product_name
+              %td
+                =order_item.quantity
+              %td
+                =order_item.product_price
+              %td
+                =order_item.subtotal
+      %tr
+        %td{:align => "center", :colspan => "4"}
+          %hr{:style => "border-style: dotted;"}/           
+      %tr
+        - _colspan = 4
+        - if @customer.present?
+          - _colspan = 2
+          %td{:align => "left", :colspan => "2"}
+            %table
+              %tr
+                %td
+                  %b Customer Details
+                  %hr{:style => "border-style: dotted;"}/
+              %tr
+                %td
+                  Name: 
+                  ="#{@customer.profile.firstname}""  #{@customer.profile.lastname}"
+              %tr
+                %td
+                  Mobile:
+                  =@customer.mobile_no    
+
+        %td{:align => "right", :colspan => "#{_colspan}"}
+          %table
+            %tr
+              %td
+                Taxable Amount: 
+                =@bill.bill_amount 
+            %tr
+              %td
+                Tax:
+                =@bill.tax_amount
+            -@bill.bill_tax_amounts.each do |btamt|
+              %tr
+                %td
+                  =btamt.tax_class.name+'@'+btamt.tax_class.ammount.to_s+'% '+': ' +btamt.tax_amount.to_s
+            %tr
+              %td
+                %font{:color => "blue", :size => "3"}
+                  %b
+                    TOTAL AMOUNT: 
+                    =@bill.grand_total
+            -if @bill.status != 'cod'        
+              -@bill.payments.each do |payment|    
+                %tr
+                  %td
+                    Payment Mode
+                    %br
+                    =payment.paymentmode_type+': '+@bill.grand_total.to_s 
+            - else
+              %tr
+                %td
+                  Payment Mode: COD
+                      
+          
+       
+         
+          

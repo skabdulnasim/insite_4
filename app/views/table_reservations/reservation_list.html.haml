@@ -1,0 +1,39 @@
+#page-wrapper
+  .row
+    .page-header
+      %h2
+        %i.fa.fa-tags
+        Table Management
+  %div{:role => "tabpanel"}
+  / Nav tabs
+  %ul.nav.nav-tabs{:role => "tablist"}
+    %li.active{:role => "presentation"}
+      %a{"aria-controls" => "home", "data-toggle" => "tab", :href => "#customer_view", :role => "tab"} Customer View
+    %li{:role => "presentation"}
+      %a{"aria-controls" => "profile", "data-toggle" => "tab", :href => "#table_view", :role => "tab"} Table View
+  .tab-content
+    #customer_view.tab-pane.active{:role => "tabpanel"} 
+      = render 'customer_view'
+    #table_view.tab-pane{:role => "tabpanel"}
+      = render 'table_view'
+        
+
+                                
+
+              
+  
+    
+  
+
+
+             
+    
+          
+                  
+              
+        
+        
+        
+                  
+
+

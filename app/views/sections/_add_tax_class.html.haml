@@ -1,0 +1,5 @@
+- simple_tax_classes.each do |tax_class|
+  %li{:style => "list-style:none"}      
+    %input#optionscheckboxes1.filled-in{:type => "checkbox", :name => "tax_classes[]", :id=>"tax_#{tax_class.id}", :value => tax_class.id, :checked => (added_tax_classes(@section).include?(tax_class[:id]))}
+    %label{:for=>"optionscheckboxes1_tax_#{tax_class.id}"}= "#{tax_class.name} [ #{tax_class.ammount} ] %"
+        

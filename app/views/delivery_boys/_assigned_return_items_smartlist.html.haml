@@ -1,0 +1,28 @@
+/ #map_wrapper{:style => "height: 400px;"}
+/   #map_canvas.mapping  
+- unless smart_listing.empty?
+  %table.table.table-bordered
+    %tr.table-header.well
+      %th  
+        %input.checkbox-parent-toggle.filled-in{:type=>"checkbox",:id=>"parent_check"}
+          %label{:for=>"parent_check"}= "Select"
+      %th Order ID
+      %th Product Name
+      %th Qnt.
+      %th Create Date
+      %th Order Address
+
+    - smart_listing.collection.each do |return_to_delivery_boy|
+      %tr{:id => "#{return_to_delivery_boy.id}"}
+        %td
+          = check_box_tag 'return_ids[]', return_to_delivery_boy.id, false,{ :id => "return_id_#{return_to_delivery_boy.id}", :class => 'return-ids checkbox-child'}
+          %label.checkbox{:for=>"return_id_#{return_to_delivery_boy.id}"}=""
+        %td= return_to_delivery_boy.order_id
+        %td= return_to_delivery_boy.product.name
+        %td= return_to_delivery_boy.quantity.to_s+" "+return_to_delivery_boy.product.basic_unit
+        %td= return_to_delivery_boy.created_at
+        /%td= return_to_delivery_boy.order.deliverable.delivery_address
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  No Data Found. 

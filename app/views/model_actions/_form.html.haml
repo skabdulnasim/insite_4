@@ -1,0 +1,29 @@
+= form_for @model_action, :html => { :class => 'form-horizontal' } do |f|
+  - if @model_action.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@model_action.errors.count, "error")} prohibited this model_action from being saved:"
+      %ul
+        - @model_action.errors.full_messages.each do |msg|
+          %li= msg
+  .form-group.col-sm-12
+    = f.label :master_model_id,:class => 'col-sm-2 control-label'
+    .col-sm-10.input-field
+      = f.select :master_model_id, options_for_select(MasterModel.order("name ASC").map{ |u| [u.name, u.id] }, @model_action.master_model_id), { include_blank: "Select a Model"}, :class => 'form-control',:required => true
+
+  .form-horizontal.m-input.col-sm-12
+    .form-group.col-sm-12
+      = f.label :name,"Action Name",:class => 'col-sm-2 control-label'
+      .col-sm-10.input-field
+        = f.text_field :name, :required => true, :autofocus => true, :placeholder => "Enter Action NAme", :class => 'form-control', autocomplete: 'off' ,:required => true
+                    
+    .form-group.col-sm-12{:style=>"margin-left:143px;"}
+      = f.fields_for :reason_codes do |builder|
+        = render 'reason_code_fields', f:builder
+      = link_to_add_fields "Add Reason", f, :reason_codes, {}, 'm-btn green margin-l-15 add_reason_codes'
+    
+    .form-group
+      .col-sm-offset-2.col-sm-10
+        = f.submit 'Save', :class => 'btn btn-success btn-lg'
+        %a.btn.btn-primary.btn-lg{:href => "#"}
+          Cancel   
+    

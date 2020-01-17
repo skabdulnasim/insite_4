@@ -1,0 +1,39 @@
+-links_arr = [{:title => "Delivery Address", :ur=>delivery_addresses_path, :url=>"#", :active_class=>"col-breadcrumb-selected"},]
+= render "layouts/flash"
+.col-sm-12.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Delivery Charge Details
+            .data-table-header_actions
+              %a.m-btn.teal.margin-l-5{:href => new_delivery_charge_path}
+                %i.mdi-content-add.left
+                %span.hidden-sm.hidden-xs Add Delivery Charge 
+
+        - unless @delivery_charges.empty?
+          %table.table
+            %thead
+              %tr.data-table__selectable-row
+                %th.col-lg-2 ID
+                %th.col-lg-2 Lower Limit
+                %th.col-lg-2 Upper Limit 
+                %th.col-lg-2 Delivery Charge 
+                %th.col-lg-2
+            %tbody
+              - @delivery_charges.each do |delivery_charge|
+                %tr.data-table__selectable-row
+                  %td=delivery_charge.id
+                  %td=delivery_charge.lower_limit
+                  %td=delivery_charge.upper_limit
+                  %td=delivery_charge.delivery_charge
+                  %td{:style=>"text-align:right"}
+                    %a.m-btn.blue.m-btn-low-padding{:href => "#{edit_delivery_charge_path(delivery_charge)}", :title => "Edit Delivery Charge"}
+                      %i.mdi-editor-border-color
+                    %a.m-btn.red.m-btn-low-padding{:href => "#{delivery_charge_path(delivery_charge)}",:method => :delete, :data => { :confirm => 'Are you sure about deleting this Delivery Charge?' }, :title => "Delete Delivery Charge"}
+                      %i.mdi-action-highlight-remove
+        - else
+          .alert.alert-warning
+            Deliver Charge not found

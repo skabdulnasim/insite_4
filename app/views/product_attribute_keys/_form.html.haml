@@ -1,0 +1,62 @@
+= form_for @product_attribute_key do |f|
+  - if @product_attribute_key.errors.any?
+    #error_explanation.alert.alert-dismissable.alert-danger
+      %button.close{"aria-hidden" => "true", "data-dismiss" => "alert", :type => "button"} ×
+      %h4= "#{pluralize(@product_attribute_key.errors.count, "error")} prohibited this attribute from being saved"
+      %ul
+        - @product_attribute_key.errors.full_messages.each do |msg|
+          %li= msg
+  .form-horizontal.bordered-row.m-input
+    .form-group
+      = f.label "Attribute Code *", :class=>"col-sm-3 control-label"
+      .col-sm-6
+        = f.text_field :attribute_code, :required => true
+        %small.grey-text Must be unique with no spaces. Maximum length of attribute code must be less then 30 symbols
+    .form-group
+      = f.label "Label *", :class=>"col-sm-3 control-label"
+      .col-sm-6
+        = f.text_field :label
+    .form-group
+      = f.label "Input Type *", :class=>"col-sm-3 control-label"
+      .col-sm-3
+        = f.select :input_type, options_for_select(ProductAttributeKey::INPUT_TYPE.map { |e| [e.humanize, e] }, @product_attribute_key.input_type), { include_blank: "-- Select Option --"}, {:class => "form-control", :required => true, :disabled=> @product_attribute_key.input_type.present? }
+    .form-group.product_attribute_key_default_value_row
+      = f.label :default_value, :class=>"col-sm-3 control-label"
+      .col-sm-6
+        = f.text_field :default_value
+    .form-group
+      = f.label "Unique?", :class=>"col-sm-3 control-label"
+      .col-sm-6
+        = f.check_box :is_unique
+        %label{:for=>"product_attribute_key_is_unique"}
+    .form-group
+      = f.label "Required?", :class=>"col-sm-3 control-label"
+      .col-sm-6
+        = f.check_box :is_required
+        %label{:for=>"product_attribute_key_is_required"}
+    .form-group
+      = f.label "Comparable?", :class=>"col-sm-3 control-label"
+      .col-sm-6
+        = f.check_box :is_comparable
+        %label{:for=>"product_attribute_key_is_comparable"}
+    .form-group
+      = f.label "Sortable?", :class=>"col-sm-3 control-label"
+      .col-sm-6
+        = f.check_box :is_sortable
+        %label{:for=>"product_attribute_key_is_sortable"}
+    .form-group.product_attribute_key_is_for_variable_product_row
+      = f.label "Use To Create Variable Product?", :class=>"col-sm-3 control-label"
+      .col-sm-6
+        = f.check_box :is_for_variable_product
+        %label{:for=>"product_attribute_key_is_for_variable_product"}   
+    .form-group.product_attribute_key_options_row
+      = f.label "Manage Options (values of your attribute)", :class=>"col-sm-3 control-label"
+      .col-sm-9
+        = f.fields_for :product_attribute_options do |builder|
+          = render "product_attribute_option_fields", f: builder
+        = link_to_add_fields "#{t(:label_add)} Option", f, :product_attribute_options, {}, ""
+    .form-group
+      .actions
+        .col-sm-6.col-sm-offset-3
+          = link_to "cancel", product_attribute_keys_path, :class=>"m-btn grey lighten-3 grey-text"
+          = f.submit 'Save', :class=>"m-btn blue"

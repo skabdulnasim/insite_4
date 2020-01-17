@@ -1,0 +1,37 @@
+.row.m0
+  .col.l8.s12
+    %h4.black-text.mb20
+      = image_tag("logo_insites.png", :height => "30px")
+    .p20-50
+      %h4.font-weight-200 Manage product catalogs
+      .min-height-300
+        .row.mt20
+          - if flash[:error].present?
+            .red.padding-10.white-text.lighten-1
+              =flash[:error]
+          .col.l7.s12
+            #catalogs
+              = render :partial => "menu_cards/menu_card_listing", :collection => @menu_card, :as => "menu_card"
+          .col.l5.s12
+            .card
+              .card-content
+                = link_to "Add a catalog ...", new_menu_card_path, :id=>"new_catalog_link", remote: true
+        = link_to "Download a sample XLS file", '/menu-product.xlsx', :action => 'download'
+      .center.mt30
+        %a.btn-large.blue.waves-effect.waves-light{:href=>previous_wizard_path}
+          Previous
+          %i.left.material-icons keyboard_arrow_left
+        %a.btn-large.blue.waves-effect.waves-light{:href=>next_wizard_path}
+          Next
+          %i.right.material-icons keyboard_arrow_right
+  .col.l4.s12.deep-purple.right-sidebar
+    %h5.white-text.lighten-5
+
+#menu_card_edit_modal.modal.modal-fixed-footer
+  .modal-content
+    %h5.font-weight-300 Edit
+    .row
+      .col.l12
+        #menu_card_edit_container
+  .modal-footer
+    %a.modal-action.modal-close.waves-effect.waves-green.btn-flat{:href => "#!"} Close

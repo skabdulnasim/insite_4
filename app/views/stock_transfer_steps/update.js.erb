@@ -1,0 +1,12 @@
+<% if @stock_transfer.valid? %>
+  <% @stock_transfer = @stock_transfer.reload %>
+  $("#item-form-container").html("<%= j render('item_form') %>")
+  $("#item-quantity-form-container").html("<%= j render('item_quantity_form') %>")
+  $('#stock_transfer_product_tokens').tokenInput('/products.json', {
+    theme: 'facebook',
+    prePopulate: $('#stock_transfer_product_tokens').data('load')
+  });
+  Materialize.toast("Saved", 3000, 'rounded');
+<% else %>
+  Materialize.toast("Unable to save changes", 3000, 'red');
+<% end %>

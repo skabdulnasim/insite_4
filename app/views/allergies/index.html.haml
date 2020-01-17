@@ -1,0 +1,19 @@
+%h1 Listing allergies
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @allergies.each do |allergy|
+    %tr
+      %td= allergy.name
+      %td= link_to 'Show', allergy
+      %td= link_to 'Edit', edit_allergy_path(allergy)
+      %td= link_to 'Destroy', allergy, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Allergy', new_allergy_path

@@ -1,0 +1,29 @@
+%h1 Listing money_refunds
+
+%table
+  %tr
+    %th Customer
+    %th Order
+    %th Paymentmode
+    %th Refund amount
+    %th Account no
+    %th Ifsc code
+    %th
+    %th
+    %th
+
+  - @money_refunds.each do |money_refund|
+    %tr
+      %td= money_refund.customer_id
+      %td= money_refund.order_id
+      %td= money_refund.paymentmode
+      %td= money_refund.refund_amount
+      %td= money_refund.account_no
+      %td= money_refund.ifsc_code
+      %td= link_to 'Show', money_refund
+      %td= link_to 'Edit', edit_money_refund_path(money_refund)
+      %td= link_to 'Destroy', money_refund, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Money refund', new_money_refund_path

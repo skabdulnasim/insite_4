@@ -1,0 +1,67 @@
+= render "layouts/flash"
+- manual_load_javascript "templates/stock_purchases/payment_details"
+- links_arr = [{:title=>"All Vendor",:url=>vendors_path,:active_class=>""},{:title=>"Vendor : #{@vendor.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+.product-card.col-lg-4.col-xs-12.col-sm-12.padding-5
+  .card.waves-effect.waves-teal.margin-t-b-0
+    .card-content.height-150
+      %span.card-title
+        Vendor details
+      .grey-text.text-darken-1.margin-t-10
+        %strong Vendor:
+        = @vendor.name
+        %br
+        %strong Address:
+        = @vendor.address
+        %br
+        %strong Contact No:
+        = @vendor.phone
+.product-card.col-lg-4.col-xs-12.col-sm-12.padding-5
+  .card.waves-effect.waves-teal.margin-t-b-0
+    .card-content.height-150
+      %span.card-title
+        Total Amount
+      .grey-text.text-darken-1.margin-t-10
+        %strong Amount: 
+        =" #{currency}"
+        = @total_amount
+        %br
+        / %strong Address:
+        / = @vendor.address
+        / %br
+        / %strong Contact No:
+        / = @vendor.phone
+.product-card.col-lg-4.col-xs-12.col-sm-12.padding-5
+  .card.waves-effect.waves-teal.margin-t-b-0
+    .card-content.height-150
+      %span.card-title
+        Due Amount
+      .grey-text.text-darken-1.margin-t-10
+        %strong Amount:
+        = " #{currency}"
+        = @total_amount - @paid_amount
+              
+%br
+/ .col-sm-3.padding-5
+/   .card
+/     .padding-10
+/       %b FILTER BY
+/     = smart_listing_controls_for(:vendor_purchases, {class: "text-left"}) do
+/       .filter-title.margin-t-b-0
+/         %i.mdi-action-search.left
+/         Search
+/       .padding-10
+/         .form-group.filter.input-append
+/           .input-group
+/             %input.form-control.search{:placeholder => "Search by VENDOR NAME...", :type => "text", :name=> "name_filter"}
+/               %span.input-group-btn
+/                 %button.btn.btn-primary.disabled{:type => "submit" }
+/                   %span.glyphicon.glyphicon-search
+
+
+
+
+
+.col-sm-12.padding-5
+  = smart_listing_render :vendor_purchases
+

@@ -1,0 +1,89 @@
+:javascript
+  $(function() {
+    $('#valid_from_req').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+    $('#valid_till_req').datetimepicker({
+      format: 'YYYY/MM/DD HH:mm:ss',
+    });
+  });
+/- manual_load_javascript "order_accumulation"
+/ .col-sm-8.padding-r-none
+/   #calendar
+/ #desc_dialog.dialog{:style => "display:none;"}
+/   #event_desc
+/   %br/
+/   %br/
+/   #event_actions
+/     %span#edit_event
+/     %span#delete_event
+/ #create_event_dialog.dialog{:style => "display:none;"}
+/   #create_event
+.col-sm-8.padding-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Products
+          %table.data-table
+            %thead
+              %tr.data-table__selectable-row{:style=>"background-color:#eaeaea;font-weight:bold;"}
+                %th.col-lg-4{:style=>"font-weight:bold;"} Name
+                %th.col-lg-4{:style=>"font-weight:bold;"} Order Quantity
+                %th.col-lg-4{:style=>"font-weight:bold;"} Requisition Quantity
+            %tbody
+              - @total_products.each do |object|
+                %tr.data-table__selectable-row
+                  - product = Product.find(object[0])
+                  %td.col-lg-4= product.name
+                  %td.col-lg-4
+                    = object[1]
+                    = product.basic_unit
+                  %td.col-lg-4
+                    .input-group
+                      %input.form-control.allow-numeric-only.search{:name => "filter", :placeholder => "Enter here..", :type => "text", "data-product-id"=>object[0], :class=>"input_quantity quantity_#{object[0]} add-products-to-temp-cart", "data-product-name"=>product.name,"data-product-unit"=>product.basic_unit}
+
+.col-sm-4.padding-r-none  
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Requisition Details
+          = form_for @store_requisition, :html => { :class => ''} do |sr|
+            = hidden_field_tag :future_orders, params[:future_orders_array]
+            = sr.hidden_field :unit_id, :class => 'form-control', :value => current_user.unit_id
+            = sr.hidden_field :store_id, :class => 'form-control', :value => @store_id
+            = sr.hidden_field :business_type, :class => 'form-control', :value => 'by_catalog'
+            .padding-10
+              = sr.submit 'Save requisition', :class => 'm-btn green width-100'
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Enter Details Below
+            .padding-10 
+              .form-group
+                = sr.text_field :name, :class => 'form-control', :placeholder => "New requisition title", :required=>true
+              .form-group
+                = sr.select :to_store, options_for_select(@destination_stores.map{ |ut| ["#{ut.name} (#{ut.unit.unit_name}) - #{ut.store_priority.humanize.upcase}", ut.id] }, 2), { include_blank: "Select store where requisition will be sent"}, :class => 'form-control',:required => true
+              .form-group
+                #valid_from_req.input-group.date
+                  = sr.text_field :valid_from, :class => "form-control", "format" => "dd-mm-yyyy hh:mm:ss", :placeholder => "valid From", :required => true
+                  %span.input-group-addon
+                    %span.glyphicon.glyphicon-calendar      
+              .form-group
+                #valid_till_req.input-group.date
+                  = sr.text_field :valid_till, :class => "form-control", "data-format" => "dd-MM-yyyy hh:mm:ss", :placeholder => "valid Till", :required => true
+                  %span.input-group-addon
+                    %span.glyphicon.glyphicon-calendar
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Selected Products
+            .padding-10{:style=>"max-height:300px; overflow-y:auto"}
+              %ul.collection.po-product-list
+                %li.collection-item.no-item-selected
+                  %div
+                    No products selected          
+.clearfix

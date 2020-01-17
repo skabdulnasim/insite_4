@@ -1,0 +1,33 @@
+<% all_lots = response; %>
+<table class="data-table z-depth-1 padding-20 margin-t-b-0">
+  <thead>
+    <tr style="background-color:#F5F5F5">
+      <th class="col-lg-2 font-sz-12">Item Name</th>
+      <th class="col-lg-3 font-sz-12">SKU</th>
+      <th class="col-lg-1 font-sz-12">Stock Quantity</th>
+      <th class="col-lg-1 font-sz-12">MRP</th>
+      <th class="col-lg-1 font-sz-12">Expiry Date</th>
+      <th class="col-lg-1 font-sz-12">Landing Price</th>
+      <th class="col-lg-1 font-sz-12">Batch No.</th>
+      <th class="col-lg-1 font-sz-12">Old Sell Price</th>
+      <th class="col-lg-1 font-sz-12">New Sell Price</th>
+
+    </tr>
+  </thead>
+  <tbody>
+		<% for (var item in all_lots) { %>
+      <tr>
+        <td class="col-lg-2 font-sz-12"><%= all_lots[item]['product_name'] %></td>
+        <td class="col-lg-3 font-sz-12"><%= all_lots[item]['new']['sku'] %></td>
+        <td class="col-lg-1 font-sz-12"><%= all_lots[item]['new']['stock_qty'] %></td>
+        <td class="col-lg-1 font-sz-12"><%= all_lots[item]['new']['mrp'].toFixed(2) %></td>
+        <td class="col-lg-1 font-sz-12"><%= all_lots[item]['new']['expiry_date'] %></td>
+        <td class="col-lg-1 font-sz-12"><%= all_lots[item]['landing_price'] %></td>
+        <td class="col-lg-1 font-sz-12"><%= all_lots[item]['new']['batch_no'] %></td>
+        <td class="col-lg-1 font-sz-12"><%= all_lots[item]['prev_sell_price'].toFixed(2) %></td>
+        <td class="col-lg-1 font-sz-12"><%= all_lots[item]['new']['sell_price'].toFixed(2) %></td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>
+<div class="clearfix"></div>

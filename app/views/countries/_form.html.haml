@@ -1,0 +1,29 @@
+= form_for @country do |f|
+  - if @country.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@country.errors.count, "error")} prohibited this country from being saved:"
+      %ul
+        - @country.errors.full_messages.each do |msg|
+          %li= msg
+  .col-sm-6
+    .form-group
+      = f.label "Name", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :name do
+          = f.text_field :name, :class => 'form-control', :required => true
+    .form-group
+      = f.label "Code", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :code do
+          = f.text_field :code, :class => 'form-control', :required => true
+    .form-group
+      = f.label "Currency", :class => 'col-sm-4 control-label'
+      .col-sm-7
+        = form_group_for f, :currency do
+          = f.text_field :currency, :class => 'form-control', :required => true
+    .control-group
+      .col-sm-offset-2.col-sm-10
+        = f.submit 'Save', :class => 'btn btn-success btn-lg'   
+        %a{:href => countries_path, :class => 'btn btn-primary btn-lg'}
+          %i.icon-backward
+          Cancel

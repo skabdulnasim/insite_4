@@ -1,0 +1,16 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"Resource Type", :url=>resource_types_path,:active_class=>""},{:title=>"#{I18n.t(:label_add_new)}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr) 
+
+.col-sm-12.padding-5
+  .main-section__content
+    .example
+      .example__content.p0.min-height-405
+        .data-table-container
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title New Resource Type
+          
+          = render 'form'
+
+=# link_to 'Back', resource_types_path

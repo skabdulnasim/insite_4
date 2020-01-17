@@ -1,0 +1,8 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"#{@current_unit.unit_name}",:url=>unit_path(@current_unit),:active_class=>""},{:title=>"Update branch options",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+- if @current_unit.unit_detail.present?
+  = render 'form'
+- else
+  = render :partial => 'load_default'
+  

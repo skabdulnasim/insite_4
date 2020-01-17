@@ -1,0 +1,30 @@
+:javascript
+  $(function() {   
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });     
+  });
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Stock issue report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Filter
+          .data-table-header__actions
+            %a.export-issue-report.m-btn.pink.margin-l-5{:href=>"/inventory_reports/stock_issue.pdf?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&store_id=#{params[:store_id]}"}
+              %i.mdi-file-file-download.left
+              PDF
+            %a.export-issue-report.m-btn.indigo.margin-l-5{:href=>"/inventory_reports/stock_issue.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&store_id=#{params[:store_id]}"}
+              %i.mdi-file-file-download.left
+              CSV
+            = smart_listing_controls_for(:reports, {class: "form-inline float-l margin-l-30"}) do       
+              .form-group.from_date.input-append
+                = select_tag "store_id", options_from_collection_for_select(@stores, "id", "name", params[:store_id]), :class => "form-control issue-report-input issue-store-id", :required => true, prompt: "Select store"                            
+                = text_field_tag :from_date, '', class: "issue-report-input form-control datepick issue-from-date", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:from_date]   
+                = text_field_tag :to_date, '', class: "issue-report-input form-control datepick issue-to-date", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:to_date]                                        
+        = smart_listing_render :reports

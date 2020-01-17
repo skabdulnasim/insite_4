@@ -1,0 +1,40 @@
+- unless smart_listing.empty?
+	.main-section__content
+		.example
+			.example__content.p0.min-height-300
+				%table.data-table.accordion
+					%thead
+						%tr.data-table__selectable-row
+							%th Row Number
+							%th total Racks
+							%th Available Bins
+					-smart_listing.collection.each do |warehouse|
+						%tbody.panel
+							%tr.data-table__selectable-row{"data-toggle" => "collapse","aria-controls" => "collapse_#{warehouse.id}", :href=>"#collapse_#{warehouse.id}"}
+								%td 
+									=warehouse.row_unique_id
+								%td 
+									= warehouse.warehouse_racks.count
+								%td
+									= get_available_bins(warehouse.id)
+							%tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{:role => "tabpanel", :id => "collapse_#{warehouse.id}"}
+								- warehouse.warehouse_racks.each do |rack|
+									%td
+										.grid-wrapper{"data-rack-id"=>rack.id, :style=>"width:150px !important;"}
+											- rack.bins.each do |bin|
+												- if bin.status == "available" 
+													.grid-box-available{:class=>"#{bin.bin_unique_id}",:id=>"bin#{bin.bin_unique_id}", :style=>"width:auto !important;"}
+														=bin.bin_unique_id
+												- if bin.status == "allocated"
+													.grid-box-allocated{:class=>"#{bin.bin_unique_id}",:id=>"bin#{bin.bin_unique_id}",:style=>"width:auto !important;"}
+														.col-sm-8
+															= get_product_name(bin.id)
+														.col-sm-2
+															%span.badge{:style=>"margin-top:5px;margin-left:60%;"}
+																= get_product_quantity(bin.id)
+												- if bin.status == "damaged"
+													.grid-box-damaged{:class=>"#{bin.bin_unique_id}",:id=>"bin#{bin.bin_unique_id}",:style=>"width:auto !important;"}
+														=bin.bin_unique_id
+	= smart_listing.paginate
+-else
+	%p.waring Record not found

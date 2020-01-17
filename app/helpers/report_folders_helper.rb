@@ -1,0 +1,2 @@
+module ReportFoldersHelper
+end

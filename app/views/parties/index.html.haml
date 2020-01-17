@@ -1,0 +1,27 @@
+%h1 Listing parties
+
+%table
+  %tr
+    %th Name
+    %th Type
+    %th Owner
+    %th Date time
+    %th Unique code
+    %th
+    %th
+    %th
+
+  - @parties.each do |party|
+    %tr
+      %td= party.name
+      %td= party.party_type
+      %td= party.owner_id
+      %td= party.date_time
+      %td= party.unique_code
+      %td= link_to 'Show', party
+      %td= link_to 'Edit', edit_party_path(party)
+      %td= link_to 'Destroy', party, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Party', new_party_path

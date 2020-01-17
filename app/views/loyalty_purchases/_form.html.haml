@@ -1,0 +1,36 @@
+:javascript
+  $(function() {
+    $('.datepicker').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+  });
+= form_for @loyalty_purchase do |f|
+  - if @loyalty_purchase.errors.any?
+    #error_explanation.alert.alert-danger2.alert-dismissible
+      %button.close{"data-dismiss" => "alert", :type => "button"}
+        %span{"aria-hidden" => "true"} &times;
+      = "#{pluralize(@loyalty_purchase.errors.count, "error")} prohibited this loyalty_purchase from being saved:"
+
+  .form-group
+    = f.label :card_identity,:class => 'col-sm-4 control-label'
+    .col-sm-6.input-field
+      = f.collection_select :card_identity, LoyaltyCard.all, :card_no, :card_no,{include_blank: "Select a Card"}, {:class => "form-control"}
+  .form-group
+    = f.label :purchase_cost,:class => 'col-sm-4 control-label'
+    .col-sm-6.input-field
+      = f.text_field :purchase_cost
+  .form-group
+    = f.label :purchase_type,:class => 'col-sm-4 control-label'
+    .col-sm-6.input-field
+      = f.select :purchase_type, options_for_select(LoyaltyPurchase::TYPE) ,{include_blank: "Select transaction type"}, {:class => "form-control"}
+  = f.fields_for :loyalty_credit_transaction_attributes do |f_l_c|
+    .form-group
+      = f_l_c.label :validity,:class => 'col-sm-4 control-label'
+      .col-sm-6.input-field
+        = f_l_c.number_field :validity 
+        (By default upto next day closing time)
+    .form-group
+      = f_l_c.check_box :refundable
+      = f_l_c.label :refundable, :class=> 'col-lg-offset-4'
+  .actions
+    = f.submit 'Save', :class=>'m-btn green col-lg-offset-4'

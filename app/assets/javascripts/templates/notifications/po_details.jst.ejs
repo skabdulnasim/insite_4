@@ -1,0 +1,111 @@
+<div class="col-lg-7">
+  <% console.log(purchase_order) %>
+  <h5>Purchase order ID: <%= purchase_order.purchase_order.id%></h5>
+</div>
+<div class="col-lg-5">
+  <h5 class="float-r">Date: <%= purchase_order.purchase_order['created_at']%></h5>
+</div>
+<br>
+<table class="table table-bordered table-hover table-striped">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for(var i=0; i< purchase_order.purchase_order['purchase_order_metum'].length; i++) {%>
+      <% po_metum_descrptions = purchase_order.purchase_order['purchase_order_metum'][i].purchase_order_metum_descrptions %>
+      <% if(po_metum_descrptions!='') { %>
+        <% for(var j=0; j< po_metum_descrptions.length; j++) { %>
+          <tr>
+            <td>
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product['name'] %> 
+              <% if(po_metum_descrptions[j].color) { %>
+                <%= "- " + po_metum_descrptions[j].color['name'] %> 
+              <% } %>
+              <% if(po_metum_descrptions[j].size) { %>
+                <%= "- " + po_metum_descrptions[j].size['name'] %> 
+              <% } %> 
+            </td>
+            <td class="width-18-p">
+              <%= po_metum_descrptions[j]['quantity']%> 
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product['basic_unit'] %>  
+            </td>         
+          </tr>
+        <%}%>
+      <%} else{%>
+        <tr>
+          <% if(typeof(purchase_order.purchase_order['purchase_order_metum'][i].color)=='undefined' && typeof(purchase_order.purchase_order['purchase_order_metum'][i].size)=='undefined'){ %>
+            <td>
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product['name']%>
+            </td>
+          <% }else if(typeof(purchase_order.purchase_order['purchase_order_metum'][i].color)=='undefined'){%>  
+            <td>
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product['name']%>-(Size:-<%= purchase_order.purchase_order['purchase_order_metum'][i].size['name']%>)
+            </td>
+          <% }else if(typeof(purchase_order.purchase_order['purchase_order_metum'][i].size)=='undefined'){%>  
+            <td>
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product['name']%>-(Color:-<%= purchase_order.purchase_order['purchase_order_metum'][i].color['name']%>)
+            </td>
+          <% }else{ %>
+            <td>
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product['name']%>-(Size:-<%= purchase_order.purchase_order['purchase_order_metum'][i].size['name']%>)-(Color:-<%= purchase_order.purchase_order['purchase_order_metum'][i].color['name']%>)
+            </td>
+          <% } %>
+          <td class="width-18-p">
+            <% if(purchase_order.purchase_order['purchase_order_metum'][i].product_transaction_unit == undefined) {%>
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product_amount %> 
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product['basic_unit'] %>
+            <% } else { %>
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].secondary_amount %>
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product_transaction_unit['product_unit_name'] %>
+              <%= "("+purchase_order.purchase_order['purchase_order_metum'][i].product_amount %> 
+              <%= purchase_order.purchase_order['purchase_order_metum'][i].product['basic_unit'] +")" %>
+            <% } %>
+          </td>       
+        </tr>
+      <%}%>
+    <%}%>
+  </tbody>
+</table>
+
+
+<% if (purchase_order.purchase_order['approvals'].length > 0){ %>
+  <div class="row">
+    <div class="col-lg-12">
+      <h5>Approved By:</h5>
+    </div>
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-content height-100" style="margin-top: -20px !important;">
+          <ol class="progtrckr" data-progtrckr-steps="5">
+            <% for(var k=0; k< purchase_order.purchase_order['approvals'].length; k++) {%>
+              <% if(purchase_order.purchase_order['approvals'][k]['is_approve']=='false'){ %>
+                <li class="progtrckr-todo"><%= purchase_order.purchase_order['approvals'][k]['role']['name'] %></li>
+              <% } else if(purchase_order.purchase_order['approvals'][k]['is_approve']=='true') { %>
+                <li class="progtrckr-done" title="Approved By: <%= purchase_order.purchase_order['approvals'][k]['user']['profile']['firstname'] %> <%= purchase_order.purchase_order['approvals'][k]['user']['profile']['lastname'] %> (<%= purchase_order.purchase_order['approvals'][k]['user']['email'] %>)"><%= purchase_order.purchase_order['approvals'][k]['role']['name'] %><span class="prog_lower_label font-sz-10"> (User ID: <%= purchase_order.purchase_order['approvals'][k]['user']['id'] %>)</span></li>
+              <% } else if(purchase_order.purchase_order['approvals'][k]['is_approve']=='reject') { %>
+                <li class="progtrckr-reject" title="Rejected Reason: <%= purchase_order.purchase_order['approvals'][k]['reason'] %>"><%= purchase_order.purchase_order['approvals'][k]['role']['name'] %><span class="prog_lower_label font-sz-10">(User ID: <%= purchase_order.purchase_order['approvals'][k]['user']['id'] %>)</span></li>
+              <% } %>
+            <% } %>
+        </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<div class="modal-footer" style="clear:both">
+  <div class="form-group">
+    <div class="col-sm-offset-5 col-sm-7">
+      <button class="btn btn-default" data-dismiss="modal" type="button">Close</button>
+      <% for(var j=0; j< purchase_order.purchase_order['approvals'].length; j++) {%>
+        <% if (purchase_order.purchase_order['approvals'][j]['role']['id'] == purchase_order.current_user_role.id && purchase_order.purchase_order['approvals'][j]['is_approve'] == 'false'){ %>
+          <button class="send_now_order m-btn red click_reject_approvable" data-approvable-id="<%= purchase_order.purchase_order.id%>" data-approvable-type="PurchaseOrder" data-user-role-id="<%= purchase_order.current_user_role.id%>" data-user-id="<%= purchase_order.current_user.id%>" type="button" >Reject <i class="mdi-content-send right"></i></button>
+          <button class="send_now_order m-btn green click_accept_approvable" data-approvable-id="<%= purchase_order.purchase_order.id%>" data-approvable-type="PurchaseOrder" data-user-role-id="<%= purchase_order.current_user_role.id%>" data-user-id="<%= purchase_order.current_user.id%>" type="button" >Approve Now <i class="mdi-content-send right"></i></button>
+        <% } %> 
+      <% } %>
+    </div>
+  </div>
+</div>

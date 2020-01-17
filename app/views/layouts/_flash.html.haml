@@ -1,0 +1,25 @@
+:javascript
+  $(function() {
+    setTimeout(function() {
+        $(".hideNotification").fadeOut( "slow");
+    }, 10000);
+    $(".flash-success-notice-container").hide();
+    $(".flash-error-notice-container").hide();
+  }); 
+- if notice.nil? == false
+  .ns-box.ns-growl.ns-effect-scale.ns-type-notice.ns-hide.green.hideNotification
+    .ns-box-inner
+      %p
+        = notice
+- elsif alert.nil? == false
+  .ns-box.ns-growl.ns-effect-scale.ns-type-notice.ns-hide.red.hideNotification
+    .ns-box-inner
+      %p
+        = alert.html_safe
+- else
+  .ns-box.ns-growl.ns-effect-scale.ns-type-notice.ns-hide.red.hideNotification.flash-error-notice-container
+    .ns-box-inner
+      %p.flash-error-notice Loading please wait ...
+  .ns-box.ns-growl.ns-effect-scale.ns-type-notice.ns-hide.green.hideNotification.flash-success-notice-container
+    .ns-box-inner
+      %p.flash-success-notice Loading please wait ...

@@ -1,0 +1,28 @@
+-if !@menu_products.present? 
+  .col-lg-12
+    .jumbotron
+      %h2 No active menu cards available
+      %p It seems that your branch don't have any active menu cards, as here you can only transfer products to production center. Follow the link given below for more datails.
+      %p
+        %a.btn.btn-primary.btn-lg{:href => "#{menu_cards_path}"} Add/ activate menu card                          
+- else    
+  = form_tag(transfer_options_store_stock_transfers_path(@store), method: "post",multipart: true) do
+    = hidden_field_tag "transfer_type", nil, value: "transfer_to_kitchen"
+    = render 'stock_productions/kitchen_transaction_generic_form' 
+    .clearfix
+    %a.btn.btn-primary.btn-social.float-r{"aria-controls" => "collapseExample", "aria-expanded" => "false", "data-toggle" => "collapse", :href => "#collapseExample"} 
+      %i.fa.fa-chevron-right
+      Proceed to next step
+    %br
+    %br
+    #collapseExample.collapse
+      .well{:style=>"height:100px;"}
+        .col-md-6
+          %strong Do you want to save this data as template?
+        .col-md-6
+          %span#template-info
+            %button.btn.btn-success.btn-sm.show-template-btn
+              Yes
+            %button.btn.btn-warning.btn-sm{:type=>"submit"}
+              Not now    
+    

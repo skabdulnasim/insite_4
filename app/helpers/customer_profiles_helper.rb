@@ -1,0 +1,2 @@
+module CustomerProfilesHelper
+end

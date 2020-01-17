@@ -1,0 +1,38 @@
+:javascript
+  $(function() {   
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: true,
+    });     
+  });
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Stock in hand",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Filter
+          .data-table-header__actions
+            %a.export-in-hand-report.m-btn.indigo.margin-l-5{:href=>"/inventory_reports/stock_in_hand.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&units=#{params[:unit_ids]}"}
+              %i.mdi-file-file-download.left
+              CSV
+            = smart_listing_controls_for(:reports, {class: "form-inline float-l margin-l-30"}) do  
+              = hidden_field_tag :units, '', :value=>"#{@unit_arr}"
+              = hidden_field_tag :from_date, '', :value=>params[:from_date], class: "inhand-from-date" 
+              = hidden_field_tag :to_date, '', :value=>params[:to_date], class: "inhand-to-date"
+              .form-group.filter.input-append
+                .input-group
+                  %input.form-control.search.store-product-name{:placeholder => "Search product...", :type => "text", :name=> "product_filter"}
+                    %span.input-group-btn
+                      %button.btn.btn-default.disabled{:type => "submit" }
+                        %span.glyphicon.glyphicon-search  
+              .form-group.filter.input-append.hidden-sm.hidden-xs
+                = select_tag :catrgory, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control inhand-category", :prompt => "All categories"
+              .form-group
+                = select_tag "units_ids", options_from_collection_for_select(@units, "id", "unit_name"),class: "form-control inhand-branch",prompt: "Select Branch"                                                                 
+        = smart_listing_render :reports
+
+			

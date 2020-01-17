@@ -1,0 +1,272 @@
+%script{:src => "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/js/bootstrap-multiselect.js"}
+
+%link{:href => "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.13/css/bootstrap-multiselect.css", :rel => "stylesheet"}/
+
+- manual_load_javascript "stock_transfers"
+:css
+  .toast {
+    z-index: 11001;
+  }
+  #toast-container{
+    z-index: 110020;
+  }
+
+= render "layouts/flash"
+.preloader
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Stock Transfer ##{@stock_transfer.id}",:url=>"#",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+- if @stock_transfer.status == '30'
+  %button.m-btn.orange.width-20#add_to_rack{:type => "button","data-target" => "#pickProductModal", "data-toggle" => "modal", :target => "_blank", :style=>"margin-left:85%"}
+    Pick product
+    %i.fa.fa-align-justify
+= form_for [@store, @stock_transfer],multipart: true do |f|
+
+  .product-card.col-lg-4.col-xs-12.col-sm-12.padding-5
+    .card.waves-effect.waves-teal.margin-t-b-0
+      .card-content.height-200
+        %span.card-title
+          Transfer details
+        .grey-text.text-darken-1.margin-t-10
+          %strong Transfer ID:
+          = @stock_transfer.id
+          %br
+          Current Status :
+          =transfer_status_tag(@stock_transfer.activity_id,@stock_transfer.status)
+          =transfer_item_status(@stock_transfer.activity_id,@stock_transfer,@stock_transfer.status)
+          %br
+          Transfer date :
+          =@stock_transfer.created_at.strftime("%d %b %Y, %I:%M %p")
+          - if @stock_transfer.expected_delivery_date.present?
+            %br
+            Expected delivery date :
+            =@stock_transfer.expected_delivery_date
+          %br
+          Transfer type :
+          =transfer_type(@stock_transfer.activity_id)
+          %br
+          =get_receive_date(@stock_transfer.activity_id, @stock_transfer.status, @stock_transfer.updated_at)
+          %br
+          - if @stock_transfer.vehicle
+            ="Delivery van : #{@stock_transfer.vehicle.name} (Contact: #{@stock_transfer.vehicle.contact_no})"
+  .product-card.col-lg-4.col-xs-12.col-sm-12.padding-5
+    .card.waves-effect.waves-teal.margin-t-b-0
+      .card-content.height-200
+        %span.card-title
+          From Store
+        .grey-text.text-darken-1.margin-t-10
+          %b=@stock_transfer.from_store.name
+          %br
+          ="Address: #{@stock_transfer.from_store.address}"
+          %br
+          ="Contact: #{@stock_transfer.from_store.contact_number}"
+  .product-card.col-lg-4.col-xs-12.col-sm-12.padding-5
+    .card.waves-effect.waves-teal.margin-t-b-0
+      .card-content.height-200
+        %span.card-title
+          To Store
+        .grey-text.text-darken-1.margin-t-10
+          %b=@stock_transfer.to_store.name
+          %br
+          ="Address: #{@stock_transfer.to_store.address}"
+          %br
+          ="Contact: #{@stock_transfer.to_store.contact_number}"
+          %br
+          %br
+          %a.m-btn.grey.lighten-3.blue-text.width-100{:href=> "/stores/#{params[:store_id]}/stock_transfers/#{@stock_transfer.id}/generate_invoice/#{invoice_name(@stock_transfer)}.pdf",:target=>"_blank"}
+            %i.material-icons.mdi-file-cloud-download.left
+            Download Invoice
+  .clearfix
+  .col-lg-12.col-sm-12.padding-5
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title
+                  Transfered items
+              .data-table-header__actions
+                = get_return_button_tag(@stock_transfer.activity_id,@store.id,@stock_transfer.secondary_store_id,@stock_transfer.status)
+                = get_receiving_button_tag(@stock_transfer.activity_id,@store.id,@stock_transfer.primary_store_id,@stock_transfer.secondary_store_id,@stock_transfer.status)
+                -if can_audit_item(@stock_transfer.activity_id,@store.id,@stock_transfer, @stock_transfer.status, @stock_transfer.primary_store_id)
+                  %a.button.m-btn.blue{"data-target" => "#showAuditModal", "data-toggle" => "modal"}
+                    Stock Audit
+            %table.data-table
+              %thead
+                %tr.data-table__selectable-row
+                  %th Item Name
+                  -if AppConfiguration.get_config_value('stock_identity') == 'enabled'
+                    %th Stock Identity
+                  - else
+                    %th Color
+                    %th Size
+                    %th Batch No
+
+                  %th Price
+                  %th Quantity transfered
+                  %th Quantity received
+                  - if @stock_transfer.to_store.store_type == 'waste_bin'
+                    %th Reason for transfer
+                    %th Reason Code
+              %tbody
+                - if @stock_transfer.stock_transfer_meta.present?
+                  = f.fields_for :stock_transfer_meta do |builder|
+                    - _product = Product.find(builder.object.product_id)
+                    - _product_name = _product.package_component.present? ?  _product.product_name(_product) : _product.name 
+                    - if builder.object.transferable?
+                      %tr
+                        %td
+                          / =builder.object.sku.present? ? "#{builder.object.product_name} - (#{builder.object.sku})" : "#{builder.object.product_name}"
+                          - if builder.object.sku.present?
+                            - if builder.object.product.local_name.present?
+                              = "#{_product_name} "
+                              %b
+                                = "(#{builder.object.product.local_name}) "
+                              = "- (#{builder.object.sku})"
+                            - else
+                              = "#{_product_name} - (#{builder.object.sku})"
+                          - else
+                            = "#{_product_name}"
+                            - if builder.object.product.local_name.present?
+                              %b
+                                = " ( #{builder.object.product.local_name} ) "
+                        -if AppConfiguration.get_config_value('stock_identity') == 'enabled'  
+                          %td= builder.object.stock_identity.present? ? builder.object.stock_identity : "-"      
+                        - else
+                          %td= builder.object.color_name.present? ? builder.object.color_name : "-"
+                          %td= builder.object.size_name.present? ? builder.object.size_name : "-"
+                          %td= builder.object.batch_no.present? ? builder.object.batch_no : "-"
+                        %td=builder.object.price_with_tax
+                        %td
+                          ="#{builder.object.quantity_transfered}"
+                          - if builder.object.product_transaction_unit_id.present?
+                            = stock_transfer_unit_name(builder.object.product_transaction_unit_id)
+                          -else 
+                            = "#{builder.object.product_basic_unit}"
+
+                        %td
+                          - if can_receive_transfer_items?(@stock_transfer.activity_id,@store.id,@stock_transfer.primary_store_id,@stock_transfer.secondary_store_id,@stock_transfer.status)
+                            .input-group
+                              = builder.text_field :quantity_received, :class=> "form-control", :value=>builder.object.quantity_transfered
+                              .input-group-addon=builder.object.product_basic_unit
+                          - elsif transfer_items_received? @stock_transfer
+                            ="#{builder.object.quantity_received}"
+                            - if builder.object.product_transaction_unit_id.present?
+                              = "#{builder.object.product_transaction_unit.product_unit_name}"
+                            -else 
+                              = "#{builder.object.product_basic_unit}"
+                          - else
+                            ="-"
+                        - if @stock_transfer.to_store.store_type == 'waste_bin'
+                          %td= builder.object.reason_code.present? ? builder.object.reason_code.reason : "-"
+                          %td= builder.object.reason_code.present? ? builder.object.reason_code.code : "-"
+                - else
+                  -# To support old transfer data
+                  - _transfered_stocks = @stock_transfer.stocks.set_store(@stock_transfer.primary_store_id).type_debit
+                  - _transfered_stocks.each do |object|
+                    %tr
+                      %td=object.product.name
+                      %td="#{number_to_currency(object.price, unit:currency, format: '%u %n', precision: 2)}"
+                      %td="#{object.stock_debit} #{object.product.basic_unit}"
+                      %td
+                        - if transfer_items_received? @stock_transfer
+                          - _product_recvd = (Stock.set_transaction(@stock_transfer.id).set_store(@stock_transfer.secondary_store_id).get_product(object.product_id).last)
+                          ="#{_product_recvd.stock_credit} #{object.product.basic_unit}" if _product_recvd.present?
+                        - else
+                          ="-"
+
+  .col-md-12
+    - if @stock_transfer.activity_id == 3 && @stock_transfer.production_audits.present?
+      %h4 Ingredients transfered for production of these following products
+      %table.table.table-bordered.product
+        %thead
+          %tr
+            %th.col-md-3 Item
+            %th.col-md-3 Quantity
+        %tbody
+          - @stock_transfer.kitchen_production_audits.each do |tmp|
+            %tr
+              %td=tmp.product.name
+              %td="#{tmp.received_qty} #{tmp.product.basic_unit}"
+
+#pickProductModal.modal.fade{"aria-hidden"=>"true", "aria-labelledby"=>"RackModal", :role=>"dialog", :tabindex=>"-1"}
+  .modal-dialog{:style => "width:800px;"}
+    .modal-content.m-modal-content
+      .modal-header.m-modal-header
+        %h4#RackModalLabel.modal-title 
+          %span Pick Product From Warehouse
+          .row 
+            %small.rack-uid{:style=>"margin-left:20px"}
+      .modal-body
+        - if @stock_transfer.stock_transfer_meta.present?
+          - @stock_transfer.stock_transfer_meta.each do |transferable_product|
+            - if transferable_product.picked_quantity.present?
+              -require_product_quantity = transferable_product.quantity_transfered - transferable_product.picked_quantity
+            -else
+              -require_product_quantity = 0
+            .row
+              .col-md-4
+                .card-content{:style=>"text-align:center;padding:0px;width:200px;height:35px;background-color:#0E8576;color:white;font-size:1.25em;font-weight:20px; margin-righ:30px;", "data-product-sku"=>"#{transferable_product.sku}"}
+                  = "#{transferable_product.product.name} (Q:#{transferable_product.quantity_transfered})"
+              .col-md-6
+                - product_bins = fetch_product_bins(transferable_product.product_id)
+                - if product_bins != false
+                  %select.bins_product{:style=>"width:150px;position:relative;hidden:false;", :class=>"binSelect", :multiple=>"multiple", "data-product-quantity"=>require_product_quantity,"data-transfer-meta-id"=>transferable_product.id}
+                    - product_bins.each do |bin|
+                      %option{:value => "#{bin.bin_unique_id}","data-bin-product-quantity"=>"#{bin.product_quantity}"}
+                        = "#{bin.bin_unique_id} (Q: #{bin.product_quantity})"
+                  %span.badge.blue 
+                    Product Picked
+                    %span.badge#product_picked_quantity
+                      =transferable_product.picked_quantity
+                -else
+                  %p.warning no bins found
+            %br
+        %p{:id=>"current_user_email","data-current-user-email"=>"#{@current_user.email}"}
+      .modal-footer
+        %button.btn.btn-primary#submitBins{:type => "button"} Submit
+        %button.btn.btn-default{"data-dismiss" => "modal", :type => "submit"} Close
+
+#showAuditModal.modal.fade.col-md-12{"aria-hidden" => "true", "aria-labelledby" => "showAuditModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content.m-modal-content
+      = form_tag("/stores/#{@store.id}/stock_audits/audit_options",method: "post") do
+        %input.form-control.search{:value => "#{@stock_transfer.stock_transfer_meta.first.product.business_type}", :type => "hidden", :name=> "business_type"}
+        .modal-header.m-modal-header
+          %button.close{"data-dismiss" => "modal", :type => "button"}
+            %span{"aria-hidden" => "true"} &times;
+            %span.sr-only Close
+          %h4#showAuditModalLabel.modal-title Stock Audit
+        .modal-body
+          .col-md-12
+            %table.data-table
+              %thead
+                %tr.data-table__selectable-row 
+                  %th
+                    %input.checkbox-parent-toggle.filled-in{:type=>"checkbox",:id=>"parent_check"}
+                      %label{:for=>"parent_check"}
+                  %th Name
+                  %th Transfered
+                  %th Received
+                  %th Current Stock
+                  %th Counted Stock
+              %tbody
+                - @stock_transfer.stock_transfer_meta.each do |object|
+                  - if object.quantity_transfered != object.quantity_received
+                    %tr.data-table__selectable-row
+                      %td
+                        %input.checkbox-child.filled-in{:value=> "#{object.product.id}",:name=>"checked_products[]",:type=>"checkbox", :id=> "product_#{object.id}", "data-transfer-meta-id" => "#{object.id}"}
+                        %label{:for=>"product_#{object.id}"}    
+                        %input{:value => "#{object.id}", :type => "hidden", :name=> "transfer_meta#{object.product.id}"}
+                      %td=object.product.name
+                      %td="#{object.quantity_transfered}" " #{object.product.basic_unit}"
+                      %td="#{object.quantity_received}" " #{object.product.basic_unit}"
+                      %td="#{get_product_current_stock(@store.id,object.product.id)}" " #{object.product.basic_unit}"
+                      %td
+                        .input-group
+                          %input.form-control{:name => "quantity#{object.product.id}", :type=>"text"}
+                          .input-group-addon=object.product.basic_unit
+          .clearfix
+        .modal-footer
+          %button.btn.btn-default{"data-dismiss" => "modal", :type => "button"} Close
+          = submit_tag "Proceed", class: "btn btn-primary audit_submit"                    

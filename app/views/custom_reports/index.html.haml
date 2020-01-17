@@ -1,0 +1,23 @@
+%h1 Listing custom_reports
+
+%table
+  %tr
+    %th Name
+    %th Query
+    %th Report folder
+    %th
+    %th
+    %th
+
+  - @custom_reports.each do |custom_report|
+    %tr
+      %td= custom_report.name
+      %td= custom_report.query
+      %td= custom_report.report_folder
+      %td= link_to 'Show', custom_report
+      %td= link_to 'Edit', edit_custom_report_path(custom_report)
+      %td= link_to 'Destroy', custom_report, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Custom report', new_custom_report_path

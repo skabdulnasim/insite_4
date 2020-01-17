@@ -1,0 +1,48 @@
+<div class="card padding-l-20 padding-t-14">
+	<div>
+		<% for (var i = 0; i <= response.inspection_questions.length - 1; i++) { %>
+	  	<div>
+	  		<span class='font-w-400 font-14'>Q.<%= i+1 %>. <%= response.inspection_questions[i].question_title %></span>
+	  		<div class='margin-t-15 col-lg-12' style='display: flex'>
+		  		<div class='col-lg-9'>
+		  			<span class='font-w-400 font-14'>Options:</span>
+		  			<% for (var j = 0; j <= response.inspection_questions[i].inspection_question_options.length - 1; j++) { %>
+		  				<div><span class='font-14'>&#8226;</span>
+		  					<%= response.inspection_questions[i].inspection_question_options[j].title %>
+		  				</div>
+		  			<% } %>
+		  		</div>
+		  		<% if(response.inspection_questions[i].inspection_question_images.length > 0){ %>
+			  		<div class='margin-r-20 col-lg-3'>
+			  			<% for (var l = 0; l <= response.inspection_questions[i].inspection_question_images.length - 1; l++) { %>
+		  				<div class='margin-l-25'>
+		  					<% if(l==0){
+		  						var display = '';
+		  						}
+		  						else{
+		  						var display = 'none';
+		  						}
+		  					%>
+		  					<a class='fancybox fancybox_<%=response.inspection_questions[i].id%>' rel="ligthbox" data-inspection-question-id='<%= response.inspection_questions[i].id %>' style='display:<%= display %>' href=<%= response.inspection_questions[i].inspection_question_images[l].image %>><image style="width:200px;height:125px;" src=<%= response.inspection_questions[i].inspection_question_images[l].image %> /></a>
+		  					<br />
+		  					<!-- <% if(response.inspection_questions[i].inspection_question_images.length > 1){ %>
+		  						<span style='display:<%= display %>' class='show_more float-r' data-inspection-question-id='<%= response.inspection_questions[i].id %>' onclick="setClickMe('show_more')">Show More</span>
+		  					<% } %> -->
+		  				</div>
+		  			<% } %>
+		  		<% } %>
+		  		</div>
+		  	</div>
+	  		<div>
+	  			<span class='font-w-400 font-14 margin-l-25 margin-t-5'>Answers:</span>
+	  			<% for (var k = 0; k <= response.inspection_questions[i].inspection_question_asnwers.length - 1; k++) { %>
+	  				<div class='margin-l-25 answer'>
+	  					<span class='font-14'>* </span> <%= response.inspection_questions[i].inspection_question_asnwers[k].answer %>
+	  				</div>
+	  			<% } %>
+	  		</div>
+	  	</div>
+	  	<hr/>
+	 	<% } %>
+	</div>
+</div>

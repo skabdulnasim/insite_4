@@ -1,0 +1,6 @@
+<select id="upload_thitdparty_id" class="select optional form-control" name="upload_thitdparty_id" required="required">
+ 	<option value="">Select Thirdparty</option>
+	<% for(var i=0; i<thirdparties.length; i++) { %>
+	 <option value="<%= thirdparties[i].id %>"><%= thirdparties[i].thirdparty %></option>
+	<%}%>
+</select>

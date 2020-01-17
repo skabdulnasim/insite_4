@@ -1,0 +1,13 @@
+= form_for @atmosphere do |f|
+  - if @atmosphere.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@atmosphere.errors.count, "error")} prohibited this atmosphere from being saved:"
+      %ul
+        - @atmosphere.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :name
+    = f.text_field :name
+  .actions
+    = f.submit 'Save'

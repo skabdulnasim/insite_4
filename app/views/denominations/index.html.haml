@@ -1,0 +1,32 @@
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Denomination 
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_denomination_path}"}
+              %i.mdi-content-add.left
+              Add new denomination 
+        %table.data-table    
+          %tr
+            %th Name
+            %th Value
+            %th Image
+            %th Country
+            %th Actions
+          - @denominations.each do |denomination|
+            %tr
+              %td= denomination.name
+              %td= denomination.value
+              %td= image_tag denomination.image, :style => "width:100px;"
+              %td= denomination.country_id
+              %td
+                %a.m-btn.green.m-btn-low-padding{:href => "#{denomination_path(denomination)}", :title => "View denomination"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_denomination_path(denomination)}", :title => "Edit denomination"} 
+                  %i.mdi-editor-border-color
+                %a.m-btn.red.m-btn-low-padding{:href => "#{denomination_path(denomination)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete denomination"}
+                  %i.mdi-action-delete
+      

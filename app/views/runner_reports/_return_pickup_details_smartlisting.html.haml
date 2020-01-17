@@ -1,0 +1,44 @@
+- unless smart_listing.empty?
+	%table.data-table
+		%tr.bg-gray
+			%th Delivery Boy
+			%th Order Id
+			%th Customer Name
+			%th Pick From
+			%th Item Name
+			%th Quantity
+			%th Sku
+			%th Drop At
+		- smart_listing.collection.each do |object|
+			%tr.data-table__selectable-row
+				%td
+					%i.fa.fa-bicycle
+					= object.delivery_boy.name
+				%td= object.order_id
+				%td
+					- if object.order.customer.present?
+						- if object.order.customer.customer_profile.present?
+							%i.fa.fa-user
+							= "#{object.order.customer.customer_profile.firstname} #{object.order.customer.customer_profile.lastname}"
+						- else
+							= '-'
+					- else
+						= '-'
+				%td
+					%i.fa.fa-map-marker
+					= object.order.deliverable.delivery_address
+				%td
+					= object.product.name
+				%td
+					= "#{object.quantity} #{object.product.basic_unit}"
+				%td
+					= object.sku.present? ? object.sku : '-'
+				%td
+					%i.fa.fa-map-marker
+					= object.order.unit.address
+	
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		No return items found

@@ -1,0 +1,2 @@
+module UnitDetailsHelper
+end

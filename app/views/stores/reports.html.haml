@@ -1,0 +1,39 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Stock Reports",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Filter
+          .data-table-header__actions
+            / = link_to "CSV", reports_store_path(@store, format: "csv"), :class => "export-stock-report m-btn indigo"
+            %a.export-stock-report.m-btn.indigo.margin-l-5{:href=>"/stores/#{@store.id}/reports.csv", "date-store-id" => @store.id}
+              %i.mdi-file-file-download
+            = smart_listing_controls_for(:reports, {class: "form-inline float-l margin-l-30"}) do
+              .form-group.filter.input-append.hidden-sm.hidden-xs.stock-report-input
+                = select_tag :category, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, nil), class: "search form-control store-product-category", :prompt => "All categories"          
+              .form-group.from_date.input-append.stock-report-input
+                = text_field_tag :from_date, '', class: "search form-control form-control-small-pad stock-from-date", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:from_date]
+              .form-group.from_date.input-append.stock-report-input
+                = text_field_tag :to_date, '', class: "search form-control form-control-small-pad stock-to-date", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:to_date]
+              .form-group.filter.input-append.stock-report-input
+                .input-group
+                  %input.form-control.search.store-product-name{:placeholder => "Search product...", :type => "text", :name=> "product_filter"}
+                    %span.input-group-btn
+                      %button.btn.btn-default.disabled{:type => "submit" }
+                        %span.glyphicon.glyphicon-search                                                        
+        = smart_listing_render :reports

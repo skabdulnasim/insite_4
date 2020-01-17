@@ -1,0 +1,5 @@
+class AddStockIdToStockTransferMeta < ActiveRecord::Migration
+  def change
+    add_column :stock_transfer_meta, :stock_id, :integer
+  end
+end

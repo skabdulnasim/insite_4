@@ -1,0 +1,94 @@
+:javascript
+  $(function() {
+    $('.datepick').datetimepicker({
+      format: 'YYYY-MM-DD HH:mm:ss',
+      useCurrent: true,
+    });           
+  });
+= form_for @alpha_promotion, :html => { :class => 'form-horizontal'}  do |promotion_form|
+  - if @alpha_promotion.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@alpha_promotion.errors.count, "error")} prohibited this alpha_promotion from being saved:"
+      %ul
+        - @alpha_promotion.errors.full_messages.each do |msg|
+          %li= msg
+  .col-sm-12
+    .col-sm-8        
+      .form-group
+        = promotion_form.label :promo_code, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.text_field :promo_code, :class => 'form-control'
+      .form-group
+        = promotion_form.label :promo_type, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.select :promo_type, options_for_select(AlphaPromotion::TYPE),{ :include_blank=>false }, {:class => "form-control"}
+      .form-group
+        = promotion_form.label :description, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.text_area :description, :rows => 3, :class => 'form-control'
+      .form-group
+        = promotion_form.label :bill_amount, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.text_field :bill_amount, :class => 'form-control'
+      .form-group
+        = promotion_form.label :promo_user, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.select :promo_user, options_for_select(AlphaPromotion::PROMO_USER),{ :include_blank=>false }, {:class => "form-control", :id => "promo-user-select"}
+      .form-group{:id => 'alpha_promotion_count' , :style => 'display:none;'}
+        = promotion_form.label :count, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.text_field :count, :class => 'form-control allow-numeric-only'
+      .form-group
+        = promotion_form.label :promo_value, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.text_field :promo_value, :class => 'form-control'
+      .form-group
+        = promotion_form.label :max_discount, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.text_field :max_discount, :class => 'form-control'
+      .form-group
+        = promotion_form.label :status, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.select :status, options_for_select(AlphaPromotion::STATUS),{ :include_blank=>false }, {:class => "form-control"}
+      .form-group{:id => 'scope_select_div'} 
+        = promotion_form.label :scope, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.select :scope, options_for_select({"Global Scope" => "global", "Local Scope" => "local"},@alpha_promotion.scope), { :include_blank=>false }, {:class => "form-control", :id => "scope-select", :disabled => params[:action]=="edit"}
+      .form-group
+        = promotion_form.label :valid_from, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.text_field :valid_from, :class => 'form-control datepick' 
+      .form-group
+        = promotion_form.label :valid_till, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.text_field :valid_till, :class => 'form-control datepick' 
+      .form-group
+        = promotion_form.label :image, :class => 'col-sm-2 control-label'
+        .col-sm-6
+          = promotion_form.file_field :image, :class => 'form-control', placeholder: "Upload Image" 
+                        
+    .col-sm-4.unit_allocate
+      .main-section__content
+        .example
+          .example__content.p0.min-height-300
+            .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Allocate to Unit 
+              .col-sm-12 
+                %table
+                  %thead
+                  %tbody 
+                    - for unit in Unit.all
+                      %tr
+                        %td
+                          = check_box_tag "alpha_promotion[unit_ids][]", unit.id, @alpha_promotion.units.include?(unit), { :id => "unit_#{unit.id}"}
+                          %label{:for=>"unit_#{unit.id}"}= unit.unit_name.humanize
+                            
+  .control-group
+    .col-sm-offset-2.col-sm-10
+      %a{:href => alpha_promotions_path, :class => 'btn btn-primary btn-lg'}
+        %i.icon-backward
+        Cancel 
+      = promotion_form.submit 'Save',:class => 'btn btn-success btn-lg' 
+     

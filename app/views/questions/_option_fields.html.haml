@@ -1,0 +1,19 @@
+%hr
+.form-group.margin-t-15
+  = f.label :title, :class => 'col-lg-3 control-label'
+  .col-lg-7
+    = f.text_area :title, :class => 'form-control', :require => true, :style => "height: 80px;"
+.form-group
+  = f.label 'Image', :class => 'col-lg-3 control-label'
+  .col-lg-7
+    .col-sm-10.margin-t-5
+      = f.file_field :image, :require => true, :class=>'margin-t-5'
+    .col-sm-2
+      - option_image = Option.find_by_id(f.object.id)
+      - if option_image.present?
+        = image_tag(option_image.image, width: '55', height: '45', :style => "margin-left:16px;")
+      - else
+        = image_tag("icons/product-box-128.png", width: '55', height: '45', :class => "img-thumbnail", :style => "margin-left:16px;")
+  .col-sm-2
+    %a.btn.btn-xs.btn-danger.remove_option{:href => "#", :title => "Delete", "data-option-id" => f.object.id}
+      %i.mdi-content-remove

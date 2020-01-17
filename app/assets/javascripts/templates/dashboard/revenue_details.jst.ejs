@@ -1,0 +1,26 @@
+<hr>
+FILTER <span class="m-label teal"><b>Date</b> <%= from_date %> to <%= to_date %></span>
+<hr>
+<table class="table data-table">
+  <thead>
+    <tr class="data-table__selectable-row">
+      <th class="col-lg-3">Date</th>
+      <th class="col-lg-3">No. of orders</th>
+      <th class="col-lg-3">Total Sales</th>
+      <th class="col-lg-3">Total COG</th>
+      <th class="col-lg-3">Gross Profit</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% for(var i=0; i < dates.length; i++) { %>
+      <tr class="data-table__selectable-row">
+        <td class="col-lg-3"><%= dates[i] %></td>
+        <td class="col-lg-3"><%= order_counts[i] %></td>
+        <td class="col-lg-3"><%= sales[i].toFixed(1) %></td>
+        <td class="col-lg-3"><%= costs[i].toFixed(1) %></td>
+        <td class="col-lg-3"><%= (sales[i]-costs[i]).toFixed(1) %></td>
+      </tr>
+    <% } %>
+  </tbody>
+</table>

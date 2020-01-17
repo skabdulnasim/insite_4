@@ -1,0 +1,28 @@
+#page-wrapper
+  .row
+    .page-header
+      %h1
+        Tax Management
+        %small Create Tax Group
+    .page-container 
+      %h1 Listing tax_groups
+
+      %table
+        %tr
+          %th Name
+          %th Section
+          %th
+          %th
+          %th
+
+        - @tax_groups.each do |tax_group|
+          %tr
+            %td= tax_group.name
+            %td= tax_group.section_id
+            %td= link_to 'Show', tax_group
+            %td= link_to 'Edit', edit_tax_group_path(tax_group)
+            %td= link_to 'Destroy', tax_group, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+      %br
+
+      = link_to 'New Tax group', new_tax_group_path

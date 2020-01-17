@@ -1,0 +1,27 @@
+:javascript
+  $(function(){
+      $('#settingsTab a:last').tab('show');
+  });
+%ul.nav.nav-tabs#settingsTab
+  %li
+    %a{"data-toggle" => "tab", :href => "#manage"} Manage products
+  %li
+    %a{"data-toggle" => "tab", :href => "#categories"} Manage categories
+  %li.active
+    %a{"data-toggle" => "tab", :href => "#add"} Add product
+  
+  
+    
+.tab-content
+  #categories.tab-pane.fade
+    = render '/menu_categories/form1'
+    
+  #manage.tab-pane.fade
+    = render 'manage'
+    
+  #add.tab-pane.active.fade.in
+    = render 'form1'
+    
+  
+    
+  

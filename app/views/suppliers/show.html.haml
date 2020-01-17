@@ -1,0 +1,20 @@
+#page-wrapper
+  .row
+    .page-header
+      %h1
+        Supplier Management
+        %small View supplier
+    .page-container 
+      %table.table.table-hover
+        %tr
+          %th= "Supplier Name"
+      
+          %tr
+            %td= @supplier.name
+      //= link_to 'Edit', edit_supplier_path(@supplier), :class => 'btn btn-primary btn-lg active'
+      %a{:href => "#{edit_supplier_path(@supplier)}", :class => 'btn btn-primary btn-mini active'}
+        %i.icon-edit
+        Edit
+      %a{:href => "#{suppliers_path}", :class => 'btn btn-primary btn-mini active'}
+        %i.icon-backward
+        Back

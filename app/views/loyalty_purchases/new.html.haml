@@ -1,0 +1,12 @@
+.col-sm-8.padding-5.col-sm-offset-2
+  .main-section__content
+    .example
+      .example__content.p0.min-height-300
+        .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Loyalty Enrollment / Point Purchase
+          .form-horizontal.bordered-row.m-input  
+            = render 'form'
+
+/= link_to 'Back', loyalty_purchases_path

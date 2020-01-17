@@ -1,0 +1,16 @@
+- unless smart_listing.empty?
+	- smart_listing.collection.each do |unit|
+		.card.padding-10.margin-l-5.col-lg-3{:style=>"width:220px;display:inline-block;height:100px;overflow-y:auto;"}
+			= check_box_tag "selected_outlets[]", "#{unit.id}", false, :class=>"filled-in outlet_checkbox", "data-unit-id"=>unit.id, :id => "#{unit.id}"
+			%label.font-sz-11{:for=>"#{unit.id}"}= unit.unit_name
+			- if unit.stores.physical.size == 1
+				= select_tag "unit_store_#{unit.id}", options_for_select(unit.stores.physical.map{ |u_s| ["#{u_s.name}", "#{u_s.id}"] }), {:class=>"form-control unit_stores", "data-unit-id"=>unit.id, :style=>"position:absolute;bottom:0;left:0;"}
+			- else
+				= select_tag "unit_store_#{unit.id}", options_for_select(unit.stores.physical.map{ |u_s| ["#{u_s.name}", "#{u_s.id}"] }), {:prompt=>"Select a store", :class=>"form-control unit_stores", "data-unit-id"=>unit.id, :style=>"position:absolute;bottom:0;left:0;"}
+			.clearfix
+	.clearfix
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		No child outlets found

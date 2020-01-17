@@ -1,0 +1,54 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Stock Purchase Report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            = smart_listing_controls_for(:unit_stock_purchase, {class: "form-inline float-l margin-l-30"}) do
+              .form-group.from_date.input-append.stock-report-input
+                = hidden_field_tag :units, '', :value=>"#{@unit_arr}"  
+                = text_field_tag :from_date, '', class: "search form-control form-control-small-pad sp-from-date", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:from_date]
+              .form-group.from_date.input-append.stock-report-input
+                = text_field_tag :to_date, '', class: "search form-control form-control-small-pad sp-to-date", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:to_date]
+              .form-group.filter.input-append.stock-report-input
+                .input-group
+                  %input.form-control.search.sp-product-name{:placeholder => "Search product...", :type => "text", :name=> "product_filter"}
+                    %span.input-group-btn
+                      %button.btn.btn-default.disabled{:type => "submit" }
+                        %span.glyphicon.glyphicon-search 
+              .form-group.filter.input-append.stock-report-input
+                .input-group
+                  %input.form-control.search.sp-product-name{:placeholder => "Search vendor...", :type => "text", :name=> "vendor_name_filter"}
+                    %span.input-group-btn
+                      %button.btn.btn-default.disabled{:type => "submit" }
+                        %span.glyphicon.glyphicon-search
+              / .form-group.filter.input-append.stock-report-input
+              / = select_tag "vendor_id", options_from_collection_for_select(Vendor.set_unit_id_in(@unit_arr).order("name asc"), "id", "name"), :class => "form-control sp-vendor", prompt: "Select vendor"
+          .data-table-header__actions
+            %a.btn.dropdown-button{"data-activates" => "dropdown2", :href => "#!"}
+              Export
+              %i.mdi-navigation-arrow-drop-down.right
+            %ul#dropdown2.dropdown-content
+              %li.width-100
+                %a.sp-report-pdf{:href=>"/inventory_reports/unit_wise_stock_purchase.pdf?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&units=#{@unit_arr}"}
+                  PDF
+              %li.width-100
+                %a.sp-report-csv{:href=>"/inventory_reports/unit_wise_stock_purchase.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&units=#{@unit_arr}"}
+                  CSV              
+        = smart_listing_render :unit_stock_purchase
+          
+

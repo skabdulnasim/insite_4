@@ -1,0 +1,37 @@
+.col-sm-6.padding-5
+	.main-section__content
+		.example
+			.example__content.p0.min-height-405
+				.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+					%header.data-table-header
+						.data-table-header__label
+							%span.fs-title Edit product
+					%table.data-table
+						%thead
+							%tr.data-table__selectable-row
+								%th Id
+								%th Name
+						%tbody
+							%tr.data-table__selectable-row  
+								%td=@unit_product.product_id
+								%td=@unit_product.product.name
+	%p= "product : #{@unit_product.product_id}"
+	%p= "unit : #{current_user.unit_id}"
+.col-sm-3.padding-5
+	.main-section__content
+		.example
+			.example__content.p0.min-height-405
+				.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+					
+					.min-height-405
+						= form_tag(update_unit_products_product_path(@unit_product.product_id), method: "post",multipart: true) do
+							.padding-10
+								%button.m-btn.green.float-r.waves-effect.waves-light.width-100{:type => "submit"}
+									Update product
+							.clearfix    
+							%br
+							.filter-title.margin-t-b-0
+								%i.mdi-action-label.left
+								INPUT TAX GROUP
+							.padding-10
+								= select_tag :tax_group_id, options_for_select(@tax_groups.map{ |tg| ["#{tg.name} (#{tg.total_amnt}%)", tg.id] },@unit_product.input_tax_group_id), :class => 'form-control',:required => true

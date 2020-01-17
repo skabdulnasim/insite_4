@@ -1,0 +1,162 @@
+:javascript
+  $(document).ready(function(){
+    loadGallery(true, 'a.thumbnail');
+      function disableButtons(counter_max, counter_current){
+        $('#show-previous-image, #show-next-image').show();
+        if(counter_max == counter_current){
+          $('#show-next-image').hide();
+        } else if (counter_current == 1){
+          $('#show-previous-image').hide();
+        }
+      }
+      function loadGallery(setIDs, setClickAttr){
+        var current_image, selector, counter = 0;
+        function updateGallery(selector) {
+          var $sel = selector;
+          current_image = $sel.data('image-id');
+          $('#image-gallery-caption').text($sel.data('caption'));
+          $('#image-gallery-title').text($sel.data('title'));
+          $('#image-gallery-image').attr('src', $sel.data('image'));
+          disableButtons(counter, $sel.data('image-id'));
+        }
+        if(setIDs == true){
+          $('[data-image-id]').each(function(){
+            counter++;
+            $(this).attr('data-image-id',counter);
+          });
+        }
+        $(setClickAttr).on('click',function(){
+          updateGallery($(this));
+        });
+      }
+    });
+#image-gallery.modal.fade{"aria-hidden" => "true", "aria-labelledby" => "myModalLabel", :role => "dialog", :tabindex => "-1"}
+  .modal-dialog
+    .modal-content
+      .modal-header
+        %button.close{"data-dismiss" => "modal", :type => "button"}
+          %span{"aria-hidden" => "true"} ×
+          %span.sr-only Close
+        %h4#image-gallery-title.modal-title
+      .modal-body
+        %img#image-gallery-image.img-responsive{:src => ""}/
+      .modal-footer
+
+
+- unless smart_listing.empty?
+  .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+    %table.table-striped#inspections_accordion
+      %thead
+        %tr.data-table__selectable-row{:style=>"background-color:#666666;"}
+
+          %th.col-lg-1= smart_listing.sortable "ID", "id"
+          %th.col-lg-1{:style=>"color:white;"} Image
+          %th.col-lg-1{:style=>"color:white;"} Resource
+          %th.col-lg-1{:style=>"color:white;"} User
+          %th.col-lg-1{:style=>"color:white;"} Day
+          %th.col-lg-2{:style=>"color:white;"} Discussion
+          %th.col-lg-1{:style=>"color:white;"} Recorded at
+          %th.col-lg-1{:style=>"color:white;"} Map Location
+      %tbody
+        - smart_listing.collection.each do |object|
+          - user_inspection = object
+          - if user_inspection.inspected_entity.present?
+            - resource_name = user_inspection.inspected_entity.name.capitalize
+            - if user_inspection.inspected_entity.customer.present?
+              - if user_inspection.inspected_entity.customer.addresses.present?
+                - resource_lat = user_inspection.inspected_entity.customer.addresses.first.latitude
+                - resource_long = user_inspection.inspected_entity.customer.addresses.first.longitude
+                - resource_marker_address = user_inspection.inspected_entity.customer.addresses.first.delivery_address
+          - else
+            - resource_name = '-'
+          
+          - sales_man_lat = user_inspection.user.profile.latitude
+          - sales_man_long = user_inspection.user.profile.longitude
+
+          - if user_inspection.user.profile.present?  
+            - salesman_name = user_inspection.user.profile.firstname+" "+user_inspection.user.profile.lastname
+            - salesman_address = user_inspection.user.profile.address
+          - if user_inspection.discussion.present?
+            - user_inspection_discussion = user_inspection.discussion
+          - else
+            - if user_inspection.purpose.present?
+              - user_inspection_discussion = user_inspection.purpose
+            - else
+              - user_inspection_discussion = ''
+
+          
+          %tr.data-table__selectable-row.inspection_row{"aria-controls" => "inspections_collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#inspections_accordion", "data-toggle" => "collapse", :href => "#inspections_collapse_#{object.id}", :role => "button","data-user-inspection-lat"=>"#{user_inspection.latitude}","data-user-inspection-long"=>"#{user_inspection.longitude}","data-inspection-id"=>"#{user_inspection.id}","data-resource-lat"=>resource_lat,"data-resource-long"=>resource_long,"data-salesman-lat"=>sales_man_lat,"data-salesman-long"=>sales_man_long,"data-salesman-address"=>salesman_address,"data-resource-address"=>resource_marker_address,"data-resource-name"=>resource_name,"data-salesman-name"=>salesman_name,"data-user-inspection-discussion"=>user_inspection_discussion}
+
+            %td= object.id
+            %td
+              - if object.image.present?
+                =image_tag("#{object.image}", width: '60', :class => "img-thumbnail")
+              - else
+                = image_tag("icons/default_inspection.svg", width: '60', :class => "img-thumbnail")
+            %td= object.inspected_entity.name
+            %td
+              - if object.user.profile.present?  
+                = object.user.profile.firstname+" "+object.user.profile.lastname
+              - else
+                N/A
+            %td= object.day
+            %td= user_inspection_discussion
+            %td= object.recorded_at
+            %td
+              .margin-t-b-2
+                = image_tag "//maps.google.com/maps/api/staticmap?center=#{object.latitude},#{object.longitude}&zoom=10&size=150x80&markers=color:red%7Clabel:%7C#{object.latitude},#{object.longitude}&key=AIzaSyBDxCJM6vT9uP_ddJyvRh-5uqjPNKMqKQk"
+          %tr.collapse.data-table__selectable-row.collapsible-body.light-blue.lighten-5.data-table__selectable-row--is-selected{"aria-labelledby" => "inspections_heading#{user_inspection.id}", :role => "tabpanel", :id => "inspections_collapse_#{user_inspection.id}"}
+            %td{:colspan=>'8'}
+              %table{:width=>'100%'}
+                %tr
+                  %td.padding-l-none{:colspan=>'2'}
+                    .inspection_ques{:id=>"inspection_ques_#{user_inspection.id}"}
+                %tr
+                  %td.blue{:width=>'30%'}
+                    %h2.text-white.text-align-left{:style=>"font-weight:bold;"} Visit Details
+                    %br
+                    .smallstat.box
+                      / %span.float-l
+                      .col-lg-3
+                        = image_tag("icons/inspection_shop.svg", width: '55',:style=>"margin-left:-14px;")
+                      .col-lg-9
+                        %span.title.font-sz-15.text-align-left{:style=>"font-weight:bold;"}
+                          = user_inspection.inspected_entity.name.capitalize
+                        - if user_inspection.inspected_entity.customer.present?
+                          - if user_inspection.inspected_entity.customer.addresses.present?
+                            - resource_address = user_inspection.inspected_entity.customer.addresses.first.delivery_address
+                            %span.title.font-sz-12.text-align-left
+                              = resource_address
+                      .clearfix
+                    .smallstat.box
+                      / %span.float-l
+                      .col-lg-3
+                        = image_tag("icons/clerk.svg", width: '55',:style=>"margin-left:-14px;")
+                      .col-lg-9
+                        %span.title.font-sz-15.text-align-left{:style=>"font-weight:bold;"}
+                          = user_inspection.user.profile.firstname.capitalize+" "+user_inspection.user.profile.lastname.capitalize
+                        %span.title.font-sz-12.text-align-left
+                          = user_inspection.user.profile.address
+                      .clearfix
+                    .smallstat.box
+                      .col-lg-3
+                        / = image_tag("icons/clerk.svg", width: '55',:style=>"margin-left:-14px;")
+                        - if user_inspection.image.present?
+                          %a.thumbnail{"data-caption" => "#{user_inspection.inspected_entity.name.capitalize}", "data-image" => "#{user_inspection.image}", "data-image-id" => "", "data-target" => "#image-gallery", "data-title" => "#{user_inspection.inspected_entity.name.capitalize}", "data-toggle" => "modal", :href => "#", :style => "border: none !important; border-radius: 0 !important;"}
+                            %img{:alt => "#{user_inspection.inspected_entity.name.capitalize}", :src => "#{user_inspection.image}", width: '55', :style => "max-width: none !important; margin-left:-14px;"}
+                        - else 
+                          = image_tag("icons/default_inspection.svg", width: '55',:style=>"margin-left:-14px;")
+                      .col-lg-9
+                        %span.title.font-sz-15.text-align-left{:style=>"font-weight:bold;"}
+                          = "Discussion"
+                        %span.title.font-sz-12.text-align-left
+                          = user_inspection_discussion
+                      .clearfix
+                  %td{:width=>'70%'}
+                    .inspections_map{:style=> "width: 100%;height: 400px;", :id=>"inspections_map_#{user_inspection.id}"}
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No Records found

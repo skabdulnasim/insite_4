@@ -1,0 +1,87 @@
+<div id="DivIdToPrint">
+  <style>
+  html{
+    font-family: "Roboto", sans-serif;
+    color: rgba(0, 0, 0, 0.87);
+  }
+  .row {
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 20px
+  }
+
+  .row:after {
+      content: "";
+      display: table;
+      clear: both
+  }
+
+  .row .col.s5 {
+      width: 41.6666666667%;
+      margin-left: auto;
+      left: auto;
+      right: auto
+  }
+
+  .row .col.s7 {
+      width: 58.3333333333%;
+      margin-left: auto;
+      left: auto;
+      right: auto
+  }
+  .mt10 { margin-top: 10px !important; }
+  .p10 { padding: 10px !important; }
+  table {
+      width: 100%;
+      display: table
+  }
+
+  h6 {
+    font-size: 0.9rem;
+    /*line-height: 110%;*/
+    font-weight: 400;
+    /*margin: 0.5rem 0 0.4rem 0*/
+  }
+
+  /* stick the contents of .page-break to the bottom of the 10 inch block */
+  .page-break .copyright {
+    position: absolute;
+    bottom: 0px;
+  }
+  </style>
+  <div style="margin: 2px;">
+    <div class="row" style="margin: 0px; padding: 0px; border: 0px solid #ccc">
+      <div class="col s5" style="float: left; box-sizing: border-box; padding: 5px 0.15rem;">
+        <img src="<%=response.unit.unit_image%>" alt="<%=response.unit.unit_name%>" width='100'>       
+      </div>
+      <div class="col s7" style="float: left; box-sizing: border-box; padding: 0px; text-align: center; padding:0px;">
+        <p style="font-size: 16px; color: blue;font-weight: 500;">
+          <h3 style="margin: 4px 2px;"><%=response.unit.unit_name%></h3>
+          <h4 style="margin: 3px 2px; font-size: 12px; color: #000;">
+            <%=response.unit.address%>, <%=response.unit.landmark%>, <%=response.unit.state%>- <%=response.unit.pincode%><br>
+            Contact us: <%=response.unit.phone%>
+          <h4>  
+        </p>
+      </div>
+    </div>
+    <hr style="border-color:black; margin-top: 5px; margin-bottom: 5px;">
+    <div class="row" style="margin: 0px; padding: 5px;">
+      <div class="col s5" style="float: left; box-sizing: border-box;  padding: 0px;">
+        <p style="font-size: 16px; color:#000000">
+          <h4><%= response.reservation.resource_name%></h4>
+          <% for (var key in response.reservation.resource_properties) { %>
+            <%= response.reservation.resource_properties[key] %>.
+          <% } %>
+        </p>       
+      </div>
+      <div class="col s7" style="float: left; box-sizing: border-box; border-left:1px solid #000000; padding: 0px;">
+        <p style="font-size: 14px; color:#000000">
+          &nbsp;&nbsp;Customer Name: <%= response.reservation.customre_name%><br>
+          &nbsp;&nbsp;Age: <%= response.reservation.customer_age%><br>
+          &nbsp;&nbsp;Gender: <%= response.reservation.customer_gender%><br>
+        </p>
+      </div>
+    </div>
+  </div>  
+</div>
+<!-- <a href="#!" class="btn green print">Print</a> -->

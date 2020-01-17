@@ -1,0 +1,6 @@
+<select id="products" class="form-control">
+ <option value="">Select Product</option>
+<% for(var i=0; i<product_name_info.length; i++) { %>
+ <option value="<%= product_name_info[i].id %>"><%= product_name_info[i].name %></option>
+<%}%>
+</select>

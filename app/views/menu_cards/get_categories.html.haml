@@ -1,0 +1,9 @@
+= hidden_field_tag 'menu_card_id', params[:id]
+- if @category_type == 'all_category' || @category_type == 'root_category'
+  .page-container
+    = render "categories"
+- elsif @category_type == 'brand_name'
+  = render "by_brand_name"
+- elsif @category_type == 'brand_name_and_category'
+  .page-container
+    = render "by_brand_name_and_category"

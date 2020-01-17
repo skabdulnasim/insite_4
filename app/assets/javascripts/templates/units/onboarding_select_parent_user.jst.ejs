@@ -1,0 +1,6 @@
+  <select class="browser-default" id="parent_user_id" class="browser-default" name="user[parent_user_id]" required="required">
+	 	<option value="">Select Parent User</option>
+		<% for(var i=0; i<type_info.length; i++) { %>
+	 		<option value="<%= type_info[i].id %>"><%= type_info[i].firstname %> <%= type_info[i].lastname %></option>
+		<%}%>
+	</select>

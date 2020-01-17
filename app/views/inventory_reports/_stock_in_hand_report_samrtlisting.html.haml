@@ -1,0 +1,36 @@
+- unless smart_listing.empty?
+  %table.table.table-striped
+    %thead
+      %tr.data-table__selectable-row
+        %td
+        - @stores.each do |store|
+          %td{:colspan=>3, :style => "border-right: 1px solid #ccc; border-left: 1px solid #ccc"}= store.name
+      %tr.data-table__selectable-row
+        %td{:style => "border-right: 1px solid #ccc"} Products
+        - @stores.each do |store|
+          %td
+            Stock  
+            %br
+            credit 
+          %td
+            Stock
+            %br
+            debit  
+          %td{:style => "border-right: 1px solid #ccc"}
+            Current
+            %br
+            stock
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr.data-table__selectable-row
+          %td{:style => "border-right: 1px solid #ccc"}="#{object.name}" " -(#{object.basic_unit})"
+          - @stores.each do |store|
+            - stock_data = get_product_data(object.id,store.id,@from_datetime,@to_datetime)
+            %td= stock_data[:total_credit]   
+            %td= stock_data[:total_debit]  
+            %td{:style => "border-right: 1px solid #ccc"}= "#{stock_data[:current_stock]}" " (#{object.basic_unit})" 
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No records found!.          

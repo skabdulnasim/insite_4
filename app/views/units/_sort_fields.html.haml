@@ -1,0 +1,11 @@
+%section.card
+  .card-content.p5              
+    .row.m0
+      .input-field.col.s3.p0.mt1
+        = f.label :name                
+      .input-field.col.s8.p0.mt1
+        = f.text_field :name, :required=>true
+      .input-field.col.s1.mt1
+        = f.hidden_field :_destroy
+        %a.remove_fields.grey-text.tooltipped{:href=>"#", :title=>"Remove SORT"}
+          %i.material-icons.font-12.mt15 clear

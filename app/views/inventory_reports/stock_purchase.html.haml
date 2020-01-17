@@ -1,0 +1,42 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Stock purchase report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Filter
+          .data-table-header__actions
+            %a.export-purchase-report-pdf.m-btn.green.margin-l-5{:href=>"/inventory_reports/stock_purchase.pdf?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&store_id=#{@stores.first.id}", "data-store-id"=>"#{@stores.first.id}"}
+              %i.mdi-file-file-download.left
+              PDF
+            %a.export-purchase-report.m-btn.indigo.margin-l-5{:href=>"/inventory_reports/stock_purchase.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&store_id=#{@stores.first.id}", "data-store-id"=>"#{@stores.first.id}"}
+              %i.mdi-file-file-download.left
+              CSV   
+            = smart_listing_controls_for(:reports, {class: "form-inline float-l margin-l-30"}) do           
+              .form-group.from_date.input-append    
+                = hidden_field_tag :store_id, '', :value=>params[:store_id], class: "avaliable-store-id"      
+                = hidden_field_tag :from_date, '', :value=>params[:from_date], class: "avaliable-storename-from-date"   
+                = hidden_field_tag :to_date, '', :value=>params[:to_date], class: "avaliable-storename-to-date"     
+                / = select_tag "vendor_id", options_from_collection_for_select(@vendors, "id", "name"),class: "form-control avaliable-vendor", prompt: 'Select Vendor'  
+                .filter.input-append
+                  .input-group
+                    %input.form-control.search.avaliable-vendor{:placeholder => "Search vendors...", :type => "text", :name=> "vendor_name_filter"}
+                      %span.input-group-btn
+                        %button.btn.btn-primary.disabled{:type => "submit" }
+                          %span.glyphicon.glyphicon-search  
+
+        = smart_listing_render :reports

@@ -1,0 +1,45 @@
+%p#notice= notice
+
+%p
+  %b Discount:
+  = @proforma.discount
+%p
+  %b Grand total:
+  = @proforma.grand_total
+%p
+  %b Proforma amount:
+  = @proforma.proforma_amount
+%p
+  %b Recorded at:
+  = @proforma.recorded_at
+%p
+  %b Remarks:
+  = @proforma.remarks
+%p
+  %b Tax amount:
+  = @proforma.tax_amount
+%p
+  %b Roundoff:
+  = @proforma.roundoff
+%p
+  %b Serial no:
+  = @proforma.serial_no
+%p
+  %b Status:
+  = @proforma.status
+%p
+  %b Unit:
+  = @proforma.unit_id
+%p
+  %b Device:
+  = @proforma.device_id
+%p
+  %b Customer:
+  = @proforma.customer_id
+%p
+  %b User:
+  = @proforma.user_id
+
+= link_to 'Edit', edit_proforma_path(@proforma)
+\|
+= link_to 'Back', proformas_path

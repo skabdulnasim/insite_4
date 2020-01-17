@@ -1,0 +1,179 @@
+- manual_load_javascript "stores"  
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"New stock audit",:url=>new_store_stock_audit_path(@store),:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)            
+= render "layouts/flash"
+- reason_codes = get_reason_codes("StockAudit","new")
+
+=render 'stock_audit_steps/wizard', current_step: "step_2", completed_steps: []
+= form_for(@stock_audit_meta,url:wizard_path,multipart: true) do
+  %input{:type=>"hidden", :name=>"business_type", :value=>@business_type}
+  -if @business_type == "by_catalog"
+    - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+      .main-section__content
+        .example
+          .example__content.p0
+            .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+              %header.data-table-header
+                .data-table-header__label
+                  %span.fs-title Confirm Audit
+                .data-table-header__actions
+                  %button.m-btn.green.waves-effect.waves-light{:type => "submit"}
+                    Submit this audit for approval
+                    %i.mdi-content-send.right
+              %table.table
+                %thead
+                  %tr.data-table__selectable-row
+                    %th.col-lg-2 PRODUCT
+                    - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+                      %th.col-lg-3 PRODUCT DETAILS
+                    %th.col-lg-3 COUNTED STOCK
+                    %th.col-lg-4 REMARKS
+                %tbody.data-table__selectable-row
+                  %tbody
+                    - @stock_audit_meta.each do |sp|
+                      /=debug sp
+
+                      - params_key = AppConfiguration.get_config_value('stock_identity') == 'enabled' ? sp.stock_id : sp.product_id
+                      %input{:type=>"hidden", :name=>"audit_meta_ids[]", :value=>sp.id}
+                      %tr.data-table__selectable-row
+                        %td
+                          =sp.product.name
+                          - if sp.product.local_name.present?
+                            %b
+                              = " ( #{sp.product.local_name} )"
+                          %br
+                          %small="ID: #{sp.product_id}"
+                          %br
+                          %small="SKU: #{sp.sku}"
+                          - if AppConfiguration.get_config_value('stock_identity') == 'enabled'
+                            %br
+                            %small="Stock Identity: #{sp.stock_identity}"
+                        - if AppConfiguration.get_config_value('barcode_on_catalog_product') == 'enabled'
+                          %td
+                            %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}  
+                              color:
+                              %span{:style=>"font-weight:normal !important"}= sp.color_id.present? ? sp.color.name : '-'
+                            %br
+                            %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}  
+                              size:
+                              %span{:style=>"font-weight:normal !important"}= sp.size_id.present? ? sp.size.name : '-'
+                            %br
+                            %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}  
+                              sale price:
+                              %span{:style=>"font-weight:normal !important"}= sp.sell_price_with_tax.present? ? sp.sell_price_with_tax : '-'
+                            %br
+                            %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}
+                              batch no:
+                              %span{:style=>"font-weight:normal !important"}= sp.batch_no.present? ? sp.batch_no : '-'
+                            %br
+                            %span{:style=>"font-family:Courier;font-size:10px;font-weight:bold"}
+                              model no:
+                              %span{:style=>"font-weight:normal !important"}= sp.model_no.present? ? sp.model_no : '-'
+                        %td
+                          .input-group
+                            %input.form-control{:name => "quantity_#{sp.id}", :required=>true, :value=>sp.counted_stock, :type=>"text"}
+                            .input-group-addon=sp.product.basic_unit
+                        %td.m-input
+                          - if reason_codes.present?
+                            = select_tag "reason_for_#{sp.id}",options_from_collection_for_select(reason_codes,:code,:reason),class: "form-control reason_select", prompt:"Select Reason","data-meta-id"=>"#{sp.id}"
+                            %input{:type=>"hidden", :name=>"remarks_#{sp.id}",:id=>"remark_#{sp.id}"}
+                          - else
+                            %p.warning Please create Reason Code to provide remark
+                          / .input-field
+                          /   %i.mdi-editor-mode-edit.prefix
+                          /   %textarea.materialize-textarea{:name => "remarks_#{params_key}",:id => "remarks_#{params_key}",:placeholder=>"Please provide some reasons or remarks for the stock audit of #{sp[:product].name}", :required=>false}                      
+    -else
+      .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Confirm Audit
+              .data-table-header__actions
+                %button.m-btn.green.waves-effect.waves-light{:type => "submit"}
+                  Submit this audit for approval
+                  %i.mdi-content-send.right
+            %table.table
+              %thead
+                %tr.data-table__selectable-row
+                  %th.col-lg-2 PRODUCT
+                  %th.col-lg-3 COUNTED STOCK
+                  %th.col-lg-6 REMARKS
+              %tbody.data-table__selectable-row
+                %tbody
+                  - @stock_audit_meta.each do |sp|
+                    %input{:type=>"hidden", :name=>"audit_meta_ids[]", :value=>sp.id}
+
+                    %tr.data-table__selectable-row
+                      %td
+                        =sp.product.name
+                        - if sp.product.local_name.present?
+                          %b
+                            = " ( #{sp.product.local_name} )"
+                        %br
+                        %small="ID: #{sp.product_id}"
+                        - if AppConfiguration.get_config_value('stock_identity') == 'enabled'
+                          %br
+                          %small="Stock Identity: #{sp.stock_identity}"
+                      %td
+                        .input-group
+                          %input.form-control{:name => "quantity_#{sp.id}", :required=>true, :value=>sp.counted_stock, :type=>"text"}
+                          .input-group-addon=sp.product.basic_unit
+                      %td.m-input
+                        - if reason_codes.present?
+                          = select_tag "reason_for_#{sp.id}",options_from_collection_for_select(reason_codes,:code,:reason),class: "form-control reason_select", prompt:"Select reason","data-meta-id"=>"#{sp.id}"
+
+                          %input{:type=>"hidden", :name=>"remarks_#{sp.id}",:id=>"remark_#{sp.id}"}
+                        - else
+                          %p.warning Please create Reason Code to provide remark
+                        / .input-field
+                        /   %i.mdi-editor-mode-edit.prefix
+                        /   %textarea.materialize-textarea{:name => "remarks_#{sp[:product].id}",:id => "remarks_#{sp[:product].id}",:placeholder=>"Please provide some reasons or remarks for the stock audit of #{sp[:product].name}", :required=>false}
+  - else
+    - puts "hello there from the  from"
+    .main-section__content
+      .example
+        .example__content.p0
+          .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+            %header.data-table-header
+              .data-table-header__label
+                %span.fs-title Confirm Audit
+              .data-table-header__actions
+                %button.m-btn.green.waves-effect.waves-light{:type => "submit"}
+                  Submit this audit for approval
+                  %i.mdi-content-send.right
+            %table.table
+              %thead
+                %tr.data-table__selectable-row
+                  %th.col-lg-2 PRODUCT
+                  %th.col-lg-3 COUNTED STOCK
+                  %th.col-lg-6 REMARKS
+              %tbody.data-table__selectable-row
+                %tbody
+                  - @stock_audit_meta.each do |sp|
+                    %input{:type=>"hidden", :name=>"audit_meta_ids[]", :value=>sp.id}
+                    %tr.data-table__selectable-row
+                      %td
+                        =sp.product.name
+                        %br
+                        %small="ID: #{sp.product_id}"
+                        %br
+                        %small="SKU: #{sp.sku}"
+                      %td
+                        .input-group
+                          %input.form-control{:name => "quantity_#{sp.id}", :required=>true, :value=>sp.counted_stock, :type=>"text"}
+                          .input-group-addon=sp.product.basic_unit
+                      %td.m-input
+                        - if reason_codes.present?
+                          = select_tag "reason_for_#{sp.id}",options_from_collection_for_select(reason_codes,:code,:reason),class: "form-control reason_select", prompt:"Select reason","data-meta-id"=>"#{sp.id}"
+
+                          %input{:type=>"hidden", :name=>"remarks_#{sp.id}",:id=>"remark_#{sp.id}"}
+                        - else
+                          %p.warning Please create Reason Code to provide remark
+                        
+                        / .input-field
+                        /   %i.mdi-editor-mode-edit.prefix
+                        /   %textarea.materialize-textarea{:name => "remarks_#{sp[:stock].id}",:id => "remarks_#{sp[:stock].id}",:placeholder=>"Please provide some reasons or remarks for the stock audit of #{sp[:stock].product.name}", :required=>true}                                                
+
+        

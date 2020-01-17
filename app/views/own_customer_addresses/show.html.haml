@@ -1,0 +1,27 @@
+%p#notice= notice
+
+%p
+  %b Contact no:
+  = @own_customer_address.contact_no
+%p
+  %b Pincode:
+  = @own_customer_address.pincode
+%p
+  %b Landmark:
+  = @own_customer_address.landmark
+%p
+  %b City:
+  = @own_customer_address.city
+%p
+  %b State:
+  = @own_customer_address.state
+%p
+  %b Latitude:
+  = @own_customer_address.latitude
+%p
+  %b Longitude:
+  = @own_customer_address.longitude
+
+= link_to 'Edit', edit_own_customer_address_path(@own_customer_address)
+\|
+= link_to 'Back', own_customer_addresses_path

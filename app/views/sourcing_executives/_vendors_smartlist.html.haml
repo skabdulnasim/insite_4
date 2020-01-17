@@ -1,0 +1,12 @@
+- unless smart_listing.empty?
+	#wrap
+		#external-events
+			#external-events-listing
+				%h4 Vendors
+				- smart_listing.collection.each do |vendor|
+					.fc-event{"data-id" => vendor.id} 
+						=vendor.name   
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	%p.warning No records!                  

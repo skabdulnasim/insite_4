@@ -1,0 +1,37 @@
+%h1 Listing return_policies
+
+%table
+  %tr
+    %th Return allowed
+    %th Policy
+    %th Return alowed on order state
+    %th Is delivery charge refandable
+    %th Unit
+    %th Return allowed after deliverable
+    %th Return charge type
+    %th Return charge
+    %th Is delivery charge refandable
+    %th Is refundable
+    %th
+    %th
+    %th
+
+  - @return_policies.each do |return_policy|
+    %tr
+      %td= return_policy.return_allowed
+      %td= return_policy.policy
+      %td= return_policy.return_alowed_on_order_state
+      %td= return_policy.is_delivery_charge_refandable
+      %td= return_policy.unit_id
+      %td= return_policy.return_allowed_after_deliverable
+      %td= return_policy.return_charge_type
+      %td= return_policy.return_charge
+      %td= return_policy.is_delivery_charge_refandable
+      %td= return_policy.is_refundable
+      %td= link_to 'Show', return_policy
+      %td= link_to 'Edit', edit_return_policy_path(return_policy)
+      %td= link_to 'Destroy', return_policy, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Return policy', new_return_policy_path

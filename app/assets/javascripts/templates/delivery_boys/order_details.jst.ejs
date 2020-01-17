@@ -1,0 +1,10 @@
+<div class="panel-heading"><b>Items</b>&nbsp;&nbsp;<% if(status !=""){ %>(<b><%= status %></b>)<% } %></div>
+<div class="panel-body">
+  <ul>
+      <% for(var i=0; i<products.length; i++) { %>
+        <li><%= products[i].name %></li>
+      <% } %>  
+    </ul>
+</div>
+
+

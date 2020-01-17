@@ -1,0 +1,35 @@
+:css
+  .circle {
+    height: 50px;
+    width: 50px;
+    border-radius: 100%;
+  }
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Tag Groups
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_tag_group_path}"}
+              %i.mdi-content-add.left
+              New Tag Group
+        %table.data-table    
+          %tr
+            %th.col-lg-4 
+              %strong Tag Group Name
+            %th.col-lg-2 
+              %strong Action
+          - @tag_groups.each do |object|
+            %tr
+              %td.col-lg-2= object.name
+              %td.col-lg-4
+                %a.m-btn.green.m-btn-low-padding{:href => "#{tag_group_path(object)}", :title => "View Tag"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_tag_group_path(object)}", :title => "Edit Tag"} 
+                  %i.mdi-editor-border-color
+                %a.m-btn.red.m-btn-low-padding{:title => "Remove Tag",:href => "#{tag_group_path(object)}",:method => :delete,:method => :delete, :data => { :confirm => 'Are you sure?' } }
+                  %i.mdi-action-delete
+

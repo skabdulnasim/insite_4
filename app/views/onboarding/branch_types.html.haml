@@ -1,0 +1,47 @@
+.row.m0
+  .col.l7.s12
+    %h4.black-text.mb20
+      = image_tag("logo_insites.png", :height => "30px")    
+    .p20-50
+      %h4.font-weight-200 Define your organization structure
+      .min-height-300
+        %p.grey-text.font-12.font-weight-300
+          We have created few branch types/nodes of your organization based on the mode of business you selected on earlier step. You can drag them to rearrange their position based on hierarchy.            
+        .row.mt20
+          .col.l5.s12
+            = link_to "Add a branch type ...", new_unittype_path, :id=>"new_branch_type_link", remote: true        
+          .col.l7.s12
+            #unittypes{"data-update-url"=> sort_unittypes_url}
+              = render :partial => "unittypes/unittype", :collection => @branch_types, :as => "unittype"
+      .center.mt30
+        %a.btn-large.blue.waves-effect.waves-light{:href=>previous_wizard_path}
+          Previous
+          %i.left.material-icons keyboard_arrow_left
+        %a.btn-large.blue.waves-effect.waves-light{:href=>next_wizard_path}
+          Next
+          %i.right.material-icons keyboard_arrow_right
+  .col.l5.s12.indigo.right-sidebar.hide-on-med-and-down
+    = render 'progress'
+    .row
+      = image_tag("branch_types_banner.png", class: "right")
+:css
+  .circular-progress svg:nth-child(2) path {
+    stroke: rgba(121, 134, 203, 1);
+  }
+#branch_type_edit_modal.modal
+  .modal-content
+    %h5.font-weight-300 Edit
+    .row
+      .col.l9
+        #unittype_edit_container
+      .col.l3
+        %h6.grey-text.font-weight-700 Actions
+        #unittype_action_container
+
+  .modal-footer
+    %a.modal-action.modal-close.waves-effect.waves-green.btn-flat{:href => "#!"} Close    
+
+
+
+
+    

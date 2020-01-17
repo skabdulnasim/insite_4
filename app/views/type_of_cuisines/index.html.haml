@@ -1,0 +1,19 @@
+%h1 Listing type_of_cuisines
+
+%table
+  %tr
+    %th Name
+    %th
+    %th
+    %th
+
+  - @type_of_cuisines.each do |type_of_cuisine|
+    %tr
+      %td= type_of_cuisine.name
+      %td= link_to 'Show', type_of_cuisine
+      %td= link_to 'Edit', edit_type_of_cuisine_path(type_of_cuisine)
+      %td= link_to 'Destroy', type_of_cuisine, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Type of cuisine', new_type_of_cuisine_path

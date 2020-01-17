@@ -1,0 +1,49 @@
+- manual_load_javascript "templates/resources/menu_card_options_dropdown", "templates/resources/resource_options_dropdown", "templates/resources/menu_product_options_dropdown"
+= form_for @resource, :html => { :class => ''} do |f|
+  = f.hidden_field :resource_type_id
+  = f.hidden_field :unit_id
+  .padding-10 
+    .form-group
+      = f.text_field :name, :class => 'form-control', :placeholder => "Resource Name", :required=>true
+    .form-group
+      = f.text_field :unique_identity_no, :class => 'form-control', :placeholder => "Unique Identity No"
+    .form-group
+      = f.text_field :capacity, :class => 'form-control allow-numeric-only', :placeholder => "Resource capacity", :required=>true
+    .form-group
+      = f.text_field :price, :class => 'form-control allow-numeric-only', :placeholder => "Resource price", :required=>true   
+
+    .form-group
+      = f.select :printer_id, options_for_select(current_user.unit.printers.map{ |printer| [printer.name, printer.id] },@resource.printer_id), { include_blank: "Select printer"}, :class => 'form-control'
+
+    .form-group
+      = f.select :section_id, options_for_select(@sections.map{ |sec| [sec.name, sec.id] },@resource.section_id), { include_blank: "Select Section"}, :id => 'resource_section_id', :class => 'form-control',:required => true
+    .form-group
+      = f.select :parent_resource_id, options_for_select(@resources.get_root_resources.map{ |rs| [rs.name, rs.id] },@resource.parent_resource_id), { include_blank: "Select parent resource"}, :class => 'form-control',:required => false 
+    .form-group
+      = f.select :menu_card_id, options_for_select(@menu_cards.present? ? @menu_cards.map{ |mnu| [mnu.name, mnu.id] } : "",@resource.menu_card_id), { include_blank: "Select menu card"}, :id => 'resource_menu_card_id', :class => 'form-control'
+    #resource_mp.form-group
+      = f.select :menu_product_id, '', { include_blank: "Select menu product"}, :id => 'resource_menu_product_id', :class => 'form-control'
+    .form-group
+      = f.select :customer_id, options_for_select(@customers.map{ |cus| ["#{cus.customer_profile.firstname}"" #{cus.customer_profile.lastname}"" (#{cus.mobile_no})", cus.id] },@resource.customer_id), { include_blank: "Select Customer"}, :class => 'form-control'
+    .form-group
+      = f.select :resource_state_id, options_for_select(@resource_states.map{ |ut| [ut.name, ut.id] },@resource.resource_state_id), { include_blank: "Select resource state"}, :class => 'form-control',:required => true  
+    .form-group
+      = f.hidden_field :unit_id, :class => 'form-control',:required => true, :value => current_user.unit_id  
+    .form-group
+      = f.select :status, options_for_select({"Enabled" => "enabled","Disabled" => "disabled" },@resource.status), { include_blank: "Select resource status"}, {:class => "form-control", :required=> true}  
+    .form-group
+      = f.file_field :resource_image, :class => "form-control"
+    .form-group
+      = f.fields_for :properties, OpenStruct.new(@resource.properties) do |builder|
+        - @resource.resource_type.fields.each do |field|
+          = render "resources/fields/#{field.field_type}", field: field, f: builder
+    .form-group
+      = f.fields_for :beneficiaries do |builder|
+        = render 'beneficiary_fields', f:builder
+      = link_to_add_fields "Add beneficiary", f, :beneficiaries, {}, 'm-btn green margin-l-15 add_beneficiaries'
+    %br
+    .form-group
+      .col-sm-8
+        = f.submit 'Save resource', :class => 'm-btn green width-100' 
+
+

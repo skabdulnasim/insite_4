@@ -1,0 +1,14 @@
+= render "layouts/flash"
+- links_arr = [{:title=>"All Resources",:url=>resources_path,:active_class=>""},{:title=>"Add new Resources",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+.col-lg-6.col-sm-6.padding-5
+	.main-section__content
+		.example
+			.example__content.p0
+				.data-table-container
+					.data-table-header
+						.data-table-header__label
+							%span.fs-title New Resource
+					%br
+					.data-table
+						= render 'form'

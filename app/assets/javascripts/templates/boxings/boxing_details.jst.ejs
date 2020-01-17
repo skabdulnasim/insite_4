@@ -1,0 +1,55 @@
+<div class="col-lg-7">
+  <h5>Boxing ID: <%= data.id%></h5>
+</div>
+<div class="col-lg-5">
+  <h5 class="float-r">Date: <%= data.created_at%></h5>
+</div>
+<br>
+<input type="hidden" name="primary_store_id" value="<%=data.store_id%>">
+<input type="hidden" name="business_type" value="by_catalog">
+<input type="hidden" name="boxing_id" value="<%=data.id%>">
+<table class="table table-bordered table-hover table-striped">
+  <thead>
+    <tr>
+      
+      <th><input class="checkbox-parent-toggle filled-in" id="checkbox-parent-toggle" type="checkbox" checked><label for="checkbox-parent-toggle">Box</label></th>
+      
+      <th>SKU</th>
+      <th>No. of Products</th>
+      <th>Status</th>   
+    </tr>
+  </thead>
+  <tbody>
+    <% for (var i = 0; i < data.boxes.length; i++) { %>
+      <tr>
+        <td><input type="checkbox" class="parentCheckBox" id="box_<%= data.boxes[i].id %>"  name="checked_raw[]" value="<%= data.boxes[i].product_id%>" checked> <label for="box_<%= data.boxes[i].id %>"><%= data.boxes[i].box_product_name %></label></td>
+        <td><%= data.boxes[i].sku %></td>
+        <td>N/A</td>
+        <td><span class="badge green">READY</span></td>
+        <input type="hidden" value=1 name="quantity<%= data.boxes[i].product_id%>">
+        <input type="hidden" value=<%= data.boxes[i].sku %> name="sku<%= data.boxes[i].product_id %>">
+      </tr>
+      <% for (var j = 0; j < data.boxes[i].box_items.length; j++) { %>
+        <tr>
+          <td>
+            &nbsp; &nbsp; &nbsp; &nbsp;
+            <input type="checkbox" class="childCheckBox" id="box_item_<%= data.boxes[i].box_items[j].id %>" name="checked_raw[]" value="<%= data.boxes[i].box_items[j].product_id%>" checked> <label for="box_item_<%= data.boxes[i].box_items[j].id %>"><%= data.boxes[i].box_items[j].box_item_name %></label></td>
+          <td><%= data.boxes[i].box_items[j].sku %></td>
+          <td><%= data.boxes[i].box_items[j].qty%>  <span><%= data.boxes[i].box_items[j].product_basic_unit%></span></td>
+          <td><span class="badge green">READY</span></td>
+          <input type="hidden" value="<%= data.boxes[i].box_items[j].qty%>" name="quantity<%= data.boxes[i].box_items[j].product_id%>">
+          <input type="hidden" value=<%= data.boxes[i].box_items[j].sku %> name="sku<%= data.boxes[i].box_items[j].product_id %>">
+        </tr>
+      <% } %>
+    <% } %>
+  </tbody>
+</table>
+<div class="modal-footer" style="clear:both">
+  <div class="form-group">
+    <div class="col-sm-offset-5 col-sm-7">
+      <button class="m-btn" data-dismiss="modal" type="button">Close</button>
+      <button class="m-btn green transfer-boxing-btn" type="submit" disabled><i class="mdi-content-send left"></i>Transfer boxing products</button> 
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,12 @@
+%ul
+  - subgroups.each do |sub|
+    %li
+      = link_to sub.name, sub, :class => 'btn btn-primary btn-mini active view', "data-toggle" => "tooltip"
+      %span{:href => "", :class=> "plus", :id=> "#{sub.id}~#{sub.name}", "data-toggle" => "tooltip", "data-target" => "#creat_cat_modal", "data-toggle" => "modal"}
+        %i.fa.fa-plus-square.fa-lg
+      = link_to image_tag( 'delete.gif'), sub, :class => "delete", "data-toggle" => "tooltip", :method => 'delete', data: { confirm: 'All the sub categroies of this group will be deleted. Still want to delete?' }
+      = link_to image_tag( 'edit.png'), edit_group_path(sub), :class => "edit", "data-toggle" => "tooltip"
+      
+      = form_for @group, :html => { :class => 'form-inline'} do |f| 
+        %div{:id=> "dyn_form#{sub.id}" }       
+      = render partial: 'subgroup_li', locals: {subgroups: sub.subgroups} if sub.subgroups.present?

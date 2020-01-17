@@ -1,0 +1,41 @@
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Vendor payment report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+- if @vendor_products.present? 
+	.main-section__content
+		.example
+			.example__content.p0.min-height-405
+				.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+					%header.data-table-header
+						.data-table-header__label
+						.data-table-header__actions
+							%a.export-issue-report.m-btn.indigo.margin-l-5{:href=>"/inventory_reports/vendor_products.csv?product_id=#{params[:product_id]}"}
+								%i.mdi-file-file-download.left
+								CSV
+					%table.data-table
+						%thead
+							%tr
+								%th 
+									%strong Sl No
+								%th 
+									%strong Product Name
+								%th 
+									%strong Vendor Name
+								%th 
+									%strong Product Price
+							%tbody
+								- sl = 1
+								- @vendor_products.each do |vendor_product|
+									%tr
+										%td
+											
+											= sl
+										%td
+											= vendor_product.product.name
+										%td
+											= vendor_product.vendor.name
+										%td
+											= vendor_product.price
+									- sl=sl+1
+- else
+	%p.warning no record found

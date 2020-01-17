@@ -1,0 +1,36 @@
+= link_to 'New Cash In', new_cash_in_path
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Listing Cash In 
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_cash_in_path}"}
+              %i.mdi-content-add.left
+              Add new Cash In              
+        %table.data-table    
+          %tr
+            %th User Id
+            %th Unit Id
+            %th Amount
+            %th Reason
+            
+            %th Actions
+
+          - @cash_ins.each do |cash_in|
+            %tr
+              %td= cash_in.user_id
+              %td= cash_in.unit_id
+              %td= cash_in.amount
+              %td= cash_in.reason
+              
+              %td
+                %a.m-btn.green.m-btn-low-padding{:href => "#{cash_in_path(cash_in)}", :title => "View Cash In"}
+                  %i.mdi-action-visibility
+                %a.m-btn.orange.m-btn-low-padding{:href => "#{edit_cash_in_path(cash_in)}", :title => "Edit Cash In"} 
+                  %i.mdi-editor-border-color
+                %a.m-btn.red.m-btn-low-padding{:href => "#{cash_in_path(cash_in)}",:method => :delete, :data => { :confirm => t('.confirm', :default => t("helpers.links.confirm", :default => 'Are you sure?')) }, :title => "Delete Cash In"}
+                  %i.mdi-action-delete

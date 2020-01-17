@@ -1,0 +1,16 @@
+.card
+  .padding-5
+    %b FILTER BY
+  = smart_listing_controls_for(:thirdparty_callback, {class: "text-left"}) do
+    .filter-title.margin-t-b-0 
+      %i.mdi-action-list.left{:style=>"margin-right: 5px;"}
+      Callback Type          
+    .padding-5{:style => "overflow-y: scroll; position: sticky; height: 500px;"}
+      %ul{:style => "list-style:none; padding:0px;"}
+        - _dist_callback_type = ThirdpartyCallback.select("DISTINCT callback_type")
+        -_dist_callback_type.each do |ct|
+          %li
+            .checkbox
+              = radio_button_tag "callback_type", "#{ct.callback_type}", false,{ :id => "callback_type_#{ct.callback_type}", :class=>"filled-in"}
+              %label.checkbox.inline.margin-l-5.font-sz-12{:for=>"callback_type_#{ct.callback_type}", :style=>"padding-left:30px;"}= "#{ct.callback_type.humanize}" 
+  

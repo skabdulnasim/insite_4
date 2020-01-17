@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @table.name
+%p
+  %b Shape:
+  = @table.table_shape
+%p
+  %b Capacity:
+  = @table.capacity
+%p
+  %b Type:
+  = @table.table_type
+%p
+  %b Unit:
+  = @table.unit_id
+
+= link_to 'Edit', edit_table_path(@table)
+\|
+= link_to 'Back', tables_path

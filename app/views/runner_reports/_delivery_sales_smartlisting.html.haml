@@ -1,0 +1,53 @@
+- unless smart_listing.empty?
+	%table.data-table#accordion
+		%tr{:style=>"background:#ddd;"}
+			%th.col-lg-3 Delivery Boy
+			%th.col-lg-1 Order Id
+			%th.col-lg-3 Customer Name
+			%th.col-lg-3 Address
+			%th.col-lg-1 Delivery Date
+			%th.col-lg-1 Order status
+		- smart_listing.collection.each do |object|
+			%tr.data-table__selectable-row{"aria-controls" => "collapse_#{object.id}", "aria-expanded" => "false", "data-parent" => "#accordion", "data-toggle" => "collapse", :href => "#collapse_#{object.id}", :role => "button", :class=>"order_collapse_#{object.id}"}
+				%td.col-lg-3
+					%i.fa.fa-bicycle
+					= object.delivery_boy.name
+				%td.col-lg-1= object.id
+				%td.col-lg-3
+					- if object.customer.present?
+						- if object.customer.customer_profile.present?
+							%i.fa.fa-user
+							= "#{object.customer.customer_profile.firstname} #{object.customer.customer_profile.lastname}"
+						- else
+							= '-'
+					- else
+						= '-'
+				%td.col-lg-3
+					%i.fa.fa-map-marker
+					= object.deliverable.delivery_address
+				%td.col-lg-1
+					%i.fa.fa-calendar
+					= object.delivary_date.strftime("%Y-%m-%d")
+				%td.col-lg-1= object.order_status.name
+			%tr.collapse.data-table__selectable-row.data-table__selectable-row--is-selected{"aria-labelledby" => "heading#{object.id}", :role => "tabpanel", :id => "collapse_#{object.id}"}
+				- if object.order_details.present?
+					%td{:colspan=>6}
+						%table.data-table
+							- object.order_details.each do |o_d|
+								%tr
+									%td.col-lg-2
+									%td.col-lg-4
+										%i.material-icons.font-14{:style=>"border:1px solid black;border-radius:5px;margin-right:5px;"} local_parking
+										= o_d.product_name
+									%td.col-lg-2
+										%i.fa.fa-balance-scale.font-14
+										= "#{o_d.quantity} #{o_d.product.basic_unit}"
+									%td.col-lg-2
+										= o_d.trash == 1 ? 'Cancelled' : 'Approved'
+									%td.col-lg-2
+	
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		No orders found

@@ -1,0 +1,20 @@
+= form_for setup_customer(@customer), :html => {"data-remote" => "true"} do |f|
+  .row
+    .col.s12
+      = f.fields_for :customer_profile do |cp_builder|
+        .row.m0
+          .input-field.col.s3.offset-s1
+            = cp_builder.label :customer_name, "Name"
+          .input-field.col.s6.m0
+            = cp_builder.text_field :customer_name, :autofocus => true, :required => true, :placeholder => "Full Name"
+      .row.m0
+        .input-field.col.s3.offset-s1
+          = f.label :mobile_no, "Mobile No"
+        .input-field.col.s6.m0
+          = f.text_field :mobile_no, :required => true, :placeholder => "Mobile No"
+      = f.fields_for :addresses do |ca_builder|
+        = render 'address_fields', f: ca_builder
+      = link_to_add_fields 'Add New Address', f, :addresses, {}, 'grey-text col s6 offset-s4'
+      .row.m0
+        .input-field.col.s6.offset-s4
+          = f.submit :save, :class => 'btn theme-green'

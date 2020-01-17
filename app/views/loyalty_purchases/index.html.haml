@@ -1,0 +1,25 @@
+%h1 Listing loyalty_purchases
+
+%table
+  %tr
+    %th Loyalty card
+    %th Point purchase
+    %th Purchase cose
+    %th Purchase type
+    %th
+    %th
+    %th
+
+  - @loyalty_purchases.each do |loyalty_purchase|
+    %tr
+      %td= loyalty_purchase.loyalty_card
+      %td= loyalty_purchase.point_purchase
+      %td= loyalty_purchase.purchase_cost
+      %td= loyalty_purchase.purchase_type
+      %td= link_to 'Show', loyalty_purchase
+      %td= link_to 'Edit', edit_loyalty_purchase_path(loyalty_purchase)
+      %td= link_to 'Destroy', loyalty_purchase, :method => :delete, :data => { :confirm => 'Are you sure?' }
+
+%br
+
+= link_to 'New Loyalty purchase', new_loyalty_purchase_path

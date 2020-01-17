@@ -1,0 +1,16 @@
+- links_arr = [{:title=>"Settlement Reports",:url=>settlement_reports_path,:active_class=>""},{:title=>"Card Report By Date",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+= render "layouts/flash"
+
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title=" Card Wise Report Between #{params[:from_date]} to #{params[:to_date]}" 
+          .data-table-header__actions
+            %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/settlement_reports/card_wise.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+        = smart_listing_render :sales_card_wise

@@ -1,0 +1,11 @@
+.tabcontrol.wizard.clearfix
+  .steps.clearfix
+    %ul{:role => "tablist"}
+      %li{"aria-disabled" => "false", "aria-selected" => "false", :role => "tab", :class=> "#{current_step=='step_1' ? 'current' : ''} #{(completed_steps.include? 'step_1') ? 'done' : ''}"}
+        %a{:href => "#!"}
+          %span.number 1
+          %span.title Initiate PO
+      %li.last{"aria-disabled" => "false", "aria-selected" => "true", :role => "tab", :class=> "#{current_step=='step_2' ? 'current' : ''} #{(completed_steps.include? 'step_2') ? 'done' : ''}"}
+        %a{:href => "#!"}
+          %span.number 2
+          %span.title Confirm PO

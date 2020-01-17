@@ -1,0 +1,4 @@
+.form-group
+  = f.label "#{field.label} #{field.is_required ? '*' : ''}", :class=>"col-sm-3 control-label"
+  .col-sm-3
+    = f.select :value, options_for_select(field.options.map { |e| [e.label, e.value] },@product.public_send(field.attribute_code)), { include_blank: "-- Choose Option --"}, {:class => "form-control", :required => field.is_required }

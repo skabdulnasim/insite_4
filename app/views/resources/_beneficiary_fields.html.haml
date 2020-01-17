@@ -1,0 +1,22 @@
+.col-sm-6
+	%h4 Beneficiary
+	.form-group
+		= f.label 'name', :class => 'col-sm-2 control-label'
+		.col-sm-8
+			= f.text_field :name, :required => true, :autofocus => true, :placeholder => "Enter Name", :class => 'form-control', autocomplete: 'off'
+	.form-group
+		= f.label 'bank_name', :class => 'col-sm-2 control-label'
+		.col-sm-8
+			= f.text_field :bank_name, :required => true, :autofocus => true, :placeholder => "Enter Name", :class => 'form-control', autocomplete: 'off'
+	.form-group
+		= f.label 'account_number', :class => 'col-sm-2 control-label'
+		.col-sm-8
+			= f.text_field :account_number, :required => true, :autofocus => true, :placeholder => "Enter Name", :class => 'form-control', autocomplete: 'off'
+	.form-group
+		= f.label 'ifsc', :class => 'col-sm-2 control-label'
+		.col-sm-8
+			= f.text_field :ifsc, :required => true, :autofocus => true, :placeholder => "Enter Name", :class => 'form-control', autocomplete: 'off'
+	.form-group
+		= f.label 'payment_mode', :class => 'col-sm-2 control-label'
+		.col-sm-8
+			= f.text_field :payment_mode, :required => true, :autofocus => true, :placeholder => "Enter Name", :class => 'form-control', autocomplete: 'off'

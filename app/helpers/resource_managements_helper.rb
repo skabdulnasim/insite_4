@@ -1,0 +1,2 @@
+module ResourceManagementsHelper
+end

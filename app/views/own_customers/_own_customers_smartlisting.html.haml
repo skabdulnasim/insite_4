@@ -1,0 +1,29 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      %tr
+        %th Name
+        %th Email
+        %th Mobile
+        %th Customer Uniqe Id
+        %th Action
+        %th
+    %tbody
+      %tr
+        - smart_listing.collection.each do |object|
+          %tr  
+            %td= object.name
+            %td= object.email
+            %td= object.mobile_no
+            %td= object.customer_unique_id
+            %td
+              = link_to 'Show', object
+              = link_to 'Edit', edit_own_customer_path(object)
+              = link_to 'Destroy', object, :method => :delete, :data => { :confirm => 'Are you sure?' }
+  
+
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+- else
+  .alert.alert-warning
+    No record found    

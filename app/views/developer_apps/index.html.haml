@@ -1,0 +1,15 @@
+= render "layouts/flash"
+%ul#task-card.collection.with-header
+  %li.collection-header.white.blue-white
+    = smart_listing_controls_for(:developer_apps, {class: "form-inline float-l"}) do  
+      .form-group.filter.input-append
+        .input-group
+          %input.form-control.search{:placeholder => "Search ...", :type => "text", :name=> "filter"}
+            %span.input-group-btn
+              %button.btn.btn-default.disabled{:type => "submit" }
+                %span.glyphicon.glyphicon-search         
+    - if can? :new, DeveloperApp
+      %a.m-btn.blue.waves-effect.waves-light.float-r{:href => "#{new_developer_app_path}"}
+        Add new app
+    .clearfix
+= smart_listing_render :developer_apps    

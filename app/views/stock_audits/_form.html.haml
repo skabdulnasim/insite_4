@@ -1,0 +1,76 @@
+=render 'stock_audit_steps/wizard', current_step: "step_1", completed_steps: []
+.col-sm-3.padding-l-r-none
+  
+  .card
+    .padding-10 
+      %b FILTER BY
+    = smart_listing_controls_for(:products, {class: "text-left"}) do
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-search.left
+        Search
+      .padding-10 
+        .filter.input-append
+          .input-group
+            %input.form-control.search{:placeholder => "Search sku...", :type => "text", :name=> "sku_filter", autofocus: true}
+            %input.form-control.search{:value => params[:business_type], :type => "hidden", :name=> "business_type"}
+              %span.input-group-btn
+                %button.btn.btn-primary.disabled{:type => "submit" }
+                  %span.glyphicon.glyphicon-search                  
+      .padding-10 
+        .filter.input-append
+          .input-group
+            %input.form-control.search{:placeholder => "Search products by name...", :type => "text", :name=> "filter"}
+              %span.input-group-btn
+                %button.btn.btn-primary.disabled{:type => "submit" }
+                  %span.glyphicon.glyphicon-search
+      .padding-10 
+        .filter.input-append
+          .input-group
+            %input.form-control.search{:placeholder => "Search products by id...", :type => "text", :name=> "product_id_filter"}
+              %span.input-group-btn
+                %button.btn.btn-primary.disabled{:type => "submit" }
+                  %span.glyphicon.glyphicon-search
+      .filter-title.margin-t-b-0 
+        %i.mdi-action-list.left
+        Categories          
+      .padding-10.height-350{:style => "overflow-y: auto;"}
+        = render 'products/listing_category'
+.col-sm-6.padding-r-none
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title Products
+          %header.data-table-header
+            .row.data-table-header__label
+              = smart_listing_controls_for(:products, {class: "form-inline text-left"}) do
+                .form-group.filter.input-append
+                  / = select_tag :stock_filter, options_for_select({"Menu products"=>"3","In stock"=>"1", "Out of stock"=>"2"}), class: "search form-control", :prompt => "All products"
+                  = select_tag :stock_filter, options_for_select({"In stock"=>"1", "All products"=>"", "Menu products"=>"3", "Out of stock"=>"2"}), class: "search form-control"
+                  = hidden_field_tag "business_type", "#{params[:business_type]}" 
+
+          = smart_listing_render :products
+.col-sm-3.padding-r-none  
+  .main-section__content
+    .example
+      .example__content.p0
+        .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+          %header.data-table-header
+            .data-table-header__label
+              %span.fs-title New audit
+          = form_tag(audit_options_store_stock_audits_path(@store), method: "post") do
+            %input.form-control.search{:value => params[:business_type], :type => "hidden", :name=> "business_type"}
+            .padding-10
+              %button.m-btn.teal.width-100.waves-effect.waves-light{:type => "submit"} 
+                Proceed to Next step                               
+            .filter-title.margin-t-b-0 
+              %i.mdi-action-label.left
+              Selected Products
+            %div
+              %ul.collection.po-product-list
+                %li.collection-item.no-item-selected
+                  %div
+                    No products selected                
+.clearfix

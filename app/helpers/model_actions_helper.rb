@@ -1,0 +1,2 @@
+module ModelActionsHelper
+end

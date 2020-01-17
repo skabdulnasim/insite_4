@@ -1,0 +1,40 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+
+- links_arr = [{:title=>"NC Report",:url=>nc_report_index_path,:active_class=>""},{:title=>"NC Report By Date",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+%ul.collapsible{"data-collapsible" => "accordion"}
+  %li
+    .collapsible-header
+      %b Column preferences
+    .collapsible-body
+      %p.col-lg-12
+        = form_tag(save_report_preferences_nc_report_index_path, method: "post", :class=>"padding-20") do
+          - get_by_date_nc_preferences(current_user.unit_id,'nc_report_by_date')
+          = hidden_field_tag :report_key, "nc_report_by_date"
+          = hidden_field_tag :unit_id, @unit_id          
+          %button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+            Save preferences
+      .clearfix
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Filter data
+          .data-table-header__actions
+            %a.export-by-date-sales-report.m-btn.indigo.margin-l-5{:href=>"/nc_report/by_date.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+            = smart_listing_controls_for(:sales_by_date, {class: "form-inline float-l margin-l-30"}) do
+              .form-group.from_date.input-append
+                =# text_field_tag :from_date, '', class: "sales-by-date-input search form-control form-control-small-pad stock-from-date", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:from_date]      
+        = smart_listing_render :sales_by_date

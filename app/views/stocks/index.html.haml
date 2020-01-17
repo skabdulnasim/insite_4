@@ -1,0 +1,185 @@
+= javascript_include_tag "//www.google.com/jsapi", "chartkick"
+= render "layouts/flash"
+- links_arr = [{:title=>"All Stores",:url=>stores_path,:active_class=>""},{:title=>"Store: #{@store.name}",:url=>store_path(@store),:active_class=>""},{:title=>"Product: #{@product.name}",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper 
+.col-lg-3.col-sm-6.col-xs-6.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-database.blue
+    %span.title Primary Stock
+    %span.value
+      =number_with_precision(get_product_current_stock(@store.id, @product.id), :precision => 8, :significant => true, :strip_insignificant_zeros => true)
+      %small=@product.basic_unit
+    .clearfix
+.col-lg-3.col-sm-6.col-xs-6.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-database.orange
+    %span.title Secondary Stock
+    %span.value
+      .font-13=get_product_secondary_stock(@store.id, @product.id)
+    .clearfix      
+.col-lg-3.col-sm-6.col-xs-6.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-level-up.green
+    %span.title Today's Stock Credit
+    %span.value
+      =number_with_precision((get_product_todays_credit(@store.id, @product.id)), :precision=>2)
+      %small=@product.basic_unit
+    .clearfix
+.col-lg-3.col-sm-6.col-xs-6.col-xxs-12.padding-5
+  .smallstat.box
+    %i.fa.fa-level-down.red
+    %span.title Today's Stock Debit
+    %span.value
+      =number_with_precision((get_product_todays_debit(@store.id, @product.id)), :precision=>2)
+      %small=@product.basic_unit
+    .clearfix
+.clearfix
+.panel.panel-default
+  .panel-heading
+    %i.fa.fa-line-chart
+    Stock update (Last week)
+  .panel-body
+    = line_chart get_stock_update_chart_data(@product.id,@store.id)
+
+/ Nav tabs
+%ul.statusTab.nav.nav-tabs{:role => "tablist"}
+  %li.active
+    %a{"data-toggle" => "tab", :href => "#credits", :role => "tab"} Stock credit history
+  %li
+    %a{"data-toggle" => "tab", :href => "#debits", :role => "tab"} Stock debit history
+  %li
+    %a{"data-toggle" => "tab", :href => "#avaliable", :role => "tab"} Stock available
+  %li
+    %a{"data-toggle" => "tab", :href => "#lots", :role => "tab"} Lots 
+
+/ Tab panes
+.tab-content{:style=>"padding-left:0px; padding-right:0px;"}
+  #credits.tab-pane.fade.in.active
+    .panel.panel-default
+      .panel-heading
+        %i.fa.fa-table
+        Purchase order credits
+      .panel-body
+        = smart_listing_render :purchase_credits  
+    .panel.panel-default
+      .panel-heading
+        %i.fa.fa-table
+        Stock transfer credits
+      .panel-body
+        = smart_listing_render :transfer_credits 
+    .panel.panel-default
+      .panel-heading
+        %i.fa.fa-table
+        Stock audit credits
+      .panel-body
+        = smart_listing_render :audit_credits   
+    .panel.panel-default
+      .panel-heading
+        %i.fa.fa-table
+        Stock production credits
+      .panel-body  
+        = smart_listing_render :production_credits
+    - if @store.store_type == 'kitchen_store'
+      .panel.panel-default
+        .panel-heading
+          %i.fa.fa-table
+          SIMO credits
+        .panel-body
+          = smart_listing_render :simo_credits                    
+  #avaliable.tab-pane.fade.in   
+    .panel.panel-default
+      .panel-heading
+        %i.fa.fa-table
+        Stock available
+      .panel-body     
+        %table.table.table-striped
+          %thead
+            %th Product
+            %th Stock Identity
+            %th Batch No
+            %th Color
+            %th Size
+            %th Quantity
+          %tbody
+            - @stock_scope.each do |object|
+              %tr      
+                %td=@product.name
+                %td=object.stock_identity.present? ? object.stock_identity : '-'
+                %td=object.batch_no.present? ? object.batch_no : '-'
+                %td=object.color_name.present? ? object.color_name : '-'
+                %td=object.size.present? ? object.size : '-'
+                %td="#{object.total_available_stock}" " #{@product.basic_unit}"
+  #lots.tab-pane.fade.in   
+    .panel.panel-default
+      .panel-heading.col-lg-12
+        .col-lg-5
+          %i.fa.fa-table
+          Lots available
+        .col-lg-7
+          = smart_listing_controls_for(:available_lots, {class: "text-left"}) do
+            .float-r.form-group.filter.input-append{:style=>"width: 35%;margin-right:10px;"}
+              .input-group
+                %input.form-control.search{:placeholder => "Search by sku...", :type => "text", :name=> "sku_filter", autofocus: true}
+                  %span.input-group-btn
+                    %button.btn.btn-primary.disabled{:type => "submit" }
+                      %span.glyphicon.glyphicon-search
+      .panel-body     
+        = smart_listing_render :available_lots
+                        
+  #debits.tab-pane.fade
+    .panel.panel-default
+      .panel-heading
+        %i.fa.fa-table
+        Stock debit for orders
+      .panel-body    
+        = smart_listing_render :order_debits  
+    .panel.panel-default
+      .panel-heading
+        %i.fa.fa-table
+        Stock transfer debits
+      .panel-body
+        = smart_listing_render :transfer_debits  
+    - if @store.store_type == 'kitchen_store'                   
+      .panel.panel-default
+        .panel-heading
+          %i.fa.fa-table
+          Production center consumption debits (Applicable for kitchen store only)
+        .panel-body 
+          = smart_listing_render :consumption_debits     
+    .panel.panel-default
+      .panel-heading
+        %i.fa.fa-table
+        Stock audit debits
+      .panel-body 
+        = smart_listing_render :audit_debits 
+    - if @store.store_type == 'kitchen_store'  
+      .panel.panel-default
+        .panel-heading
+          %i.fa.fa-table
+          SIMO debits
+        .panel-body
+          = smart_listing_render :simo_debits        
+- if @store.store_type == 'kitchen_store'
+  .col-md-12.padding-l-none
+    .panel.panel-default
+      .panel-heading
+        %i.fa.fa-pie-chart
+        ="Stock consumption of #{@product.name} in production center for different menu products (Last week)"
+      .panel-body            
+        = bar_chart get_kitchen_consumption_pie_data(@product.id,@store.id)
+.clearfix        
+.col-md-6.padding-l-none
+  .panel.panel-default
+    .panel-heading
+      %i.fa.fa-pie-chart
+      Stock credits (Last week)
+    .panel-body
+      = pie_chart get_stock_credit_pie_data(@product.id,@store.id)
+.col-md-6.padding-l-none
+  .panel.panel-default
+    .panel-heading
+      %i.fa.fa-pie-chart
+      Stock debits (Last week)
+    .panel-body            
+      = pie_chart get_stock_debit_pie_data(@product.id,@store.id) 
+.clearfix                                        

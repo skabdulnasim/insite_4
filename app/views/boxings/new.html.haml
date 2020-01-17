@@ -1,0 +1,5 @@
+- links_arr = [{:title=>"Create Boxing",:url=>"#!",:active_class=>"col-breadcrumb-selected"}]
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper
+.card.padding-10
+	= render 'form'
+= hidden_field_tag 'boxing-id', ''

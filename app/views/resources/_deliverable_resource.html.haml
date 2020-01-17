@@ -1,0 +1,12 @@
+.row.m0.custom-list-item
+  .col.s1.p0
+    %i.material-icons.theme-green-text.font-25 person_pin_circle
+  .col.s11.p0-20
+    %h6.m0
+      %strong=resource.name
+      %small.theme-green-text.right Home Delivery
+    %p.font-07.grey-text
+      ="Unique Identity: #{resource.unique_identity_no}"
+      = hidden_field_tag 'resource_order_deliverable_type', 'Resource'
+      = hidden_field_tag 'resource_order_deliverable_id', resource.id
+  .clearfix

@@ -1,0 +1,30 @@
+%h1 Listing bins
+
+%table
+  %tr
+    %th Name
+    %th Height
+    %th Width
+    %th Breadth
+    %th Row no
+    %th Store rack
+    %th Unique identify no
+    %th
+    %th
+    %th
+
+  - @bins.each do |bin|
+    %tr
+      %td= bin.name
+      %td= bin.height
+      %td= bin.width
+      %td= bin.breadth
+      %td= bin.row_no
+      %td= bin.store_rack
+      %td= bin.unique_identify_no
+      %td= link_to 'Show', bin
+      %td= link_to 'Edit', edit_bin_path(bin)
+      %td= link_to 'Destroy', bin, :method => :delete, :data => { :confirm => 'Are you sure?' }
+%br
+
+/= link_to 'New Bin', new_bin_path

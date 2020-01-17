@@ -1,0 +1,21 @@
+%p#notice= notice
+
+%p
+  %b Loyalty card:
+  = @loyalty_card_payment.loyalty_card
+%p
+  %b Card serial:
+  = @loyalty_card_payment.card_serial
+%p
+  %b Name on card:
+  = @loyalty_card_payment.name_on_card
+%p
+  %b Amount:
+  = @loyalty_card_payment.amount
+%p
+  %b Points used:
+  = @loyalty_card_payment.points_used
+
+= link_to 'Edit', edit_loyalty_card_payment_path(@loyalty_card_payment)
+\|
+= link_to 'Back', loyalty_card_payments_path

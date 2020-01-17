@@ -1,0 +1,83 @@
+- unless smart_listing.empty?     
+  %table.data-table
+    %thead
+      %tr
+        %th.col-sm-2 Resource
+        %th District name
+        %th Invoice No
+        %th Distributer
+        %th Order Id
+        %th Item Name
+        %th HSN CODE
+        %th QTY
+        %th Unit
+        %th TsE
+        %th Device Id
+        %th Delivery Date
+        %th Recorded Date
+        %th{:style => "padding-right: 0px !important;"} Synced Date
+    
+    %tbody
+      - smart_listing.collection.each do |resource|
+        - orderdetails = get_order_details_for_resource(resource.id,@from_datetime,@to_datetime)
+        %tr
+          %td{:style=>"background-color:rgb(255, 210, 26);"}
+            = "#{resource.name} (#{resource.unique_identity_no})"
+            - if resource.customer.present?  
+              %br
+              = "#{resource.customer.customer_profile.firstname}" "#{resource.customer.customer_profile.lastname}"
+              %br
+              Ph:
+              = resource.customer.mobile_no
+              %br
+              Unit:
+              = resource.unit.unit_name
+          %td= get_district_name_by_resource(resource)
+          - if orderdetails.present? 
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td{:style => "padding-right: 0px !important;"}
+          - else
+            %td{:style => "padding-left: 12px !important;",:colspan => 11} 
+              No Record Found ....
+          - if orderdetails.present?
+            - orderdetails.each do |object|
+              /=debug object
+              %tr{:style=>"background-color:rgb(255, 165, 27);"}
+                %td 
+                %td= object.order.bill.present? ? object.order.bill.serial_no : '-'
+                %td= object.order.store.present? ? object.order.store.name : '-'
+                %td= object.order_id
+                /%td= show_delivery_name(object.order)
+                %td= object.product_name
+                %td= object.hsn_code
+                %td= "#{object.quantity.round(0)}"
+                %td= "#{object.product.basic_unit}"
+                - if object.order.consumer_type == 'User'
+                  %td
+                    = object.order.consumer.profile.full_name 
+                    %br
+                    Ph:
+                    = object.order.consumer.profile.contact_no 
+                - else
+                  %td '-'
+                %td= object.order.device_id
+                %td= object.order.delivary_date.strftime("%d-%m-%Y, %I:%M %p")
+                %td= object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+                %td{:style => "padding-right: 0px !important;"}
+                  = object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  %br                 
+- else
+  .alert.alert-warning
+    No record found

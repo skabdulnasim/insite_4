@@ -1,0 +1,12 @@
+- unless smart_listing.empty?
+	#wrap
+		#external-events{:style=>"width:175px;"}
+			#external-events-listing
+				%h4 Bits
+				- smart_listing.collection.each do |bit|
+					.fc-event{"data-id" => bit.id,:style=>" word-break: break-all"} 
+						=bit.name   
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	%p.warning No Resource Found!                  

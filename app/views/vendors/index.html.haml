@@ -1,0 +1,23 @@
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title 
+              .col-lg-3.margin-t-25 Listing Vendors
+            .col-lg-4.margin-t-15
+              = smart_listing_controls_for(:vendors, {class: "text-left"}) do
+                .padding-10 
+                  .form-group.filter.input-append
+                    .input-group
+                      %input.form-control.search{:placeholder => "Search by name...", :type => "text", :name=> "filter"}
+                        %span.input-group-btn
+                          %button.btn.btn-primary.disabled{:type => "submit" }
+                            %span.glyphicon.glyphicon-search
+          .data-table-header__actions
+            %a.m-btn.m-btn-teal{:href => "#{new_vendor_path}"}
+              %i.mdi-content-add.left
+              Add new vendor
+        = smart_listing_render :vendors

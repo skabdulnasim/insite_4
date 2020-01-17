@@ -1,0 +1,54 @@
+- unless smart_listing.empty?
+  %table.data-table
+    %thead
+      /%th= smart_listing.sortable "Stock ID", "id"
+      %th Purchase Id
+      %th Product
+      %th= smart_listing.sortable "Stock Purchase", "stock_credit"
+      %th Cost (#{currency})
+      %th Purchase to store
+      %th Vendor
+      %th PO Sent on
+      %th= smart_listing.sortable "System PO Received on", "created_at"
+      %th Invoice Date
+
+    %tbody
+      - smart_listing.collection.each do |object|
+        %tr      
+          /%td=object.id  
+          %td=object.stock_transaction.id
+          %td=object.product.name
+          %td="#{object.stock_credit} #{object.product.basic_unit}"
+          %td=number_to_currency(object.price.to_f,unit: '')
+          %td
+            =object.store.name
+            %br
+            %small="(Branch: #{object.store.unit.unit_name})"
+          %td=object.stock_transaction.purchase_order.vendor.name
+          %td=object.stock_transaction.created_at.strftime("%d %b %Y, %I:%M %p")           
+          %td=object.created_at.strftime("%d %b %Y, %I:%M %p")
+          %td=object.stock_transaction.invoice_date.present? ? object.stock_transaction.invoice_date.strftime("%d %b %Y, %I:%M %p") : "-"
+      
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  .example
+    .example__content.p0
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title Summery Of Report
+          .data-table-header__actions 
+        %table.data-table#mytable
+          %thead
+            %th Product
+            %th Total Stock Purchase            
+            %th Total Cost (#{currency})
+          %tbody
+            - @product_details.each do |data|
+              %tr      
+                %td=data.product.name
+                %td="#{data.total_credit}  #{data.product.basic_unit}"                
+                %td=number_to_currency(data.total_price.to_f, unit: '')
+- else
+  %p.warning No records!
+

@@ -1,0 +1,26 @@
+- unless smart_listing.empty?
+	%table.data-table
+		%thead
+			%tr.data-table__selectable-row
+				%th="Role"
+				%th="Name"
+				%th="Email"
+				%th="Unit"
+				%th="Sign in at"
+				%th="Sign out at"
+
+		%tbody
+			- smart_listing.collection.each do |object|
+				%tr.data-table__selectable-row
+					%td=object.user_role_name.humanize
+					%td=object.user.profile.firstname + " " + object.user.profile.lastname
+					%td=object.user.email
+					%td=object.user.unit.unit_name
+					%td=object.sign_in_at.strftime("%Y-%b-%d %I:%M%p")
+					%td=object.sign_out_at.present? ? object.sign_out_at.strftime("%Y-%b-%d %I:%M%p") : '-'
+
+	= smart_listing.paginate
+	= smart_listing.pagination_per_page_links
+- else
+	.alert.alert-warning
+		No record found

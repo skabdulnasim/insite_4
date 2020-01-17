@@ -1,0 +1,33 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY-MM-DD',
+      useCurrent: false,
+    });
+  });
+
+- links_arr = [{:title=>"Runner Report",:url=>runner_reports_path,:active_class=>""},{:title=>"Day by Day delivery",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+%link{:href => "http://fonts.googleapis.com/icon?family=Material+Icons", :rel => "stylesheet"}
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title.left Filter data
+            = smart_listing_controls_for(:by_date_range_delivery, {class: "form-inline float-l margin-l-30"}) do
+              = hidden_field_tag :from_date, "#{params[:from_date]}"
+              = hidden_field_tag :to_date, "#{params[:to_date]}"
+              %span.left.margin-l-15
+                = select_tag "delivery_boy_id", options_from_collection_for_select(@delivery_boys, "id", "name"),class: "form-control", "data-from-date" =>"#{params[:from_date]}", "data-to-date" => "#{params[:to_date]}", "data-unit-id" => "#{@unit_id}", "data-csv-url" => "by_date_range_delivery", prompt: 'Select Delivery Boy'  
+              %span.left.margin-l-15
+                = select_tag "order_status_id", options_from_collection_for_select(OrderStatus.all, "id", "name"),class: "form-control", "data-from-date" =>"#{params[:from_date]}", "data-to-date" => "#{params[:to_date]}", "data-unit-id" => "#{@unit_id}", "data-csv-url" => "by_date_range_delivery", prompt: 'Select Order Status'
+          .data-table-header__actions        
+            %a.export-runner-reports.m-btn.indigo.margin-l-5{:href=>"/runner_reports/by_date_range_delivery.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}&unit_id=#{@unit_id}"}
+              %i.mdi-file-file-download.left
+              CSV
+
+        = smart_listing_render :by_date_range_delivery

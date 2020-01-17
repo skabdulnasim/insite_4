@@ -1,0 +1,5 @@
+  <h6 class="grey-text">Select stores</h6>
+  <% for(var i=0; i<stores.length; i++) { %>
+    <input type="checkbox" name="consumption_store[]" value="<%= stores[i].id %>" id="consumption_store_<%= stores[i].id %>" class="filled-in">
+    <label calss="margin-t-2" for="consumption_store_<%= stores[i].id %>"><%= stores[i].name %></label><br>
+  <%}%>

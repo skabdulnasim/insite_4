@@ -1,0 +1,2 @@
+module SaleRulesHelper
+end

@@ -1,0 +1,2 @@
+module MasterModelsHelper
+end

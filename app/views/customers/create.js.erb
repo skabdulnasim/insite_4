@@ -1,0 +1,17 @@
+<% if @customer.new_record? %>
+  Materialize.toast("Oops! <%= j @customer.errors.full_messages.join(', ') %>", 3000,'round');
+<% else %>
+  Materialize.toast("Customer registered successfully", 3000);
+  $("#right-sheet-modal-header").html("Select Delivery address");
+  $('#modal-data-container').html("");
+  $('#modal-data-container').append("<%= j render(:partial => 'customers/customer', :object => @customer.reload, :as => 'customer') %>");
+	
+	$("#customer_unique_id").val("<%= @customer.customer_unique_id%>");
+	$("#customer_id").val("<%= @customer.id%>")
+	$("#profile_id").val("<%= @customer.customer_profile.id%>")
+	$('#register-customer').modal('hide');
+	$('#new-reservation').modal('show');
+	$('.add-details').show();
+	$("#customer").val("<%= @customer.customer_profile.firstname%> <%= @customer.customer_profile.lastname%>");
+	$(window.location.replace("/customers"))
+<% end %>

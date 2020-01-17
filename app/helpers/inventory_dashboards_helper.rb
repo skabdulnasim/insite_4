@@ -1,0 +1,2 @@
+module InventoryDashboardsHelper
+end

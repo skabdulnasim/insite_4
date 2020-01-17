@@ -1,0 +1,40 @@
+= form_for @production_process, :html => { :class => 'form-horizontal m-input generic_product_form' } do |f|
+  - if @production_process.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@production_process.errors.count, "error")} prohibited this production_process from being saved:"
+      %ul
+        - @production_process.errors.full_messages.each do |msg|
+          %li= msg
+
+  .card  
+    .card-content.p10
+      .form-group
+        = f.label "Name *", :class=>"col-sm-4 control-label"
+        .col-sm-5
+          = f.text_field :name, {:required => true}
+      .form-group
+        = f.label :short_name, :class=>"col-sm-4 control-label"
+        .col-sm-5
+          = f.text_field :short_name
+      .form-group
+        = f.label :local_name, :class=>"col-sm-4 control-label"
+        .col-sm-5
+          = f.text_field :local_name
+      .form-group
+        = f.label "Category *", :class=>"col-sm-4 control-label"
+        .col-sm-5
+          = f.select :category_id, options_for_select(build_product_categories.map{ |cat| [cat[:name], cat[:id]] }, @production_process.category_id), { include_blank: "Select category"},  {:class => "form-control",:required => true}
+      .form-group
+        = f.label "Rate/min.", :class=>"col-sm-4 control-label"
+        .col-sm-5
+          = f.text_field :cost
+      .form-group
+        = f.label "Process image", :class => 'col-sm-4 control-label'
+        .col-sm-5
+          = f.file_field :process_image 
+          %br 
+          = image_tag @production_process.process_image.url(:thumb) if @production_process.process_image.present?
+      .form-group.actions
+        .col-sm-4
+        .col-sm-5.center
+          = f.submit 'Save process', :class => 'btn btn-success btn-lg'

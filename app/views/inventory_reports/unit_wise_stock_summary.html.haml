@@ -1,0 +1,22 @@
+- links_arr = [{:title=>"Inventory Report",:url=>inventory_reports_path,:active_class=>""},{:title=>"Unit Wise Stock Summary Report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+
+%ul.collapsible{"data-collapsible" => "accordion"}
+	%li
+		.collapsible-header
+			%b Column preferences
+		.collapsible-body
+			%p.col-lg-12
+				= form_tag(save_report_preferences_inventory_reports_path, method: "post", :class=>"padding-20") do
+					- get_unit_wise_stock_summary_preferences(current_user.unit_id,'stock_summery_report_unit_wise')
+					= hidden_field_tag :report_key, "stock_summery_report_unit_wise"
+					%button.m-btn.teal.secondary-content.waves-effect.waves-light{:type=>"submit"}
+						Save preferences
+			.clearfix
+
+.main-section__content
+	.example
+		.example__content.p0.min-height-405
+			.data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+				= smart_listing_render :unit_wise_stock_summary

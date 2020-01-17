@@ -1,0 +1,33 @@
+= form_for @table_state, :class => 'form-control' do |f|
+  - if @table_state.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@table_state.errors.count, "error")} prohibited this table_state from being saved:"
+      %ul
+        - @table_state.errors.full_messages.each do |msg|
+          %li= msg
+ 
+  .form-group
+    = f.label :name,:class => 'col-sm-3 control-label'
+  .form-group
+    .col-sm-6  
+      = f.text_field :name,:class => 'form-control'
+  %br
+  %br
+  .form-group
+    = f.label "Select color",:class => 'col-sm-3 control-label'
+  .form-group
+    .col-sm-6  
+      = f.text_field :color_code, :type => "color"
+  %br
+  %br      
+  .form-group
+    = f.label :state_priority,:class => 'col-sm-3 control-label'
+  .form-group
+    .col-sm-6  
+      = f.number_field :state_priority,:class => 'form-control'      
+  %br
+  %br
+  .control-group
+    .col-sm-offset-3.col-sm-10
+      = f.submit 'Save', :class => 'btn btn-success btn-sm'   
+  

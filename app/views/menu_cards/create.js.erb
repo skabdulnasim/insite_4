@@ -1,0 +1,4 @@
+$('#new_menu_card').hide();
+$('#new_catalog_link').show();
+$("#catalogs").prepend("<%=j render(:partial => 'menu_card_listing', :locals => { :menu_card => @menu_card }) %>")
+

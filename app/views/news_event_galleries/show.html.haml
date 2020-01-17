@@ -1,0 +1,12 @@
+%p#notice= notice
+
+%p
+  %b News event:
+  = @news_event_gallery.news_event_id
+%p
+  %b News event image:
+  = @news_event_gallery.news_event_image
+
+= link_to 'Edit', edit_news_event_gallery_path(@news_event_gallery)
+\|
+= link_to 'Back', news_event_galleries_path

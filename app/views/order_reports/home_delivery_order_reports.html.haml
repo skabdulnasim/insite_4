@@ -1,0 +1,19 @@
+- links_arr = [{:title=>"Order Report",:url=>order_reports_path,:active_class=>""},{:title=>"Home delivery order report",:url=>"#",:active_class=>"col-breadcrumb-selected"}] 
+- render_page_breadcrumbs(links_arr)  #ApplicationHelper  
+= render "layouts/flash"
+.main-section__content
+  .example
+    .example__content.p0.min-height-405
+      .data-table-container#accordion{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label
+            %span.fs-title= @unit.unit_name
+          / .data-table-header__actions
+          /   %a.export-issue-report.m-btn.indigo.margin-l-5{:href=>"/inventory_reports/vendor_wise_product_sale.csv?from_date=#{params[:from_date]}&to_date=#{params[:to_date]}"}
+          /     %i.mdi-file-file-download.left
+          /     CSV
+          /   = smart_listing_controls_for(:vendor_wise_products_sale, {class: "form-inline float-l margin-l-30"}) do
+          /     .form-group.from_date.input-append                           
+          /       = text_field_tag :from_date, '', class: "form-control datepick", placeholder: "From Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:from_date]   
+          /       = text_field_tag :to_date, '', class: "form-control datepick ", placeholder: "To Date", autocomplete: :off, :style => "padding: 6px 10px;", :value=>params[:to_date]                                        
+        = smart_listing_render :orders

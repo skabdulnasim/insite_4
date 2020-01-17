@@ -1,0 +1,15 @@
+:javascript
+  $(function() {
+    $('#from_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+    $('#to_date').datetimepicker({
+      format: 'YYYY/MM/DD',
+    });
+  });
+= render "layouts/flash"
+- manual_load_javascript "templates/orders/quick_details"
+.col-sm-3.padding-5
+  = render :partial => "future_order_filter"
+.col-sm-9.padding-5
+  = smart_listing_render :future_orders

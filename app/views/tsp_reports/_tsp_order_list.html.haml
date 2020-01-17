@@ -1,0 +1,106 @@
+- unless smart_listing.empty?     
+  %table.data-table
+    %thead
+      %tr
+        %th TsE
+        %th.col-lg-1 Invoice No
+        %th Distributer
+        %th Order Id
+        %th Deliver To
+        %th Item Name
+        %th HSN CODE
+        %th QTY
+        %th Device Id
+        %th Delivery Date
+        %th Recorded Date
+        %th{:style => "padding-right: 0px !important;"} Synced Date
+        %th Location
+    
+    %tbody
+      - smart_listing.collection.each do |user|
+        - store_requisitions= []
+        - orderdetails=[]
+        - if @report_type_filteration == "orders"
+          - orderdetails = get_order_details_for_tsp(user.id,@from_datetime,@to_datetime)
+        -elsif @report_type_filteration == "requisition"
+          - store_requisitions = get_requisitions_for_tsp(user.id,@from_datetime,@to_datetime)
+        -else
+          - orderdetails = get_order_details_for_tsp(user.id,@from_datetime,@to_datetime)
+          - store_requisitions = get_requisitions_for_tsp(user.id,@from_datetime,@to_datetime)
+        %tr
+          %td{:style=>"background-color:rgb(255, 210, 26);"}
+            %b
+              = user.profile.full_name
+            %br
+            Ph:
+            = user.profile.contact_no
+            %br
+            Unit:
+            = user.unit.unit_name
+          - if orderdetails.present? || store_requisitions.present?  
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td
+            %td{:style => "padding-right: 0px !important;"}
+            %td
+          - else
+            %td{:style => "padding-left: 12px !important;",:colspan => 12} 
+              No Record Found ....
+          - if orderdetails.present?
+            - orderdetails.each do |object|
+              /=debug object
+              %tr{:style=>"background-color:rgb(255, 165, 27);"}
+                %td 
+                %td= object.order.bill.present? ? object.order.bill.serial_no : '-'
+                %td= object.order.store.present? ? object.order.store.name : '-'
+                %td= object.order_id
+                %td
+                  ="#{object.order.resource_type}: ""#{object.order.deliverable.name}"
+                  ="(#{object.order.deliverable.unique_identity_no})" if object.order.deliverable.unique_identity_no.present?
+                  %br
+                  - if object.order.customer.present?
+                    = "#{object.order.customer.customer_profile.firstname}" "#{object.order.customer.customer_profile.lastname}"
+                    = "Ph:#{object.order.customer.mobile_no}"
+                %td= object.product_name
+                %td= object.hsn_code
+                %td= "#{object.quantity.round(0)} (#{object.product.basic_unit})"
+                %td= object.order.device_id
+                %td= object.order.delivary_date.strftime("%d-%m-%Y, %I:%M %p")
+                %td= object.recorded_at.strftime("%d-%m-%Y, %I:%M %p")
+                %td{:style => "padding-right: 0px !important;"}
+                  = object.created_at.strftime("%d-%m-%Y, %I:%M %p")
+                %td
+                  %img{:src => "/google-maps.png", :class => "map-view", :width => "40px","data-lat"=>"#{object.order.latitude}", "data-lon"=>"#{object.order.longitude}", "data-text" => "#{object.order.deliverable.name}"}  
+          - if store_requisitions.present?
+            -store_requisitions.each do |requisition_meta|
+              %tr{:style=>"background-color:rgb(154, 185, 182);"}
+                %td 
+                %td= "N/A"
+                %td= requisition_meta.store_requisition.from_store.name
+                %td= "#{requisition_meta.store_requisition.id}(requisition)"
+                %td= requisition_meta.store_requisition.destination_store.name 
+                %td= requisition_meta.product.name
+                %td= requisition_meta.product.hsn_code
+                %td= "#{requisition_meta.product_ammount} #{requisition_meta.product.basic_unit}"
+                %td= "N/A"
+                %td= 'N/A'
+                %td= requisition_meta.store_requisition.created_at.strftime("%d-%m-%Y, %I:%M %p")
+                %td{:style => "padding-right: 0px !important;"}
+                  = "-"
+                %td
+                  %img{:src => "/google-maps.png", :class => "map-view", :width => "40px","data-lat"=>"#{requisition_meta.store_requisition.latitude}", "data-lon"=>"#{requisition_meta.store_requisition.longitude}"}  
+      
+  = smart_listing.paginate
+  = smart_listing.pagination_per_page_links
+  %br                 
+- else
+  .alert.alert-warning
+    No record found

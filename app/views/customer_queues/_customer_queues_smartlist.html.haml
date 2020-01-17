@@ -1,0 +1,34 @@
+
+.main-section__content
+  .example
+    .example__content.p0
+      .data-table-container{"aria-multiselectable" => "true", :role => "tablist"}
+        %header.data-table-header
+          .data-table-header__label.col-sm-6
+            %span.fs-title Listing Customer Queues
+        - unless smart_listing.empty?
+          - smart_listing.collection.each do |object|
+            .product-card.col-lg-3.col-xs-12.col-sm-12.padding-5
+              - card_bg = object.is_preauth==true ? 'green' : '#f46b42'
+              .card.margin-t-b-0{:style => "background: #{card_bg}"}
+                .card-content.white-text
+                  %p
+                    = "Mobile no.: " "#{object.customer.mobile_no}"
+                .card-action.white-text
+                  %span.font-sz-12
+                    = "Id: " "#{object.id}"
+                  %br
+                  %span.font-sz-12
+                    = "Total pax: " "#{object.total_pax}"
+                  %br
+                  %span.font-sz-12
+                    = "Slot: " "#{object.slot.title}"
+                  %i.mdi-content-send.smaller.float-r
+
+          = smart_listing.paginate
+          = smart_listing.pagination_per_page_links
+
+        - else
+          .alert.alert-warning
+            No customer queue found          
+                
